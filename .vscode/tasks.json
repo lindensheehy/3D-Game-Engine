@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "main.cpp",
+                "-o",
+                "main.exe",
+                "-I",
+                "C:/dev/SDL2/64-bit-mingw32/include",
+                "-L",
+                "C:/dev/SDL2/64-bit-mingw32/lib",
+                "-lSDL2",
+                "-lSDL2main", 
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

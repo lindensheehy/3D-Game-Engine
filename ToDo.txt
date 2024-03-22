@@ -1,0 +1,5 @@
+- add colors to meshes
+- implement a lighting vec
+- Object class
+    - make a doFrame(dt) function
+    - some basic collision like with the floor
