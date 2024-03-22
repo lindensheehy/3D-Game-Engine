@@ -1,3 +1,7 @@
+/*
+    This file serves no functional purpose. I just wanted to see all my code in one file to put it in scale. This is also outdated
+*/
+
 #define SDL_MAIN_HANDLED 
 #include <iostream>
 #include <fstream>
