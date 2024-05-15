@@ -15,9 +15,6 @@ class Color {
         static const Uint32 WHITE  = 0xFFFFFFFF;
         static const Uint32 GREY   = 0xFF888888;
 
-        static const Uint32 CHESS_WHITE = 0xFFBBBBBB;
-        static const Uint32 CHESS_BLACK = 0xFF444444;
-
         // Instance variables
         Uint32 rawValue;  // raw value which was given
         Uint8 redValue;
@@ -53,6 +50,34 @@ class Color {
             this->rawValue |= g;
             this->rawValue <<= 8;
             this->rawValue |= b;
+        }
+
+        // Class functions
+        static Uint32 reduceBrightness(Uint32 color, double newBrightness) {
+
+            // Unpack color code
+            Uint8 opacityValue = (Uint8) (color >> 24);
+            Uint8 redValue = (Uint8) (color >> 16);
+            Uint8 greenValue = (Uint8) (color >> 8);
+            Uint8 blueValue = (Uint8) (color);
+
+            // Update values
+            redValue *= newBrightness;
+            greenValue *= newBrightness;
+            blueValue *= newBrightness;
+
+            // Repack color code
+            Uint32 newColor = 0x00000000;
+            newColor |= opacityValue;
+            newColor <<= 8;
+            newColor |= redValue;
+            newColor <<= 8;
+            newColor |= greenValue;
+            newColor <<= 8;
+            newColor |= blueValue;
+
+            return newColor;
+
         }
 
     private:

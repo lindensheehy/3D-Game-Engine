@@ -1,11 +1,15 @@
 #ifndef math
 #define math
 
-#include <cmath>
-
 #ifndef pi
 #define pi 3.14159265358979323846
 #endif
+
+/*
+    Reminder for myself:
+    Inline causes the compiler to replace an assembly function call with the actual piece of code in the function
+    This is used here for the very simple functions becuase they dont have much logic and therefore are unnecessary to have as function calls at low level
+*/
 
 const double degToRadFactor = pi / 180;
 
@@ -25,30 +29,30 @@ double outRange(double num, double from, double to) {
 
 }
 
-double toRadians(double degrees) {
+inline double toRadians(double degrees) {
     return degrees * degToRadFactor;
 }
 
-double toDegrees(double radians) {
+inline double toDegrees(double radians) {
     return radians / degToRadFactor;
 }
 
-int max(int var1, int var2) {
+inline int max(int var1, int var2) {
     if (var1 > var2) return var1;
     return var2;
 }
 
-double max(double var1, double var2) {
+inline double max(double var1, double var2) {
     if (var1 > var2) return var1;
     return var2;
 }
 
-int min(int var1, int var2) {
+inline int min(int var1, int var2) {
     if (var1 < var2) return var1;
     return var2;
 }
 
-double min(double var1, double var2) {
+inline double min(double var1, double var2) {
     if (var1 < var2) return var1;
     return var2;
 }

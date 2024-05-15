@@ -17,22 +17,27 @@ class Camera {
         double pitch;
         double roll;
         Vec3* facingDirection;  // Vector which points in the same direction the camera is facing
-
         Vec2* fov;              // degrees of fov on the x and y axis
-
         double movementSpeed;   // Movement speed in units per second
+
+        Vec3* lightingVec;      // This is the vector representing the direction of the global light source for this camera
 
         // Constructors
         Camera() {
-            this->pos = new Vec3(0, 0, 0);
-            this->velocity = new Vec3(0, 0, 0);
-            this->acceleration = new Vec3(0, 0, 0);
+
+            this->pos = new Vec3();
+            this->velocity = new Vec3();
+            this->acceleration = new Vec3();
+
             this->facingDirection = new Vec3(0, 0, 1);
-            this->fov = new Vec2(0, 0);
+            this->fov = new Vec2();
             this->yaw = 0;
             this->pitch = 0;
             this->roll = 0;
             this->movementSpeed = 3;
+
+            this->lightingVec = new Vec3();
+
         }
 
         // Destructor
@@ -91,6 +96,7 @@ class Camera {
         void setFacingDirection(Vec3* facingDirection) {
             delete this->facingDirection;
             this->facingDirection = facingDirection->copy();
+            return;
         }
 
         void setFov(double x, double y) {
@@ -102,14 +108,33 @@ class Camera {
         void setFov(Vec2* fov) {
             delete this->fov;
             this->fov = fov->copy();
+            return;
+        }
+
+        void setLightingVec(double x, double y, double z) {
+            this->lightingVec->x = x;
+            this->lightingVec->y = y;
+            this->lightingVec->z = z;
+            return;
+        }
+
+        void setLightingVec(Vec3* lightingVec) {
+            delete this->lightingVec;
+            this->lightingVec = lightingVec->copy();
+            return;
         }
 
         void rotate(double yaw, double pitch, double roll) {
-            this->facingDirection->rotate(yaw, pitch, roll);
+
+            // Update angles
             this->yaw += yaw;
             this->pitch += pitch;
             this->roll += roll;
             this->rolloverAngles();
+
+            // Find new facing direction vector
+            this->facingDirection->set(0, 0, 1);
+            this->facingDirection->rotate(-this->yaw, -this->pitch, this->roll);
         }
 
         void project(Vec3* vec, Vec2* displayPos) {

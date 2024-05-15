@@ -101,6 +101,7 @@ class Mesh {
         int vertexCount;
         int normalCount;
         int triCount;
+        Uint32 color;
 
         // Maps vecs from verticies and normals to tris
         IndexMap* indexMap;
@@ -117,6 +118,7 @@ class Mesh {
             this->vertexCount = 0;
             this->normalCount = 0;
             this->triCount = 0;
+            this->color = Color::WHITE;
 
             this->indexMap = NULL;
 
@@ -223,6 +225,11 @@ class Mesh {
 
             return this;
 
+        }
+
+        Mesh* setColor(Uint32 color) {
+            this->color = color;
+            return this;
         }
 
         void mapTris() {

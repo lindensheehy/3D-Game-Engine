@@ -127,6 +127,21 @@ class Drawer {
             }
         }
 
+        void drawCircle(Uint32 pixel, int locationx, int locationy, int radius) {
+
+            int limit = radius * radius;
+
+            for (int i = -radius; i < radius; i++) {
+                for (int j = -radius; j < radius; j++) {
+
+                    if ( (i * i) + (j * j) < limit ) {
+                        this->writePixel(pixel, locationx + i, locationy + j);
+                    }
+                    
+                }
+            }
+        }
+
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
 
             /*
@@ -170,7 +185,7 @@ class Drawer {
             }
 
             // These are the y values the line will go to/from for each x
-            // the doubles store the actual value, and the ints are rounded
+            // The doubles store the actual value, and the ints are rounded
             // The actual values may not actually be start and end as they say and might be backwards, thats why the min and max functions are used later
             int startY, endY;
             double actualStartY = y1;
@@ -194,7 +209,7 @@ class Drawer {
             else slopeLeftRight = 1e250; // just a big number representing infinity
 
             // this checks if all the points have the same x coordinate and draws a single line accordingly
-            // Since the points are sorted, if the highest (left) and lowest (right) have the same x, so does the middle
+            // Since the points are sorted, if the lowest (left) and highest (right) have the same x, so does the middle
             if (slopeLeftRight == 1e250) {
                 startY = min(min(y1, y2), y3);
                 endY = max(max(y1, y2), y3);

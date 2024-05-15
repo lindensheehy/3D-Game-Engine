@@ -1,3 +1,4 @@
+- fix triangles not working correclty to shown when facing cam
 - add colors to meshes
 - implement a lighting vec
 - Object class

@@ -2,7 +2,6 @@
 #define graphics
 
 #include <iostream>
-#include <SDL2/SDL.h>
 
 #include "classes/DrawerClass.h"
 #include "classes/FrameStateClass.h"

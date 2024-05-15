@@ -124,7 +124,7 @@ class Tri3 {
         }
 
         bool isFacing(Vec3* vec) {
-            return this->normal->getAngle(vec) >= (pi / 2); // 90 degrees
+            return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
         }
 
 };

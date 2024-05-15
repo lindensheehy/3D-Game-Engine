@@ -5,8 +5,6 @@
 #include <fstream>
 #include <iomanip>
 
-#include <stdint.h>
-
 typedef uint8_t int1byte;
 typedef uint16_t int2bytes;
 typedef uint32_t int4bytes;
