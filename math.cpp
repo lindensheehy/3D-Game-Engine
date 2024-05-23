@@ -5,13 +5,26 @@
 #define pi 3.14159265358979323846
 #endif
 
+#include <cmath>
+
 /*
+    Note: Im very aware that there are several libraries which have most if not all of these functions, but I wanted to write it myself
+
     Reminder for myself:
     Inline causes the compiler to replace an assembly function call with the actual piece of code in the function
     This is used here for the very simple functions becuase they dont have much logic and therefore are unnecessary to have as function calls at low level
 */
 
 const double degToRadFactor = pi / 180;
+
+
+inline int myabs(int num) {
+    return ( num < 0 ? -num : num);
+}
+
+inline double myabs(double num) {
+    return ( num < 0 ? -num : num);
+}
 
 double inRange(double num, double from, double to) {
     if ( (num >= from) && (num <= to) )

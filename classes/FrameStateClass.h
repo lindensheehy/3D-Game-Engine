@@ -478,6 +478,8 @@ class FrameState {
             return this->keys->keyIsDown(keyCode);
         }
 
+        
+
     private:
 
         void setState(FrameState* state) {
