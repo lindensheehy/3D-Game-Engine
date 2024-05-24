@@ -127,6 +127,18 @@ class Tri3 {
             return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
         }
 
+        Vec3* getCenter() {
+
+            // Average all 3 components
+            double x = this->v1->x + this->v2->x + this->v3->x;
+            double y = this->v1->y + this->v2->y + this->v3->y;
+            double z = this->v1->z + this->v2->z + this->v3->z;
+            x /= 3; y /= 3; z /= 3;
+
+            return new Vec3(x, y, z);
+            
+        }
+
 };
 
 #endif

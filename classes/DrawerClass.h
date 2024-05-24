@@ -34,8 +34,8 @@ class Drawer {
             }
 
             // Dont draw if it outside the buffer
-            if (x >= this->bufferWidth) return;
-            if (y >= this->bufferHeight) return;
+            if (x >= this->bufferWidth || x < 0) return;
+            if (y >= this->bufferHeight || y < 0) return;
 
             int index = (y * this->bufferWidth) + x;
             if (index > this->bufferSize) return;
