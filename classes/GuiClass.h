@@ -32,7 +32,7 @@ class Gui {
             this->renderer = NULL;
             this->texture = NULL;
 
-            this->buffer = NULL;
+            this->buffer = new Uint32[windowWidth * windowHeight];
 
         }
 
@@ -95,9 +95,8 @@ class Gui {
         }
 
         void getBuffer() {
-            int* windowWidthTemp = new int(this->windowWidth);
-            SDL_LockTexture(this->texture, NULL, (void**) &(this->buffer), windowWidthTemp);
-            delete windowWidthTemp;
+            int windowWidthTemp = this->windowWidth;
+            SDL_LockTexture(this->texture, NULL, (void**) &(this->buffer), &windowWidthTemp);
         }
 
         void dumpBuffer() {
@@ -105,13 +104,12 @@ class Gui {
         }
 
         void flip() {
-            int* windowWidthTemp = new int(this->windowWidth);
+            int windowWidthTemp = this->windowWidth;
             SDL_UnlockTexture(this->texture);
-            SDL_UpdateTexture(this->texture, NULL, this->buffer, (*windowWidthTemp) * sizeof(Uint32));
+            SDL_UpdateTexture(this->texture, NULL, this->buffer, windowWidthTemp * sizeof(Uint32));
             SDL_RenderClear(this->renderer);
             SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
             SDL_RenderPresent(this->renderer);
-            delete windowWidthTemp;
         }
 
     private:

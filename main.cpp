@@ -124,7 +124,6 @@ int main(int argc, char* argv[]) {
         drawer->fillScreen(Color::BLACK);
         drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
         gui->flip();
-        //gui->dumpBuffer(); // frees up the memory taken by the buffer
         delete drawer;
 
         std::cout << "(" << camera1->yaw << ", " << camera1->pitch << ")";

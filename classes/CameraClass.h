@@ -206,6 +206,8 @@ class Camera {
             displayPos->x = locationX;
             displayPos->y = locationY;
 
+            delete relative;
+
             return;
         }
 
