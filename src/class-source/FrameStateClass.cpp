@@ -1,5 +1,4 @@
-#ifndef FrameStateClass
-#define FrameStateClass
+#include "../class-headers/FrameStateClass.h"
 
 #include <SDL2/SDL.h>
 
@@ -270,13 +269,13 @@ class FrameState {
 
                     }
 
-                    return NULL;
+                    return nullptr;
                 }
 
                 void keyDown(int keyCode) {
 
                     bool* key = this->getKeyRef(keyCode);
-                    if (key != NULL) (*key) = true;
+                    if (key != nullptr) (*key) = true;
 
                     return;
 
@@ -285,7 +284,7 @@ class FrameState {
                 void keyUp(int keyCode) {
                     
                     bool* key = this->getKeyRef(keyCode);
-                    if (key != NULL) (*key) = false;
+                    if (key != nullptr) (*key) = false;
 
                     return;
 
@@ -294,7 +293,7 @@ class FrameState {
                 bool keyIsDown(int keyCode) {
                     
                     bool* key = this->getKeyRef(keyCode);
-                    if (key != NULL) return (*key) == true;
+                    if (key != nullptr) return (*key) == true;
                     else return false;
 
                 }
@@ -372,15 +371,15 @@ class FrameState {
             this->keys = new KeyboardState();
 
             if (hasChild) this->lastFrame = new FrameState(false);
-            else this->lastFrame = NULL;
+            else this->lastFrame = nullptr;
 
         }
 
         // Destructor
         ~FrameState() {
-            if (this->mouse != NULL) delete this->mouse;
-            if (this->keys != NULL) delete this->keys;
-            if (this->lastFrame != NULL) delete this->lastFrame;
+            if (this->mouse != nullptr) delete this->mouse;
+            if (this->keys != nullptr) delete this->keys;
+            if (this->lastFrame != nullptr) delete this->lastFrame;
         }
 
         // Instance functions
@@ -439,7 +438,7 @@ class FrameState {
 
         void nextFrame() {
 
-            if (this->lastFrame == NULL) return;
+            if (this->lastFrame == nullptr) return;
 
             this->lastFrame->setState(this);
             this->frameCount++;
@@ -465,12 +464,12 @@ class FrameState {
         }
 
         int deltaMousePosX() {
-            if (this->lastFrame == NULL) return 0;
+            if (this->lastFrame == nullptr) return 0;
             return (this->mouse->posX) - (this->lastFrame->mouse->posX);
         }
 
         int deltaMousePosY() {
-            if (this->lastFrame == NULL) return 0;
+            if (this->lastFrame == nullptr) return 0;
             return (this->mouse->posY) - (this->lastFrame->mouse->posY);
         }
 
@@ -489,5 +488,3 @@ class FrameState {
         }
 
 };
-
-#endif

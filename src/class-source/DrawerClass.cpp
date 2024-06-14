@@ -1,13 +1,13 @@
-#ifndef DrawerClass
-#define DrawerClass
+#include "../class-headers/DrawerClass.h"
 
 #include <SDL2/SDL.h>
 
-#include "PNGClass.h"
-#include "Vec2Class.h"
-#include "Tri2Class.h"
-#include "../math.cpp"
-#include "../log.cpp"
+#include "../class-headers/PNGClass.h"
+#include "../class-headers/Vec2Class.h"
+#include "../class-headers/Tri2Class.h"
+
+#include "../math/math.h"
+#include "../log/log.h"
 
 class Drawer {
     public:
@@ -29,7 +29,7 @@ class Drawer {
         // Instance functions
         void writePixel(Uint32 pixel, int x, int y) {
 
-            if (this->buffer == NULL) {
+            if (this->buffer == nullptr) {
                 return;
             }
 
@@ -47,7 +47,7 @@ class Drawer {
 
         void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
-            if (this->buffer == NULL) {
+            if (this->buffer == nullptr) {
                 return;
             }
             
@@ -87,7 +87,7 @@ class Drawer {
 
         void drawRect(Uint32 pixel, int startx, int starty, int endx, int endy) {
 
-            if (this->buffer == NULL) {
+            if (this->buffer == nullptr) {
                 return;
             }
 
@@ -276,7 +276,7 @@ class Drawer {
             if (x + file->width > bufferWidth) return;
             if (y + file->height > bufferHeight) return;
             
-            if (this->buffer == NULL) {
+            if (this->buffer == nullptr) {
                 return;
             }
 
@@ -298,5 +298,3 @@ class Drawer {
     private:
 
 };
-
-#endif

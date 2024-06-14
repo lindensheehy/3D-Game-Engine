@@ -1,11 +1,10 @@
-#ifndef PNGClass
-#define PNGClass
+#include "../class-headers/PNGClass.h"
 
 #include <iostream>
-#include <SDL2/SDL.h>
 
-#include "ColorClass.h"
-#include "../src/lodepng.cpp"
+#include "../class-headers/ColorClass.h"
+
+#include "../lodepng/lodepng.h"
 
 const char RED = 0;
 const char GREEN = 1;
@@ -55,6 +54,7 @@ class PNG {
             }
             
             return;
+
         }
 
         PNG(PNG* input, int startx, int starty, int endx, int endy) {
@@ -62,7 +62,7 @@ class PNG {
             this->width = (endx - startx);
             this->height = (endy - starty);
 
-            this->fileName = NULL;
+            this->fileName = nullptr;
             int size = this->width * this->height;
             this->rawData = new Uint8[size * 4];
             this->pixels = new Color*[size];
@@ -93,6 +93,7 @@ class PNG {
             }
             
             return;
+
         }
 
         ~PNG() {
@@ -105,31 +106,49 @@ class PNG {
             delete[] this->pixels;
 
             return;
+
         }
 
         Color* getPixel(int x, int y) {
-            if (x >= this->width || y >= this->height) return NULL;
+
+            if (x >= this->width || y >= this->height) return nullptr;
+
             return this->pixels[ (this->width * y) + x ];
+
         }
 
         bool setPixel(int x, int y, Color* pixel) {
+
             if (x >= this->width || y >= this->height) return false;
-            if (pixel == NULL) return false;
+
+            if (pixel == nullptr) return false;
+
             this->pixels[ (this->width * y) + x ] = pixel;
+
             return true;
+
         }
 
         Uint8 getChannel(int x, int y, char channel) {
+
             if (x >= this->width || y >= this->height) return -1;
+
             if (channel > 3 || channel < 0) return -1;
+
             return this->rawData[ (((this->width * y) + x) * 4) + channel];
+
         }
 
         bool setChannel(int x, int y, char channel, Uint8 value) {
+            
             if (x >= this->width || y >= this->height) return false;
+
             if (channel > 3 || channel < 0) return false;
+
             this->rawData[ (((this->width * y) + x) * 4) + channel] = value;
+
             return true;
+
         }
 
 
@@ -137,5 +156,3 @@ class PNG {
 
 
 };
-
-#endif

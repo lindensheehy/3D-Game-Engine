@@ -1,14 +1,12 @@
-#ifndef MeshClass
-#define MeshClass
+#include "../class-headers/MeshClass.h"
 
-#include <iostream>
+#include "../class-headers/Vec2Class.h"
+#include "../class-headers/Vec3Class.h"
+#include "../class-headers/Tri2Class.h"
+#include "../class-headers/Tri3Class.h"
+#include "../class-headers/ColorClass.h"
 
-#include "Vec2Class.h"
-#include "Vec3Class.h"
-#include "Tri2Class.h"
-#include "Tri3Class.h"
-
-#include "../log.cpp"
+#include "../log/log.h"
 
 class Mesh {
     /*
@@ -112,18 +110,18 @@ class Mesh {
 
         // Constructor
         Mesh() {
-            this->verticies = NULL;
-            this->normals = NULL;
-            this->tris = NULL;
+            this->verticies = nullptr;
+            this->normals = nullptr;
+            this->tris = nullptr;
             this->vertexCount = 0;
             this->normalCount = 0;
             this->triCount = 0;
             this->color = Color::WHITE;
 
-            this->indexMap = NULL;
+            this->indexMap = nullptr;
 
-            this->projectedVerticies = NULL;
-            this->projectedTris = NULL;
+            this->projectedVerticies = nullptr;
+            this->projectedTris = nullptr;
         }
 
         // Destructor
@@ -133,15 +131,15 @@ class Mesh {
 
             // Delete all objects in the lists
             for (int i = 0; i < this->vertexCount; i++) { 
-                if (this->verticies[i] != NULL) delete this->verticies[i]; 
-                if (this->projectedVerticies[i] != NULL) delete this->projectedVerticies[i]; 
+                if (this->verticies[i] != nullptr) delete this->verticies[i]; 
+                if (this->projectedVerticies[i] != nullptr) delete this->projectedVerticies[i]; 
             }
             for (int i = 0; i < this->triCount; i++) {
-                if (this->tris[i] != NULL) delete this->tris[i];
-                if (this->projectedTris[i] != NULL) delete this->projectedTris[i];
+                if (this->tris[i] != nullptr) delete this->tris[i];
+                if (this->projectedTris[i] != nullptr) delete this->projectedTris[i];
             }
             for (int i = 0; i < this->normalCount; i++) {
-                if (this->normals[i] != NULL) delete this->normals[i];
+                if (this->normals[i] != nullptr) delete this->normals[i];
             }
 
             // Delete lists
@@ -217,7 +215,7 @@ class Mesh {
 
         }
 
-        Mesh* rotate(double yaw, double pitch, double roll, Vec3* around = NULL) {
+        Mesh* rotate(double yaw, double pitch, double roll, Vec3* around = nullptr) {
 
             for (int i = 0; i < this->vertexCount; i++) {
                 this->verticies[i]->rotate(yaw, pitch, roll, around);
@@ -343,7 +341,5 @@ class Mesh {
 
 };
 
-Mesh* Mesh::cubeMesh = NULL;
-Mesh* Mesh::tetrahedronMesh = NULL;
-
-#endif
+Mesh* Mesh::cubeMesh = nullptr;
+Mesh* Mesh::tetrahedronMesh = nullptr;

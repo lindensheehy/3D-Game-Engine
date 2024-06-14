@@ -1,10 +1,6 @@
-#ifndef Vec2Class
-#define Vec2Class
+#include "../class-headers/Vec2Class.h"
 
-#include <iostream>
-#include <cmath>
-
-#include "../math.cpp"
+#include "../math/math.h"
 
 class Vec2 {
     public:
@@ -112,7 +108,7 @@ class Vec2 {
             return (this->x * other->x) + (this->y * other->y);
         }
 
-        void rotate(double degrees, Vec2* around = NULL) {
+        void rotate(double degrees, Vec2* around = nullptr) {
 
             if (degrees == 0) return;
 
@@ -121,7 +117,7 @@ class Vec2 {
             double relativeX = this->x;
             double relativeY = this->y;
 
-            if (around != NULL) {
+            if (around != nullptr) {
                 aroundX = around->x;
                 aroundY = around->y;
                 relativeX -= aroundX;
@@ -161,5 +157,3 @@ class Vec2 {
         double magnitudeValue;
         bool magnitudeUpdated;
 };
-
-#endif

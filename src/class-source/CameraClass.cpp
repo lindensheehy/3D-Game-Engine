@@ -1,9 +1,8 @@
-#ifndef CameraClass
-#define CameraClass
+#include "../class-headers/CameraClass.h"
 
-#include "Vec2Class.h"
-#include "Vec3Class.h"
-#include "MeshClass.h"
+#include "../class-headers/Vec2Class.h"
+#include "../class-headers/Vec3Class.h"
+#include "../class-headers/MeshClass.h"
 
 class Camera {
     public:
@@ -244,5 +243,3 @@ class Camera {
         }
 
 };
-
-#endif

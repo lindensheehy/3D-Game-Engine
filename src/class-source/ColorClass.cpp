@@ -1,5 +1,4 @@
-#ifndef ColorClass
-#define ColorClass
+#include "../class-headers/ColorClass.h"
 
 #include <SDL2/SDL.h>
 
@@ -53,7 +52,7 @@ class Color {
         }
 
         // Class functions
-        static Uint32 reduceBrightness(Uint32 color, double newBrightness) {
+        static Uint32 setBrightness(Uint32 color, double newBrightness) {
 
             // Unpack color code
             Uint8 opacityValue = (Uint8) (color >> 24);
@@ -83,5 +82,3 @@ class Color {
     private:
 
 };
-
-#endif

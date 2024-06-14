@@ -1,5 +1,7 @@
-#ifndef DisplayClass
-#define DisplayClass
+#include "../class-headers/DisplayClass.h"
+
+#include "../class-headers/Vec2Class.h"
+#include "../class-headers/MeshClass.h"
 
 class Display {
     public:
@@ -59,5 +61,3 @@ class Display {
         }
 
 };
-
-#endif

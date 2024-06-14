@@ -1,9 +1,8 @@
-#ifndef GuiClass
-#define GuiClass
+#include "../class-headers/GuiClass.h"
 
 #include <SDL2/SDL.h>
 
-#include "../log.cpp"
+#include "../log/log.h"
 
 class Gui {
     public:
@@ -28,9 +27,9 @@ class Gui {
             this->windowWidth = windowWidth;
             this->windowHeight = windowHeight;
 
-            this->window = NULL;
-            this->renderer = NULL;
-            this->texture = NULL;
+            this->window = nullptr;
+            this->renderer = nullptr;
+            this->texture = nullptr;
 
             this->buffer = new Uint32[windowWidth * windowHeight];
 
@@ -55,7 +54,7 @@ class Gui {
                 SDL_WINDOW_SHOWN
             );
 
-            if (this->window == NULL) {
+            if (this->window == nullptr) {
                 logWrite("SDL create window failed! from GuiClass.h in init()", true);
                 return 1;
             }
@@ -67,7 +66,7 @@ class Gui {
                 SDL_RENDERER_ACCELERATED
             );
 
-            if (this->renderer == NULL) {
+            if (this->renderer == nullptr) {
                 logWrite("SDL create renderer failed! from GuiClass.h in init()", true);
                 return 1;
             }
@@ -81,7 +80,7 @@ class Gui {
                 this->windowHeight
             );
 
-            if (this->texture == NULL) {
+            if (this->texture == nullptr) {
                 logWrite("SDL create texture failed! from GuiClass.h in init()", true);
                 return 1;
             }
@@ -96,7 +95,7 @@ class Gui {
 
         void getBuffer() {
             int windowWidthTemp = this->windowWidth;
-            SDL_LockTexture(this->texture, NULL, (void**) &(this->buffer), &windowWidthTemp);
+            SDL_LockTexture(this->texture, nullptr, (void**) &(this->buffer), &windowWidthTemp);
         }
 
         void dumpBuffer() {
@@ -106,13 +105,11 @@ class Gui {
         void flip() {
             int windowWidthTemp = this->windowWidth;
             SDL_UnlockTexture(this->texture);
-            SDL_UpdateTexture(this->texture, NULL, this->buffer, windowWidthTemp * sizeof(Uint32));
+            SDL_UpdateTexture(this->texture, nullptr, this->buffer, windowWidthTemp * sizeof(Uint32));
             SDL_RenderClear(this->renderer);
-            SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
+            SDL_RenderCopy(this->renderer, this->texture, nullptr, nullptr);
             SDL_RenderPresent(this->renderer);
         }
 
     private:
 };
-
-#endif

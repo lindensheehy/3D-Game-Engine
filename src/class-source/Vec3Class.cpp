@@ -1,10 +1,6 @@
-#ifndef Vec3Class
-#define Vec3Class
+#include "../class-headers/Vec3Class.h"
 
-#include <iostream>
-#include <cmath>
-
-#include "../math.cpp"
+#include "../math/math.h"
 
 class Vec3 {
     public:
@@ -176,7 +172,7 @@ class Vec3 {
             return acos(ratio);
         }
 
-        void rotate(double yaw, double pitch, double roll, Vec3* around = NULL) {
+        void rotate(double yaw, double pitch, double roll, Vec3* around = nullptr) {
 
             if (yaw == 0 && pitch == 0 && roll == 0) return;
 
@@ -187,7 +183,7 @@ class Vec3 {
             double relativeY = this->y;
             double relativeZ = this->z;
 
-            if (around != NULL) {
+            if (around != nullptr) {
                 aroundX = around->x;
                 aroundY = around->y;
                 aroundZ = around->z;
@@ -233,9 +229,8 @@ class Vec3 {
         }
 
     private:
+    
         // Instance variables
         double magnitudeValue;
         bool magnitudeUpdated;
 };
-
-#endif

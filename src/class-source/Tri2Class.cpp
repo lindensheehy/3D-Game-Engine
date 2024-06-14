@@ -1,7 +1,6 @@
-#ifndef Tri2Class
-#define Tri2Class
+#include "../class-headers/Tri2Class.h"
 
-#include "Vec2Class.h"
+#include "../class-headers/Vec2Class.h"
 
 class Tri2 {
     public:
@@ -19,9 +18,9 @@ class Tri2 {
             */
 
             if (nullPointers) {
-                this->v1 = NULL;
-                this->v2 = NULL;
-                this->v3 = NULL;
+                this->v1 = nullptr;
+                this->v2 = nullptr;
+                this->v3 = nullptr;
             }
 
             else {
@@ -69,5 +68,3 @@ class Tri2 {
         }
 
 };
-
-#endif

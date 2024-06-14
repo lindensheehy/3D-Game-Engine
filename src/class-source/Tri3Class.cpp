@@ -1,7 +1,6 @@
-#ifndef Tri3Class
-#define Tri3Class
+#include "../class-headers/Tri3Class.h"
 
-#include "Vec3Class.h"
+#include "../class-headers/Vec3Class.h"
 
 class Tri3 {
     public:
@@ -20,10 +19,10 @@ class Tri3 {
             */
 
             if (nullPointers) {
-                this->v1 = NULL;
-                this->v2 = NULL;
-                this->v2 = NULL;
-                this->normal = NULL;
+                this->v1 = nullptr;
+                this->v2 = nullptr;
+                this->v2 = nullptr;
+                this->normal = nullptr;
                 return;
             }
 
@@ -140,5 +139,3 @@ class Tri3 {
         }
 
 };
-
-#endif

@@ -3,15 +3,15 @@
 
 #include <iostream>
 
-#include "classes/DrawerClass.h"
-#include "classes/FrameStateClass.h"
-#include "classes/Vec2Class.h"
-#include "classes/Vec3Class.h"
-#include "classes/MeshClass.h"
-#include "classes/CameraClass.h"
-#include "classes/DisplayClass.h"
+#include "src/class-headers/DrawerClass.h"
+#include "src/class-headers/FrameStateClass.h"
+#include "src/class-headers/Vec2Class.h"
+#include "src/class-headers/Vec3Class.h"
+#include "src/class-headers/MeshClass.h"
+#include "src/class-headers/CameraClass.h"
+#include "src/class-headers/DisplayClass.h"
 
-#include "log.cpp"
+#include "src/log/log.cpp"
 
 void drawMesh(Mesh* mesh, Camera* camera, Drawer* drawer, Display* display) {
 

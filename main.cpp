@@ -3,18 +3,18 @@
 #include <iostream>
 #include <chrono>
 
-#include "classes/ColorClass.h"
-#include "classes/DrawerClass.h"
-#include "classes/FrameStateClass.h"
-#include "classes/CameraClass.h"
-#include "classes/DisplayClass.h"
-#include "classes/MeshClass.h"
-#include "classes/GuiClass.h"
+#include "src/class-headers/ColorClass.h"
+#include "src/class-headers/DrawerClass.h"
+#include "src/class-headers/FrameStateClass.h"
+#include "src/class-headers/CameraClass.h"
+#include "src/class-headers/DisplayClass.h"
+#include "src/class-headers/MeshClass.h"
+#include "src/class-headers/GuiClass.h"
 
-#include "log.cpp"
+#include "src/log/log.cpp"
 #include "graphics.cpp"
 
-Gui* gui = NULL;
+Gui* gui = nullptr;
 
 void handleInput(FrameState* frameState, Camera* camera, double dt) {
 

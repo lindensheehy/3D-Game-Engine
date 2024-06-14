@@ -1,19 +1,11 @@
-#ifndef math
-#define math
-
-#ifndef pi
-#define pi 3.14159265358979323846
-#endif
+/*
+    Note: Im very aware that there are several libraries which have most if not all of these functions, but I wanted to write it myself
+*/
 
 #include <cmath>
 
-/*
-    Note: Im very aware that there are several libraries which have most if not all of these functions, but I wanted to write it myself
+#include "math.h"
 
-    Reminder for myself:
-    Inline causes the compiler to replace an assembly function call with the actual piece of code in the function
-    This is used here for the very simple functions becuase they dont have much logic and therefore are unnecessary to have as function calls at low level
-*/
 
 const double degToRadFactor = pi / 180;
 
@@ -118,5 +110,3 @@ double getAngle(double x1, double y1, double x2 = 0, double y2 = 0) {
     return angle;
 
 }
-
-#endif

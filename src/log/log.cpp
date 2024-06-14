@@ -1,9 +1,8 @@
-#ifndef log
-#define log
-
-#include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <stdint.h>
+
+#include "log.h"
 
 typedef uint8_t int1byte;
 typedef uint16_t int2bytes;
@@ -135,5 +134,3 @@ void logVar(std::string message, double variable) {
     logWrite(": ", false);
     logWrite(variable, true);
 }
-
-#endif
