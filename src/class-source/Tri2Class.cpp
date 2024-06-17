@@ -37,13 +37,29 @@ class Tri2 {
         }
 
         // Instance functions
+        Tri2* copy() {
+
+            Tri2* ret = new Tri2(true);
+
+            Vec2* v1 = this->v1->copy();
+            Vec2* v2 = this->v2->copy();
+            Vec2* v3 = this->v3->copy();
+
+            ret->setv1(v1);
+            ret->setv2(v2);
+            ret->setv3(v3);
+
+            return ret;
+            
+        }
+
         void setv1(double x, double y, double z) {
             this->v1->x = x;
             this->v1->y = y;
         }
 
         void setv1(Vec2* vec) {
-            delete this->v1;
+            if (this->v1 != nullptr) delete this->v1;
             this->v1 = vec->copy();
         }
 
@@ -53,7 +69,7 @@ class Tri2 {
         }
 
         void setv2(Vec2* vec) {
-            delete this->v2;
+            if (this->v2 != nullptr) delete this->v2;
             this->v2 = vec->copy();
         }
 
@@ -63,7 +79,7 @@ class Tri2 {
         }
 
         void setv3(Vec2* vec) {
-            delete this->v3;
+            if (this->v3 != nullptr) delete this->v3;
             this->v3 = vec->copy();
         }
 

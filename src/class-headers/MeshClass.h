@@ -1,5 +1,4 @@
-#ifndef MeshClass
-#define MeshClass
+#pragma once
 
 #include "Vec2Class.h"
 #include "Vec3Class.h"
@@ -9,18 +8,19 @@
 #include "../log/log.cpp"
 
 class Mesh {
+
     /*
         This is the class used to define and transform meshes, some default meshes are populted after a call to initMeshes()
         Contains transformation functions
         The reason there is a verticies list and a tri list is to simplify transformations and to use less memory
-        The verticies stores the actual points, and the tris list only point to values in the verticies list
+        The verticies list stores the actual points, and the tris list only point to values in the verticies list
         Same goes for the normals
     */
 
     public:
 
-        // Class used to store index maps
         class IndexMap {
+
             /*
                 This contains an array of size 4n where n is the input size
                 Each set of 4 elements contains the index to various vecs for the triangles in a mesh
@@ -95,5 +95,3 @@ class Mesh {
 
 Mesh* Mesh::cubeMesh = nullptr;
 Mesh* Mesh::tetrahedronMesh = nullptr;
-
-#endif

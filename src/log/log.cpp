@@ -1,5 +1,6 @@
-#include <fstream>
+#include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <stdint.h>
 
 #include "log.h"

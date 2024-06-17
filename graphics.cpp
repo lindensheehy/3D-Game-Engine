@@ -1,5 +1,4 @@
-#ifndef graphics
-#define graphics
+#pragma once
 
 #include <iostream>
 
@@ -25,36 +24,36 @@ void drawMesh(Mesh* mesh, Camera* camera, Drawer* drawer, Display* display) {
     Vec2* vecEnd = new Vec2();
 
     // Draw Normals
-    for (int i = 0; i < mesh->triCount; i++) {
+    // for (int i = 0; i < mesh->triCount; i++) {
 
-        // Pass if tri isnt facing cam
-        if (!mesh->tris[i]->isFacing(camera->facingDirection)) continue;
+    //     // Pass if tri isnt facing cam
+    //     if (!mesh->tris[i]->isFacing(camera->facingDirection)) continue;
 
-        // Get projected coords for normal start and end
-        Vec3* triCenter = mesh->tris[i]->getCenter();
-        Vec3* normalOffset = mesh->tris[i]->normal->copy()->normalise();
-        Vec3* triNormal = triCenter->add(normalOffset);
+    //     // Get projected coords for normal start and end
+    //     Vec3* triCenter = mesh->tris[i]->getCenter();
+    //     Vec3* normalOffset = mesh->tris[i]->normal->copy()->normalise();
+    //     Vec3* triNormal = triCenter->add(normalOffset);
 
-        logWrite("here", true);
+    //     logWrite("here", true);
 
-        camera->project(triCenter, vecStart);
-        camera->project(triNormal, vecEnd);
-        display->toDisplayPos(vecStart);
-        display->toDisplayPos(vecEnd);
+    //     camera->project(triCenter, vecStart);
+    //     camera->project(triNormal, vecEnd);
+    //     display->toDisplayPos(vecStart);
+    //     display->toDisplayPos(vecEnd);
 
-        logWrite(vecStart->x);
-        logWrite(", ");
-        logWrite(vecStart->y, true);
-        logWrite(vecEnd->x);
-        logWrite(", ");
-        logWrite(vecEnd->y, true);
-        logNewLine();
+    //     logWrite(vecStart->x);
+    //     logWrite(", ");
+    //     logWrite(vecStart->y, true);
+    //     logWrite(vecEnd->x);
+    //     logWrite(", ");
+    //     logWrite(vecEnd->y, true);
+    //     logNewLine();
 
-        drawer->drawLine(Color::RED, vecStart, vecEnd);
+    //     drawer->drawLine(Color::RED, vecStart, vecEnd);
 
-        delete triCenter; delete normalOffset; delete triNormal;
+    //     delete triCenter; delete normalOffset; delete triNormal;
 
-    }
+    // }
 
     delete vecStart; delete vecEnd;
 
@@ -148,5 +147,3 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
     return;
 
 }
-
-#endif

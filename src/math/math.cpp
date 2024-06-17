@@ -26,7 +26,7 @@ double inRange(double num, double from, double to) {
 
 double outRange(double num, double from, double to) {
     /*
-        Functions similar to inRange, but it allows values to be outside the range and will return a value accordingly.
+        Function is similar to inRange, but it allows values to be outside the range and will return a value accordingly.
         Will return a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
     */
 

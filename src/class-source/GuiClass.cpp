@@ -35,6 +35,21 @@ class Gui {
 
         }
 
+        // Destructor
+        ~Gui() {
+
+            // SDL2 objects
+            if (this->window != nullptr) delete this->window;
+            if (this->renderer != nullptr) delete this->renderer;
+            if (this->texture != nullptr) delete this->texture;
+
+            // Pixel buffer
+            if (this->buffer != nullptr) delete this->buffer;
+
+            return;
+
+        }
+
         // Instance functions
         int init() {
 
@@ -96,10 +111,6 @@ class Gui {
         void getBuffer() {
             int windowWidthTemp = this->windowWidth;
             SDL_LockTexture(this->texture, nullptr, (void**) &(this->buffer), &windowWidthTemp);
-        }
-
-        void dumpBuffer() {
-            delete this->buffer;
         }
 
         void flip() {
