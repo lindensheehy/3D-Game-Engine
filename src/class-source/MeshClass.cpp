@@ -24,23 +24,26 @@ class Mesh {
             /*
                 This contains an array of size 4n where n is the input size
                 Each set of 4 elements contains the index to various vecs for the triangles in a mesh
+                These indexes refer to the position of the vectors in thier respective array.
             */
 
             public:
 
-                // Readable Indexes
-                static const int VERTEX1 = 0;
-                static const int VERTEX2 = 1;
-                static const int VERTEX3 = 2;
-                static const int NORMAL = 3;
+                // List items for the map variable
+                struct Set {
+                    int vertex1;
+                    int vertex2;
+                    int vertex3;
+                    int normal;
+                };
 
                 // Instance variables
-                int* map;
+                Set* map;
                 int size;
 
                 // Constructor
                 IndexMap(int size) {
-                    this->map = new int[size * 4];
+                    this->map = new Set[size];
                     this->size = size;
                 }
 
@@ -54,8 +57,11 @@ class Mesh {
 
                     IndexMap* newCopy = new IndexMap(this->size);
 
-                    for (int i = 0; i < (this->size * 4); i++) {
-                        newCopy->map[i] = this->map[i];
+                    for (int i = 0; i < (this->size); i++) {
+                        newCopy->map[i].vertex1 = this->map[i].vertex1;
+                        newCopy->map[i].vertex2 = this->map[i].vertex2;
+                        newCopy->map[i].vertex3 = this->map[i].vertex3;
+                        newCopy->map[i].normal = this->map[i].normal;
                     }
 
                     return newCopy;
@@ -64,27 +70,27 @@ class Mesh {
 
                 void setGroup(int index, int v1, int v2, int v3, int normal) {
                     int actualIndex = index * 4;
-                    this->map[actualIndex + VERTEX1] = v1;
-                    this->map[actualIndex + VERTEX2] = v2;
-                    this->map[actualIndex + VERTEX3] = v3;
-                    this->map[actualIndex + NORMAL] = normal;
+                    this->map[actualIndex].vertex1 = v1;
+                    this->map[actualIndex].vertex2 = v2;
+                    this->map[actualIndex].vertex3 = v3;
+                    this->map[actualIndex].normal = normal;
                 }
 
-                void setValue(int index, int subIndex, int value) {
-                    this->map[ (index * 4) + subIndex ] = value;
-                }
+                // void setValue(int index, int subIndex, int value) {
+                //     this->map[index] = value;
+                // }
 
                 void getGroup(int index, int* v1, int* v2, int* v3, int* normal) {
                     int actualIndex = index * 4;
-                    (*v1) = this->map[actualIndex + VERTEX1];
-                    (*v2) = this->map[actualIndex + VERTEX2];
-                    (*v3) = this->map[actualIndex + VERTEX3];
-                    (*normal) = this->map[actualIndex + NORMAL];
+                    (*v1) = this->map[actualIndex].vertex1;
+                    (*v2) = this->map[actualIndex].vertex2;
+                    (*v3) = this->map[actualIndex].vertex3;
+                    (*normal) = this->map[actualIndex].normal;
                 }
 
-                int getValue(int index, int subIndex) {
-                    return this->map[ (index * 4) + subIndex ];
-                }
+                // int getValue(int index, int subIndex) {
+                //     return this->map[ (index * 4) + subIndex ];
+                // }
 
         };
 
@@ -110,6 +116,7 @@ class Mesh {
 
         // Constructor
         Mesh() {
+
             this->verticies = nullptr;
             this->normals = nullptr;
             this->tris = nullptr;
@@ -122,12 +129,13 @@ class Mesh {
 
             this->projectedVerticies = nullptr;
             this->projectedTris = nullptr;
+            
         }
 
         // Destructor
         ~Mesh() {
 
-            delete this->indexMap;
+            if (this->indexMap != nullptr) delete this->indexMap;
 
             // Delete all objects in the lists
             for (int i = 0; i < this->vertexCount; i++) { 
@@ -143,11 +151,11 @@ class Mesh {
             }
 
             // Delete lists
-            delete[] this->verticies;
-            delete[] this->normals;
-            delete[] this->tris;
-            delete[] this->projectedVerticies;
-            delete[] this->projectedTris;
+            if (this->verticies != nullptr) delete[] this->verticies;
+            if (this->normals != nullptr) delete[] this->normals;
+            if (this->tris != nullptr) delete[] this->tris;
+            if (this->projectedVerticies != nullptr) delete[] this->projectedVerticies;
+            if (this->projectedTris != nullptr) delete[] this->projectedTris;
 
             return;
 

@@ -6,7 +6,7 @@ class Tri3 {
 
     /*
         Similar to Tri2, but for 3d. This also contains a normal vector.
-        There are several other functions here becuase these are the objects used for all game items.
+        There are several other functions here becuase these are the objects used for all program physics items items.
     */
 
     public:
