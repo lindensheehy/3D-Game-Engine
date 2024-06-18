@@ -5,7 +5,7 @@
 #include "Tri2Class.h"
 #include "Tri3Class.h"
 
-#include "../log/log.cpp"
+#include "../log/log.h"
 
 class Mesh {
 

@@ -5,8 +5,8 @@
 #include "PNGClass.h"
 #include "Vec2Class.h"
 #include "Tri2Class.h"
-#include "../math/math.cpp"
-#include "../log/log.cpp"
+#include "../math/math.h"
+#include "../log/log.h"
 
 class Drawer {
 

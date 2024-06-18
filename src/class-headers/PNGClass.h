@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "ColorClass.h"
-#include "../lodepng/lodepng.cpp"
+#include "../lodepng/lodepng.h"
 
 class PNG {
 

@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "../log/log.cpp"
+#include "../log/log.h"
 
 class Gui {
 

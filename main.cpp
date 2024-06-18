@@ -11,7 +11,7 @@
 #include "src/class-headers/MeshClass.h"
 #include "src/class-headers/GuiClass.h"
 
-#include "src/log/log.cpp"
+#include "src/log/log.h"
 #include "graphics.cpp"
 
 Gui* gui = nullptr;

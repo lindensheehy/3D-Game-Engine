@@ -46,7 +46,7 @@ void logNewLine() {
 }
 
 // Strings and chars
-void logWrite(std::string message, bool newLine = false) {
+void logWrite(std::string message, bool newLine) {
 
     // Check if the file is successfully opened
     if (!outputFile.is_open()) {
@@ -64,41 +64,41 @@ void logWrite(std::string message, bool newLine = false) {
     return;
 }
 
-void logWrite(char message, bool newLine = false) {
+void logWrite(char message, bool newLine) {
     std::string outputString;
     outputString += message;
     logWrite(outputString, newLine);
 }
 
-void logWrite(wchar_t message, bool newLine = false) {
+void logWrite(wchar_t message, bool newLine) {
     std::string outputString;
     outputString += message;
     logWrite(outputString, newLine);
 }
 
 // Decimal Values
-void logWrite(int message, bool newLine = false) {
+void logWrite(int message, bool newLine) {
     logWrite(std::to_string(message), newLine);
     return;
 }
 
-void logWrite(long message, bool newLine = false) {
+void logWrite(long message, bool newLine) {
     logWrite(std::to_string(message), newLine);
     return;
 }
 
-void logWrite(long long message, bool newLine = false) {
+void logWrite(long long message, bool newLine) {
     logWrite(std::to_string(message), newLine);
     return;
 }
 
-void logWrite(double message, bool newLine = false) {
+void logWrite(double message, bool newLine) {
     logWrite(std::to_string(message), newLine);
     return;
 }
 
 // Hex values
-void logWrite(int8bytes message, bool newLine = false) {
+void logWrite(int8bytes message, bool newLine) {
 
     std::stringstream stream;
     stream << "0x" << std::hex << std::uppercase << message;
@@ -108,17 +108,17 @@ void logWrite(int8bytes message, bool newLine = false) {
     return;
 }
 
-void logWrite(int2bytes message, bool newLine = false) {
+void logWrite(int2bytes message, bool newLine) {
     logWrite( (int8bytes) message, newLine);
     return;
 }
 
-void logWrite(int4bytes message, bool newLine = false) {
+void logWrite(int4bytes message, bool newLine) {
     logWrite( (int8bytes) message, newLine);
     return;
 }
 
-void logWrite(int1byte message, bool newLine = false) {
+void logWrite(int1byte message, bool newLine) {
     logWrite( (int8bytes) message, newLine);
     return;
 }

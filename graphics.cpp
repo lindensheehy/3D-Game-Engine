@@ -10,7 +10,7 @@
 #include "src/class-headers/CameraClass.h"
 #include "src/class-headers/DisplayClass.h"
 
-#include "src/log/log.cpp"
+#include "src/log/log.h"
 
 void drawMesh(Mesh* mesh, Camera* camera, Drawer* drawer, Display* display) {
 

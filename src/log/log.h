@@ -10,6 +10,8 @@ typedef uint16_t int2bytes;
 typedef uint32_t int4bytes;
 typedef uint64_t int8bytes;
 
+std::ofstream outputFile;
+
 // Init
 void logInit(std::string fileName);
 
@@ -18,21 +20,21 @@ void logClear();
 void logNewLine();
 
 // Strings and chars
-void logWrite(std::string message, bool newLine);
-void logWrite(char message, bool newLine);
-void logWrite(wchar_t message, bool newLine);
+void logWrite(std::string message, bool newLine = false);
+void logWrite(char message, bool newLine = false);
+void logWrite(wchar_t message, bool newLine = false);
 
 // Decimal Values
-void logWrite(int message, bool newLine);
-void logWrite(long message, bool newLine);
-void logWrite(long long message, bool newLine);
-void logWrite(double message, bool newLine);
+void logWrite(int message, bool newLine = false);
+void logWrite(long message, bool newLine = false);
+void logWrite(long long message, bool newLine = false);
+void logWrite(double message, bool newLine = false);
 
 // Hex values
-void logWrite(int8bytes message, bool newLine);
-void logWrite(int2bytes message, bool newLine);
-void logWrite(int4bytes message, bool newLine);
-void logWrite(int1byte message, bool newLine);
+void logWrite(int8bytes message, bool newLine = false);
+void logWrite(int2bytes message, bool newLine = false);
+void logWrite(int4bytes message, bool newLine = false);
+void logWrite(int1byte message, bool newLine = false);
 
 // Variable Format
 void logVar(std::string message, int variable);
