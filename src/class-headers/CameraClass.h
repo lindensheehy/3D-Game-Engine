@@ -10,7 +10,9 @@ class Camera {
         /*   Instance variables   */
 
         // Physics vectors
-        Vec3* pos, velocity, acceleration;
+        Vec3* pos;
+        Vec3* velocity;
+        Vec3* acceleration;
 
         // Facing vectors. yaw -> about Y-axis, pitch -> about X-axis, roll -> about Z-axis
         double yaw, pitch, roll;

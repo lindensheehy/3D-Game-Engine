@@ -6,8 +6,12 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "-g",
                 "main.cpp",
+                "./src/obj/Vec2.o",
+                "./src/obj/Vec3.o",
+                "./src/obj/Tri2.o",
+                "./src/obj/Tri3.o",
+                "./src/obj/Camera.o",
                 "-o",
                 "main.exe",
                 "-I",

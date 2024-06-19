@@ -35,6 +35,8 @@ class Tri3 {
         Tri3* copy();
 
         // Setters for each vertex, and the normal. Allowing double or Vec3 inputs
+        // The ones which take a Vec3 object will delete the current instance variable, then point to the one given.
+        // That means the Vec3 given, should NOT be changed after running this, unless also changing the triangle is intended.
         void setv1(double x, double y, double z);
         void setv1(Vec3* vec);
 

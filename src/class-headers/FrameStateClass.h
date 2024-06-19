@@ -7,7 +7,7 @@ class FrameState {
     /*
         This class serves to handle events from frame to frame.
         It keeps track of the events currently happening on this frame, and which events happened last frame.
-        Subclasses MouseState and KeyboardState keep track of thier respective events.
+        Subclasses MouseState and KeyboardState keep track of their respective events.
     */
 
     public:

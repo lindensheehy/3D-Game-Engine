@@ -39,6 +39,7 @@ class Display {
 
         // The second step of projection. 
         // This takes the fov factor from the output of a projection call, and turns it into a pixel position on the gui window.
+        // The return values of this are placed into the components of the input vector. meaning the old values are overwritten
         void toDisplayPos(Vec2* vec);
 
         // Does the above step for each vertex in a mesh

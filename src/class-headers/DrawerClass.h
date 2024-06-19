@@ -5,6 +5,7 @@
 #include "PNGClass.h"
 #include "Vec2Class.h"
 #include "Tri2Class.h"
+
 #include "../math/math.h"
 #include "../log/log.h"
 

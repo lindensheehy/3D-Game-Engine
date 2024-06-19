@@ -10,8 +10,6 @@ typedef uint16_t int2bytes;
 typedef uint32_t int4bytes;
 typedef uint64_t int8bytes;
 
-std::ofstream outputFile;
-
 // Init
 void logInit(std::string fileName);
 

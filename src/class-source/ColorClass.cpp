@@ -2,83 +2,61 @@
 
 #include <SDL2/SDL.h>
 
-class Color {
 
-    public:
+// Contructors
+Color::Color(uint32 color) {
 
-        // Constants
-        static const Uint32 RED    = 0xFFFF0000;
-        static const Uint32 GREEN  = 0xFF00FF00;
-        static const Uint32 BLUE   = 0xFF0000FF;
-        static const Uint32 BLACK  = 0xFF000000;
-        static const Uint32 WHITE  = 0xFFFFFFFF;
-        static const Uint32 GREY   = 0xFF888888;
+    this->rawValue = color;
 
-        // Instance variables
-        Uint32 rawValue;  // raw value which was given
-        Uint8 redValue;
-        Uint8 greenValue;
-        Uint8 blueValue;
-        Uint8 opacityValue;
+    // This gets the sub values at each 8 bit interval of the 32 bit input
+    this->opacityValue = (uint8) (color >> 24);
+    this->redValue = (uint8) (color >> 16);
+    this->greenValue = (uint8) (color >> 8);
+    this->blueValue = (uint8) (color);
+}
 
-        // Contructors
-        Color(Uint32 color) {
+Color::Color(uint8 o, uint8 r, uint8 g, uint8 b) {
 
-            this->rawValue = color;
+    this->redValue = r;
+    this->greenValue = g;
+    this->blueValue = b;
+    this->opacityValue = o;
+    
+    // Load each 8 sub bits into a bigger variable
+    this->rawValue = 0x00000000;
+    this->rawValue |= o;
+    this->rawValue <<= 8;
+    this->rawValue |= r;
+    this->rawValue <<= 8;
+    this->rawValue |= g;
+    this->rawValue <<= 8;
+    this->rawValue |= b;
+}
 
-            // This gets the sub values at each 8 bit interval of the 32 bit input
-            this->opacityValue = (Uint8) (color >> 24);
-            this->redValue = (Uint8) (color >> 16);
-            this->greenValue = (Uint8) (color >> 8);
-            this->blueValue = (Uint8) (color);
-        }
+// Class functions
+uint32 Color::setBrightness(uint32 color, double newBrightness) {
 
-        Color(Uint8 o, Uint8 r, Uint8 g, Uint8 b) {
+    // Unpack color code
+    uint8 opacityValue = (uint8) (color >> 24);
+    uint8 redValue = (uint8) (color >> 16);
+    uint8 greenValue = (uint8) (color >> 8);
+    uint8 blueValue = (uint8) (color);
 
-            this->redValue = r;
-            this->greenValue = g;
-            this->blueValue = b;
-            this->opacityValue = o;
-            
-            // Load each 8 sub bits into a bigger variable
-            this->rawValue = 0x00000000;
-            this->rawValue |= o;
-            this->rawValue <<= 8;
-            this->rawValue |= r;
-            this->rawValue <<= 8;
-            this->rawValue |= g;
-            this->rawValue <<= 8;
-            this->rawValue |= b;
-        }
+    // Update values
+    redValue *= newBrightness;
+    greenValue *= newBrightness;
+    blueValue *= newBrightness;
 
-        // Class functions
-        static Uint32 setBrightness(Uint32 color, double newBrightness) {
+    // Repack color code
+    uint32 newColor = 0x00000000;
+    newColor |= opacityValue;
+    newColor <<= 8;
+    newColor |= redValue;
+    newColor <<= 8;
+    newColor |= greenValue;
+    newColor <<= 8;
+    newColor |= blueValue;
 
-            // Unpack color code
-            Uint8 opacityValue = (Uint8) (color >> 24);
-            Uint8 redValue = (Uint8) (color >> 16);
-            Uint8 greenValue = (Uint8) (color >> 8);
-            Uint8 blueValue = (Uint8) (color);
+    return newColor;
 
-            // Update values
-            redValue *= newBrightness;
-            greenValue *= newBrightness;
-            blueValue *= newBrightness;
-
-            // Repack color code
-            Uint32 newColor = 0x00000000;
-            newColor |= opacityValue;
-            newColor <<= 8;
-            newColor |= redValue;
-            newColor <<= 8;
-            newColor |= greenValue;
-            newColor <<= 8;
-            newColor |= blueValue;
-
-            return newColor;
-
-        }
-
-    private:
-
-};
+}

@@ -10,7 +10,7 @@ class Gui {
         This class serves to simplify the process of creating an SDL2 window.
         The whole process of creating many objects and checking if they were initialized properly is now done automatically when init is run.
         All this class requires if a window size (width, height) and it does the rest when instance->init() is called.
-        This also serves as a base for the DrawerClass, as it handles the pixel buffer getting and setting
+        This also serves as a base for the DrawerClass, as it handles pixel buffer interactions with SDL2.
     */
 
     public:
@@ -32,9 +32,8 @@ class Gui {
         // Constructor
         Gui(int windowWidth, int windowHeight);
 
-        // Destructor
-        ~Gui();
-
+        // Even though this class allocated memory for SDL2 objects. These objects cannot be deleted manually.
+        // When running instance->exit(), there is a call made to SDL2 which handles this all.
 
         /*   Instance functions   */
 

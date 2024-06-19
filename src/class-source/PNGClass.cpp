@@ -6,153 +6,142 @@
 
 #include "../lodepng/lodepng.h"
 
-const char RED = 0;
-const char GREEN = 1;
-const char BLUE = 2;
-const char OPACITY = 3;
 
-class PNG {
+// Color indexes. Used to parse the return data from lodepng
+const char PNG::RED = 0;
+const char PNG::GREEN = 1;
+const char PNG::BLUE = 2;
+const char PNG::OPACITY = 3;
 
-    public:
+// Constructor from filename
+PNG::PNG(const char* filename) {
 
-        // Instance variables
-        const char* fileName;
-        unsigned int width;
-        unsigned int height;
-        Uint8* rawData;
-        Color** pixels;
+    std::vector<unsigned char> returnData;
+    unsigned int failed = lodepng::decode(returnData, this->width, this->height, filename);
 
-        PNG(const char* filename) {
+    if (failed) {
+        std::cerr << "Error loading PNG file: " << lodepng_error_text(failed) << std::endl;
+        return;
+    }
 
-            std::vector<unsigned char> returnData;
-            unsigned int failed = lodepng::decode(returnData, this->width, this->height, filename);
+    this->fileName = filename;
+    int size = this->width * this->height;
+    this->rawData = new Uint8[size * 4];
+    this->pixels = new Color*[size];
 
-            if (failed) {
-                std::cerr << "Error loading PNG file: " << lodepng_error_text(failed) << std::endl;
-                return;
-            }
+    for (int i = 0; i < size * 4; i += 4) {
 
-            this->fileName = filename;
-            int size = this->width * this->height;
-            this->rawData = new Uint8[size * 4];
-            this->pixels = new Color*[size];
+        Uint8 r = (Uint8) returnData[i];
+        Uint8 g = (Uint8) returnData[i + 1];
+        Uint8 b = (Uint8) returnData[i + 2];
+        Uint8 o = (Uint8) returnData[i + 3];
 
-            for (int i = 0; i < size * 4; i += 4) {
+        this->rawData[i] = r;
+        this->rawData[i + 1] = g;
+        this->rawData[i + 2] = b;
+        this->rawData[i + 3] = o;
 
-                Uint8 r = (Uint8) returnData[i];
-                Uint8 g = (Uint8) returnData[i + 1];
-                Uint8 b = (Uint8) returnData[i + 2];
-                Uint8 o = (Uint8) returnData[i + 3];
+        this->pixels[i / 4] = new Color(o, r, g, b);
 
-                this->rawData[i] = r;
-                this->rawData[i + 1] = g;
-                this->rawData[i + 2] = b;
-                this->rawData[i + 3] = o;
+    }
+    
+    return;
 
-                this->pixels[i / 4] = new Color(o, r, g, b);
+}
 
-            }
-            
+// Constructor from other PNG object
+PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
+
+    this->width = (endx - startx);
+    this->height = (endy - starty);
+
+    this->fileName = nullptr;
+    int size = this->width * this->height;
+    this->rawData = new Uint8[size * 4];
+    this->pixels = new Color*[size];
+
+    for (int i = 0; i < size; i += 1) {
+
+        int x = ((i % this->width) + startx);
+        int y = (int) (i / this->width) + (starty);
+
+        Uint8 r = input->getChannel( x, y, RED);
+        Uint8 g = input->getChannel( x, y, GREEN);
+        Uint8 b = input->getChannel( x, y, BLUE);
+        Uint8 o = input->getChannel( x, y, OPACITY);
+
+        if (r == -1 || g == -1 || b == -1 || o == -1) {
+            std::cout << "color channel failed to get" << std::endl;
+            system("pause");
             return;
-
         }
 
-        PNG(PNG* input, int startx, int starty, int endx, int endy) {
+        this->rawData[i * 4] = r;
+        this->rawData[(i * 4) + 1] = g;
+        this->rawData[(i * 4) + 2] = b;
+        this->rawData[(i * 4) + 3] = o;
 
-            this->width = (endx - startx);
-            this->height = (endy - starty);
+        this->pixels[i] = new Color(o, r, g, b);
 
-            this->fileName = nullptr;
-            int size = this->width * this->height;
-            this->rawData = new Uint8[size * 4];
-            this->pixels = new Color*[size];
+    }
+    
+    return;
 
-            for (int i = 0; i < size; i += 1) {
+}
 
-                int x = ((i % this->width) + startx);
-                int y = (int) (i / this->width) + (starty);
+// Destructor
+PNG::~PNG() {
 
-                Uint8 r = input->getChannel( x, y, RED);
-                Uint8 g = input->getChannel( x, y, GREEN);
-                Uint8 b = input->getChannel( x, y, BLUE);
-                Uint8 o = input->getChannel( x, y, OPACITY);
+    for (int i = 0; i < this->width * this-> height; i++) {
+        delete this->pixels[i];
+    }
 
-                if (r == -1 || g == -1 || b == -1 || o == -1) {
-                    std::cout << "color channel failed to get" << std::endl;
-                    system("pause");
-                    return;
-                }
+    delete[] this->rawData;
+    delete[] this->pixels;
 
-                this->rawData[i * 4] = r;
-                this->rawData[(i * 4) + 1] = g;
-                this->rawData[(i * 4) + 2] = b;
-                this->rawData[(i * 4) + 3] = o;
+    return;
 
-                this->pixels[i] = new Color(o, r, g, b);
+}
 
-            }
-            
-            return;
+// Instance Functions
+Color* PNG::getPixel(int x, int y) {
 
-        }
+    if (x >= this->width || y >= this->height) return nullptr;
 
-        ~PNG() {
+    return this->pixels[ (this->width * y) + x ];
 
-            for (int i = 0; i < this->width * this-> height; i++) {
-                delete this->pixels[i];
-            }
+}
 
-            delete[] this->rawData;
-            delete[] this->pixels;
+bool PNG::setPixel(int x, int y, Color* pixel) {
 
-            return;
+    if (x >= this->width || y >= this->height) return false;
 
-        }
+    if (pixel == nullptr) return false;
 
-        Color* getPixel(int x, int y) {
+    this->pixels[ (this->width * y) + x ] = pixel;
 
-            if (x >= this->width || y >= this->height) return nullptr;
+    return true;
 
-            return this->pixels[ (this->width * y) + x ];
+}
 
-        }
+Uint8 PNG::getChannel(int x, int y, char channel) {
 
-        bool setPixel(int x, int y, Color* pixel) {
+    if (x >= this->width || y >= this->height) return -1;
 
-            if (x >= this->width || y >= this->height) return false;
+    if (channel > 3 || channel < 0) return -1;
 
-            if (pixel == nullptr) return false;
+    return this->rawData[ (((this->width * y) + x) * 4) + channel];
 
-            this->pixels[ (this->width * y) + x ] = pixel;
+}
 
-            return true;
+bool PNG::setChannel(int x, int y, char channel, Uint8 value) {
+    
+    if (x >= this->width || y >= this->height) return false;
 
-        }
+    if (channel > 3 || channel < 0) return false;
 
-        Uint8 getChannel(int x, int y, char channel) {
+    this->rawData[ (((this->width * y) + x) * 4) + channel] = value;
 
-            if (x >= this->width || y >= this->height) return -1;
+    return true;
 
-            if (channel > 3 || channel < 0) return -1;
-
-            return this->rawData[ (((this->width * y) + x) * 4) + channel];
-
-        }
-
-        bool setChannel(int x, int y, char channel, Uint8 value) {
-            
-            if (x >= this->width || y >= this->height) return false;
-
-            if (channel > 3 || channel < 0) return false;
-
-            this->rawData[ (((this->width * y) + x) * 4) + channel] = value;
-
-            return true;
-
-        }
-
-
-    private:
-
-
-};
+}

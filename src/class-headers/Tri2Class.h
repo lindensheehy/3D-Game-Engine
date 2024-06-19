@@ -35,6 +35,8 @@ class Tri2 {
         Tri2* copy();
 
         // Setters for each vertex. Allowing double or Vec2 inputs
+        // The ones which take a Vec2 object will delete the current instance variable, then point to the one given.
+        // That means the Vec2 given, should NOT be changed after running this, unless changing the triangle is intended.
         void setv1(double x, double y, double z);
         void setv1(Vec2* vec);
 

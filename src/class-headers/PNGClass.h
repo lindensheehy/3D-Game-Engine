@@ -16,11 +16,8 @@ class PNG {
     public:
 
         // Indexes for color channels of each pixel in the buffer array returned by lodepng
-        // I just used char becuase they dont need to be big
-        static const char RED = 0;
-        static const char GREEN = 1;
-        static const char BLUE = 2;
-        static const char OPACITY = 3;
+        // I just used char becuase they dont need to be big, values are 0-3
+        static const char RED, GREEN, BLUE, OPACITY;
 
 
         /*   Instance variables   */

@@ -48,7 +48,7 @@ class Vec2 {
         Vec2* inverseScale(double factor);
 
         // Sets the magnitude of the vector to a given value, while keeping the ratios between components the same.
-        Vec2* normalise(double toMagnitude = 1);
+        Vec2* normalise(double toMagnitude = 1.0);
 
 
         // Allows these objects to be indexed like an array.

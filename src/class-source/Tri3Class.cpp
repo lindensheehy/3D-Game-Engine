@@ -2,140 +2,130 @@
 
 #include "../class-headers/Vec3Class.h"
 
-class Tri3 {
-    public:
 
-        // Instance variables
-        Vec3* v1;
-        Vec3* v2;
-        Vec3* v3;
-        Vec3* normal;
+// Constructor
+Tri3::Tri3(bool nullPointers /* default value = false */) {
+    /*
+        Stores a set of 3 vectors as well as their normal, the normal can be updated using the instance function but this may be facing the wrong way
+        nullPointers flag allows the pointers to be manually set instead of autocreating objects
+    */
 
-        // Constructor
-        Tri3(bool nullPointers = false) {
-            /*
-                Stores a set of 3 vectors as well as their normal, the normal can be updated using the instance function but this may be facing the wrong way
-                nullPointers flag allows the pointers to be manually set instead of autocreating objects
-            */
+    if (nullPointers) {
+        this->v1 = nullptr;
+        this->v2 = nullptr;
+        this->v2 = nullptr;
+        this->normal = nullptr;
+        return;
+    }
 
-            if (nullPointers) {
-                this->v1 = nullptr;
-                this->v2 = nullptr;
-                this->v2 = nullptr;
-                this->normal = nullptr;
-                return;
-            }
+    else {
+        this->v1 = new Vec3(0, 0, 0);
+        this->v2 = new Vec3(0, 0, 0);
+        this->v3 = new Vec3(0, 0, 0);
+        this->normal = new Vec3(0, 0, 0);
+        return;
+    }
 
-            else {
-                this->v1 = new Vec3(0, 0, 0);
-                this->v2 = new Vec3(0, 0, 0);
-                this->v3 = new Vec3(0, 0, 0);
-                this->normal = new Vec3(0, 0, 0);
-                return;
-            }
+}
 
-        }
+Tri3::~Tri3() {
+    delete this->v1;
+    delete this->v2;
+    delete this->v3;
+    delete this->normal;
+}
 
-        ~Tri3() {
-            delete this->v1;
-            delete this->v2;
-            delete this->v3;
-            delete this->normal;
-        }
+// Instance functions
+Tri3* Tri3::copy() {
+    Tri3* newCopy = new Tri3(true);
+    newCopy->v1 = this->v1->copy();
+    newCopy->v2 = this->v2->copy();
+    newCopy->v3 = this->v3->copy();
+    newCopy->normal = this->normal->copy();
+    return newCopy;
+}
 
-        // Instance functions
-        Tri3* copy() {
-            Tri3* newCopy = new Tri3(true);
-            newCopy->v1 = this->v1->copy();
-            newCopy->v2 = this->v2->copy();
-            newCopy->v3 = this->v3->copy();
-            newCopy->normal = this->normal->copy();
-            return newCopy;
-        }
+void Tri3::setv1(double x, double y, double z) {
+    this->v1->x = x;
+    this->v1->y = y;
+    this->v1->z = z;
+}
 
-        void setv1(double x, double y, double z) {
-            this->v1->x = x;
-            this->v1->y = y;
-            this->v1->z = z;
-        }
+void Tri3::setv1(Vec3* vec) {
+    if (this->v1 != nullptr) delete this->v1;
+    this->v1 = vec->copy();
+}
 
-        void setv1(Vec3* vec) {
-            delete this->v1;
-            this->v1 = vec->copy();
-        }
+void Tri3::setv2(double x, double y, double z) {
+    this->v2->x = x;
+    this->v2->y = y;
+    this->v2->z = z;
+}
 
-        void setv2(double x, double y, double z) {
-            this->v2->x = x;
-            this->v2->y = y;
-            this->v2->z = z;
-        }
+void Tri3::setv2(Vec3* vec) {
+    if (this->v2 != nullptr) delete this->v2;
+    this->v2 = vec->copy();
+}
 
-        void setv2(Vec3* vec) {
-            delete this->v2;
-            this->v2 = vec->copy();
-        }
+void Tri3::setv3(double x, double y, double z) {
+    this->v3->x = x;
+    this->v3->y = y;
+    this->v3->z = z;
+}
 
-        void setv3(double x, double y, double z) {
-            this->v3->x = x;
-            this->v3->y = y;
-            this->v3->z = z;
-        }
+void Tri3::setv3(Vec3* vec) {
+    if (this->v3 != nullptr) delete this->v3;
+    this->v3 = vec->copy();
+}
 
-        void setv3(Vec3* vec) {
-            delete this->v3;
-            this->v3 = vec->copy();
-        }
+void Tri3::setNormal(double x, double y, double z) {
+    this->normal->x = x;
+    this->normal->y = y;
+    this->normal->z = z;
+}
 
-        void setNormal(double x, double y, double z) {
-            this->normal->x = x;
-            this->normal->y = y;
-            this->normal->z = z;
-        }
+void Tri3::setNormal(Vec3* normal) {
+    delete this->normal;
+    this->normal = normal->copy();
+}
 
-        void setNormal(Vec3* normal) {
-            delete this->normal;
-            this->normal = normal->copy();
-        }
+void Tri3::updateNormal() {
 
-        void updateNormal() {
+    Vec3* vec1to2 = new Vec3(
+        this->v1->x - this->v2->x,
+        this->v1->y - this->v2->y,
+        this->v1->z - this->v2->z 
+    );
+    Vec3* vec1to3 = new Vec3(
+        this->v1->x - this->v3->x,
+        this->v1->y - this->v3->y,
+        this->v1->z - this->v3->z 
+    );
 
-            Vec3* vec1to2 = new Vec3(
-                this->v1->x - this->v2->x,
-                this->v1->y - this->v2->y,
-                this->v1->z - this->v2->z 
-            );
-            Vec3* vec1to3 = new Vec3(
-                this->v1->x - this->v3->x,
-                this->v1->y - this->v3->y,
-                this->v1->z - this->v3->z 
-            );
+    Vec3* newNormal = vec1to2->crossProduct(vec1to3);
+    newNormal->normalise();
+    
+    delete this->normal;
+    delete vec1to2, vec1to3;
 
-            Vec3* newNormal = vec1to2->crossProduct(vec1to3);
-            newNormal->normalise();
-            
-            delete this->normal;
-            delete vec1to2, vec1to3;
+    this->normal = newNormal;
 
-            this->normal = newNormal;
+    return;
 
-            return;
+}
 
-        }
+bool Tri3::isFacing(Vec3* vec) {
+    return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
+}
 
-        bool isFacing(Vec3* vec) {
-            return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
-        }
+Vec3* Tri3::getCenter() {
 
-        Vec3* getCenter() {
+    // Average all 3 components
+    double x = this->v1->x + this->v2->x + this->v3->x;
+    double y = this->v1->y + this->v2->y + this->v3->y;
+    double z = this->v1->z + this->v2->z + this->v3->z;
+    x /= 3; y /= 3; z /= 3;
 
-            // Average all 3 components
-            double x = this->v1->x + this->v2->x + this->v3->x;
-            double y = this->v1->y + this->v2->y + this->v3->y;
-            double z = this->v1->z + this->v2->z + this->v3->z;
-            x /= 3; y /= 3; z /= 3;
-
-            return new Vec3(x, y, z);
-            
-        }
-
-};
+    return new Vec3(x, y, z);
+    
+}

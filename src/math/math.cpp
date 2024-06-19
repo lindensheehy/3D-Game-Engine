@@ -7,17 +7,6 @@
 #include "math.h"
 
 
-const double degToRadFactor = pi / 180;
-
-
-inline int myabs(int num) {
-    return ( num < 0 ? -num : num);
-}
-
-inline double myabs(double num) {
-    return ( num < 0 ? -num : num);
-}
-
 double inRange(double num, double from, double to) {
     if ( (num >= from) && (num <= to) )
         return ( (num - from) / (to - from) );
@@ -32,34 +21,6 @@ double outRange(double num, double from, double to) {
 
     return -1;
 
-}
-
-inline double toRadians(double degrees) {
-    return degrees * degToRadFactor;
-}
-
-inline double toDegrees(double radians) {
-    return radians / degToRadFactor;
-}
-
-inline int max(int var1, int var2) {
-    if (var1 > var2) return var1;
-    return var2;
-}
-
-inline double max(double var1, double var2) {
-    if (var1 > var2) return var1;
-    return var2;
-}
-
-inline int min(int var1, int var2) {
-    if (var1 < var2) return var1;
-    return var2;
-}
-
-inline double min(double var1, double var2) {
-    if (var1 < var2) return var1;
-    return var2;
 }
 
 void swap(int* var1, int* var2) {
@@ -79,7 +40,7 @@ double quickArctan(double x) {
     return (a * ( (b * x) / sqrt(1 + ((b * x) * (b * x)) ) ));
 }
 
-double getAngle(double x1, double y1, double x2 = 0, double y2 = 0) {
+double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
     /*
         Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)
         so this means that the 'y-axis' will be shifted to one side depending on where x2 lies
