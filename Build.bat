@@ -1,4 +1,4 @@
-:: Im sure theres a way to do this automatically, but this was just easier.
+:: Build libraries
 
 set srcdir=src/class-source/
 set objdir=src/obj/
@@ -84,6 +84,29 @@ g++ -c %srcdir%DrawerClass.cpp ^
 :: FrameState
 g++ -c %srcdir%FrameStateClass.cpp ^
     -o %objdir%FrameStateClass.o ^
+    %SDLinclude%
+
+
+:: Build main.exe
+
+:: Compile
+g++ main.cpp ^
+    %objdir%math.o ^
+    %objdir%log.o ^
+    %objdir%Vec2Class.o ^
+    %objdir%Vec3Class.o ^
+    %objdir%Tri2Class.o ^
+    %objdir%Tri3Class.o ^
+    %objdir%CameraClass.o ^
+    %objdir%MeshClass.o ^
+    %objdir%ColorClass.o ^
+    %objdir%PNGClass.o ^
+    %objdir%DisplayClass.o ^
+    %objdir%GuiClass.o ^
+    %objdir%DrawerClass.o ^
+    %objdir%FrameStateClass.o ^
+    %objdir%lodepng.o ^
+    -o main.exe ^
     %SDLinclude%
 
 pause
