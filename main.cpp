@@ -63,94 +63,88 @@ void handleInput(FrameState* frameState, Camera* camera, double dt) {
 
 int main(int argc, char* argv[]) {
 
-    try {
+    // Start the gui window
+    gui = new Gui(1000, 600);
+    gui->init();
 
-        // Start the gui window
-        gui = new Gui(1000, 600);
-        gui->init();
+    // Log stuff
+    logInit("log.txt");
+    logClear();
+    logWrite("Starting...", true);
 
-        // Log stuff
-        logInit("log.txt");
-        logClear();
-        logWrite("Starting...", true);
+    // Sets up the objects to be drawn and the camera
+    Mesh::initMeshes();
+    initGraphics();
 
-        // Sets up the objects to be drawn and the camera
-        Mesh::initMeshes();
-        initGraphics();
+    FrameState* frameState = new FrameState();
+    Drawer* drawer;
+    SDL_Event event;
+    int mouseX, mouseY;
 
-        FrameState* frameState = new FrameState();
-        Drawer* drawer;
-        SDL_Event event;
-        int mouseX, mouseY;
+    // Init main camera and the associated display
+    Display* display1 = new Display(gui->windowWidth, gui->windowHeight);
+    Camera* camera1 = new Camera();
+    camera1->setPos(0, 0, -10);
+    camera1->setFov(90, 54);
+    camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
 
-        // Init main camera and the associated display
-        Display* display1 = new Display(gui->windowWidth, gui->windowHeight);
-        Camera* camera1 = new Camera();
-        camera1->setPos(0, 0, -10);
-        camera1->setFov(90, 54);
-        camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
+    // Time stuff
+    auto timeVar = std::chrono::high_resolution_clock::now();
+    double appStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
+    double lastFrameTime = appStartTime;
+    double thisFrameTime = appStartTime;
+    double dt;
 
-        // Time stuff
-        auto timeVar = std::chrono::high_resolution_clock::now();
-        double appStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-        double lastFrameTime = appStartTime;
-        double thisFrameTime = appStartTime;
-        double dt;
+    // Main event loop
+    bool leave = false;
+    while (!leave) {
 
-        // Main event loop
-        bool leave = false;
-        while (!leave) {
+        // Logging
+        logWrite("Frame ", false);
+        logWrite(frameState->frameCount, true);
 
-            // Logging
-            logWrite("Frame ", false);
-            logWrite(frameState->frameCount, true);
+        // Delta time
+        timeVar = std::chrono::high_resolution_clock::now();
+        lastFrameTime = thisFrameTime;
+        thisFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
+        dt = thisFrameTime - lastFrameTime;
 
-            // Delta time
-            timeVar = std::chrono::high_resolution_clock::now();
-            lastFrameTime = thisFrameTime;
-            thisFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-            dt = thisFrameTime - lastFrameTime;
-
-            // Mouse position
-            SDL_GetMouseState(&mouseX, &mouseY);
-            frameState->mouse->setPos(mouseX, mouseY);
-            // std::cout << "(" << frameState->mouse->posX << ", " << frameState->mouse->posY << ")" << std::endl;
-            
-            // Handle SDL events
-            while (SDL_PollEvent(&event) != 0) {
-                if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
-                else frameState->addEvent(&event);
-            }
-
-            // Does all the user input handling
-            handleInput(frameState, camera1, dt);
-            gui->getBuffer();
-
-            drawer = new Drawer(gui->buffer, gui->windowWidth, gui->windowHeight);
-            drawer->fillScreen(Color::BLACK);
-            drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
-            gui->flip();
-            delete drawer;
-
-            std::cout << "(" << camera1->yaw << ", " << camera1->pitch << ")";
-            //std::cout << " - (" << camera1->pos->x << ", " << camera1->pos->y << ", " << camera1->pos->z << ")" << std::endl;
-            std::cout << " - (" << camera1->facingDirection->x << ", " << camera1->facingDirection->y << ", " << camera1->facingDirection->z << ")" << std::endl;
-
-            // Make current frameState become last frame
-            frameState->nextFrame();
+        // Mouse position
+        SDL_GetMouseState(&mouseX, &mouseY);
+        frameState->mouse->setPos(mouseX, mouseY);
+        // std::cout << "(" << frameState->mouse->posX << ", " << frameState->mouse->posY << ")" << std::endl;
+        
+        // Handle SDL events
+        while (SDL_PollEvent(&event) != 0) {
+            if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
+            else frameState->addEvent(&event);
         }
 
-        delete frameState;
-        delete camera1;
-        delete display1;
+        // Does all the user input handling
+        handleInput(frameState, camera1, dt);
+        gui->getBuffer();
 
-        // Destroy the window and quit SDL
-        gui->exit();
+        drawer = new Drawer(gui->buffer, gui->windowWidth, gui->windowHeight);
+        drawer->fillScreen(Color::BLACK);
+        drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
+        gui->flip();
+        delete drawer;
 
-        return 0;
+        std::cout << "(" << camera1->yaw << ", " << camera1->pitch << ")";
+        //std::cout << " - (" << camera1->pos->x << ", " << camera1->pos->y << ", " << camera1->pos->z << ")" << std::endl;
+        std::cout << " - (" << camera1->facingDirection->x << ", " << camera1->facingDirection->y << ", " << camera1->facingDirection->z << ")" << std::endl;
 
-    } catch (const std::exception &e) {
-        logWrite("Caught an exception!", true);
-        logWrite(e.what(), true);
+        // Make current frameState become last frame
+        frameState->nextFrame();
     }
+
+    delete frameState;
+    delete camera1;
+    delete display1;
+
+    // Destroy the window and quit SDL
+    gui->exit();
+
+    return 0;
+
 }

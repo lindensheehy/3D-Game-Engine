@@ -1,5 +1,6 @@
 :: Build libraries
 
+:: Paths
 set srcdir=src/class-source/
 set objdir=src/obj/
 
@@ -89,7 +90,7 @@ g++ -c %srcdir%FrameStateClass.cpp ^
 
 :: Build main.exe
 
-:: Compile
+:: Compile main.exe
 g++ main.cpp ^
     %objdir%math.o ^
     %objdir%log.o ^
@@ -108,5 +109,7 @@ g++ main.cpp ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%
+
+main.exe
 
 pause
