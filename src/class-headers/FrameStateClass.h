@@ -37,6 +37,7 @@ class FrameState {
                 void setState(MouseState* state);
 
                 // These are SETTERS for all the mouse buttons
+                // To GET the value, simply use the variable since its public
                 void leftButtonDown();
                 void leftButtonUp();
 

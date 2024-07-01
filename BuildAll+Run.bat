@@ -3,10 +3,7 @@
 :: Paths
 set srcdir=src/class-source/
 set objdir=src/obj/
-
-:: Change the value of SDLdir based on where SDL is installed
-set SDLdir=C:/dev/SDL2/64-bit-mingw32/
-set SDLinclude=-I %SDLdir%include -L %SDLdir%lib -l SDL2 -l SDL2main
+set SDLinclude=-I SDL2/include -L SDL2/lib -l SDL2 -l SDL2main
 
 
 
