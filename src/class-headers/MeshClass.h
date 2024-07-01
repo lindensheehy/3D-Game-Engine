@@ -126,7 +126,7 @@ class Mesh {
 
         /*   Class functions   */
 
-        // Initializes all the standard meshes. such as cubeMesh for example.
+        // Initializes all the standard meshes. Such as cubeMesh for example.
         static void initMeshes();
 
 };

@@ -40,19 +40,17 @@ Mesh::IndexMap* Mesh::IndexMap::copy() {
 }
 
 void Mesh::IndexMap::setGroup(int index, int v1, int v2, int v3, int normal) {
-    int actualIndex = index * 4;
-    this->map[actualIndex].vertex1 = v1;
-    this->map[actualIndex].vertex2 = v2;
-    this->map[actualIndex].vertex3 = v3;
-    this->map[actualIndex].normal = normal;
+    this->map[index].vertex1 = v1;
+    this->map[index].vertex2 = v2;
+    this->map[index].vertex3 = v3;
+    this->map[index].normal = normal;
 }
 
 void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal) {
-    int actualIndex = index * 4;
-    (*v1) = this->map[actualIndex].vertex1;
-    (*v2) = this->map[actualIndex].vertex2;
-    (*v3) = this->map[actualIndex].vertex3;
-    (*normal) = this->map[actualIndex].normal;
+    (*v1) = this->map[index].vertex1;
+    (*v2) = this->map[index].vertex2;
+    (*v3) = this->map[index].vertex3;
+    (*normal) = this->map[index].normal;
 }
 
 /*  ------------------------------------  */
