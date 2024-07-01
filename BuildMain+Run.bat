@@ -24,3 +24,6 @@ g++ main.cpp ^
     %SDLinclude%
 
 main.exe
+
+:: pause for debugging purposes
+pause

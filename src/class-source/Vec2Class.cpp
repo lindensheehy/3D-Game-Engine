@@ -1,5 +1,6 @@
 #include "../class-headers/Vec2Class.h"
 
+#include "../log/log.h"
 #include "../math/math.h"
 
 
@@ -23,21 +24,64 @@ Vec2* Vec2::copy() {
     return new Vec2(this->x, this->y);
 }
 
+bool Vec2::is(double x, double y) {
+
+    return (
+        this->x == x &&
+        this->y == y
+    );
+}
+
 bool Vec2::is(Vec2* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->is(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     return (
         this->x == other->x &&
         this->y == other->y
     );
 }
 
+Vec2* Vec2::add(double x, double y) {
+    this->x += x;
+    this->y += y;
+    this->magnitudeUpdated = false;
+    return this;
+}
+
 Vec2* Vec2::add(Vec2* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->add(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     this->x += other->x;
     this->y += other->y;
     this->magnitudeUpdated = false;
     return this;
 }
 
+Vec2* Vec2::sub(double x, double y) {
+    this->x -= x;
+    this->y -= y;
+    this->magnitudeUpdated = false;
+    return this;
+}
+
 Vec2* Vec2::sub(Vec2* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->sub(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     this->x -= other->x;
     this->y -= other->y;
     this->magnitudeUpdated = false;
@@ -87,12 +131,26 @@ double Vec2::magnitude() {
 }
 
 double Vec2::distanceTo(Vec2* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->distanceTo(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     double dx = this->x - other->x;
     double dy = this->y - other->y;
     return sqrt( (dx * dx) + (dy * dy) );
 }
 
 Vec2* Vec2::midpoint(Vec2* other) {
+    
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->midpoint(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     return new Vec2(
         (this->x + other->x) / 2,
         (this->y + other->y) / 2
@@ -100,10 +158,19 @@ Vec2* Vec2::midpoint(Vec2* other) {
 }
 
 double Vec2::dotProduct(Vec2* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec2->dotProduct(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     return (this->x * other->x) + (this->y * other->y);
 }
 
 void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
+    
+    // around = nullptr already addressed here, no need for error case
 
     if (degrees == 0) return;
 

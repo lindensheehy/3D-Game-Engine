@@ -56,6 +56,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "set": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "scoped_allocator": "cpp"
     }
 }

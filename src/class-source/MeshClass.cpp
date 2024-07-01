@@ -172,6 +172,12 @@ Mesh* Mesh::scale(double fx, double fy, double fz) {
 
 Mesh* Mesh::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
 
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (around == nullptr) {
+        logWrite("Called Mesh->rotate(double, double, double, Vec3*) on a null pointer!", true);
+        return;
+    }
+
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->rotate(yaw, pitch, roll, around);
     }

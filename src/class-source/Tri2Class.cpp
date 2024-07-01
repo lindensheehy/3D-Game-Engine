@@ -1,5 +1,6 @@
 #include "../class-headers/Tri2Class.h"
 
+#include "../log/log.h"
 #include "../class-headers/Vec2Class.h"
 
 
@@ -52,6 +53,13 @@ void Tri2::setv1(double x, double y, double z) {
 }
 
 void Tri2::setv1(Vec2* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri2->setv1(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v1 != nullptr) delete this->v1;
     this->v1 = vec->copy();
 }
@@ -62,6 +70,13 @@ void Tri2::setv2(double x, double y, double z) {
 }
 
 void Tri2::setv2(Vec2* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri2->setv2(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v2 != nullptr) delete this->v2;
     this->v2 = vec->copy();
 }
@@ -72,6 +87,13 @@ void Tri2::setv3(double x, double y, double z) {
 }
 
 void Tri2::setv3(Vec2* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri2->setv3(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v3 != nullptr) delete this->v3;
     this->v3 = vec->copy();
 }

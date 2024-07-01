@@ -1,5 +1,6 @@
 /*
-    Note: Im very aware that there are several libraries which have most if not all of these functions, but I wanted to write it myself
+    Note: Im very aware that there are several libraries which have most of, if not all, of these functions, but I wanted to write it myself
+          There are more function definitions in the header file (math.h), becuase they are inline functions
 */
 
 #include <cmath>

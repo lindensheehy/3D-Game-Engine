@@ -109,4 +109,5 @@ g++ main.cpp ^
 
 main.exe
 
+:: pause for debugging purposes
 pause

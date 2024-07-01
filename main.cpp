@@ -95,6 +95,12 @@ int main(int argc, char* argv[]) {
     double thisFrameTime = appStartTime;
     double dt;
 
+    std::cout << "display size: " << "(" << display1->width << ", " << display1->height << ")" << std::endl;
+
+
+
+    // return 0;
+
     // Main event loop
     bool leave = false;
     while (!leave) {

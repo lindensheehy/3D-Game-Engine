@@ -113,8 +113,8 @@ void initGraphics() {
     }
 
     // Init cube mesh then move it away and make it bigger
-    cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 10)->move(10, 0, 10);
-    cube2 = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 10, 0)->rotate(0, 10, 0);
+    cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 10);
+    //cube2 = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 10, 0)->rotate(0, 10, 0);
 
 }
 

@@ -1,5 +1,6 @@
 #include "../class-headers/Tri3Class.h"
 
+#include "../log/log.h"
 #include "../class-headers/Vec3Class.h"
 
 
@@ -52,6 +53,13 @@ void Tri3::setv1(double x, double y, double z) {
 }
 
 void Tri3::setv1(Vec3* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri3->setv1(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v1 != nullptr) delete this->v1;
     this->v1 = vec->copy();
 }
@@ -63,6 +71,13 @@ void Tri3::setv2(double x, double y, double z) {
 }
 
 void Tri3::setv2(Vec3* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri3->setv2(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v2 != nullptr) delete this->v2;
     this->v2 = vec->copy();
 }
@@ -74,6 +89,13 @@ void Tri3::setv3(double x, double y, double z) {
 }
 
 void Tri3::setv3(Vec3* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri3->setv3(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     if (this->v3 != nullptr) delete this->v3;
     this->v3 = vec->copy();
 }
@@ -85,6 +107,13 @@ void Tri3::setNormal(double x, double y, double z) {
 }
 
 void Tri3::setNormal(Vec3* normal) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (normal == nullptr) {
+        logWrite("Called Tri3->setNormal(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->normal;
     this->normal = normal->copy();
 }
@@ -115,6 +144,13 @@ void Tri3::updateNormal() {
 }
 
 bool Tri3::isFacing(Vec3* vec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Tri3->isFacing(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
 }
 

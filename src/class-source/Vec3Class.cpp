@@ -1,5 +1,6 @@
 #include "../class-headers/Vec3Class.h"
 
+#include "../log/log.h"
 #include "../math/math.h"
 
 
@@ -33,6 +34,13 @@ Vec3* Vec3::set(double x, double y, double z) {
 }
 
 bool Vec3::is(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->is(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     return (
         this->x == other->x &&
         this->y == other->y &&
@@ -41,6 +49,13 @@ bool Vec3::is(Vec3* other) {
 }
 
 Vec3* Vec3::add(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->add(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     this->x += other->x;
     this->y += other->y;
     this->z += other->z;
@@ -57,6 +72,13 @@ Vec3* Vec3::add(double dx, double dy, double dz) {
 }
 
 Vec3* Vec3::sub(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->sub(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     this->x -= other->x;
     this->y -= other->y;
     this->z -= other->z;
@@ -127,6 +149,13 @@ double Vec3::magnitude() {
 }
 
 double Vec3::distanceTo(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->distanceTo(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     double dx = this->x - other->x;
     double dy = this->y - other->y;
     double dz = this->z - other->z;
@@ -134,6 +163,13 @@ double Vec3::distanceTo(Vec3* other) {
 }
 
 Vec3* Vec3::midpoint(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->midpoint(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     return new Vec3(
         (this->x + other->x) / 2,
         (this->y + other->y) / 2,
@@ -142,10 +178,24 @@ Vec3* Vec3::midpoint(Vec3* other) {
 }
 
 double Vec3::dotProduct(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->dotProduct(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     return (this->x * other->x) + (this->y * other->y) + (this->z * other->z);
 }
 
 Vec3* Vec3::crossProduct(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->crossProduct(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     double x = (this->y * other->z) - (this->z * other->y);
     double y = (this->z * other->x) - (this->x * other->z);
     double z = (this->x * other->y) - (this->y * other->x);
@@ -153,6 +203,12 @@ Vec3* Vec3::crossProduct(Vec3* other) {
 }
 
 double Vec3::getAngle(Vec3* other) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (other == nullptr) {
+        logWrite("Called Vec3->getAngle(Vec3*) on a null pointer!", true);
+        return;
+    }
 
     double dotProduct = this->dotProduct(other);
     double magnitudeFactor = this->magnitude() * other->magnitude();
@@ -166,6 +222,8 @@ double Vec3::getAngle(Vec3* other) {
 }
 
 void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
+
+    // around = nullptr already addressed here, no need for error case
 
     if (yaw == 0 && pitch == 0 && roll == 0) return;
 

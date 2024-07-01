@@ -1,5 +1,6 @@
 #include "../class-headers/DisplayClass.h"
 
+#include "../log/log.h"
 #include "../class-headers/Vec2Class.h"
 #include "../class-headers/MeshClass.h"
 
@@ -34,10 +35,16 @@ void Display::toDisplayPos(Vec2* vec) {
         CHANGES THE ACTUAL VALUES OF THE ARGUMENT
     */
 
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Display->toDisplayPos(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     int drawPosx = (int) (vec->x * (double) this->width);
     drawPosx += this->widthOffset;
 
-    int drawPosy = this->height - (int) (vec->y * (double) this->height); // display->height - because y=0 is at the top
+    int drawPosy = this->height - (int) (vec->y * (double) this->height); // minus because y=0 is at the top
     drawPosy += this->heightOffset;
 
     vec->x = drawPosx;
@@ -47,6 +54,13 @@ void Display::toDisplayPos(Vec2* vec) {
 }
 
 void Display::toDisplayPos(Mesh* mesh) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (mesh == nullptr) {
+        logWrite("Called Display->toDisplayPos(Mesh*) on a null pointer!", true);
+        return;
+    }
+
     for (int i = 0; i < mesh->vertexCount; i++) {
         this->toDisplayPos(mesh->projectedVerticies[i]);
     }

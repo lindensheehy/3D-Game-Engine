@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "../log/log.h"
 #include "../class-headers/ColorClass.h"
 
 #include "../lodepng/lodepng.h"
@@ -15,6 +16,12 @@ const char PNG::OPACITY = 3;
 
 // Constructor from filename
 PNG::PNG(const char* filename) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (fileName == nullptr) {
+        logWrite("Called PNG->PNG(const char*) on a null pointer!", true);
+        return;
+    }
 
     std::vector<unsigned char> returnData;
     unsigned int failed = lodepng::decode(returnData, this->width, this->height, filename);
@@ -51,6 +58,12 @@ PNG::PNG(const char* filename) {
 
 // Constructor from other PNG object
 PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (input == nullptr) {
+        logWrite("Called PNG->PNG(PNG*, int, int, int, int) on a null pointer!", true);
+        return;
+    }
 
     this->width = (endx - startx);
     this->height = (endy - starty);

@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "../log/log.h"
 
 /*  ------------------------------------  */
 /*  ----------   MouseState   ----------  */
@@ -90,6 +91,13 @@ FrameState::KeyboardState::~KeyboardState() {
 
 // Instance variables
 void FrameState::KeyboardState::setState(KeyboardState* state) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (state == nullptr) {
+        logWrite("Called FrameState::KeyboardState->setState(KeyboardState*) on a null pointer!", true);
+        return;
+    }
+
     for (int i = 0; i < 26; i++) {
 
         this->letterKeys[i] = state->letterKeys[i];
@@ -312,6 +320,12 @@ FrameState::~FrameState() {
 // Instance functions
 void FrameState::addEvent(SDL_Event* event) {
 
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (event == nullptr) {
+        logWrite("Called FrameState->addEvent(SDL_Event*) on a null pointer!", true);
+        return;
+    }
+
     // Mouse buttons down
     if ((*event).type == SDL_MOUSEBUTTONDOWN) {
 
@@ -405,6 +419,13 @@ bool FrameState::keyIsDown(int keyCode) {
 }
 
 void FrameState::setState(FrameState* state) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (state == nullptr) {
+        logWrite("Called FrameState->setState(FrameState*) on a null pointer!", true);
+        return;
+    }
+
     this->frameCount = state->frameCount;
     this->mouse->setState(state->mouse);
     this->keys->setState(state->keys);

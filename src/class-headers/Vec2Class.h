@@ -31,14 +31,17 @@ class Vec2 {
         Vec2* copy();
 
         // Acts similar to '=='. Returns true if all components are equal to each other
+        bool is(double x, double y);
         bool is(Vec2* other);
 
         // The following are self transformation functions. they all return 'this' so they can be chained ( ex. this->add(vec)->sub(vec2) )
 
         // Adds the components of other to those of this.
+        Vec2* add(double x, double y);
         Vec2* add(Vec2* other);
 
         // Subtracts the components of other from those of this.
+        Vec2* sub(double x, double y);
         Vec2* sub(Vec2* other);
 
         // Scalar multiplication by a given factor

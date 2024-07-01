@@ -41,6 +41,12 @@ void Camera::setPos(double x, double y, double z) {
 }
 
 void Camera::setPos(Vec3* position) {
+
+    if (position == nullptr) {
+        logWrite("Called Camera->setPos(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->pos;
     this->pos = position->copy();
 }
@@ -53,6 +59,13 @@ void Camera::setVelocity(double x, double y, double z) {
 }
 
 void Camera::setVelocity(Vec3* velocity) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (velocity == nullptr) {
+        logWrite("Called Camera->setVelocity(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->velocity;
     this->velocity = velocity->copy();
 }
@@ -65,6 +78,13 @@ void Camera::setAcceleration(double x, double y, double z) {
 }
 
 void Camera::setAcceleration(Vec3* acceleration) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (acceleration == nullptr) {
+        logWrite("Called Camera->setAcceleration(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->acceleration;
     this->acceleration = acceleration->copy();
 }
@@ -77,6 +97,13 @@ void Camera::setFacingDirection(double x, double y, double z) {
 }
 
 void Camera::setFacingDirection(Vec3* facingDirection) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (facingDirection == nullptr) {
+        logWrite("Called Camera->setFacingDirection(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->facingDirection;
     this->facingDirection = facingDirection->copy();
     return;
@@ -89,6 +116,13 @@ void Camera::setFov(double x, double y) {
 }
 
 void Camera::setFov(Vec2* fov) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (fov == nullptr) {
+        logWrite("Called Camera->setFov(Vec2*) on a null pointer!", true);
+        return;
+    }
+
     delete this->fov;
     this->fov = fov->copy();
     return;
@@ -102,6 +136,13 @@ void Camera::setLightingVec(double x, double y, double z) {
 }
 
 void Camera::setLightingVec(Vec3* lightingVec) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (lightingVec == nullptr) {
+        logWrite("Called Camera->setLightingVec(Vec3*) on a null pointer!", true);
+        return;
+    }
+
     delete this->lightingVec;
     this->lightingVec = lightingVec->copy();
     return;
@@ -126,6 +167,17 @@ void Camera::project(Vec3* vec, Vec2* displayPos) {
         Can return values outside the 0-1 range, in this case the point lies off screen, but the location might still be needed
         These values are returned through the displayPos argument
     */
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Camera->project(Vec3*, Vec2*) with 'vec' being a null pointer!", true);
+        return;
+    }
+
+    if (displayPos == nullptr) {
+        logWrite("Called Camera->setAcceleration(Vec3*) with 'displayPos' being a null pointer!", true);
+        return;
+    }
     
     // Get points location relative to the cameras position and rotation
     Vec3* relative = vec->copy();
@@ -195,6 +247,12 @@ void Camera::project(Vec3* vec, Vec2* displayPos) {
 }
 
 void Camera::project(Mesh* mesh) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (mesh == nullptr) {
+        logWrite("Called Camera->project(Mesh*) on a null pointer!", true);
+        return;
+    }
     
     // This uses the other project function to project each of the mesh verticies to the meshes projectedVerticies
     for (int i = 0; i < mesh->vertexCount; i++) {

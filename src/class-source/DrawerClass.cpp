@@ -60,6 +60,17 @@ void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
 void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to) {
 
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (from == nullptr) {
+        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
+        return;
+    }
+
+    if (to == nullptr) {
+        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
+        return;
+    }
+
     this->drawLine(pixel, from->x, from->y, to->x, to->y);
     return;
 
@@ -249,6 +260,12 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 }
 
 void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (tri == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        return;
+    }
     
     int x1 = (int) round(tri->v1->x);
     int y1 = (int) round(tri->v1->y);
