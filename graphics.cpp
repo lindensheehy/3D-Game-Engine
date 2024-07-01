@@ -12,7 +12,30 @@
 
 #include "src/log/log.h"
 
-void drawMesh(Mesh* mesh, Camera* camera, Drawer* drawer, Display* display) {
+void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
+
+    // Because of how this function is called from drawGraphics, none of these should ever be null but it doesnt really hurt to check
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (mesh == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'frameState' as a null pointer!", true);
+        return;
+    }
+
+    if (drawer == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        return;
+    }
+
+    if (camera == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        return;
+    }
+
+    if (display == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'display' as a null pointer!", true);
+        return;
+    }
 
     // Draw Tris
     for (int i = 0; i < mesh->triCount; i++) {
@@ -60,6 +83,24 @@ void drawMesh(Mesh* mesh, Camera* camera, Drawer* drawer, Display* display) {
 }
 
 void drawSky(Drawer* drawer, Camera* camera, Display* display) {
+
+    // Because of how this function is called from drawGraphics, none of these should ever be null but it doesnt really hurt to check
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (drawer == nullptr) {
+        logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        return;
+    }
+
+    if (camera == nullptr) {
+        logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        return;
+    }
+
+    if (display == nullptr) {
+        logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
+        return;
+    }
 
     // Find the height on the display to draw the skyline
     Vec2* heightVec = new Vec2(display->height, 0);
@@ -120,15 +161,36 @@ void initGraphics() {
 
 void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Display* display) {
 
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (drawer == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        return;
+    }
+
+    if (frameState == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'frameState' as a null pointer!", true);
+        return;
+    }
+
+    if (camera == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        return;
+    }
+
+    if (display == nullptr) {
+        logWrite("Called drawGraphics(Drawer*, FrameState*, Camera*, Display*) with 'display' as a null pointer!", true);
+        return;
+    }
+
     drawSky(drawer, camera, display);
 
     camera->project(cube1);
-    camera->project(cube2);
+    // camera->project(cube2);
     display->toDisplayPos(cube1);
-    display->toDisplayPos(cube2);
+    // display->toDisplayPos(cube2);
 
-    drawMesh(cube1, camera, drawer, display);
-    drawMesh(cube2, camera, drawer, display);
+    drawMesh(cube1, drawer, camera, display);
+    // drawMesh(cube2, drawer, camera, display);
 
     // Vec3* camFacingVec = camera->facingDirection->copy()->scale(50);
     // Vec3* camFacingVecStart = new Vec3(0, 0, 0);

@@ -1,4 +1,5 @@
 - fix triangles not working correclty to shown when facing cam (might be because of using radians in Tri3->isFacing())
+- something in the projection process is failing, this is likely because of misuse of radians and degrees in places.
 - add colors to meshes
 - implement a lighting vec
 - Object class
