@@ -37,7 +37,7 @@ bool Vec2::is(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->is(Vec2*) on a null pointer!", true);
-        return;
+        return false;
     }
 
     return (
@@ -58,7 +58,7 @@ Vec2* Vec2::add(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->add(Vec2*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     this->x += other->x;
@@ -79,7 +79,7 @@ Vec2* Vec2::sub(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->sub(Vec2*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     this->x -= other->x;
@@ -135,7 +135,7 @@ double Vec2::distanceTo(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->distanceTo(Vec2*) on a null pointer!", true);
-        return;
+        return 0;
     }
 
     double dx = this->x - other->x;
@@ -148,7 +148,7 @@ Vec2* Vec2::midpoint(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->midpoint(Vec2*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     return new Vec2(
@@ -162,7 +162,7 @@ double Vec2::dotProduct(Vec2* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec2->dotProduct(Vec2*) on a null pointer!", true);
-        return;
+        return 0;
     }
 
     return (this->x * other->x) + (this->y * other->y);

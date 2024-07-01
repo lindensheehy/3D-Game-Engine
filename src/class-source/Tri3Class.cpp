@@ -148,7 +148,7 @@ bool Tri3::isFacing(Vec3* vec) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (vec == nullptr) {
         logWrite("Called Tri3->isFacing(Vec3*) on a null pointer!", true);
-        return;
+        return false;
     }
 
     return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees

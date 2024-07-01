@@ -1,2 +1,4 @@
 Starting...
 Frame 0
+Called Camera->project(Mesh*) on a null pointer!
+Called Display->toDisplayPos(Mesh*) on a null pointer!

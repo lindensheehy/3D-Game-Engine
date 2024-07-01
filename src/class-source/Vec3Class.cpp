@@ -38,7 +38,7 @@ bool Vec3::is(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->is(Vec3*) on a null pointer!", true);
-        return;
+        return false;
     }
 
     return (
@@ -53,7 +53,7 @@ Vec3* Vec3::add(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->add(Vec3*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     this->x += other->x;
@@ -76,7 +76,7 @@ Vec3* Vec3::sub(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->sub(Vec3*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     this->x -= other->x;
@@ -153,7 +153,7 @@ double Vec3::distanceTo(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->distanceTo(Vec3*) on a null pointer!", true);
-        return;
+        return 0;
     }
 
     double dx = this->x - other->x;
@@ -167,7 +167,7 @@ Vec3* Vec3::midpoint(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->midpoint(Vec3*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     return new Vec3(
@@ -182,7 +182,7 @@ double Vec3::dotProduct(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->dotProduct(Vec3*) on a null pointer!", true);
-        return;
+        return 0;
     }
 
     return (this->x * other->x) + (this->y * other->y) + (this->z * other->z);
@@ -193,7 +193,7 @@ Vec3* Vec3::crossProduct(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->crossProduct(Vec3*) on a null pointer!", true);
-        return;
+        return nullptr;
     }
 
     double x = (this->y * other->z) - (this->z * other->y);
@@ -207,7 +207,7 @@ double Vec3::getAngle(Vec3* other) {
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
         logWrite("Called Vec3->getAngle(Vec3*) on a null pointer!", true);
-        return;
+        return 0;
     }
 
     double dotProduct = this->dotProduct(other);
