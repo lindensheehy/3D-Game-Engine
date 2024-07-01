@@ -4,3 +4,4 @@ This project uses SDL2 to create a window and access the pixel buffer. Although 
 All the drawing to the screen is done manually by modifying the hex values in an array.<br>
 I wanted to challenge myself, mostly to learn more about C++, so I restricted the libraries I'm using to in my opinion the bare minimum.<br>
 The libraries used are just 'cmath', 'chrono' and 'SDL2.h' for the actual logic, and I also used 'iostream', 'fstream' and 'iomanip' purely for debugging purposes.
+I added the SDL2 includes to this directory. They are the 64 bit versions, so if you are on a 32 bit system, read the README in the SDL2 folder for instructions

@@ -1,7 +1,12 @@
-- fix triangles not working correclty to shown when facing cam (might be because of using radians in Tri3->isFacing())
-- something in the projection process is failing, this is likely because of misuse of radians and degrees in places.
+new stuff:
+- add tests for some important functions, or all if im feeling ambitious
+- add Font class to draw text to the window
 - add colors to meshes
 - implement a lighting vec
 - Object class
     - make a doFrame(dt) function
     - some basic collision like with the floor
+
+fixes:
+- something in the projection process is failing, this is likely because of misuse of radians and degrees in places.
+- fix triangles not working correclty to shown when facing cam (might be because of using radians in Tri3->isFacing())
