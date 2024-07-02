@@ -4,15 +4,9 @@
 #define pi 3.14159265358979323846
 #endif
 
-#include <cmath>
-
 // For degree conversion
 const double degToRadFactor = pi / 180;
 
-
-// Absolute value
-int myabs(int num);
-double myabs(double num);
 
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
 double inRange(double num, double from, double to);
@@ -36,12 +30,12 @@ double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
 /*   Inline Functions   */
 
 // Absolute value (int)
-inline int myabs(int num) {
+inline int abs(int num) {
     return ( num < 0 ? -num : num);
 }
 
 // Absolute value (double)
-inline double myabs(double num) {
+inline double abs(double num) {
     return ( num < 0 ? -num : num);
 }
 

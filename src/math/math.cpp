@@ -3,8 +3,6 @@
           There are more function definitions in the header file (math.h), becuase they are inline functions
 */
 
-#include <cmath>
-
 #include "math.h"
 
 
@@ -31,14 +29,58 @@ void swap(int* var1, int* var2) {
     return;
 }
 
-double quickArctan(double x) {
-    // Returns degrees
+double arctan(double x) {
+    /*
+        Returns radians
+        This function is sort of complicated so heres the breakdown:
 
-    double a = 90;
-    double b = 0.3;
+        1. This way of calculating only works if the value of x is in (-1, 1)
+           If the value is outside that range, 1/x is used instead and the angle is given as (pi/2 - found angle)
 
-    // a * (bx / sqrt(1 + (bx)^2))
-    return (a * ( (b * x) / sqrt(1 + ((b * x) * (b * x)) ) ));
+        2. Im using powere series to calculate the angle, but for performance im only using the first 5 terms.
+           This series is accurate until around |x| > 0.76
+
+        3. When the value is outside that range, I am using linear functions which closely fit the graph of arctan
+           I used desmos to find these functions and fine tuned the values, so they may seem arbitrary
+
+        This method gives at most a 0.5% error, with the majority of inputs giving less than 0.05% error
+        This function does not need to be perfectly accurate, so I am choosing to optimize performance over accuracy
+    */
+
+    double value = x;
+    bool inverseFlag = false;
+
+    // Fix value if its outside (-1, 1)
+    if (abs(x) > 1) {
+        value = 1 / value;
+        inverseFlag = true;
+    }
+
+    // Linear Functions for values outside (-0.76, 0.76)
+    if (value < -0.76) {
+        return (0.55 * x) - 0.235;
+    }
+
+    if (value > 0.76) {
+        return (0.55 * x) + 0.235;
+    }
+
+    // Power series for values inside (-0.76, 0.76)
+    double returnValue = x;
+
+    // Just defining these here for readability
+    double xExp3 = x * x * x;
+    double xExp5 = xExp3 * x * x;
+    double xExp7 = xExp5 * x * x;
+    double xExp9 = xExp7 * x * x;
+
+    returnValue -= (xExp3) / 3;
+    returnValue += (xExp5) / 5;
+    returnValue -= (xExp7) / 7;
+    returnValue += (xExp9) / 9;
+
+    return returnValue;
+
 }
 
 double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
@@ -50,24 +92,24 @@ double getAngle(double x1, double y1, double x2 /* default value = 0 */, double 
     // If the x coordinates are the same, the point is either right above, below or on top of the other
     if (x1 == x2) {
         if (y1 >= y2) return 0;
-        return 180;
+        return pi;
     }
 
     if (y1 == y2) {
-        if (x1 >= x2) return 90;
-        return 270;
+        if (x1 >= x2) return pi / 2;
+        return (3 / 2) * pi;
     }
 
     double angle;
     if (x1 != x2) {
         double m = abs( (x1 - x2) / (y1 - y2) );
-        angle = toDegrees(atan(m));
+        angle = arctan(m);
     } else
         angle = 0;
 
     // Adjust angle based on quadrant
-    if (y1 < y2) angle = (double) 180 - angle;
-    if (x1 < x2) angle = (double) 360 - angle;
+    if (y1 < y2) angle = pi - angle;
+    if (x1 < x2) angle = (2 * pi) - angle;
 
     return angle;
 
