@@ -118,7 +118,7 @@ double sin(double x) {
         x -  ----- + ----- - ...
                3!      5!
 
-        This function uses the first 5 terms. as this gives at most an error of 0.007 ( on a range of (-1, 1) ) for values inside (-pi, pi)
+        This function uses the first 5 terms. as this gives at most an error of 0.007 ( making 0.35% on a range of (-1, 1) ) for values inside (-pi, pi)
         In interest of performance, I will not add more terms as this should be accurate enough for what I need.
 
         For values outside (-pi, pi), x is simply adjusted by amounts of 2pi until it lies in that range.
@@ -162,7 +162,7 @@ double cos(double x) {
         1 -  ----- + ----- - ...
                2!      4!
 
-        This function uses the first 6 terms. as this gives at most an error of 0.002 ( making 0.35% on a range of (-1, 1) ) for values inside (-pi, pi)
+        This function uses the first 6 terms. as this gives at most an error of 0.002 ( making 0.1% on a range of (-1, 1) ) for values inside (-pi, pi)
         In interest of performance, I will not add more terms as this should be accurate enough for what I need.
 
         For values outside (-pi, pi), x is simply adjusted by amounts of 2pi until it lies in that range.
