@@ -5,65 +5,105 @@
 
 #include "math.h"
 
+// For logging error cases
+#include "../log/log.h"
 
-double inRange(double num, double from, double to) {
-    if ( (num >= from) && (num <= to) )
-        return ( (num - from) / (to - from) );
-    return -1;
-}
-
-double outRange(double num, double from, double to) {
+/*   -----   Basic Functions   -----   */
+int floor(double x) {
     /*
-        Function is similar to inRange, but it allows values to be outside the range and will return a value accordingly.
-        Will return a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
+        Type casting is used to truncate the fractional part of the value
+
+        For negative number this returns floor(x) + 1
+        So those cases are handled
     */
 
-    return -1;
+    int returnValue = (int) x;
+
+    if (x < 0 && x != returnValue) returnValue--;   
+    
+    return returnValue;
 
 }
 
-void swap(int* var1, int* var2) {
-    int temp = *var1;
-    *var1 = *var2;
-    *var2 = temp;
-    return;
-}
-
-double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
+int ceil(double x) {
     /*
-        Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)
-        so this means that the 'y-axis' will be shifted to one side depending on where x2 lies
+        Type casting is used to truncate the fractional part of the value
+
+        For positive numbers this returns ceil(x) + 1, so those cases are handled
+        for negative numbers this works correctly
     */
 
-    // If the x coordinates are the same, the point is either right above, below or on top of the other
-    if (x1 == x2) {
-        if (y1 >= y2) return 0;
-        return pi;
-    }
+    int returnValue = (int) x;
 
-    if (y1 == y2) {
-        if (x1 >= x2) return pi / 2;
-        return (3 / 2) * pi;
-    }
-
-    double angle;
-    if (x1 != x2) {
-        double m = abs( (x1 - x2) / (y1 - y2) );
-        angle = arctan(m);
-    } else
-        angle = 0;
-
-    // Adjust angle based on quadrant
-    if (y1 < y2) angle = pi - angle;
-    if (x1 < x2) angle = (2 * pi) - angle;
-
-    return angle;
+    if (x > 0 && x != returnValue) returnValue++;   
+    
+    return returnValue;
 
 }
 
-double sqrt(double x) {
-    return 0;
+int round(double x) {
+    /*
+        This just calls floor(x + 0.5), as that does the same thing as rounding to 0 decimal points
+        Rounding to more decimal points is not supported
+    */
+
+    double y = x + 0.5;
+    return floor(y);
+
 }
+
+/*   -----   sqrt   -----   */
+double sqrt(double x, double tolerance) {
+    /*
+        This function makes use of the Newton Raphson method to find the sqrt of x as follows:
+
+        let     x = the input value
+                y_n = the nth approximation of sqrt(x)
+                f(y) = y^2 + x
+                f'(y) = 2y
+
+                        f(y_n)
+        y_n+1 = y_n - -----------
+                        f'(y_n)
+
+          f(y_n)       1    (         x    )
+        ----------- = --- * ( y_n + -----  )
+          f'(y_n)      2    (        y_n   )
+
+        Therefore y_n+1 = y_n - 0.5*(y_n + x/y_n)
+
+        This solves for sqrt(x) as the root of f(y).
+
+        The Newton Raphson method repeats over several iterations to approximate the value of sqrt(x)
+        When the value is only changed by the designated tolerance (0.001 by default) on a given iteration, the function ends and the value is returned.
+    */
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (x < 0) {
+        logWrite("Called sqrt(double) on a negative value!", true);
+        return -1;
+    }
+
+    // Zero input
+    if (x == 0) return 0;
+
+    // Newton Raphson method
+    double y = x;
+    double yNext = 0;
+
+    while (true) {
+
+        yNext = 0.5 * (y + (x / y));
+
+        // Break case
+        if (abs(y - yNext) < tolerance) return yNext;
+
+        y = yNext;
+
+    }
+
+}
+
 
 /*   --------------------------   */
 /*   ---   Trig Functions   ---   */
@@ -170,10 +210,89 @@ double tan(double x) {
     while (value > pi) value -= (2 * pi);
     while (value < -pi) value += (2 * pi);
 
+    // Find sin and cos, then get tan
     double sinValue = sin(value);
     double cosValue = cos(value);
 
-    return sinValue/cosValue;
+    return sinValue / cosValue;
+}
+
+// Arctan defined first because it is used for the other two
+double arctan(double x) {
+    /*
+        Returns radians
+        This function is sort of complicated so heres the breakdown:
+
+        1.  This way of calculating only works if the value of x is in (-1, 1)
+            If the value is outside that range, 1/x is used instead and the angle is given as (pi/2 - found angle)
+
+        2.  Im using power series to calculate the angle, but for performance im only using the first 5 terms.
+            This series is accurate until around |x| > 0.76
+
+            That being:
+
+                 x^3     x^5
+            x - ----- + ----- - ...
+                  3       5
+
+        3.  When the value is outside that range, I am using linear functions which closely fit the graph of arctan
+            I used desmos to find these functions and fine tuned the values, so they may seem arbitrary
+
+            Those being:
+
+                For x < -0.76:
+                    f(x) = 0.55x - 0.235
+
+                For x > 0.76:
+                    f(x) = 0.55x + 0.235
+
+
+        This method gives at most a 0.5% error, with the majority of inputs giving less than 0.05% error
+        This function does not need to be perfectly accurate, so I am choosing to optimize performance over accuracy
+    */
+
+    double value = x;
+    bool inverseFlag = false;
+    double returnValue;
+
+    // Fix value if its outside (-1, 1)
+    if (abs(x) > 1) {
+        value = 1 / value;
+        inverseFlag = true;
+    }
+
+    // Linear Functions for values outside (-0.76, 0.76)
+    if (value < -0.76) {
+        returnValue = (0.55 * x) - 0.235;
+    }
+
+    else if (value > 0.76) {
+        returnValue = (0.55 * x) + 0.235;
+    }
+
+    else {
+
+        // Power series for values inside (-0.76, 0.76)
+
+        // Just defining these here for readability
+        double exp3 = value * value * value;
+        double exp5 = exp3 * value * value;
+        double exp7 = exp5 * value * value;
+        double exp9 = exp7 * value * value;
+
+        // Put it all together
+        returnValue = value;
+
+        returnValue -= (exp3) / 3;
+        returnValue += (exp5) / 5;
+        returnValue -= (exp7) / 7;
+        returnValue += (exp9) / 9;
+
+    }
+
+    // Return the angle found, or pi/2 - angle found depending on the flag
+    return (inverseFlag) ? returnValue : (pi / 2) - returnValue;
+
 }
 
 double arcsin(double x) {
@@ -184,58 +303,66 @@ double arccos(double x) {
     return 0;
 }
 
-double arctan(double x) {
+
+/*   ---------------------------   */
+/*   ---   Other Functions   ---   */
+/*   ---------------------------   */
+
+double inRange(double num, double from, double to) {
+    if ( (num >= from) && (num <= to) )
+        return ( (num - from) / (to - from) );
+    return -1;
+}
+
+double outRange(double num, double from, double to) {
     /*
-        Returns radians
-        This function is sort of complicated so heres the breakdown:
-
-        1. This way of calculating only works if the value of x is in (-1, 1)
-           If the value is outside that range, 1/x is used instead and the angle is given as (pi/2 - found angle)
-
-        2. Im using powere series to calculate the angle, but for performance im only using the first 5 terms.
-           This series is accurate until around |x| > 0.76
-
-        3. When the value is outside that range, I am using linear functions which closely fit the graph of arctan
-           I used desmos to find these functions and fine tuned the values, so they may seem arbitrary
-
-        This method gives at most a 0.5% error, with the majority of inputs giving less than 0.05% error
-        This function does not need to be perfectly accurate, so I am choosing to optimize performance over accuracy
+        Function is similar to inRange, but it allows values to be outside the range and will return a value accordingly.
+        Will return a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
     */
 
-    double value = x;
-    bool inverseFlag = false;
+    return -1;
 
-    // Fix value if its outside (-1, 1)
-    if (abs(x) > 1) {
-        value = 1 / value;
-        inverseFlag = true;
+}
+
+void swap(int* var1, int* var2) {
+    int temp = *var1;
+    *var1 = *var2;
+    *var2 = temp;
+    return;
+}
+
+double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
+    /*
+        Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)
+        so this means that the 'y-axis' will be shifted to one side depending on where x2 lies
+    */
+
+    // If the x coordinates are the same, the point is either right above, below or on top of the other
+    if (x1 == x2) {
+        if (y1 >= y2) return 0;
+        return pi;
     }
 
-    // Linear Functions for values outside (-0.76, 0.76)
-    if (value < -0.76) {
-        return (0.55 * x) - 0.235;
+    if (y1 == y2) {
+        if (x1 >= x2) return pi / 2;
+        return (3 / 2) * pi;
     }
 
-    if (value > 0.76) {
-        return (0.55 * x) + 0.235;
-    }
+    double angle;
+    if (x1 != x2) {
+        double m = abs( (x1 - x2) / (y1 - y2) );
+        angle = arctan(m);
+    } else
+        angle = 0;
 
-    // Power series for values inside (-0.76, 0.76)
+    // Adjust angle based on quadrant
+    if (y1 < y2) angle = pi - angle;
+    if (x1 < x2) angle = (2 * pi) - angle;
 
-    // Just defining these here for readability
-    double exp3 = value * value * value;
-    double exp5 = exp3 * value * value;
-    double exp7 = exp5 * value * value;
-    double exp9 = exp7 * value * value;
+    return angle;
 
-    // Put it all together
-    double returnValue = value;
+}
 
-    returnValue -= (exp3) / 3;
-    returnValue += (exp5) / 5;
-    returnValue -= (exp7) / 7;
-    returnValue += (exp9) / 9;
-
-    return returnValue;
-
+double sqrt(double x) {
+    return 0;
 }

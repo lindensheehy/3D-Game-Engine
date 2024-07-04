@@ -6,6 +6,7 @@
 #include "../class-headers/Tri3Class.h"
 #include "../class-headers/ColorClass.h"
 
+// For logging error cases
 #include "../log/log.h"
 
 /*  ------------------------------------  */

@@ -7,6 +7,14 @@
 // For degree conversion
 const double degToRadFactor = pi / 180;
 
+// Returns the floor value of x as an int
+int floor(double x);
+
+// Returns the ceiling value of x as an int
+int ceil(double x);
+
+// Returns the rounded value of x as an integer. That means this rounds to ZERO decimal points
+int round(double x);
 
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
 double inRange(double num, double from, double to);
@@ -17,14 +25,33 @@ double outRange(double num, double from, double to);
 // Swaps the values in two memory locations.
 void swap(int* var1, int* var2);
 
-// Arctan. this is an approximation, but its generally close enough.
-double quickArctan(double x);
-
 // Returns the angle between two points in DEGREES.
 // This angle is from a vertical line on (x1, y1) to (x2, y2)
 // For example if (x2, y2) is directly right of (x1, y1) this returns 90. 
 // The second position is set to (0, 0) by default.
 double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
+
+double sqrt(double x, double tolerance = 0.001);
+
+/*   Trig Functions   */
+
+// Sine function. Uses radians
+double sin(double x);
+
+// Cosine function. Uses radians
+double cos(double x);
+
+// Tangent function. Uses radians
+double tan(double x);
+
+// Reverse sine function. Uses radians
+double arcsin(double x);
+
+// Reverse cosine function. Uses radians
+double arccos(double x);
+
+// Reverse tangent function. Uses radians
+double arctan(double x);
 
 
 /*   Inline Functions   */

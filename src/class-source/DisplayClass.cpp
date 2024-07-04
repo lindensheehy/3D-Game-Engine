@@ -1,8 +1,10 @@
 #include "../class-headers/DisplayClass.h"
 
-#include "../log/log.h"
 #include "../class-headers/Vec2Class.h"
 #include "../class-headers/MeshClass.h"
+
+// For logging error cases
+#include "../log/log.h"
 
 
 // Constructors

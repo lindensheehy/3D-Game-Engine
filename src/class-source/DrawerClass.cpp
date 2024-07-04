@@ -7,6 +7,8 @@
 #include "../class-headers/Tri2Class.h"
 
 #include "../math/math.h"
+
+// For logging error cases
 #include "../log/log.h"
 
 

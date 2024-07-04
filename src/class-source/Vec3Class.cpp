@@ -1,8 +1,9 @@
 #include "../class-headers/Vec3Class.h"
 
-#include "../log/log.h"
 #include "../math/math.h"
 
+// For logging error cases
+#include "../log/log.h"
 
 // Constructors
 Vec3::Vec3(double inputX, double inputY, double inputZ) {
@@ -218,7 +219,7 @@ double Vec3::getAngle(Vec3* other) {
     if (ratio < -1) return pi;
     if (ratio > 1)  return 0;
 
-    return acos(ratio);
+    return arccos(ratio);
 }
 
 void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {

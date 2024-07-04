@@ -4,6 +4,9 @@
 #include "../class-headers/Vec3Class.h"
 #include "../class-headers/MeshClass.h"
 
+// For logging error cases
+#include "../log/log.h"
+
 
 // Constructors
 Camera::Camera() {

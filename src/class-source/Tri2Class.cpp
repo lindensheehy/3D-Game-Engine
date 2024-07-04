@@ -1,7 +1,9 @@
 #include "../class-headers/Tri2Class.h"
 
-#include "../log/log.h"
 #include "../class-headers/Vec2Class.h"
+
+// For logging error cases
+#include "../log/log.h"
 
 
 // Constructor
