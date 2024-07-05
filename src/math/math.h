@@ -7,6 +7,9 @@
 // For degree conversion
 const double degToRadFactor = pi / 180;
 
+
+/*   -----   Basic Functions   -----   */
+
 // Returns the floor value of x as an int
 int floor(double x);
 
@@ -16,24 +19,16 @@ int ceil(double x);
 // Returns the rounded value of x as an integer. That means this rounds to ZERO decimal points
 int round(double x);
 
-// Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
-double inRange(double num, double from, double to);
 
-// Same as above, but allows values outside the range, in which case it would return values outside 0-1
-double outRange(double num, double from, double to);
+/*   -----   sqrt   -----   */
 
-// Swaps the values in two memory locations.
-void swap(int* var1, int* var2);
-
-// Returns the angle between two points in DEGREES.
-// This angle is from a vertical line on (x1, y1) to (x2, y2)
-// For example if (x2, y2) is directly right of (x1, y1) this returns 90. 
-// The second position is set to (0, 0) by default.
-double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
-
+// Returns a value within the given tolerance from the actual square root of x
 double sqrt(double x, double tolerance = 0.001);
 
-/*   Trig Functions   */
+
+/*   --------------------------   */
+/*   ---   Trig Functions   ---   */
+/*   --------------------------   */
 
 // Sine function. Uses radians
 double sin(double x);
@@ -54,7 +49,29 @@ double arccos(double x);
 double arctan(double x);
 
 
-/*   Inline Functions   */
+/*   ---------------------------   */
+/*   ---   Other Functions   ---   */
+/*   ---------------------------   */
+
+// Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
+double range(double num, double from, double to);
+
+// Same as above, but allows values outside the range, in which case it would return values outside 0-1
+double inRange(double num, double from, double to);
+
+// Swaps the values in two memory locations.
+void swap(int* var1, int* var2);
+
+// Returns the angle between two points in DEGREES.
+// This angle is from a vertical line on (x1, y1) to (x2, y2)
+// For example if (x2, y2) is directly right of (x1, y1) this returns 90. 
+// The second position is set to (0, 0) by default.
+double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
+
+
+/*   ----------------------------   */
+/*   ---   Inline Functions   ---   */
+/*   ----------------------------   */
 
 // Absolute value (int)
 inline int abs(int num) {
