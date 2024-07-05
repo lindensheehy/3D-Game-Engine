@@ -43,7 +43,8 @@ int ceil(double x) {
 
 int round(double x) {
     /*
-        This just calls floor(x + 0.5), as that does the same thing as rounding to 0 decimal points
+        This just calls floor(x + 0.5)
+        This does the same thing as rounding to 0 decimal points
         Rounding to more decimal points is not supported
     */
 
@@ -296,11 +297,77 @@ double arctan(double x) {
 }
 
 double arcsin(double x) {
-    return 0;
+    /*
+        This function makes use of the arctan function defined above, along side the following identity:
+
+                          (         x         )
+        arcsin(x) = arctan( ----------------- )
+                          (   sqrt(1 - x^2)   )
+
+        The power series defined for arcsin are very inaccurate at values close to |1|, even with many terms
+        However my arctan function has a very low error margin so I have no problem relying on it for this
+
+        This function also uses my sqrt function as defined above, which has a very small error margin
+        So the total error on this would be very slightly higher than the error on arctan
+
+        Arcsin is undefined outside (-1, 1)
+        So when given a value outside that range, I log an error and simply return 0.
+    */
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (abs(x) > 1) {
+        logWrite("Called arcsin(double) on a value outside (-1, 1)", true);
+        return 0;
+    }
+
+    double y;
+
+    y = 1 - (x * x);
+    y = sqrt(y);
+    y = x / y;
+
+    return arctan(y);
+
 }
 
 double arccos(double x) {
-    return 0;
+    /*
+        This function makes use of the arctan function defined above, along side the following identity:
+
+                          (   sqrt(1 - x^2)   )
+        arccos(x) = arctan( ----------------- )
+                          (         x         )
+
+        The power series defined for arccos are very inaccurate at values close to |1|, even with many terms
+        However my arctan function has a very low error margin so I have no problem relying on it for this
+
+        This function also uses my sqrt function as defined above, which has a very small error margin
+        So the total error on this would be very slightly higher than the error on arctan
+
+        Arccos is undefined outside (-1, 1)
+        So when given a value outside that range, I log an error and simply return 0.
+
+        This identity is also wierd becuase it gives values of x < 0, a return value pi lower than it should be
+        So theres simply a check at the end of fix that.
+    */
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (abs(x) > 1) {
+        logWrite("Called arccos(double) on a value outside (-1, 1)", true);
+        return 0;
+    }
+
+    double y;
+
+    y = 1 - (x * x);
+    y = sqrt(y);
+    y = y / x;
+
+    double returnValue = arctan(y);
+    
+    // Check both the result of arctan and the value of x due to overlaps in the graphs
+    return (returnValue < 0 || x < 0) ? returnValue + pi : returnValue;
+
 }
 
 
@@ -308,27 +375,36 @@ double arccos(double x) {
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
 
+double range(double num, double from, double to) {
+    /*
+        This function basically normalizes a value with respect to some given range
+        Returns a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
+    */
+
+    return ( (num - from) / (to - from) );
+
+}
+
 double inRange(double num, double from, double to) {
+    /*
+        Function is similar to range, but returns -1 for values outside the range
+    */
+
     if ( (num >= from) && (num <= to) )
         return ( (num - from) / (to - from) );
     return -1;
 }
 
-double outRange(double num, double from, double to) {
+void swap(int* var1, int* var2) {
     /*
-        Function is similar to inRange, but it allows values to be outside the range and will return a value accordingly.
-        Will return a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
+        Just swaps the values in var1 and var2 using pointers to those values
     */
 
-    return -1;
-
-}
-
-void swap(int* var1, int* var2) {
     int temp = *var1;
     *var1 = *var2;
     *var2 = temp;
     return;
+
 }
 
 double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
@@ -361,8 +437,4 @@ double getAngle(double x1, double y1, double x2 /* default value = 0 */, double 
 
     return angle;
 
-}
-
-double sqrt(double x) {
-    return 0;
 }
