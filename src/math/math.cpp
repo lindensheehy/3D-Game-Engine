@@ -201,6 +201,7 @@ double cos(double x) {
 double tan(double x) {
     /*
         Uses radians
+        The tan power series is quite complicated and is not very accurate with only a few terms, so it is not used
         Since tan is defined as sin/cos, this function simply calls sin() and cos() from above
         The value adjusting is done here to avoid doing it twice
     */
