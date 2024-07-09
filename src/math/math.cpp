@@ -25,22 +25,6 @@ int floor(double x) {
 
 }
 
-int ceil(double x) {
-    /*
-        Type casting is used to truncate the fractional part of the value
-
-        For positive numbers this returns ceil(x) + 1, so those cases are handled
-        for negative numbers this works correctly
-    */
-
-    int returnValue = (int) x;
-
-    if (x > 0 && x != returnValue) returnValue++;   
-    
-    return returnValue;
-
-}
-
 int round(double x) {
     /*
         This just calls floor(x + 0.5)

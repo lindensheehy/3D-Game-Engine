@@ -1,14 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <stdint.h>
 
 #include "log.h"
-
-typedef uint8_t int1byte;
-typedef uint16_t int2bytes;
-typedef uint32_t int4bytes;
-typedef uint64_t int8bytes;
 
 std::ofstream outputFile;
 
@@ -98,30 +92,30 @@ void logWrite(double message, bool newLine /* default value = false */) {
 }
 
 // Hex values
-void logWrite(int8bytes message, bool newLine /* default value = false */) {
+// void logWrite(int8bytes message, bool newLine /* default value = false */) {
 
-    std::stringstream stream;
-    stream << "0x" << std::hex << std::uppercase << message;
-    std::string hexString = stream.str();
+//     std::stringstream stream;
+//     stream << "0x" << std::hex << std::uppercase << message;
+//     std::string hexString = stream.str();
 
-    logWrite(hexString, newLine);
-    return;
-}
+//     logWrite(hexString, newLine);
+//     return;
+// }
 
-void logWrite(int2bytes message, bool newLine /* default value = false */) {
-    logWrite( (int8bytes) message, newLine);
-    return;
-}
+// void logWrite(int2bytes message, bool newLine /* default value = false */) {
+//     logWrite( (int8bytes) message, newLine);
+//     return;
+// }
 
-void logWrite(int4bytes message, bool newLine /* default value = false */) {
-    logWrite( (int8bytes) message, newLine);
-    return;
-}
+// void logWrite(int4bytes message, bool newLine /* default value = false */) {
+//     logWrite( (int8bytes) message, newLine);
+//     return;
+// }
 
-void logWrite(int1byte message, bool newLine /* default value = false */) {
-    logWrite( (int8bytes) message, newLine);
-    return;
-}
+// void logWrite(int1byte message, bool newLine /* default value = false */) {
+//     logWrite( (int8bytes) message, newLine);
+//     return;
+// }
 
 // Variable Format
 void logVar(std::string message, int variable) {

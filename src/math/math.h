@@ -13,9 +13,6 @@ const double degToRadFactor = pi / 180;
 // Returns the floor value of x as an int
 int floor(double x);
 
-// Returns the ceiling value of x as an int
-int ceil(double x);
-
 // Returns the rounded value of x as an integer. That means this rounds to ZERO decimal points
 int round(double x);
 
@@ -72,16 +69,6 @@ double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
 /*   ----------------------------   */
 /*   ---   Inline Functions   ---   */
 /*   ----------------------------   */
-
-// Absolute value (int)
-inline int abs(int num) {
-    return ( num < 0 ? -num : num);
-}
-
-// Absolute value (double)
-inline double abs(double num) {
-    return ( num < 0 ? -num : num);
-}
 
 // Angle conversion. Degrees -> Radians
 inline double toRadians(double degrees) {

@@ -29,10 +29,10 @@ void logWrite(long long message, bool newLine = false);
 void logWrite(double message, bool newLine = false);
 
 // Hex values
-void logWrite(int8bytes message, bool newLine = false);
-void logWrite(int2bytes message, bool newLine = false);
-void logWrite(int4bytes message, bool newLine = false);
-void logWrite(int1byte message, bool newLine = false);
+// void logWrite(int8bytes message, bool newLine = false);
+// void logWrite(int2bytes message, bool newLine = false);
+// void logWrite(int4bytes message, bool newLine = false);
+// void logWrite(int1byte message, bool newLine = false);
 
 // Variable Format
 void logVar(std::string message, int variable);
