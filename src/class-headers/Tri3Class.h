@@ -2,6 +2,10 @@
 
 #include "Vec3Class.h"
 
+// For logging error cases
+#include "../log/log.h"
+
+
 class Tri3 {
 
     /*

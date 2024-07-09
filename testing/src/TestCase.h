@@ -1,5 +1,10 @@
+#include "FunctionWrapperClass.h"
+#include "ArgWrapperClass.h"
 
+#include "../../src/log/log.h"
 
+// This template allows this class to be used for any function signature
+template<typename returnType, typename... args>
 class TestCase {
     /*
         This class is used to create test cases
@@ -8,25 +13,43 @@ class TestCase {
 
     public:
 
-        class Function {
-            /*
-                This class is used to define functions based on their return value and parameters
-                The reason for this is so the TestCase class can just use an instance of this rather than having tons functions
-            */
-
-            /*   Instance Variables   */
-
-            void* (*func)(args...);
-
-
-            // Constructors
-            Function(double (*func)(double)) {
-                this->func = func;
-            }
-
-        };
+        // Instance Variables
+        FunctionWrapper<returnType, args...>* func;
+        ArgWrapper<args...> argSet;
 
         // Constructor
-        TestCase();
+        TestCase(FunctionWrapper<returnType, args...>* func, ArgWrapper<args...> argSet) {
+            this->func = func;
+            this->argSet = argSet;
+        }
+
+        // Destructor
+        ~TestCase() {
+            
+            if (this->func != nullptr)
+                delete this->func;
+
+            if (this->argSet != nullptr)
+                delete this->argSet;
+
+            return;
+
+        }
+
+        /*   Instance Functions   */
+
+        // Runs all test cases
+        void run() {
+
+        }
+
+    private:
+
+        /*   Instance Functions   */
+
+        // Runs a single test case. This is called from run()
+        void runSet(int set) {
+
+        }
 
 };

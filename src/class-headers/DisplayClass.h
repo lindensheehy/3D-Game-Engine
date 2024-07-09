@@ -3,6 +3,10 @@
 #include "Vec2Class.h"
 #include "MeshClass.h"
 
+// For logging error cases
+#include "../log/log.h"
+
+
 class Display {
 
     /*

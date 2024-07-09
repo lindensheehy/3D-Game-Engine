@@ -2,6 +2,10 @@
 
 #include "../math/math.h"
 
+// For logging error cases
+#include "../log/log.h"
+
+
 class Vec3 {
 
     /*

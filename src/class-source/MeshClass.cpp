@@ -1,13 +1,5 @@
 #include "../class-headers/MeshClass.h"
 
-#include "../class-headers/Vec2Class.h"
-#include "../class-headers/Vec3Class.h"
-#include "../class-headers/Tri2Class.h"
-#include "../class-headers/Tri3Class.h"
-#include "../class-headers/ColorClass.h"
-
-// For logging error cases
-#include "../log/log.h"
 
 /*  ------------------------------------  */
 /*  -----------   IndexMap   -----------  */

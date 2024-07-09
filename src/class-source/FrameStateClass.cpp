@@ -1,9 +1,5 @@
 #include "../class-headers/FrameStateClass.h"
 
-#include <SDL2/SDL.h>
-
-// For logging error cases
-#include "../log/log.h"
 
 /*  ------------------------------------  */
 /*  ----------   MouseState   ----------  */

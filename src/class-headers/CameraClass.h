@@ -4,6 +4,10 @@
 #include "Vec3Class.h"
 #include "MeshClass.h"
 
+// For logging error cases
+#include "../log/log.h"
+
+
 class Camera {
     public:
         

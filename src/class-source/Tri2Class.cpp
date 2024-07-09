@@ -1,10 +1,5 @@
 #include "../class-headers/Tri2Class.h"
 
-#include "../class-headers/Vec2Class.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructor
 Tri2::Tri2(bool nullPointers /* default value = false */) {

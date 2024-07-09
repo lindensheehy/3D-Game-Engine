@@ -1,16 +1,5 @@
 #include "../class-headers/DrawerClass.h"
 
-#include <SDL2/SDL.h>
-
-#include "../class-headers/PNGClass.h"
-#include "../class-headers/Vec2Class.h"
-#include "../class-headers/Tri2Class.h"
-
-#include "../math/math.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructor
 Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {

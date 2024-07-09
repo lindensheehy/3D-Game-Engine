@@ -1,9 +1,5 @@
 #include "../class-headers/Vec3Class.h"
 
-#include "../math/math.h"
-
-// For logging error cases
-#include "../log/log.h"
 
 // Constructors
 Vec3::Vec3(double inputX, double inputY, double inputZ) {

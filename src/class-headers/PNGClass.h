@@ -1,10 +1,13 @@
 #pragma once
 
 #include <iostream>
-#include <SDL2/SDL.h>
 
 #include "ColorClass.h"
+
 #include "../lodepng/lodepng.h"
+
+// For logging error cases
+#include "../log/log.h"
 
 class PNG {
 

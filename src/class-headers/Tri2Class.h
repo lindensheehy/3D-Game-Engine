@@ -2,6 +2,9 @@
 
 #include "Vec2Class.h"
 
+// For logging error cases
+#include "../log/log.h"
+
 class Tri2 {
 
     /*

@@ -6,7 +6,9 @@
 #include "Tri3Class.h"
 #include "ColorClass.h"
 
+// For logging error cases
 #include "../log/log.h"
+
 
 class Mesh {
 

@@ -1,10 +1,5 @@
 #include "../class-headers/Vec2Class.h"
 
-#include "../math/math.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructor
 Vec2::Vec2(double inputX, double inputY) {

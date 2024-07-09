@@ -1,7 +1,5 @@
 #include "../class-headers/ColorClass.h"
 
-#include <SDL2/SDL.h>
-
 
 // Contructors
 Color::Color(uint32 color) {

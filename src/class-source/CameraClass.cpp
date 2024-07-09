@@ -1,12 +1,5 @@
 #include "../class-headers/CameraClass.h"
 
-#include "../class-headers/Vec2Class.h"
-#include "../class-headers/Vec3Class.h"
-#include "../class-headers/MeshClass.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructors
 Camera::Camera() {
@@ -45,6 +38,7 @@ void Camera::setPos(double x, double y, double z) {
 
 void Camera::setPos(Vec3* position) {
 
+    // Address error case, but dont kill the process yet in case its not fatal
     if (position == nullptr) {
         logWrite("Called Camera->setPos(Vec3*) on a null pointer!", true);
         return;

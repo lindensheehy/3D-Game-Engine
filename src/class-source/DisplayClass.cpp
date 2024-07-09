@@ -1,11 +1,5 @@
 #include "../class-headers/DisplayClass.h"
 
-#include "../class-headers/Vec2Class.h"
-#include "../class-headers/MeshClass.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructors
 Display::Display(int width, int height) {    

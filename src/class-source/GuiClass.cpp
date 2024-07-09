@@ -1,10 +1,5 @@
 #include "../class-headers/GuiClass.h"
 
-#include <SDL2/SDL.h>
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructor
 Gui::Gui(int windowWidth, int windowHeight) {

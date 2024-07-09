@@ -1,10 +1,5 @@
 #include "../class-headers/Tri3Class.h"
 
-#include "../class-headers/Vec3Class.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Constructor
 Tri3::Tri3(bool nullPointers /* default value = false */) {

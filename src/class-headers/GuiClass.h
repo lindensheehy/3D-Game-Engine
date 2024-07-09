@@ -2,7 +2,9 @@
 
 #include <SDL2/SDL.h>
 
+// For logging error cases
 #include "../log/log.h"
+
 
 class Gui {
 

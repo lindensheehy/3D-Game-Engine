@@ -1,14 +1,5 @@
 #include "../class-headers/PNGClass.h"
 
-#include <iostream>
-
-#include "../class-headers/ColorClass.h"
-
-#include "../lodepng/lodepng.h"
-
-// For logging error cases
-#include "../log/log.h"
-
 
 // Color indexes. Used to parse the return data from lodepng
 const char PNG::RED = 0;
