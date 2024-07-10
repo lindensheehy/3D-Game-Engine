@@ -1,1 +1,3 @@
-test
+Starting Tests...
+3
+0.400000

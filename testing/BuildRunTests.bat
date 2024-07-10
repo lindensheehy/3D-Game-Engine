@@ -1,4 +1,25 @@
-echo off
-g++ test.cpp -o test.exe
+set objdir=../src/obj/
+set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
+
+g++ test.cpp ^
+    %objdir%math.o ^
+    %objdir%log.o ^
+    %objdir%Vec2Class.o ^
+    %objdir%Vec3Class.o ^
+    %objdir%Tri2Class.o ^
+    %objdir%Tri3Class.o ^
+    %objdir%CameraClass.o ^
+    %objdir%MeshClass.o ^
+    %objdir%ColorClass.o ^
+    %objdir%PNGClass.o ^
+    %objdir%DisplayClass.o ^
+    %objdir%GuiClass.o ^
+    %objdir%DrawerClass.o ^
+    %objdir%FrameStateClass.o ^
+    %objdir%lodepng.o ^
+    -o test.exe ^
+    %SDLinclude%
+
 test.exe
+
 pause

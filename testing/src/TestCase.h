@@ -1,5 +1,6 @@
+#pragma once
+
 #include "FunctionWrapperClass.h"
-#include "ArgWrapperClass.h"
 
 #include "../../src/log/log.h"
 
@@ -15,10 +16,9 @@ class TestCase {
 
         // Instance Variables
         FunctionWrapper<returnType, args...>* func;
-        ArgWrapper<args...> argSet;
 
         // Constructor
-        TestCase(FunctionWrapper<returnType, args...>* func, ArgWrapper<args...> argSet) {
+        TestCase(FunctionWrapper<returnType, args...>* func) {
             this->func = func;
             this->argSet = argSet;
         }
@@ -29,16 +29,13 @@ class TestCase {
             if (this->func != nullptr)
                 delete this->func;
 
-            if (this->argSet != nullptr)
-                delete this->argSet;
-
             return;
 
         }
 
         /*   Instance Functions   */
 
-        // Runs all test cases
+        // Runs all argument sets on the function
         void run() {
 
         }
@@ -47,7 +44,7 @@ class TestCase {
 
         /*   Instance Functions   */
 
-        // Runs a single test case. This is called from run()
+        // Runs a single argument set. This is called from run()
         void runSet(int set) {
 
         }

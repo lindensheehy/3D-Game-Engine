@@ -1,9 +1,16 @@
+#pragma once
+
 /*
     This class is seperate from TestCase for cleanliness, but it could just be in the same file its not used anywhere else
 */
 
 // For logging error cases
 #include "../../src/log/log.h"
+
+template<typename... types>
+struct ArgSet {
+    types items[sizeof...(types)];
+};
 
 // This template allows this class to be used for any set of arguments types
 template<typename... types>
@@ -15,19 +22,18 @@ class ArgWrapper {
     public:
 
         // Instance Variables
-        args* items;
+        ArgSet* items;
         int setCount;
         int setLength;
         int listLength;
 
         // Constructor
-        ArgumentWrapper(int size, types... args) {
+        ArgWrapper(int size) {
 
             this->setCount = size;
             this->setLength = sizeof...(types);
-            this->listLength = this->setCount * this->setLength;
 
-            this->items = new types[this->listLength]{args...};
+            this->items = new ArgSet[size];
 
             return;
 
@@ -36,16 +42,8 @@ class ArgWrapper {
         // Destructor
         ~ArgWrapper() {
             
-            if (this->items != nullptr) {
-
-                for (int i = 0; i < this->size; i++) {
-
-                    if (this->items[i] != nullptr)
-                        delete this->items[i];
-
-                }
-
-            }
+            if (this->items != nullptr)
+                delete[] this->items;
 
             return;
 
