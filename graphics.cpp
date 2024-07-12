@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include "src/class-headers/DrawerClass.h"
 #include "src/class-headers/FrameStateClass.h"
 #include "src/class-headers/Vec2Class.h"

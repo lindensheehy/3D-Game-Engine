@@ -1,5 +1,8 @@
 #pragma once
 
+// For logging error cases
+#include "../log/log.h"
+
 #ifndef pi
 #define pi 3.14159265358979323846
 #endif

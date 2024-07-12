@@ -40,7 +40,7 @@ void Camera::setPos(Vec3* position) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (position == nullptr) {
-        logWrite("Called Camera->setPos(Vec3*) on a null pointer!", true);
+        logWrite("Called Camera->setPos(Vec3*) on a null pointer!\n");
         return;
     }
 
@@ -59,7 +59,7 @@ void Camera::setVelocity(Vec3* velocity) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (velocity == nullptr) {
-        logWrite("Called Camera->setVelocity(Vec3*) on a null pointer!", true);
+        logWrite("Called Camera->setVelocity(Vec3*) on a null pointer!");
         return;
     }
 
@@ -78,7 +78,7 @@ void Camera::setAcceleration(Vec3* acceleration) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (acceleration == nullptr) {
-        logWrite("Called Camera->setAcceleration(Vec3*) on a null pointer!", true);
+        logWrite("Called Camera->setAcceleration(Vec3*) on a null pointer!");
         return;
     }
 
@@ -97,7 +97,7 @@ void Camera::setFacingDirection(Vec3* facingDirection) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (facingDirection == nullptr) {
-        logWrite("Called Camera->setFacingDirection(Vec3*) on a null pointer!", true);
+        logWrite("Called Camera->setFacingDirection(Vec3*) on a null pointer!");
         return;
     }
 

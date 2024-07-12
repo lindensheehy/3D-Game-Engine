@@ -5,9 +5,6 @@
 
 #include "math.h"
 
-// For logging error cases
-#include "../log/log.h"
-
 /*   -----   Basic Functions   -----   */
 int floor(double x) {
     /*

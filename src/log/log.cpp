@@ -1,7 +1,3 @@
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-
 #include "log.h"
 
 std::ofstream outputFile;

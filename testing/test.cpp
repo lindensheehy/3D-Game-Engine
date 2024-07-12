@@ -5,6 +5,12 @@
 // Libs for functions to test
 #include "../src/math/math.h"
 
+
+// Test counters
+int totalTests;
+int passedTests;
+
+// This template allows this class to be used for any function signature
 template<typename returnType, typename... args>
 class FunctionWrapper {
     /*
@@ -31,13 +37,53 @@ class FunctionWrapper {
 
         // This calls the function with some args and tests it against the expected value
         // percentTolerance is the percent difference the actual is allowed to be off from the expected by
-        void test(returnType expected, args... arguments, double percentTolerance = 0) {
+        bool test(returnType expected, args... arguments, double percentTolerance = 0) {
 
             // Get actual value
             returnType actual = func(arguments...);
+            double error = (abs((double) actual - (double) expected)) / (double) expected;
+            bool passed = error <= percentTolerance;
 
-            logWrite(arguments...);
+            totalTests++;
 
+            //LogQueue<const char*>* q = new LogQueue<const char*>("Test: ");
+
+            logWrite("Test: ");
+            logWrite(this->funcName);
+            logWrite("(");
+
+            bool firstFlag = true;
+
+            // Log packed items
+            (..., [&]
+            {   
+                
+                // Print the ", " on every iteration after the first
+                if (firstFlag)
+                    firstFlag = false;
+                else
+                    logWrite(", ");
+
+                logWrite(arguments);
+
+            } ());
+
+            logWrite(")  ->  ");
+
+            if (passed) {
+                logWrite("Passed!", true);
+                passedTests++;
+                return true;
+            }
+
+            else {
+                logWrite("Failed!  (expected ");
+                logWrite(expected);
+                logWrite(" but got ");
+                logWrite(actual);
+                logWrite(") ", true);
+                return false;
+            }
 
         }
 
@@ -45,14 +91,26 @@ class FunctionWrapper {
 
 int main() {
 
+    totalTests = 0;
+    passedTests = 0;
+
     logInit("testlog.txt");
-    logWrite("Starting Tests...", true);
+    logWrite("Loading Functions...", true);
 
     FunctionWrapper<int, double>* funcFloor = new FunctionWrapper<int, double>(floor, "math.floor");
     FunctionWrapper<double, double, double, double>* funcRange = new FunctionWrapper<double, double, double, double>(range, "math.range");
 
+    logWrite("Functions Loaded!", true);
+
     funcFloor->test(3, 3.2);
     funcRange->test(0.4, 5, 3, 8, 0.001);
+
+
+    logWrite("\n\n");
+    logWrite(totalTests);
+    logWrite(" tests run", true);
+    logWrite(passedTests);
+    logWrite(" tests passed", true);
 
     return 0;
 }

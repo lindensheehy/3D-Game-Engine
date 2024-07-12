@@ -1,6 +1,5 @@
 #define SDL_MAIN_HANDLED
 
-#include <iostream>
 #include <chrono>
 
 #include "src/class-headers/ColorClass.h"

@@ -3,12 +3,6 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <stdint.h>
-
-typedef uint8_t int1byte;
-typedef uint16_t int2bytes;
-typedef uint32_t int4bytes;
-typedef uint64_t int8bytes;
 
 // Init
 void logInit(std::string fileName);
