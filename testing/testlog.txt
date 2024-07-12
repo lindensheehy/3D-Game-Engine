@@ -1,8 +1,8 @@
 Loading Functions...
 Functions Loaded!
-Test: math.floor(3.200000)  ->  Passed!
-Test: math.range(5.000000, 3.000000, 8.000000)  ->  Passed!
+Test: math.floor(3.200000) == 4   ->   Failed!  (Output: 3)
+Test: math.range(5.000000, 3.000000, 8.000000) == 0.400000   ->   Passed!
 
 
 2 tests run
-2 tests passed
+1 tests passed

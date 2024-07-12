@@ -68,7 +68,9 @@ class FunctionWrapper {
 
             } ());
 
-            logWrite(")  ->  ");
+            logWrite(") == ");
+            logWrite(expected);
+            logWrite("   ->   ");
 
             if (passed) {
                 logWrite("Passed!", true);
@@ -77,11 +79,9 @@ class FunctionWrapper {
             }
 
             else {
-                logWrite("Failed!  (expected ");
-                logWrite(expected);
-                logWrite(" but got ");
+                logWrite("Failed!  (Output: ");
                 logWrite(actual);
-                logWrite(") ", true);
+                logWrite(")", true);
                 return false;
             }
 
@@ -102,7 +102,7 @@ int main() {
 
     logWrite("Functions Loaded!", true);
 
-    funcFloor->test(3, 3.2);
+    funcFloor->test(4, 3.2);
     funcRange->test(0.4, 5, 3, 8, 0.001);
 
 
