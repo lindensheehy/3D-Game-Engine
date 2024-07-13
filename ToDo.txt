@@ -10,3 +10,4 @@ new stuff:
 fixes:
 - something in the projection process is failing, this is likely because of misuse of radians and degrees in places.
 - fix triangles not working correclty to shown when facing cam (might be because of using radians in Tri3->isFacing())
+- sqrt from math.cpp has an issue as shown by the tests. looks like its removing value too fast

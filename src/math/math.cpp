@@ -5,7 +5,12 @@
 
 #include "math.h"
 
+
 /*   -----   Basic Functions   -----   */
+double abs_(double x) {
+    return (x > 0) ? x : -x;
+}
+
 int floor(double x) {
     /*
         Type casting is used to truncate the fractional part of the value
@@ -69,13 +74,19 @@ double sqrt(double x, double tolerance) {
     // Zero input
     if (x == 0) return 0;
 
+    // This will break the loop after a set number of iterations
+    int maxIterations = 4;
+
     // Newton Raphson method
     double y = x;
     double yNext = 0;
 
     while (true) {
 
-        yNext = 0.5 * (y + (x / y));
+        if (maxIterations == 0) return y;
+        else maxIterations--;
+
+        yNext = y - (0.5 * (y + (x / y)));
 
         // Break case
         if (abs(y - yNext) < tolerance) return yNext;
@@ -161,20 +172,23 @@ double cos(double x) {
     double exp4 = exp2 * value * value;
     double exp6 = exp4 * value * value;
     double exp8 = exp6 * value * value;
+    double exp10 = exp8 * value * value;
 
     // Factorials
     double fac2 = 2;
     double fac4 = fac2 * 3 * 4;
     double fac6 = fac4 * 5 * 6;
     double fac8 = fac6 * 7 * 8;
+    double fac10 = fac8 * 9 * 10;
 
     // Put it all together
-    double returnValue = value;
+    double returnValue = 1;
 
-    returnValue -= (exp2) / fac2;
-    returnValue += (exp4) / fac4;
-    returnValue -= (exp6) / fac6;
-    returnValue += (exp8) / fac8;
+    returnValue -= exp2 / fac2;
+    returnValue += exp4 / fac4;
+    returnValue -= exp6 / fac6;
+    returnValue += exp8 / fac8;
+    returnValue -= exp10 /fac10;
 
     return returnValue;
 }
