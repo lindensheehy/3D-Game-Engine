@@ -54,7 +54,7 @@ class FunctionWrapper {
                 else
                     error = 100 * ((double) actual - (double) expected);
 
-                passed = (error > 0) ? error <= percentTolerance : -error <= percentTolerance;
+                passed = ((error > 0) ? error : -error) <= percentTolerance;
 
             }
 
