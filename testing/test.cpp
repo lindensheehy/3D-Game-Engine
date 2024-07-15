@@ -194,6 +194,7 @@ int main() {
 
     // cos
     logWrite("\ncos function from math.cpp\n");
+    //                   Return    Input     Percent Error
     funcCos->test(         1,        0,           0.25          );
     funcCos->test(         0,       pi/2,         0.25          );
     funcCos->test(         0,      -pi/2,         0.25          );
@@ -204,15 +205,47 @@ int main() {
 
     // tan
     logWrite("\ntan function from math.cpp\n");
+    //                   Return    Input     Percent Error
+    funcTan->test(         0,        0,           0.75          );
+    funcTan->test(         1,       pi/4,         0.75          ); 
+    funcTan->test(        inf,      pi/2,          0            );
+    funcTan->test(        -1,      -pi/4,         0.75          ); 
+    funcTan->test(       -inf,     -pi/2,          0            );
+    funcTan->test(      1.5574,      1,           0.75          );
+    funcTan->test(         0,      pi * 99,       0.75          );
 
     // arctan
     logWrite("\narctan function from math.cpp\n");
+    //                   Return    Input     Percent Error
+    funcArctan->test(         1,        0,           0.25          );
+    funcArctan->test(         0,       pi/2,         0.25          );
+    funcArctan->test(         0,      -pi/2,         0.25          );
+    funcArctan->test(        -1,        pi,          0.25          );
+    funcArctan->test(        -1,       -pi,          0.25          );
+    funcArctan->test(      0.5403,      1,           0.25          );
+    funcArctan->test(        -1,      pi * 99,       0.25          );
 
     // arcsin
     logWrite("\narcsin function from math.cpp\n");
+    //                   Return    Input     Percent Error
+    funcArcsin->test(         1,        0,           0.25          );
+    funcArcsin->test(         0,       pi/2,         0.25          );
+    funcArcsin->test(         0,      -pi/2,         0.25          );
+    funcArcsin->test(        -1,        pi,          0.25          );
+    funcArcsin->test(        -1,       -pi,          0.25          );
+    funcArcsin->test(      0.5403,      1,           0.25          );
+    funcArcsin->test(        -1,      pi * 99,       0.25          );
 
     // arccos
     logWrite("\narccos function from math.cpp\n");
+    //                   Return    Input     Percent Error
+    funcArccos->test(         1,        0,           0.25          );
+    funcArccos->test(         0,       pi/2,         0.25          );
+    funcArccos->test(         0,      -pi/2,         0.25          );
+    funcArccos->test(        -1,        pi,          0.25          );
+    funcArccos->test(        -1,       -pi,          0.25          );
+    funcArccos->test(      0.5403,      1,           0.25          );
+    funcArccos->test(        -1,      pi * 99,       0.25          );
 
     // range
     logWrite("\nrange function from math.cpp\n");

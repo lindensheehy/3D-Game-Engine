@@ -42,20 +42,58 @@ Test: sin(311.017673) == 0.000000   ->   Passed!  ( Error: 0.692527% / 0.750000%
 
 cos function from math.cpp
 Test: cos(0.000000) == 1.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
-Test: cos(1.570796) == 0.000000   ->   Passed!  ( Error: -0.000046% / 0.250000% )
-Test: cos(-1.570796) == 0.000000   ->   Passed!  ( Error: -0.000046% / 0.250000% )
+Test: cos(1.570796) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
+Test: cos(-1.570796) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
 Test: cos(3.141593) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
 Test: cos(-3.141593) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
 Test: cos(1.000000) == 0.540300   ->   Passed!  ( Error: 0.000426% / 0.250000% )
 Test: cos(311.017673) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
 
 tan function from math.cpp
+Test: tan(0.000000) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
+Test: tan(0.785398) == 1.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
+Test: tan(1.570796) == 1000000000000.000000   ->   Passed!
+Test: tan(-0.785398) == -1.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
+Test: tan(-1.570796) == -1000000000000.000000   ->   Passed!
+Test: tan(1.000000) == 1.557400   ->   Passed!  ( Error: 0.000499% / 0.750000% )
+Test: tan(311.017673) == 0.000000   ->   Passed!  ( Error: -0.691263% / 0.750000% )
 
 arctan function from math.cpp
+Test: arctan(0.000000) == 1.000000   ->   Failed!  ( Output: 1.570796 )
+Test: arctan(1.570796) == 0.000000   ->   Failed!  ( Output: 0.471858 )
+Test: arctan(-1.570796) == 0.000000   ->   Failed!  ( Output: 2.669734 )
+Test: arctan(3.141593) == -1.000000   ->   Failed!  ( Output: 0.308169 )
+Test: arctan(-3.141593) == -1.000000   ->   Failed!  ( Output: -0.308169 )
+Test: arctan(1.000000) == 0.540300   ->   Failed!  ( Output: 0.785796 )
+Test: arctan(311.017673) == -1.000000   ->   Failed!  ( Output: 0.003215 )
 
 arcsin function from math.cpp
+Test: arcsin(0.000000) == 1.000000   ->   Failed!  ( Output: 1.570796 )
+Called sqrt(double) on a negative value!
+Test: arcsin(1.570796) == 0.000000   ->   Failed!  ( Output: 2.669734 )
+Called sqrt(double) on a negative value!
+Test: arcsin(-1.570796) == 0.000000   ->   Failed!  ( Output: 0.471858 )
+Called arcsin(double) on a value outside (-1, 1)
+Test: arcsin(3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+Called arcsin(double) on a value outside (-1, 1)
+Test: arcsin(-3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+Test: arcsin(1.000000) == 0.540300   ->   Failed!  ( Output: -inf )
+Called arcsin(double) on a value outside (-1, 1)
+Test: arcsin(311.017673) == -1.000000   ->   Failed!  ( Output: 0.000000 )
 
 arccos function from math.cpp
+Test: arccos(0.000000) == 1.000000   ->   Failed!  ( Output: inf )
+Called sqrt(double) on a negative value!
+Test: arccos(1.570796) == 0.000000   ->   Failed!  ( Output: 2.138180 )
+Called sqrt(double) on a negative value!
+Test: arccos(-1.570796) == 0.000000   ->   Failed!  ( Output: 4.145005 )
+Called arccos(double) on a value outside (-1, 1)
+Test: arccos(3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+Called arccos(double) on a value outside (-1, 1)
+Test: arccos(-3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+Test: arccos(1.000000) == 0.540300   ->   Failed!  ( Output: 1.570796 )
+Called arccos(double) on a value outside (-1, 1)
+Test: arccos(311.017673) == -1.000000   ->   Failed!  ( Output: 0.000000 )
 
 range function from math.cpp
 Test: range(5.000000, 3.000000, 8.000000) == 0.400000   ->   Passed!  ( Error: 0.000000% / 0.001000% )
@@ -65,5 +103,5 @@ inRange function from math.cpp
 getAngle function from math.cpp
 
 
-37 tests run
-32 tests passed
+65 tests run
+39 tests passed

@@ -190,6 +190,9 @@ double cos(double x) {
     returnValue += exp8 / fac8;
     returnValue -= exp10 /fac10;
 
+    // Avoid returning small negative value in place of 0
+    if (abs_(returnValue) < 1e-6) return 0;
+
     return returnValue;
 }
 
@@ -211,7 +214,12 @@ double tan(double x) {
     double sinValue = sin(value);
     double cosValue = cos(value);
 
+    // Dont divide by zero
+    if (cosValue == 0)
+        return (sinValue > 0) ? inf : -inf;
+        
     return sinValue / cosValue;
+
 }
 
 // Arctan defined first because it is used for the other two

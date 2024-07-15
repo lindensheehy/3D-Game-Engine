@@ -7,6 +7,11 @@
 #define pi 3.14159265358979323846
 #endif
 
+// This doesnt need to be extremely high becuase its just for trig functions and such
+#ifndef inf
+#define inf 1e12
+#endif
+
 // For degree conversion
 const double degToRadFactor = pi / 180;
 
