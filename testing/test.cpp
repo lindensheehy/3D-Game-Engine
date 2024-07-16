@@ -152,7 +152,6 @@ int main() {
         "<!DOCTYPE html> \n"
         "<html lang=\"en\">\n\n"
         "<head>\n"
-        "   <script src=\"testreport.js\"></script>"
         "   <link rel=\"stylesheet\" href=\"testreport.css\">\n"
         "</head>\n\n"
         "<body>\n"
