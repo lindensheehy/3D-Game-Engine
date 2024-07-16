@@ -117,8 +117,13 @@ int main() {
     totalTests = 0;
     passedTests = 0;
 
-    logInit("testlog.txt");
-    logWrite("Loading Functions...", true);
+    logInit("testreport.html");
+    logWrite(
+        
+        "<!DOCTYPE html> \n"
+        "<html lang=\"en\">"
+        
+        , true);
 
     /*  --------------------------------------  */
     /*  -----   Load Functions To Test   -----  */
