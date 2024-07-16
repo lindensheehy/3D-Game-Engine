@@ -1,108 +1,754 @@
 <!DOCTYPE html> 
 <html lang="en">
-Functions Loaded!
 
-floor function from math.cpp
-Test: floor(0.000000) == 0   ->   Passed!
-Test: floor(0.000000) == 0   ->   Passed!
-Test: floor(-0.000000) == -1   ->   Passed!
-Test: floor(-1.000000) == -1   ->   Passed!
-Test: floor(-1.010000) == -2   ->   Passed!
-Test: floor(1000000.000000) == 1000000   ->   Passed!
-Test: floor(-1000000.000000) == -1000000   ->   Passed!
+<head>
+   <script src="testreport.js"></script>   <link rel="stylesheet" href="testreport.css">
+</head>
 
-round function from math.cpp
-Test: round(0.000000) == 0   ->   Passed!
-Test: round(0.499990) == 0   ->   Passed!
-Test: round(0.500000) == 1   ->   Passed!
-Test: round(-1.500000) == -1   ->   Passed!
-Test: round(-1.500010) == -2   ->   Passed!
-Test: round(1000000.000000) == 1000000   ->   Passed!
-Test: round(-1000000.000000) == -1000000   ->   Passed!
-
-sqrt function from math.cpp
-Test: sqrt(0.000000, 0.001000) == 0.000000   ->   Passed!
-Test: sqrt(1.000000, 0.001000) == 1.000000   ->   Failed!  ( Output: -inf )
+<body>
+<div class="seperation"></div>
+<h1>
+   Testing Output
+</h1>
+<div class="seperation"></div>
+<h2>
+   floor function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(0) == 0
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(0) == 0
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(-0) == -1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(-1) == -1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(-1.01) == -2
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(1000000) == 1000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: floor(-1000000) == -1000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<div class="seperation"></div>
+<h2>
+   round function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(0) == 0
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(0.49999) == 0
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(0.5) == 1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(-1.5) == -1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(-1.50001) == -2
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(1000000) == 1000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: round(-1000000) == -1000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<div class="seperation"></div>
+<h2>
+   sqrt function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(0, 0.001) == 0
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(1, 0.001) == 1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -inf</p>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: sqrt(-1.000000, 0.001000) == -1.000000   ->   Passed!
+</span>
+<br>
+<p>
+Test: sqrt(-1, 0.001) == -1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: sqrt(-1000.000000, 0.001000) == -1.000000   ->   Passed!
-Test: sqrt(100.000000, 0.001000) == 10.000000   ->   Failed!  ( Output: -0.239067 )
-Test: sqrt(4.000000, 0.001000) == 2.000000   ->   Failed!  ( Output: 0.930881 )
-Test: sqrt(2.000000, 0.001000) == 0.000000   ->   Failed!  ( Output: 3.142332 )
-Test: sqrt(1.100000, 0.001000) == 0.000000   ->   Failed!  ( Output: -2.617542 )
-
-sin function from math.cpp
-Test: sin(0.000000) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
-Test: sin(1.570796) == 1.000000   ->   Passed!  ( Error: 0.000354% / 0.750000% )
-Test: sin(-1.570796) == -1.000000   ->   Passed!  ( Error: 0.000354% / 0.750000% )
-Test: sin(3.141593) == 0.000000   ->   Passed!  ( Error: 0.692527% / 0.750000% )
-Test: sin(-3.141593) == 0.000000   ->   Passed!  ( Error: -0.692527% / 0.750000% )
-Test: sin(1.000000) == 0.841470   ->   Passed!  ( Error: 0.000120% / 0.750000% )
-Test: sin(311.017673) == 0.000000   ->   Passed!  ( Error: 0.692527% / 0.750000% )
-
-cos function from math.cpp
-Test: cos(0.000000) == 1.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
-Test: cos(1.570796) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
-Test: cos(-1.570796) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.250000% )
-Test: cos(3.141593) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
-Test: cos(-3.141593) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
-Test: cos(1.000000) == 0.540300   ->   Passed!  ( Error: 0.000426% / 0.250000% )
-Test: cos(311.017673) == -1.000000   ->   Passed!  ( Error: 0.182910% / 0.250000% )
-
-tan function from math.cpp
-Test: tan(0.000000) == 0.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
-Test: tan(0.785398) == 1.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
-Test: tan(1.570796) == 1000000000000.000000   ->   Passed!
-Test: tan(-0.785398) == -1.000000   ->   Passed!  ( Error: 0.000000% / 0.750000% )
-Test: tan(-1.570796) == -1000000000000.000000   ->   Passed!
-Test: tan(1.000000) == 1.557400   ->   Passed!  ( Error: 0.000499% / 0.750000% )
-Test: tan(311.017673) == 0.000000   ->   Passed!  ( Error: -0.691263% / 0.750000% )
-
-arctan function from math.cpp
-Test: arctan(0.000000) == 1.000000   ->   Failed!  ( Output: 1.570796 )
-Test: arctan(1.570796) == 0.000000   ->   Failed!  ( Output: 0.471858 )
-Test: arctan(-1.570796) == 0.000000   ->   Failed!  ( Output: 2.669734 )
-Test: arctan(3.141593) == -1.000000   ->   Failed!  ( Output: 0.308169 )
-Test: arctan(-3.141593) == -1.000000   ->   Failed!  ( Output: -0.308169 )
-Test: arctan(1.000000) == 0.540300   ->   Failed!  ( Output: 0.785796 )
-Test: arctan(311.017673) == -1.000000   ->   Failed!  ( Output: 0.003215 )
-
-arcsin function from math.cpp
-Test: arcsin(0.000000) == 1.000000   ->   Failed!  ( Output: 1.570796 )
+</span>
+<br>
+<p>
+Test: sqrt(-1000, 0.001) == -1
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(100, 0.001) == 10
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -0.239067</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(4, 0.001) == 2
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.930881</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(2, 0.001) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 3.142332</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sqrt(1.1, 0.001) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -2.617542</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   sin function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(0) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(1.570796) == 1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.000354 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(-1.570796) == -1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.000354 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(3.141593) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.692527 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(-3.141593) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: -0.692527 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(1) == 0.84147
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.00012 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: sin(311.017673) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.692527 / 0.75 %</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   cos function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(0) == 1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(1.570796) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(-1.570796) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(3.141593) == -1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.18291 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(-3.141593) == -1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.18291 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(1) == 0.5403
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.000426 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: cos(311.017673) == -1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.18291 / 0.25 %</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   tan function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(0) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(0.785398) == 1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(1.570796) == 1000000000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(-0.785398) == -1
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(-1.570796) == -1000000000000
+<span class="test-pass">
+   Passed!
+</span>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(1) == 1.5574
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.000499 / 0.75 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: tan(311.017673) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: -0.691263 / 0.75 %</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   arctan function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(0) == 1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 1.570796</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.471858</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(-1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 2.669734</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.308169</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(-3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -0.308169</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(1) == 0.5403
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.785796</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arctan(311.017673) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.003215</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   arcsin function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arcsin(0) == 1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 1.570796</p>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: arcsin(1.570796) == 0.000000   ->   Failed!  ( Output: 2.669734 )
+</span>
+<br>
+<p>
+Test: arcsin(1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 2.669734</p>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: arcsin(-1.570796) == 0.000000   ->   Failed!  ( Output: 0.471858 )
+</span>
+<br>
+<p>
+Test: arcsin(-1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.471858</p>
+</p>
+<span class="hidden">
 Called arcsin(double) on a value outside (-1, 1)
-Test: arcsin(3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+</span>
+<br>
+<p>
+Test: arcsin(3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<span class="hidden">
 Called arcsin(double) on a value outside (-1, 1)
-Test: arcsin(-3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
-Test: arcsin(1.000000) == 0.540300   ->   Failed!  ( Output: -inf )
+</span>
+<br>
+<p>
+Test: arcsin(-3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arcsin(1) == 0.5403
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -inf</p>
+</p>
+<span class="hidden">
 Called arcsin(double) on a value outside (-1, 1)
-Test: arcsin(311.017673) == -1.000000   ->   Failed!  ( Output: 0.000000 )
-
-arccos function from math.cpp
-Test: arccos(0.000000) == 1.000000   ->   Failed!  ( Output: inf )
+</span>
+<br>
+<p>
+Test: arcsin(311.017673) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   arccos function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(0) == 1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: inf</p>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: arccos(1.570796) == 0.000000   ->   Failed!  ( Output: 2.138180 )
+</span>
+<br>
+<p>
+Test: arccos(1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 2.13818</p>
+</p>
+<span class="hidden">
 Called sqrt(double) on a negative value!
-Test: arccos(-1.570796) == 0.000000   ->   Failed!  ( Output: 4.145005 )
+</span>
+<br>
+<p>
+Test: arccos(-1.570796) == 0
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 4.145005</p>
+</p>
+<span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
-Test: arccos(3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
+</span>
+<br>
+<p>
+Test: arccos(3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
-Test: arccos(-3.141593) == -1.000000   ->   Failed!  ( Output: 0.000000 )
-Test: arccos(1.000000) == 0.540300   ->   Failed!  ( Output: 1.570796 )
+</span>
+<br>
+<p>
+Test: arccos(-3.141593) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(1) == 0.5403
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 1.570796</p>
+</p>
+<span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
-Test: arccos(311.017673) == -1.000000   ->   Failed!  ( Output: 0.000000 )
-
-range function from math.cpp
-Test: range(5.000000, 3.000000, 8.000000) == 0.400000   ->   Passed!  ( Error: 0.000000% / 0.001000% )
-
-inRange function from math.cpp
-
-getAngle function from math.cpp
+</span>
+<br>
+<p>
+Test: arccos(311.017673) == -1
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   range function from math.cpp
+</h2>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: range(5, 3, 8) == 0.4
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.001 %</p>
+</p>
+<div class="seperation"></div>
+<h2>
+   inRange function from math.cpp
+</h2>
+<div class="seperation"></div>
+<h2>
+   getAngle function from math.cpp
+</h2>
 
 
 65 tests run
 39 tests passed
+</body>

@@ -1,6 +1,8 @@
+:: Directories
 set objdir=../src/obj/
 set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
+:: Build test.exe
 g++ test.cpp ^
     %objdir%math.o ^
     %objdir%log.o ^
@@ -20,6 +22,11 @@ g++ test.cpp ^
     -o test.exe ^
     %SDLinclude%
 
+:: Run the tests
 test.exe
 
-pause
+:: Open the html file
+start "" testreport.html
+
+:: Uncomment this for debugging
+::pause

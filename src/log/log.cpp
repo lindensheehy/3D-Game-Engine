@@ -83,7 +83,29 @@ void logWrite(long long message, bool newLine /* default value = false */) {
 }
 
 void logWrite(double message, bool newLine /* default value = false */) {
-    logWrite(std::to_string(message), newLine);
+
+    // Get a string without trailing zeros after the decimal
+    std::string output = std::to_string(message);
+
+    int decimalPos = output.find('.');
+
+    if (decimalPos != std::string::npos) {
+
+        // Find the position of the last non-zero digit after the decimal point
+        int endPos = output.find_last_not_of('0');
+        
+        // If the last non-zero digit is after the decimal point, remove trailing zeros
+        if (endPos != std::string::npos && endPos > decimalPos)
+            output = output.substr(0, endPos + 1);
+
+        // If there are no non-zero digits after the decimal point, return the integer part
+        else
+            output = output.substr(0, decimalPos);
+            
+    }
+
+    // Log it
+    logWrite(output, newLine);
     return;
 }
 

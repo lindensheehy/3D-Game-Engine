@@ -38,7 +38,11 @@ class FunctionWrapper {
         bool test(returnType expected, args... arguments, double percentTolerance = 0) {
 
             // Get actual value
+            
+            // Hide any written logs from function call, like error messages
+            logWrite("<span class=\"hidden\">\n");
             returnType actual = func(arguments...);
+            logWrite("</span>\n");
 
             double error;
             bool passed;
@@ -59,6 +63,11 @@ class FunctionWrapper {
             }
 
             totalTests++; 
+
+            logWrite(
+                "<br>\n"
+                "<p>\n"
+            );
 
             logWrite("Test: ");
             logWrite(this->funcName);
@@ -82,29 +91,46 @@ class FunctionWrapper {
 
             logWrite(") == ");
             logWrite(expected);
-            logWrite("   ->   ");
+            logNewLine();
 
             if (passed) {
-                logWrite("Passed!");
+                logWrite(
+                    "<span class=\"test-pass\">\n"
+                    "   Passed!\n"
+                    "</span>\n"
+                );  
 
                 if (percentTolerance != 0) {
-                    logWrite( "  ( Error: ");
+                    logWrite("<p class=\"note\">\n");
+                    logWrite( "Error: ");
                     logWrite(error);
-                    logWrite("% / ");
+                    logWrite(" / ");
                     logWrite(percentTolerance);
-                    logWrite("% )");
+                    logWrite(" %");
+                    logWrite("</p>\n");
                 }
 
-                logNewLine();
+                logWrite(
+                    "</p>\n"
+                );
 
                 passedTests++;
                 return true;
             }
 
             else {
-                logWrite("Failed!  ( Output: ");
+                logWrite(
+                    "<span class=\"test-fail\">\n"
+                    "   Failed!\n"
+                    "</span>\n"
+                );
+                logWrite("<p class=\"note\">\n");
+                logWrite("Output: ");
                 logWrite(actual);
-                logWrite(" )", true);
+                logWrite("</p>\n");
+                logWrite(
+                    "</p>\n"
+                );
                 return false;
             }
 
@@ -117,13 +143,20 @@ int main() {
     totalTests = 0;
     passedTests = 0;
 
+    /*
+        This file uses an html file as output. so all the log statements are in the form of html elements
+    */
+
     logInit("testreport.html");
     logWrite(
-        
         "<!DOCTYPE html> \n"
-        "<html lang=\"en\">"
-        
-        , true);
+        "<html lang=\"en\">\n\n"
+        "<head>\n"
+        "   <script src=\"testreport.js\"></script>"
+        "   <link rel=\"stylesheet\" href=\"testreport.css\">\n"
+        "</head>\n\n"
+        "<body>\n"
+    );
 
     /*  --------------------------------------  */
     /*  -----   Load Functions To Test   -----  */
@@ -143,7 +176,12 @@ int main() {
     FunctionWrapper<double, double, double, double>* funcInRange = /* -- */ new FunctionWrapper<double, double, double, double>(inRange, "inRange");
     FunctionWrapper<double, double, double, double, double>* funcGetAngle = new FunctionWrapper<double, double, double, double, double>(getAngle, "getAngle");
 
-    logWrite("Functions Loaded!", true);
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h1>\n"
+        "   Testing Output\n"
+        "</h1>\n"
+    );
 
 
     /*  ---------------------------------  */
@@ -151,7 +189,13 @@ int main() {
     /*  ---------------------------------  */
 
     // floor
-    logWrite("\nfloor function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   floor function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input
     funcFloor->test(       0,        0        );
     funcFloor->test(       0,      1e-300     );
@@ -163,7 +207,13 @@ int main() {
 
 
     // round
-    logWrite("\nround function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   round function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input
     funcRound->test(       0,        0        );
     funcRound->test(       0,     0.49999     );
@@ -175,7 +225,13 @@ int main() {
 
 
     // sqrt
-    logWrite("\nsqrt function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   sqrt function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input    Tolerance
     funcSqrt->test(        0,        0,       0.001       );
     funcSqrt->test(        1,        1,       0.001       );
@@ -187,7 +243,13 @@ int main() {
     funcSqrt->test(        0,       1.1,      0.001       );
 
     // sin
-    logWrite("\nsin function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   sin function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input     Percent Error
     funcSin->test(         0,        0,           0.75          );
     funcSin->test(         1,       pi/2,         0.75          );
@@ -198,7 +260,13 @@ int main() {
     funcSin->test(         0,      pi * 99,       0.75          );
 
     // cos
-    logWrite("\ncos function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   cos function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input     Percent Error
     funcCos->test(         1,        0,           0.25          );
     funcCos->test(         0,       pi/2,         0.25          );
@@ -209,7 +277,13 @@ int main() {
     funcCos->test(        -1,      pi * 99,       0.25          );
 
     // tan
-    logWrite("\ntan function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   tan function from math.cpp\n"
+        "</h2>\n"
+    );
+
     //                   Return    Input     Percent Error
     funcTan->test(         0,        0,           0.75          );
     funcTan->test(         1,       pi/4,         0.75          ); 
@@ -220,8 +294,14 @@ int main() {
     funcTan->test(         0,      pi * 99,       0.75          );
 
     // arctan
-    logWrite("\narctan function from math.cpp\n");
-    //                   Return    Input     Percent Error
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   arctan function from math.cpp\n"
+        "</h2>\n"
+    );
+
+    //                     Return     Input      Percent Error
     funcArctan->test(         1,        0,           0.25          );
     funcArctan->test(         0,       pi/2,         0.25          );
     funcArctan->test(         0,      -pi/2,         0.25          );
@@ -231,8 +311,14 @@ int main() {
     funcArctan->test(        -1,      pi * 99,       0.25          );
 
     // arcsin
-    logWrite("\narcsin function from math.cpp\n");
-    //                   Return    Input     Percent Error
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   arcsin function from math.cpp\n"
+        "</h2>\n"
+    );
+
+    //                     Return     Input      Percent Error
     funcArcsin->test(         1,        0,           0.25          );
     funcArcsin->test(         0,       pi/2,         0.25          );
     funcArcsin->test(         0,      -pi/2,         0.25          );
@@ -242,8 +328,14 @@ int main() {
     funcArcsin->test(        -1,      pi * 99,       0.25          );
 
     // arccos
-    logWrite("\narccos function from math.cpp\n");
-    //                   Return    Input     Percent Error
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   arccos function from math.cpp\n"
+        "</h2>\n"
+    );
+
+    //                     Return     Input      Percent Error
     funcArccos->test(         1,        0,           0.25          );
     funcArccos->test(         0,       pi/2,         0.25          );
     funcArccos->test(         0,      -pi/2,         0.25          );
@@ -253,14 +345,30 @@ int main() {
     funcArccos->test(        -1,      pi * 99,       0.25          );
 
     // range
-    logWrite("\nrange function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   range function from math.cpp\n"
+        "</h2>\n"
+    );
+    
     funcRange->test(0.4, 5, 3, 8, 0.001);
 
     //inRange
-    logWrite("\ninRange function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   inRange function from math.cpp\n"
+        "</h2>\n"
+    );
 
     //getAngle
-    logWrite("\ngetAngle function from math.cpp\n");
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   getAngle function from math.cpp\n"
+        "</h2>\n"
+    );
 
 
 
@@ -270,6 +378,10 @@ int main() {
     logWrite(" tests run", true);
     logWrite(passedTests);
     logWrite(" tests passed", true);
+
+    logWrite(
+        "</body>\n"
+    );
 
     return 0;
 }

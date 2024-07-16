@@ -1,0 +1,48 @@
+/* Div to seperate functions */
+.seperation {
+    height: 50px;
+}
+
+/* Default style for all p elements. This supersede the style above */
+body p {
+    font-size: 14px;
+    color: #000000;
+}
+
+/* Main titles */
+body h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #000000;
+}
+
+/* Section titles, for example function names */
+body h2 {
+    margin: 40px 0 40px 0;
+    font-size: 24px;
+    color: #000000;
+}
+
+/* Passed tests, green text */
+.test-pass {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #44AA44;
+}
+
+/* Failed tests, red text */
+.test-fail {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #DD4444;
+}
+
+/* Notes on tests, gray text */
+.note {
+    color: #555555;
+}
+
+/* Style for items outside elements which should be hidden. This applies to the error messages (they are expected) */
+.hidden {
+    display: none;
+}

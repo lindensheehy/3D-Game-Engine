@@ -1,12 +1,13 @@
+:: Directories
 set srcdir=../src/class-source/
 set objdir=../src/obj/
 set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
-:: math
+:: Build math
 g++ -c ../src/math/math.cpp ^
     -o %objdir%math.o
 
-:: build test exe
+:: Build test.exe
 g++ test.cpp ^
     %objdir%math.o ^
     %objdir%log.o ^
@@ -26,6 +27,10 @@ g++ test.cpp ^
     -o test.exe ^
     %SDLinclude%
 
+:: Run the tests
 test.exe
+
+:: Open the html file
+start "" testreport.html
 
 pause
