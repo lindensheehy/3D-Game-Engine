@@ -7,7 +7,7 @@
 
 
 /*   -----   Basic Functions   -----   */
-double abs_(double x) {
+double abs(double x) {
     return (x > 0) ? x : -x;
 }
 
@@ -191,7 +191,7 @@ double cos(double x) {
     returnValue -= exp10 /fac10;
 
     // Avoid returning small negative value in place of 0
-    if (abs_(returnValue) < 1e-6) return 0;
+    if (abs(returnValue) < 1e-6) return 0;
 
     return returnValue;
 }
@@ -266,18 +266,22 @@ double arctan(double x) {
         inverseFlag = true;
     }
 
+    // Value close to 0
+    if (abs(value) < 0.05) {
+        returnValue = value;
+    }
+
     // Linear Functions for values outside (-0.76, 0.76)
-    if (value < -0.76) {
-        returnValue = (0.55 * x) - 0.235;
+    else if (value < -0.76) {
+        returnValue = (0.55 * value) - 0.235;
     }
 
     else if (value > 0.76) {
-        returnValue = (0.55 * x) + 0.235;
+        returnValue = (0.55 * value) + 0.235;
     }
 
+    // Power series for values inside (-0.76, 0.76)
     else {
-
-        // Power series for values inside (-0.76, 0.76)
 
         // Just defining these here for readability
         double exp3 = value * value * value;
@@ -295,8 +299,17 @@ double arctan(double x) {
 
     }
 
-    // Return the angle found, or pi/2 - angle found depending on the flag
-    return (inverseFlag) ? returnValue : (pi / 2) - returnValue;
+    // Handle inverse return values
+    if (inverseFlag) {
+
+        // offset = pi/2 or -pi/2 depending of sign of returnvalue
+        double offset = (returnValue > 0) ? (pi / 2) : -(pi / 2);
+
+        return offset - returnValue;
+
+    }
+
+    return returnValue;
 
 }
 

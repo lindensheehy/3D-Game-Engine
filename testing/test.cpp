@@ -250,13 +250,13 @@ int main() {
     );
 
     //                   Return    Input     Percent Error
-    funcSin->test(         0,        0,           0.75          );
-    funcSin->test(         1,       pi/2,         0.75          );
-    funcSin->test(         -1,     -pi/2,         0.75          );
-    funcSin->test(         0,        pi,          0.75          );
-    funcSin->test(         0,       -pi,          0.75          );
-    funcSin->test(      0.84147,     1,           0.75          );
-    funcSin->test(         0,      pi * 99,       0.75          );
+    funcSin->test(         0,          0,           0.75          );
+    funcSin->test(         1,         pi/2,         0.75          );
+    funcSin->test(         -1,       -pi/2,         0.75          );
+    funcSin->test(         0,          pi,          0.75          );
+    funcSin->test(         0,         -pi,          0.75          );
+    funcSin->test(      0.84147,       1,           0.75          );
+    funcSin->test(         0,        pi * 99,       0.75          );
 
     // cos
     logWrite(
@@ -267,13 +267,13 @@ int main() {
     );
 
     //                   Return    Input     Percent Error
-    funcCos->test(         1,        0,           0.25          );
-    funcCos->test(         0,       pi/2,         0.25          );
-    funcCos->test(         0,      -pi/2,         0.25          );
-    funcCos->test(        -1,        pi,          0.25          );
-    funcCos->test(        -1,       -pi,          0.25          );
-    funcCos->test(      0.5403,      1,           0.25          );
-    funcCos->test(        -1,      pi * 99,       0.25          );
+    funcCos->test(         1,          0,           0.25          );
+    funcCos->test(         0,         pi/2,         0.25          );
+    funcCos->test(         0,        -pi/2,         0.25          );
+    funcCos->test(        -1,          pi,          0.25          );
+    funcCos->test(        -1,         -pi,          0.25          );
+    funcCos->test(      0.5403,        1,           0.25          );
+    funcCos->test(        -1,        pi * 99,       0.25          );
 
     // tan
     logWrite(
@@ -284,13 +284,13 @@ int main() {
     );
 
     //                   Return    Input     Percent Error
-    funcTan->test(         0,        0,           0.75          );
-    funcTan->test(         1,       pi/4,         0.75          ); 
-    funcTan->test(        inf,      pi/2,          0            );
-    funcTan->test(        -1,      -pi/4,         0.75          ); 
-    funcTan->test(       -inf,     -pi/2,          0            );
-    funcTan->test(      1.5574,      1,           0.75          );
-    funcTan->test(         0,      pi * 99,       0.75          );
+    funcTan->test(         0,          0,           0.75          );
+    funcTan->test(         1,         pi/4,         0.75          ); 
+    funcTan->test(        inf,        pi/2,          0            );
+    funcTan->test(        -1,        -pi/4,         0.75          ); 
+    funcTan->test(       -inf,       -pi/2,          0            );
+    funcTan->test(      1.5574,        1,           0.75          );
+    funcTan->test(         0,        pi * 99,       0.75          );
 
     // arctan
     logWrite(
@@ -301,13 +301,13 @@ int main() {
     );
 
     //                     Return     Input      Percent Error
-    funcArctan->test(         1,        0,           0.25          );
-    funcArctan->test(         0,       pi/2,         0.25          );
-    funcArctan->test(         0,      -pi/2,         0.25          );
-    funcArctan->test(        -1,        pi,          0.25          );
-    funcArctan->test(        -1,       -pi,          0.25          );
-    funcArctan->test(      0.5403,      1,           0.25          );
-    funcArctan->test(        -1,      pi * 99,       0.25          );
+    funcArctan->test(         0,          0,           0.5          );
+    funcArctan->test(       pi/4,         1,           0.5          );
+    funcArctan->test(      -pi/4,        -1,           0.5          );
+    funcArctan->test(         1,        1.557,         0.5          );
+    funcArctan->test(        -1,       -1.557,         0.5          );
+    funcArctan->test(       pi/2,        1e6,          0.5          );
+    funcArctan->test(      -pi/2,       -1e6,          0.5          );
 
     // arcsin
     logWrite(
@@ -318,13 +318,13 @@ int main() {
     );
 
     //                     Return     Input      Percent Error
-    funcArcsin->test(         1,        0,           0.25          );
-    funcArcsin->test(         0,       pi/2,         0.25          );
-    funcArcsin->test(         0,      -pi/2,         0.25          );
-    funcArcsin->test(        -1,        pi,          0.25          );
-    funcArcsin->test(        -1,       -pi,          0.25          );
-    funcArcsin->test(      0.5403,      1,           0.25          );
-    funcArcsin->test(        -1,      pi * 99,       0.25          );
+    funcArcsin->test(         0,          0,           0.25          );
+    funcArcsin->test(       pi/2,         1,           0.25          );
+    funcArcsin->test(      -pi/2,        -1,           0.25          );
+    funcArcsin->test(       pi/6,        0.5,          0.25          );
+    funcArcsin->test(      -pi/6,       -0.5,          0.25          );
+    funcArcsin->test(         0,        1.001,         0.25          );
+    funcArcsin->test(         0,       -1.001,         0.25          );
 
     // arccos
     logWrite(

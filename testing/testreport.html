@@ -166,7 +166,7 @@ Test: sqrt(1, 0.001) == 1
    Failed!
 </span>
 <p class="note">
-Output: -inf</p>
+Output: nan</p>
 </p>
 <span class="hidden">
 Called sqrt(double) on a negative value!
@@ -479,78 +479,78 @@ Error: -0.691263 / 0.75 %</p>
 </span>
 <br>
 <p>
-Test: arctan(0) == 1
-<span class="test-fail">
-   Failed!
+Test: arctan(0) == 0
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 1.570796</p>
+Error: 0 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(1.570796) == 0
-<span class="test-fail">
-   Failed!
+Test: arctan(1) == 0.785398
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.471858</p>
+Error: -0.050696 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(-1.570796) == 0
-<span class="test-fail">
-   Failed!
+Test: arctan(-1) == -0.785398
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 2.669734</p>
+Error: -0.050696 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(3.141593) == -1
-<span class="test-fail">
-   Failed!
+Test: arctan(1.557) == 1
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.308169</p>
+Error: -0.063684 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(-3.141593) == -1
-<span class="test-fail">
-   Failed!
+Test: arctan(-1.557) == -1
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: -0.308169</p>
+Error: -0.063684 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(1) == 0.5403
-<span class="test-fail">
-   Failed!
+Test: arctan(1000000) == 1.570796
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.785796</p>
+Error: -0.000064 / 0.5 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arctan(311.017673) == -1
-<span class="test-fail">
-   Failed!
+Test: arctan(-1000000) == -1.570796
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.003215</p>
+Error: -0.000064 / 0.5 %</p>
 </p>
 <div class="seperation"></div>
 <h2>
@@ -560,83 +560,80 @@ Output: 0.003215</p>
 </span>
 <br>
 <p>
-Test: arcsin(0) == 1
+Test: arcsin(0) == 0
 <span class="test-fail">
    Failed!
 </span>
 <p class="note">
-Output: 1.570796</p>
-</p>
-<span class="hidden">
-Called sqrt(double) on a negative value!
-</span>
-<br>
-<p>
-Test: arcsin(1.570796) == 0
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 2.669734</p>
-</p>
-<span class="hidden">
-Called sqrt(double) on a negative value!
-</span>
-<br>
-<p>
-Test: arcsin(-1.570796) == 0
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0.471858</p>
-</p>
-<span class="hidden">
-Called arcsin(double) on a value outside (-1, 1)
-</span>
-<br>
-<p>
-Test: arcsin(3.141593) == -1
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
-</p>
-<span class="hidden">
-Called arcsin(double) on a value outside (-1, 1)
-</span>
-<br>
-<p>
-Test: arcsin(-3.141593) == -1
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
+Output: nan</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: arcsin(1) == 0.5403
+Test: arcsin(1) == 1.570796
 <span class="test-fail">
    Failed!
 </span>
 <p class="note">
-Output: -inf</p>
+Output: -1.570796</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arcsin(-1) == -1.570796
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: -0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arcsin(0.5) == 0.523599
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: 0.905782</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arcsin(-0.5) == -0.523599
+<span class="test-fail">
+   Failed!
+</span>
+<p class="note">
+Output: -0.905782</p>
 </p>
 <span class="hidden">
 Called arcsin(double) on a value outside (-1, 1)
 </span>
 <br>
 <p>
-Test: arcsin(311.017673) == -1
-<span class="test-fail">
-   Failed!
+Test: arcsin(1.001) == 0
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0</p>
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+Called arcsin(double) on a value outside (-1, 1)
+</span>
+<br>
+<p>
+Test: arcsin(-1.001) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
 </p>
 <div class="seperation"></div>
 <h2>
@@ -651,31 +648,31 @@ Test: arccos(0) == 1
    Failed!
 </span>
 <p class="note">
-Output: inf</p>
+Output: nan</p>
 </p>
 <span class="hidden">
-Called sqrt(double) on a negative value!
+Called arccos(double) on a value outside (-1, 1)
 </span>
 <br>
 <p>
 Test: arccos(1.570796) == 0
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 2.13818</p>
+Error: 0 / 0.25 %</p>
 </p>
 <span class="hidden">
-Called sqrt(double) on a negative value!
+Called arccos(double) on a value outside (-1, 1)
 </span>
 <br>
 <p>
 Test: arccos(-1.570796) == 0
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 4.145005</p>
+Error: 0 / 0.25 %</p>
 </p>
 <span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
@@ -710,7 +707,7 @@ Test: arccos(1) == 0.5403
    Failed!
 </span>
 <p class="note">
-Output: 1.570796</p>
+Output: 0</p>
 </p>
 <span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
@@ -750,5 +747,5 @@ Error: 0 / 0.001 %</p>
 
 
 65 tests run
-39 tests passed
+51 tests passed
 </body>
