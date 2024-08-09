@@ -46,18 +46,28 @@ double sqrt(double x, double tolerance) {
 
         let     x = the input value
                 y_n = the nth approximation of sqrt(x)
-                f(y) = y^2 + x
+                f(y) = y^2 - x
                 f'(y) = 2y
+
+        Newton Raphson Formula:
 
                         f(y_n)
         y_n+1 = y_n - -----------
                         f'(y_n)
+                        
+        Second term:
 
-          f(y_n)       1    (         x    )
-        ----------- = --- * ( y_n + -----  )
-          f'(y_n)      2    (        y_n   )
+          f(y_n)        (   y_n^2 - x   )     (  y_n        x    )  
+        -----------  =  ( ------------- )  =  ( -----  -  ------ )
+          f'(y_n)       (      2y_n     )     (   2        2y_n  )
 
-        Therefore y_n+1 = y_n - 0.5*(y_n + x/y_n)
+        Therefore
+
+                         (  y_n        x    )     (  y_n         x     )
+        y_n+1  =  y_n -  ( -----  -  ------ )  =  ( -----  +  -------- )
+                         (   2        2y_n  )     (   2         2y_n   )
+
+        Which is  ->  y_n+1  =  0.5 * ( -y_n + (x / y_n) )
 
         This solves for sqrt(x) as the root of f(y).
 
@@ -75,7 +85,7 @@ double sqrt(double x, double tolerance) {
     if (x == 0) return 0;
 
     // This will break the loop after a set number of iterations
-    int maxIterations = 4;
+    int maxIterations = 10;
 
     // Newton Raphson method
     double y = x;
@@ -86,7 +96,7 @@ double sqrt(double x, double tolerance) {
         if (maxIterations == 0) return y;
         else maxIterations--;
 
-        yNext = y - (0.5 * (y + (x / y)));
+        yNext = 0.5 * ( y + (x / y) );
 
         // Break case
         if (abs(y - yNext) < tolerance) return yNext;
@@ -340,6 +350,12 @@ double arcsin(double x) {
     double y;
 
     y = 1 - (x * x);
+
+    // Check for value of 0, as this could give a divide by 0 error
+    if (y == 0) {
+        return ( (x > 0) ? (pi/2) : (-pi/2) );
+    }
+
     y = sqrt(y);
     y = x / y;
 
@@ -364,7 +380,7 @@ double arccos(double x) {
         Arccos is undefined outside (-1, 1)
         So when given a value outside that range, I log an error and simply return 0.
 
-        This identity is also wierd becuase it gives values of x < 0, a return value pi lower than it should be
+        This identity is also weird becuase it gives values of x < 0, a return value pi lower than it should be
         So theres simply a check at the end of fix that.
     */
 
@@ -372,6 +388,11 @@ double arccos(double x) {
     if (abs(x) > 1) {
         logWrite("Called arccos(double) on a value outside (-1, 1)", true);
         return 0;
+    }
+
+    // When x = 0, there will be a divide by 0 error. So return manually
+    if (x == 0) {
+        return pi/2;
     }
 
     double y;

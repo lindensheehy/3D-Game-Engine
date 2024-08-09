@@ -48,7 +48,7 @@ class FunctionWrapper {
             bool passed;
 
             if (percentTolerance == 0) {
-                passed = actual == expected;
+                passed = (actual == expected);
             }
 
             else {
@@ -56,9 +56,9 @@ class FunctionWrapper {
                 if (expected != 0) 
                     error = 100 * (((double) actual - (double) expected) / (double) expected);
                 else
-                    error = 100 * ((double) actual - (double) expected);
+                    error = 100 * ((double) actual);
 
-                passed = ((error > 0) ? error : -error) <= percentTolerance;
+                passed = ((error >= 0) ? error : -error) <= percentTolerance;
 
             }
 
@@ -119,6 +119,7 @@ class FunctionWrapper {
             }
 
             else {
+                
                 logWrite(
                     "<span class=\"test-fail\">\n"
                     "   Failed!\n"
@@ -128,9 +129,11 @@ class FunctionWrapper {
                 logWrite("Output: ");
                 logWrite(actual);
                 logWrite("</p>\n");
+
                 logWrite(
                     "</p>\n"
                 );
+
                 return false;
             }
 
@@ -231,15 +234,15 @@ int main() {
         "</h2>\n"
     );
 
-    //                   Return    Input    Tolerance
-    funcSqrt->test(        0,        0,       0.001       );
-    funcSqrt->test(        1,        1,       0.001       );
-    funcSqrt->test(       -1,       -1,       0.001       );
-    funcSqrt->test(       -1,     -1000,      0.001       );
-    funcSqrt->test(       10,       100,      0.001       );
-    funcSqrt->test(        2,        4,       0.001       );
-    funcSqrt->test(        0,        2,       0.001       );
-    funcSqrt->test(        0,       1.1,      0.001       );
+    //                   Return    Input    Tolerance     Percent Error
+    funcSqrt->test(        0,        0,       0.001,          0.001       );
+    funcSqrt->test(        1,        1,       0.001,          0.001       );
+    funcSqrt->test(       -1,       -1,       0.001,          0.001       );
+    funcSqrt->test(       -1,     -1000,      0.001,          0.001       );
+    funcSqrt->test(       10,       100,      0.001,          0.001       );
+    funcSqrt->test(        2,        4,       0.001,          0.001       );
+    funcSqrt->test(     1.4142,      2,       0.001,          0.001       );
+    funcSqrt->test(     1.0488,     1.1,      0.001,          0.001       );
 
     // sin
     logWrite(
@@ -249,7 +252,7 @@ int main() {
         "</h2>\n"
     );
 
-    //                   Return    Input     Percent Error
+    //                   Return      Input     Percent Error
     funcSin->test(         0,          0,           0.75          );
     funcSin->test(         1,         pi/2,         0.75          );
     funcSin->test(         -1,       -pi/2,         0.75          );
@@ -266,7 +269,7 @@ int main() {
         "</h2>\n"
     );
 
-    //                   Return    Input     Percent Error
+    //                   Return      Input     Percent Error
     funcCos->test(         1,          0,           0.25          );
     funcCos->test(         0,         pi/2,         0.25          );
     funcCos->test(         0,        -pi/2,         0.25          );
@@ -283,7 +286,7 @@ int main() {
         "</h2>\n"
     );
 
-    //                   Return    Input     Percent Error
+    //                   Return      Input     Percent Error
     funcTan->test(         0,          0,           0.75          );
     funcTan->test(         1,         pi/4,         0.75          ); 
     funcTan->test(        inf,        pi/2,          0            );
@@ -300,7 +303,7 @@ int main() {
         "</h2>\n"
     );
 
-    //                     Return     Input      Percent Error
+    //                     Return       Input      Percent Error
     funcArctan->test(         0,          0,           0.5          );
     funcArctan->test(       pi/4,         1,           0.5          );
     funcArctan->test(      -pi/4,        -1,           0.5          );
@@ -317,7 +320,7 @@ int main() {
         "</h2>\n"
     );
 
-    //                     Return     Input      Percent Error
+    //                     Return       Input      Percent Error
     funcArcsin->test(         0,          0,           0.25          );
     funcArcsin->test(       pi/2,         1,           0.25          );
     funcArcsin->test(      -pi/2,        -1,           0.25          );
@@ -334,14 +337,14 @@ int main() {
         "</h2>\n"
     );
 
-    //                     Return     Input      Percent Error
-    funcArccos->test(         1,        0,           0.25          );
-    funcArccos->test(         0,       pi/2,         0.25          );
-    funcArccos->test(         0,      -pi/2,         0.25          );
-    funcArccos->test(        -1,        pi,          0.25          );
-    funcArccos->test(        -1,       -pi,          0.25          );
-    funcArccos->test(      0.5403,      1,           0.25          );
-    funcArccos->test(        -1,      pi * 99,       0.25          );
+    //                     Return       Input      Percent Error
+    funcArccos->test(       pi/2,         0,           0.25          );
+    funcArccos->test(         0,          1,           0.25          );
+    funcArccos->test(        pi,         -1,           0.25          );
+    funcArccos->test(       pi/3,        0.5,          0.25          );
+    funcArccos->test(      2*pi/3,      -0.5,          0.25          );
+    funcArccos->test(         0,        1.001,         0.25          );
+    funcArccos->test(         0,       -1.001,         0.25          );
 
     // range
     logWrite(

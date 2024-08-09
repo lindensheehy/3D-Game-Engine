@@ -156,17 +156,19 @@ Test: sqrt(0, 0.001) == 0
 <span class="test-pass">
    Passed!
 </span>
+<p class="note">
+Error: 0 / 0.001 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
 Test: sqrt(1, 0.001) == 1
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: nan</p>
+Error: 0 / 0.001 %</p>
 </p>
 <span class="hidden">
 Called sqrt(double) on a negative value!
@@ -177,6 +179,8 @@ Test: sqrt(-1, 0.001) == -1
 <span class="test-pass">
    Passed!
 </span>
+<p class="note">
+Error: -0 / 0.001 %</p>
 </p>
 <span class="hidden">
 Called sqrt(double) on a negative value!
@@ -187,50 +191,52 @@ Test: sqrt(-1000, 0.001) == -1
 <span class="test-pass">
    Passed!
 </span>
+<p class="note">
+Error: -0 / 0.001 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
 Test: sqrt(100, 0.001) == 10
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: -0.239067</p>
+Error: 0 / 0.001 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
 Test: sqrt(4, 0.001) == 2
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.930881</p>
+Error: 0.000005 / 0.001 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: sqrt(2, 0.001) == 0
-<span class="test-fail">
-   Failed!
+Test: sqrt(2, 0.001) == 1.4142
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 3.142332</p>
+Error: 0.000959 / 0.001 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
-Test: sqrt(1.1, 0.001) == 0
-<span class="test-fail">
-   Failed!
+Test: sqrt(1.1, 0.001) == 1.0488
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: -2.617542</p>
+Error: 0.000844 / 0.001 %</p>
 </p>
 <div class="seperation"></div>
 <h2>
@@ -561,22 +567,22 @@ Error: -0.000064 / 0.5 %</p>
 <br>
 <p>
 Test: arcsin(0) == 0
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: nan</p>
+Error: 0 / 0.25 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
 Test: arcsin(1) == 1.570796
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: -1.570796</p>
+Error: 0 / 0.25 %</p>
 </p>
 <span class="hidden">
 </span>
@@ -594,22 +600,22 @@ Error: -0 / 0.25 %</p>
 <br>
 <p>
 Test: arcsin(0.5) == 0.523599
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: 0.905782</p>
+Error: 0.032216 / 0.25 %</p>
 </p>
 <span class="hidden">
 </span>
 <br>
 <p>
 Test: arcsin(-0.5) == -0.523599
-<span class="test-fail">
-   Failed!
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: -0.905782</p>
+Error: 0.032216 / 0.25 %</p>
 </p>
 <span class="hidden">
 Called arcsin(double) on a value outside (-1, 1)
@@ -643,19 +649,63 @@ Error: 0 / 0.25 %</p>
 </span>
 <br>
 <p>
-Test: arccos(0) == 1
-<span class="test-fail">
-   Failed!
+Test: arccos(0) == 1.570796
+<span class="test-pass">
+   Passed!
 </span>
 <p class="note">
-Output: nan</p>
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(1) == 0
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(-1) == 3.141593
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(0.5) == 1.047198
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: -0.016108 / 0.25 %</p>
+</p>
+<span class="hidden">
+</span>
+<br>
+<p>
+Test: arccos(-0.5) == 2.094395
+<span class="test-pass">
+   Passed!
+</span>
+<p class="note">
+Error: 0.008054 / 0.25 %</p>
 </p>
 <span class="hidden">
 Called arccos(double) on a value outside (-1, 1)
 </span>
 <br>
 <p>
-Test: arccos(1.570796) == 0
+Test: arccos(1.001) == 0
 <span class="test-pass">
    Passed!
 </span>
@@ -667,59 +717,12 @@ Called arccos(double) on a value outside (-1, 1)
 </span>
 <br>
 <p>
-Test: arccos(-1.570796) == 0
+Test: arccos(-1.001) == 0
 <span class="test-pass">
    Passed!
 </span>
 <p class="note">
 Error: 0 / 0.25 %</p>
-</p>
-<span class="hidden">
-Called arccos(double) on a value outside (-1, 1)
-</span>
-<br>
-<p>
-Test: arccos(3.141593) == -1
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
-</p>
-<span class="hidden">
-Called arccos(double) on a value outside (-1, 1)
-</span>
-<br>
-<p>
-Test: arccos(-3.141593) == -1
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
-</p>
-<span class="hidden">
-</span>
-<br>
-<p>
-Test: arccos(1) == 0.5403
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
-</p>
-<span class="hidden">
-Called arccos(double) on a value outside (-1, 1)
-</span>
-<br>
-<p>
-Test: arccos(311.017673) == -1
-<span class="test-fail">
-   Failed!
-</span>
-<p class="note">
-Output: 0</p>
 </p>
 <div class="seperation"></div>
 <h2>
@@ -747,5 +750,5 @@ Error: 0 / 0.001 %</p>
 
 
 65 tests run
-51 tests passed
+65 tests passed
 </body>
