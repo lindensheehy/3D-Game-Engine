@@ -244,6 +244,17 @@ void Camera::project(Mesh* mesh) {
 
 }
 
+bool Camera::canSee(Tri3* tri) {
+
+    // Find the distance to the triangle, relative to the camera position
+    Vec3* distance;
+    distance = tri->getCenter();
+    distance->sub(this->pos);
+
+    return tri->isFacing(distance);
+
+}
+
 void Camera::rolloverAngles() {
     while (this->yaw > (double) 360) {
         this->yaw -= 360;

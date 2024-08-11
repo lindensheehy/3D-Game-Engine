@@ -86,6 +86,9 @@ class Camera {
         // Runs the function above for all the verticies in a mesh
         void project(Mesh* mesh);
 
+        // Returns true if the camera can see the triangle, based on the location of the tri relative to the cam, and the normal vector of the tri
+        bool canSee(Tri3* tri);
+
     private:
 
         // Just used to ensure angles between 0-360

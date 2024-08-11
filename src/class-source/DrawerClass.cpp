@@ -272,8 +272,6 @@ void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
         logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
         return;
     }
-
-    tri->log();
     
     int x1 = (int) round(tri->v1->x);
     int y1 = (int) round(tri->v1->y);

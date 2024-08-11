@@ -37,18 +37,19 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
 
     // Draw Tris
     for (int i = 0; i < mesh->triCount; i++) {
-
-        logWrite("Checking -> ", false);
         
-        // Draw the triangle only if its facing the camera
-        if (mesh->tris[i]->isFacing(camera->facingDirection)) {
-            logWrite("Facing!", true);
-            drawer->drawTriangle(Color::WHITE, mesh->projectedTris[i]);
-        }
+        // Skip if tri cant be seen face on by cam
+        if (!camera->canSee(mesh->tris[i])) continue;
 
-        else {
-            logWrite("Not Facing!", true);
-        }
+        // Find a shade based on the lighting vec
+        double lightAngle = mesh->tris[i]->normal->getAngle(camera->lightingVec);
+        double lightFactor = lightAngle / 180;
+
+        Uint32 shade = mesh->color;
+        shade = Color::setBrightness(shade, lightFactor);
+
+        // Draw the tri    
+        drawer->drawTriangle(shade, mesh->projectedTris[i]);
 
     }
 
@@ -62,23 +63,18 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
     // Draw Normals
     for (int i = 0; i < mesh->triCount; i++) {
 
-        // Pass if tri isnt facing cam
-        if (!mesh->tris[i]->isFacing(camera->facingDirection)) continue;
+        // Skip if tri cant be seen face on by cam
+        if (!camera->canSee(mesh->tris[i])) continue;
 
         // Get projected coords for normal start and end
         triCenter = mesh->tris[i]->getCenter();
-        normalOffset = mesh->tris[i]->normal->copy()->normalise(10);
-        triNormal = triCenter->add(normalOffset);
-
-        logWrite("here", true);
+        normalOffset = mesh->tris[i]->normal->copy()->normalise(1);
+        triNormal = triCenter->copy()->add(normalOffset);
 
         camera->project(triCenter, vecStart);
         camera->project(triNormal, vecEnd);
         display->toDisplayPos(vecStart);
         display->toDisplayPos(vecEnd);
-
-        vecStart->log();
-        vecEnd->log();
 
         drawer->drawLine(Color::RED, vecStart, vecEnd);
 
@@ -148,6 +144,7 @@ void initGraphics() {
 
     // Init cube mesh then move it away and make it bigger
     cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 50);
+    cube1->setColor(Color::WHITE);
 
     //cube2 = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 10, 0)->rotate(0, 10, 0);
 
@@ -178,22 +175,8 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
 
     drawSky(drawer, camera, display);
 
-    for (int i = 0; i < cube1->vertexCount; i++) {
-        cube1->verticies[i]->log();
-    }
-
     camera->project(cube1);
-
-    for (int i = 0; i < cube1->vertexCount; i++) {
-        cube1->projectedVerticies[i]->log();
-    }
-
     display->toDisplayPos(cube1);
-
-    for (int i = 0; i < cube1->vertexCount; i++) {
-        cube1->projectedVerticies[i]->log();
-    }
-    
     drawMesh(cube1, drawer, camera, display);
 
     // camera->project(cube2);

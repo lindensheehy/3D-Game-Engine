@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
     camera1->setPos(0, 0, -10);
     camera1->setFov(90, 54);
     camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
+    camera1->movementSpeed = 10;
 
     // Set up time stuff
     auto timeVar = std::chrono::high_resolution_clock::now();

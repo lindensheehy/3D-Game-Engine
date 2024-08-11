@@ -1,13 +1,11 @@
 new stuff:
-- add tests for some important functions, or all if im feeling ambitious
+- add tests for more functions
 - add Font class to draw text to the window
-- add colors to meshes
-- implement a lighting vec
+- add multiple color meshes
+    - let each tri be a different color
+    - let tris be drawn as a png
 - Object class
     - make a doFrame(dt) function
     - some basic collision like with the floor
 
 fixes:
-- something in the projection process is failing, this is likely because of misuse of radians and degrees in places.
-- fix triangles not working correclty to shown when facing cam (might be because of using radians in Tri3->isFacing())
-- sqrt from math.cpp has an issue as shown by the tests. looks like its removing value too fast
