@@ -38,6 +38,8 @@ class Tri3 {
         // Creates a copy of the instance, and returns a pointer to it.
         Tri3* copy();
 
+        void log();
+
         // Setters for each vertex, and the normal. Allowing double or Vec3 inputs
         // The ones which take a Vec3 object will delete the current instance variable, then point to the one given.
         // That means the Vec3 given, should NOT be changed after running this, unless also changing the triangle is intended.

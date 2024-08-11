@@ -21,6 +21,18 @@ Vec2* Vec2::copy() {
     return new Vec2(this->x, this->y);
 }
 
+void Vec2::log() {
+
+    logWrite("Vec2( ");
+    logWrite(this->x);
+    logWrite(", ");
+    logWrite(this->y);
+    logWrite(" )", true);
+
+    return;
+    
+}
+
 bool Vec2::is(double x, double y) {
 
     return (
@@ -121,7 +133,7 @@ double* Vec2::toArray() {
 
 double Vec2::magnitude() {
     if (!this->magnitudeUpdated) {
-        this->magnitudeValue = sqrt( (this->x * this->x) + (this->y * this->y) );
+        this->magnitudeValue = distance2(this->x, this->y);
         this->magnitudeUpdated = true;
     }
     return this->magnitudeValue;
@@ -135,9 +147,8 @@ double Vec2::distanceTo(Vec2* other) {
         return 0;
     }
 
-    double dx = this->x - other->x;
-    double dy = this->y - other->y;
-    return sqrt( (dx * dx) + (dy * dy) );
+    return distance2(this->x, this->y, other->x, other->y);
+
 }
 
 Vec2* Vec2::midpoint(Vec2* other) {
@@ -152,6 +163,7 @@ Vec2* Vec2::midpoint(Vec2* other) {
         (this->x + other->x) / 2,
         (this->y + other->y) / 2
     );
+
 }
 
 double Vec2::dotProduct(Vec2* other) {
@@ -163,6 +175,7 @@ double Vec2::dotProduct(Vec2* other) {
     }
 
     return (this->x * other->x) + (this->y * other->y);
+
 }
 
 void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
@@ -183,11 +196,14 @@ void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
         relativeY -= aroundY;
     }
 
-    double sinValue = sin(toRadians(degrees));
-    double cosValue = cos(toRadians(degrees));
+    double radians = toRadians(degrees);
+
+    double sinValue = sin(radians);
+    double cosValue = cos(radians);
 
     this->x = (cosValue * relativeX) - (sinValue * relativeY) + aroundX;
     this->y = (cosValue * relativeY) + (sinValue * relativeX) + aroundY;
 
     return;
+    
 }

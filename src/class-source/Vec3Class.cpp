@@ -23,6 +23,20 @@ Vec3* Vec3::copy() {
     return new Vec3(this->x, this->y, this->z);
 }
 
+void Vec3::log() {
+
+    logWrite("Vec3( ");
+    logWrite(this->x);
+    logWrite(", ");
+    logWrite(this->y);
+    logWrite(", ");
+    logWrite(this->z);
+    logWrite(" )", true);
+
+    return;
+    
+}
+
 Vec3* Vec3::set(double x, double y, double z) {
     this->x = x;
     this->y = y;
@@ -138,11 +152,14 @@ double* Vec3::toArray() {
 }
 
 double Vec3::magnitude() {
+
     if (!this->magnitudeUpdated) {
-        this->magnitudeValue = sqrt( (this->x * this->x) + (this->y * this->y) + (this->z * this->z) );
+        this->magnitudeValue = distance3(this->x, this->y, this->z);
         this->magnitudeUpdated = true;
     }
+    
     return this->magnitudeValue;
+
 }
 
 double Vec3::distanceTo(Vec3* other) {
@@ -153,10 +170,8 @@ double Vec3::distanceTo(Vec3* other) {
         return 0;
     }
 
-    double dx = this->x - other->x;
-    double dy = this->y - other->y;
-    double dz = this->z - other->z;
-    return sqrt( (dx * dx) + (dy * dy) + (dz * dz));
+    return distance3(this->x, this->y, this->z, other->x, other->y, other->z);
+
 }
 
 Vec3* Vec3::midpoint(Vec3* other) {
@@ -212,10 +227,12 @@ double Vec3::getAngle(Vec3* other) {
     double ratio = dotProduct / magnitudeFactor;
 
     // These cases shouldnt happen but floating point errors can cause them
-    if (ratio < -1) return pi;
+    if (ratio < -1) return 180;
     if (ratio > 1)  return 0;
 
-    return arccos(ratio);
+    double radians = arccos(ratio);
+    
+    return toDegrees(radians);
 }
 
 void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
@@ -240,28 +257,42 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
         relativeZ -= aroundZ;
     }
 
+    double radians;
+
     if (yaw != 0) {
-        double sinValue = sin(toRadians(yaw));
-        double cosValue = cos(toRadians(yaw));
+        
+        radians = toRadians(yaw);
+
+        double sinValue = sin(radians);
+        double cosValue = cos(radians);
 
         this->x = (cosValue * relativeX) - (sinValue * relativeZ) + aroundX;
         this->z = (cosValue * relativeZ) + (sinValue * relativeX) + aroundZ;
+
     }
 
     if (pitch != 0) {
-        double sinValue = sin(toRadians(pitch));
-        double cosValue = cos(toRadians(pitch));
+
+        radians = toRadians(pitch);
+
+        double sinValue = sin(radians);
+        double cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeZ) + aroundY;
         this->z = (cosValue * relativeZ) + (sinValue * relativeY) + aroundZ;
+
     }
 
     if (roll != 0) {
-        double sinValue = sin(toRadians(roll));
-        double cosValue = cos(toRadians(roll));
+
+        radians = toRadians(roll);
+
+        double sinValue = sin(radians);
+        double cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeX) + aroundY;
         this->x = (cosValue * relativeX) + (sinValue * relativeY) + aroundX;
+
     }
 
     return;

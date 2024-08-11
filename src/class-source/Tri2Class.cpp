@@ -44,6 +44,21 @@ Tri2* Tri2::copy() {
     
 }
 
+void Tri2::log() {
+
+    logWrite("Tri2(", true);
+    logWrite("  ");
+    this->v1->log();
+    logWrite("  ");
+    this->v2->log();
+    logWrite("  ");
+    this->v3->log();
+    logWrite(")", true);
+
+    return;
+
+}
+
 void Tri2::setv1(double x, double y, double z) {
     this->v1->x = x;
     this->v1->y = y;

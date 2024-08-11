@@ -37,6 +37,8 @@ class Tri2 {
         // Creates a copy of the instance, and returns a pointer to it.
         Tri2* copy();
 
+        void log();
+
         // Setters for each vertex. Allowing double or Vec2 inputs
         // The ones which take a Vec2 object will delete the current instance variable, then point to the one given.
         // That means the Vec2 given, should NOT be changed after running this, unless changing the triangle is intended.

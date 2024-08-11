@@ -37,12 +37,27 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
 
     // Draw Tris
     for (int i = 0; i < mesh->triCount; i++) {
-        if (!mesh->tris[i]->isFacing(camera->facingDirection)) continue;
-        drawer->drawTriangle(Color::WHITE, mesh->projectedTris[i]);
+
+        logWrite("Checking -> ", false);
+        
+        // Draw the triangle only if its facing the camera
+        if (mesh->tris[i]->isFacing(camera->facingDirection)) {
+            logWrite("Facing!", true);
+            drawer->drawTriangle(Color::WHITE, mesh->projectedTris[i]);
+        }
+
+        else {
+            logWrite("Not Facing!", true);
+        }
+
     }
 
     Vec2* vecStart = new Vec2(); 
     Vec2* vecEnd = new Vec2();
+
+    Vec3* triCenter;
+    Vec3* normalOffset;
+    Vec3* triNormal;
 
     // Draw Normals
     for (int i = 0; i < mesh->triCount; i++) {
@@ -51,9 +66,9 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
         if (!mesh->tris[i]->isFacing(camera->facingDirection)) continue;
 
         // Get projected coords for normal start and end
-        Vec3* triCenter = mesh->tris[i]->getCenter();
-        Vec3* normalOffset = mesh->tris[i]->normal->copy()->normalise();
-        Vec3* triNormal = triCenter->add(normalOffset);
+        triCenter = mesh->tris[i]->getCenter();
+        normalOffset = mesh->tris[i]->normal->copy()->normalise(10);
+        triNormal = triCenter->add(normalOffset);
 
         logWrite("here", true);
 
@@ -62,17 +77,10 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
         display->toDisplayPos(vecStart);
         display->toDisplayPos(vecEnd);
 
-        logWrite(vecStart->x);
-        logWrite(", ");
-        logWrite(vecStart->y, true);
-        logWrite(vecEnd->x);
-        logWrite(", ");
-        logWrite(vecEnd->y, true);
-        logNewLine();
+        vecStart->log();
+        vecEnd->log();
 
         drawer->drawLine(Color::RED, vecStart, vecEnd);
-
-        delete triCenter; delete normalOffset; delete triNormal;
 
     }
 
@@ -133,26 +141,14 @@ void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 }
 
 // Static variables for objects to draw, reimplement later
-Vec3* points[8];
 Mesh* cube1;
 Mesh* cube2;
 
 void initGraphics() {
 
-    // Init points to draw
-    for (int i = 0; i < 8; i++) {
-
-        // These values will count in binary
-        int x = i % 2;
-        int y = (int) (i % 4) >= 2;
-        int z = (int) i >= 4;
-
-        points[i] = new Vec3(5 * x, 5 * y, 5 * z);
-
-    }
-
     // Init cube mesh then move it away and make it bigger
-    cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 10);
+    cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 50);
+
     //cube2 = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 10, 0)->rotate(0, 10, 0);
 
 }
@@ -182,12 +178,26 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
 
     drawSky(drawer, camera, display);
 
-    camera->project(cube1);
-    // camera->project(cube2);
-    display->toDisplayPos(cube1);
-    // display->toDisplayPos(cube2);
+    for (int i = 0; i < cube1->vertexCount; i++) {
+        cube1->verticies[i]->log();
+    }
 
+    camera->project(cube1);
+
+    for (int i = 0; i < cube1->vertexCount; i++) {
+        cube1->projectedVerticies[i]->log();
+    }
+
+    display->toDisplayPos(cube1);
+
+    for (int i = 0; i < cube1->vertexCount; i++) {
+        cube1->projectedVerticies[i]->log();
+    }
+    
     drawMesh(cube1, drawer, camera, display);
+
+    // camera->project(cube2);
+    // display->toDisplayPos(cube2);
     // drawMesh(cube2, drawer, camera, display);
 
     // Vec3* camFacingVec = camera->facingDirection->copy()->scale(50);

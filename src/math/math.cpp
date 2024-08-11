@@ -413,6 +413,25 @@ double arccos(double x) {
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
 
+double distance2(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
+
+    double dx = x1 - x2;
+    double dy = y1 - y2;
+
+    return sqrt((dx * dx) + (dy * dy));
+
+}
+
+double distance3(double x1, double y1, double z1, double x2 /* default value = 0 */, double y2 /* default value = 0 */, double z2 /* default value = 0 */) {
+
+    double dx = x1 - x2;
+    double dy = y1 - y2;
+    double dz = z1 - z2;
+
+    return sqrt((dx * dx) + (dy * dy) + (dz * dz));
+
+}
+
 double range(double num, double from, double to) {
     /*
         This function basically normalizes a value with respect to some given range
@@ -454,25 +473,30 @@ double getAngle(double x1, double y1, double x2 /* default value = 0 */, double 
     // If the x coordinates are the same, the point is either right above, below or on top of the other
     if (x1 == x2) {
         if (y1 >= y2) return 0;
-        return pi;
+        return 180;
     }
 
     if (y1 == y2) {
-        if (x1 >= x2) return pi / 2;
-        return (3 / 2) * pi;
+        if (x1 >= x2) return 90;
+        return 270;
     }
 
-    double angle;
+    double radians;
+
     if (x1 != x2) {
+
         double m = abs( (x1 - x2) / (y1 - y2) );
-        angle = arctan(m);
-    } else
-        angle = 0;
+        radians = arctan(m);
+
+    } 
+    
+    else
+        radians = 0;
 
     // Adjust angle based on quadrant
-    if (y1 < y2) angle = pi - angle;
-    if (x1 < x2) angle = (2 * pi) - angle;
+    if (y1 < y2) radians = pi - radians;
+    if (x1 < x2) radians = (2 * pi) - radians;
 
-    return angle;
+    return toDegrees(radians);
 
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../math/math.h"
+
 #include "Vec2Class.h"
 #include "Vec3Class.h"
 #include "MeshClass.h"
@@ -29,6 +31,7 @@ class Camera {
 
         // Movement speed in units per second
         double movementSpeed;
+        double sprintFactor;
 
         // This is the vector representing the direction of the global light source for this camera
         Vec3* lightingVec;

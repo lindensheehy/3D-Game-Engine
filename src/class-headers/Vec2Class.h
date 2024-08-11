@@ -34,6 +34,9 @@ class Vec2 {
         // Creates a copy of the instance, and returns a pointer to it.
         Vec2* copy();
 
+        // Logs the vector in the format "Vec2( x, y )"
+        void log();
+
         // Acts similar to '=='. Returns true if all components are equal to each other
         bool is(double x, double y);
         bool is(Vec2* other);
@@ -90,6 +93,7 @@ class Vec2 {
         double magnitudeValue;
 
         // Flag showing if the above value is accurate. This allows the function call which returns the magnitude to only do the math when nessecary.
+        // Any instance function which can change the magnitude, will set this to false.
         bool magnitudeUpdated;
         
 };

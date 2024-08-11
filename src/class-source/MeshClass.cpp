@@ -197,7 +197,7 @@ void Mesh::mapTris() {
         this->tris[i]->v1 = this->verticies[vertex1Index];
         this->tris[i]->v2 = this->verticies[vertex2Index];
         this->tris[i]->v3 = this->verticies[vertex3Index];
-        this->tris[i]->normal = this->verticies[normalIndex];
+        this->tris[i]->normal = this->normals[normalIndex];
 
         // Set pointers for 2d tris
         this->projectedTris[i]->v1 = this->projectedVerticies[vertex1Index];

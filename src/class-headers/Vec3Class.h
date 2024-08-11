@@ -34,6 +34,9 @@ class Vec3 {
         // Creates a copy of the instance, and returns a pointer to it.
         Vec3* copy();
 
+        // Logs the vector in the format "Vec3( x, y, z )"
+        void log();
+
         // Sets the components of the Vec3 to specific values
         Vec3* set(double x, double y, double z);
 
@@ -83,7 +86,7 @@ class Vec3 {
         // Returns the cross product of this and other as a new Vec3 object. This vector is perpendicular to both other and this.
         Vec3* crossProduct(Vec3* other);
 
-        // Find the angle between this and other. This angle will always be between 0-180.
+        // Find the angle in degrees between this and other. This angle will always be between 0-180.
         double getAngle(Vec3* other);
 
         // Rotates the vector around a certain point (by default (0, 0, 0)) by a given angle on each direction.

@@ -14,6 +14,7 @@ Camera::Camera() {
     this->pitch = 0;
     this->roll = 0;
     this->movementSpeed = 3;
+    this->sprintFactor = 2;
 
     this->lightingVec = new Vec3();
 
@@ -156,6 +157,11 @@ void Camera::rotate(double yaw, double pitch, double roll) {
     // Find new facing direction vector
     this->facingDirection->set(0, 0, 1);
     this->facingDirection->rotate(-this->yaw, -this->pitch, this->roll);
+
+    this->facingDirection->log();
+
+    return;
+
 }
 
 void Camera::project(Vec3* vec, Vec2* displayPos) {
@@ -172,7 +178,7 @@ void Camera::project(Vec3* vec, Vec2* displayPos) {
     }
 
     if (displayPos == nullptr) {
-        logWrite("Called Camera->setAcceleration(Vec3*) with 'displayPos' being a null pointer!", true);
+        logWrite("Called Camera->project(Vec3*, Vec2*) with 'displayPos' being a null pointer!", true);
         return;
     }
     
@@ -191,50 +197,30 @@ void Camera::project(Vec3* vec, Vec2* displayPos) {
     }
 
     // Find the distance along the x,z axis, and the dy from the camera to the vec, this is used to find pitch
-    Vec2* tempVar = new Vec2(relative->x, relative->z);
-    double dist = tempVar->magnitude();
-    double dy = relative->y - this->pos->y;
-    delete tempVar;
+    double dist = distance2(relative->x, relative->z);
+    double dy = relative->y;
 
     // Get the angle the point makes from the camera position on
     double angleYaw = getAngle(relative->x, relative->z);       // Angle from the +z axis
-    double anglePitch = (double) 90 - getAngle(dist, dy);       // Angle from the +y axis, 90 - becuase its not against the axis used for getAngle
+    double anglePitch = getAngle(dist, dy);                     // Angle from the +y axis
+    anglePitch = (double) 90 - anglePitch;                                   // Now this is from the x,z plane, where positive is towards y+
 
     // Gets the screen position given the angles found and the camera rotation angles
     /* ---  YAW  --- */
 
-    double camYawFrom = -((double) this->fov->x / 2);
-    double camYawTo = ((double) this->fov->x / 2);
-    if (angleYaw > 180) {
+    // Adjust the left side of the fov to be within the negatives rather than above 180
+    if (angleYaw > 180)
         angleYaw -= 360;
-    }
 
-    double locationX = inRange(angleYaw, (double) -180, (double) 180);
+    double camYawRange = this->fov->x / 2;
+    double locationX = range(angleYaw, -camYawRange, camYawRange);
 
     /* ---  PITCH  --- */
-    double camPitchFrom = -(this->fov->y / 2);
-    double camPitchTo = (this->fov->y / 2);
-    if (anglePitch > 180) {
-        anglePitch -= 360;
-    }
 
-    double locationY = inRange(anglePitch, (double) -180, (double) 180);
+    double camPitchRange = this->fov->y / 2;
+    double locationY = range(anglePitch, -camPitchRange, camPitchRange);
 
-    // Value adjusting
-
-    /*
-        This code converts the range value between -180 and 180 into a value within the fov where values outside of 0-1 mean its outside the fov
-        This is an extremely simplified version of the formula so it looks like nonsense but this is the math:
-        First find the decimal value between -180 and 180 which represents the start of the fov
-        value = (360 - k) / (2 * 360)
-        Then use this value so find the new decimal for the posision
-        pos = (360 * (oldpos - value)) / fov
-        so this all simplifies to the math below, with a lot of type casting because I dont trust cpp auto typing
-    */
-
-    locationX = (((double) 180 * ((double) 2 * locationX - (double) 1)) / this->fov->x) + ((double) 0.5);
-    locationY = (((double) 180 * ((double) 2 * locationY - (double) 1)) / this->fov->y) + ((double) 0.5);
-
+    // Store the final value
     displayPos->x = locationX;
     displayPos->y = locationY;
 

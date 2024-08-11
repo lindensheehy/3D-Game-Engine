@@ -43,6 +43,21 @@ Tri3* Tri3::copy() {
     return newCopy;
 }
 
+void Tri3::log() {
+
+    logWrite("Tri3(", true);
+    logWrite("  ");
+    this->v1->log();
+    logWrite("  ");
+    this->v2->log();
+    logWrite("  ");
+    this->v3->log();
+    logWrite(")", true);
+
+    return;
+
+}
+
 void Tri3::setv1(double x, double y, double z) {
     this->v1->x = x;
     this->v1->y = y;
@@ -148,7 +163,7 @@ bool Tri3::isFacing(Vec3* vec) {
         return false;
     }
 
-    return vec->getAngle(this->normal) >= (pi / 2); // 90 degrees
+    return vec->getAngle(this->normal) >= 90;
 }
 
 Vec3* Tri3::getCenter() {

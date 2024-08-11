@@ -252,11 +252,28 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
         logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
         return;
     }
+
+    if (tri->v1 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v2 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v3 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        return;
+    }
+
+    tri->log();
     
     int x1 = (int) round(tri->v1->x);
     int y1 = (int) round(tri->v1->y);

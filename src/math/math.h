@@ -58,6 +58,12 @@ double arctan(double x);
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
 
+// Returns the distance between 2 sets of 2 dimensional coordinates
+double distance2(double x1, double y1, double x2 = 0, double y2 = 0);
+
+// Returns the distance between 2 sets of 3 dimensional coordinates
+double distance3(double x1, double y1, double z1, double x2 = 0, double y2 = 0, double z2 = 0);
+
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
 double range(double num, double from, double to);
 
