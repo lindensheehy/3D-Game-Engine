@@ -1,10 +1,9 @@
 new stuff:
 - add tests for more functions
-- add Font class to draw text to the window
 - add multiple color meshes
     - let each tri be a different color
     - let tris be drawn as a png
-- Object class
+- PhysicsObject class
     - make a doFrame(dt) function
     - some basic collision like with the floor
 

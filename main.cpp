@@ -1,7 +1,5 @@
 #define SDL_MAIN_HANDLED
 
-#include <chrono>
-
 #include "src/class-headers/ColorClass.h"
 #include "src/class-headers/DrawerClass.h"
 #include "src/class-headers/FrameStateClass.h"
@@ -15,7 +13,7 @@
 
 Gui* gui = nullptr;
 
-void handleInput(FrameState* frameState, Camera* camera, double dt) {
+void handleInput(FrameState* frameState, Camera* camera) {
 
     /*
         ---  Directional Movement  ---
@@ -28,7 +26,7 @@ void handleInput(FrameState* frameState, Camera* camera, double dt) {
     */
 
     // Find distance to move based on the delta time of the frame
-    double dist = camera->movementSpeed * (dt / 1000);
+    double dist = camera->movementSpeed * (frameState->time->dt / 1000);
 
     if (frameState->keyIsDown(SDLK_LSHIFT)) 
         dist *= camera->sprintFactor;
@@ -91,13 +89,6 @@ int main(int argc, char* argv[]) {
     camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
     camera1->movementSpeed = 10;
 
-    // Set up time stuff
-    auto timeVar = std::chrono::high_resolution_clock::now();
-    double appStartTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-    double lastFrameTime = appStartTime;
-    double thisFrameTime = appStartTime;
-    double dt;
-
 
     // Main event loop
     bool leave = false;
@@ -105,13 +96,7 @@ int main(int argc, char* argv[]) {
 
         // Logging
         logWrite("Frame ", false);
-        logWrite(frameState->frameCount, true);
-
-        // Delta time
-        timeVar = std::chrono::high_resolution_clock::now();
-        lastFrameTime = thisFrameTime;
-        thisFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-        dt = thisFrameTime - lastFrameTime;
+        logWrite(frameState->time->totalFrameCount, true);
 
         // Mouse position
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -124,7 +109,7 @@ int main(int argc, char* argv[]) {
         }
 
         // Does all the user input handling
-        handleInput(frameState, camera1, dt);
+        handleInput(frameState, camera1);
 
         // Draw stuff
         gui->getBuffer();

@@ -84,6 +84,16 @@ g++ -c %srcdir%FrameStateClass.cpp ^
     -o %objdir%FrameStateClass.o ^
     %SDLinclude%
 
+:: Font
+g++ -c %srcdir%FontClass.cpp ^
+    -o %objdir%FontClass.o ^
+    %SDLinclude%
+
+:: PhysicsObject
+g++ -c %srcdir%PhysicsObjectClass.cpp ^
+    -o %objdir%PhysicsObjectClass.o ^
+    %SDLinclude%
+
 
 :: Build main.exe
 
@@ -103,6 +113,8 @@ g++ main.cpp ^
     %objdir%GuiClass.o ^
     %objdir%DrawerClass.o ^
     %objdir%FrameStateClass.o ^
+    %objdir%FontClass.o ^
+    %objdir%PhysicsObjectClass.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

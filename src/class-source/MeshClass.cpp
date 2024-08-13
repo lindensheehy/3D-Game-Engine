@@ -33,6 +33,15 @@ Mesh::IndexMap* Mesh::IndexMap::copy() {
 }
 
 void Mesh::IndexMap::setGroup(int index, int v1, int v2, int v3, int normal) {
+
+    if (index >= this->size) {
+        logWrite("Called Mesh::IndexMap->setGroup() for index ");
+        logWrite(index);
+        logWrite(" of size ");
+        logWrite(this->size, true);
+        return;
+    }
+
     this->map[index].vertex1 = v1;
     this->map[index].vertex2 = v2;
     this->map[index].vertex3 = v3;
@@ -40,6 +49,15 @@ void Mesh::IndexMap::setGroup(int index, int v1, int v2, int v3, int normal) {
 }
 
 void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal) {
+
+    if (index >= this->size) {
+        logWrite("Called Mesh::IndexMap->getGroup() for index ");
+        logWrite(index);
+        logWrite(" of size ");
+        logWrite(this->size, true);
+        return;
+    }
+
     (*v1) = this->map[index].vertex1;
     (*v2) = this->map[index].vertex2;
     (*v3) = this->map[index].vertex3;
@@ -52,6 +70,7 @@ void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal)
 
 // Static variables for simple meshes
 Mesh* Mesh::cubeMesh = nullptr;
+Mesh* Mesh::sphereMesh = nullptr;
 Mesh* Mesh::tetrahedronMesh = nullptr;
 
 // Constructor
@@ -69,6 +88,9 @@ Mesh::Mesh() {
 
     this->projectedVerticies = nullptr;
     this->projectedTris = nullptr;
+
+    this->center = new Vec3();
+    this->centerValid = false;
     
 }
 
@@ -143,11 +165,38 @@ Mesh* Mesh::copy() {
     return newCopy;
 }
 
+Vec3* Mesh::getCenter() {
+
+    if (this->centerValid) return this->center;
+
+    double x = 0;
+    double y = 0;
+    double z = 0;
+
+    for (int i = 0; i < this->vertexCount; i++) {
+        x += this->verticies[i]->x;
+        y += this->verticies[i]->y;
+        z += this->verticies[i]->z;
+    }
+
+    x /= this->vertexCount;
+    y /= this->vertexCount;
+    z /= this->vertexCount;
+
+    this->center->set(x, y, z);
+    this->centerValid = true;
+
+    return this->center;
+
+}
+
 Mesh* Mesh::move(double dx, double dy, double dz) {
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->add(dx, dy, dz);
     }
+
+    this->centerValid = false;
 
     return this;
 
@@ -159,20 +208,43 @@ Mesh* Mesh::scale(double fx, double fy, double fz) {
         this->verticies[i]->scale(fx, fy, fz);
     }
 
+    this->centerValid = false;
+
     return this;
 
 }
 
 Mesh* Mesh::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (around == nullptr) {
-        logWrite("Called Mesh->rotate(double, double, double, Vec3*) on a null pointer!", true);
-        return nullptr;
-    }
+    // around = nullptr is allowed, no need to error check
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->rotate(yaw, pitch, roll, around);
+    }
+
+    // Normals are not relative to anything, and as such should not be rotated around anything but (0, 0, 0)
+    for (int i = 0; i < this->normalCount; i++) {
+        this->normals[i]->rotate(yaw, pitch, roll);
+    }
+
+    this->centerValid = false;
+
+    return this;
+
+}
+
+Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
+
+    // This doesnt create any new object
+    Vec3* center = this->getCenter();
+
+    for (int i = 0; i < this->vertexCount; i++) {
+        this->verticies[i]->rotate(yaw, pitch, roll, center);
+    }
+
+    // Normals are not relative to anything, and as such should not be rotated around anything but (0, 0, 0)
+    for (int i = 0; i < this->normalCount; i++) {
+        this->normals[i]->rotate(yaw, pitch, roll);
     }
 
     return this;
@@ -184,7 +256,61 @@ Mesh* Mesh::setColor(uint32 color) {
     return this;
 }
 
+void Mesh::updateNormals() {
+
+    for (int i = 0; i < this->triCount; i++) {
+
+        Vec3* newNormal;
+        Tri3* tri = this->tris[i];
+
+        // Get one of the two possible normals
+        Vec3* vec1to2 = tri->v1->copy()->sub(tri->v2);
+        Vec3* vec1to3 = tri->v1->copy()->sub(tri->v3);
+
+        newNormal = vec1to2->crossProduct(vec1to3);
+        newNormal->normalise();
+
+        delete vec1to2, vec1to3;
+
+        // Check if the found normal faces outwards
+        Vec3* meshCenter = this->getCenter();                   // Not a new object
+        Vec3* triCenter = tri->getCenter();                     // New object
+        Vec3* normalOffset = newNormal->copy()->scale(0.05);    // New object
+
+        double dist1 = triCenter->distanceTo(meshCenter);
+        triCenter->add(normalOffset);
+        double dist2 = triCenter->distanceTo(meshCenter);
+
+        delete triCenter, normalOffset;
+
+        // Flip if its facing towards the center
+        if (dist2 < dist1) newNormal->scale(-1);
+
+        // Place the found normal into its place in the list
+        int _, index; // The underscore represents a value which isnt wanted/needed
+
+        this->indexMap->getGroup(i, &_, &_, &_, &index);
+
+        if (this->normals[index] != nullptr) delete this->normals[index];
+        this->normals[index] = newNormal;
+
+    }
+
+    // Update the tris
+    this->mapTris();
+
+}
+
 void Mesh::mapTris() {
+
+    if (this->triCount != this->indexMap->size) {
+        logWrite("Called Mesh->mapTris() with ");
+        logWrite(this->triCount);
+        logWrite(" tris, but ");
+        logWrite(this->indexMap->size);
+        logWrite(" entries in the index map", true);
+        return;
+    }
 
     int vertex1Index, vertex2Index, vertex3Index, normalIndex;
 
@@ -218,7 +344,9 @@ void Mesh::initMeshes() {
     Tri2** projectedTriList;
     IndexMap* indexMap;
 
+    /* ------------------- */
     /* ---  Cube Mesh  --- */
+    /* ------------------- */
 
     // Create lists
     vertexList = new Vec3*[8];
@@ -290,5 +418,354 @@ void Mesh::initMeshes() {
 
     // Populate tri lists with pointers
     Mesh::cubeMesh->mapTris();
+
+    /* --------------------- */
+    /* ---  Sphere Mesh  --- */
+    /* --------------------- */
+
+    int triCount = 200;
+    int vertexCount = 102;
+
+    // Create lists
+    vertexList = new Vec3*[vertexCount];
+    normalList = new Vec3*[triCount];
+    triList = new Tri3*[triCount];
+    projectedVertexList = new Vec2*[vertexCount];
+    projectedTriList = new Tri2*[triCount];
+    
+    // Load verticies
+
+    // Bottom and top
+    vertexList[100] = new Vec3(0, -0.5, 0);
+    vertexList[101] = new Vec3(0, 0.5, 0);
+
+    // Rotate a vector around at a certain length to make new vertices
+    double theta = 360 / 20;
+    Vec3* newVec = new Vec3();
+
+    // Along the circumference (index 0-19 inclusive)
+    newVec->set(0, 0, 0.5);
+
+    for (int i = 0; i < 20; i++) {
+
+        // Rotate the vector by a changing amount
+        newVec->rotate(theta, 0, 0);
+
+        // Add it and update the angle for next iteration
+        vertexList[i] = newVec->copy();
+
+    }
+
+    // 30 degrees below the circumference (index 20-39 inclusive)
+    newVec->set(0, 0, 0.5);
+    newVec->rotate(0, 30, 0);
+    newVec->rotate(theta / 2, 0, 0); // Offset by half
+
+    for (int i = 20; i < 40; i++) {
+
+        // Rotate the vector by a changing amount
+        newVec->rotate(theta, 0, 0);
+
+        // Add it and update the angle for next iteration
+        vertexList[i] = newVec->copy();
+
+    }
+
+    // 30 degrees above the circumference (index 40-59 inclusive)
+    newVec->set(0, 0, 0.5);
+    newVec->rotate(0, -30, 0);
+    newVec->rotate(theta / 2, 0, 0); // Offset by half
+
+    for (int i = 40; i < 60; i++) {
+
+        // Rotate the vector by a changing amount
+        newVec->rotate(theta, 0, 0);
+
+        // Add it and update the angle for next iteration
+        vertexList[i] = newVec->copy();
+
+    }
+
+    // 60 degrees below the circumference (index 60-79 inclusive)
+    newVec->set(0, 0, 0.5);
+    newVec->rotate(0, 60, 0);
+
+    for (int i = 60; i < 80; i++) {
+
+        // Rotate the vector by a changing amount
+        newVec->rotate(theta, 0, 0);
+
+        // Add it and update the angle for next iteration
+        vertexList[i] = newVec->copy();
+
+    }
+
+    // 60 degrees above the circumference (index 80-99 inclusive)
+    newVec->set(0, 0, 0.5);
+    newVec->rotate(0, -60, 0);
+
+    for (int i = 80; i < 100; i++) {
+
+        // Rotate the vector by a changing amount
+        newVec->rotate(theta, 0, 0);
+
+        // Add it and update the angle for next iteration
+        vertexList[i] = newVec->copy();
+
+    }
+
+
+
+    // Clear space for normal vectors
+    for (int i = 0; i < triCount; i++) {
+        normalList[i] = nullptr;
+    }
+
+    // Load index map
+    indexMap = new IndexMap(triCount);
+    //                triangle          v2          normal
+    //                   ||      v1     ||     v3     ||
+    //                   \/      \/     \/     \/     \/
+    indexMap->setGroup(  0,     101,    80,    81,    0    );     // -------------
+    indexMap->setGroup(  1,     101,    81,    82,    1    );     //
+    indexMap->setGroup(  2,     101,    82,    83,    2    );     //
+    indexMap->setGroup(  3,     101,    83,    84,    3    );     //
+    indexMap->setGroup(  4,     101,    84,    85,    4    );     //
+    indexMap->setGroup(  5,     101,    85,    86,    5    );     //     here
+    indexMap->setGroup(  6,     101,    86,    87,    6    );     //     ----     
+    indexMap->setGroup(  7,     101,    87,    88,    7    );     //     ----     
+    indexMap->setGroup(  8,     101,    88,    89,    8    );     //     ----    
+    indexMap->setGroup(  9,     101,    89,    90,    9    );     //     ----     
+    indexMap->setGroup(  10,    101,    90,    91,    10   );     //     ----     
+    indexMap->setGroup(  11,    101,    91,    92,    11   );     //     ----    
+    indexMap->setGroup(  12,    101,    92,    93,    12   );     //     ----     
+    indexMap->setGroup(  13,    101,    93,    94,    13   );     //     ----     
+    indexMap->setGroup(  14,    101,    94,    95,    14   );     //     ----     
+    indexMap->setGroup(  15,    101,    95,    96,    15   );     //
+    indexMap->setGroup(  16,    101,    96,    97,    16   );     //
+    indexMap->setGroup(  17,    101,    97,    98,    17   );     //
+    indexMap->setGroup(  18,    101,    98,    99,    18   );     //
+    indexMap->setGroup(  19,    101,    99,    80,    19   );     // -------------
+
+    indexMap->setGroup(  20,     81,    40,    41,    20   );     // -------------
+    indexMap->setGroup(  21,     82,    41,    42,    21   );     //
+    indexMap->setGroup(  22,     83,    42,    43,    22   );     //
+    indexMap->setGroup(  23,     84,    43,    44,    23   );     //
+    indexMap->setGroup(  24,     85,    44,    45,    24   );     //
+    indexMap->setGroup(  25,     86,    45,    46,    25   );     //     ----
+    indexMap->setGroup(  26,     87,    46,    47,    26   );     //     here     
+    indexMap->setGroup(  27,     88,    47,    48,    27   );     //     ----     
+    indexMap->setGroup(  28,     89,    48,    49,    28   );     //     ----    
+    indexMap->setGroup(  29,     90,    49,    50,    29   );     //     ----     
+    indexMap->setGroup(  30,     91,    50,    51,    30   );     //     ----     
+    indexMap->setGroup(  31,     92,    51,    52,    31   );     //     ----    
+    indexMap->setGroup(  32,     93,    52,    53,    32   );     //     ----     
+    indexMap->setGroup(  33,     94,    53,    54,    33   );     //     ----     
+    indexMap->setGroup(  34,     95,    54,    55,    34   );     //     ----     
+    indexMap->setGroup(  35,     96,    55,    56,    35   );     //
+    indexMap->setGroup(  36,     97,    56,    57,    36   );     //
+    indexMap->setGroup(  37,     98,    57,    58,    37   );     //
+    indexMap->setGroup(  38,     99,    58,    59,    38   );     //
+    indexMap->setGroup(  39,     80,    59,    40,    39   );     // -------------
+
+    indexMap->setGroup(  40,     40,    80,    81,    40   );     // -------------
+    indexMap->setGroup(  41,     41,    81,    82,    41   );     //
+    indexMap->setGroup(  42,     42,    82,    83,    42   );     //
+    indexMap->setGroup(  43,     43,    83,    84,    43   );     //
+    indexMap->setGroup(  44,     44,    84,    85,    44   );     //
+    indexMap->setGroup(  45,     45,    85,    86,    45   );     //     ----
+    indexMap->setGroup(  46,     46,    86,    87,    46   );     //     ----     
+    indexMap->setGroup(  47,     47,    87,    88,    47   );     //     here     
+    indexMap->setGroup(  48,     48,    88,    89,    48   );     //     ----    
+    indexMap->setGroup(  49,     49,    89,    90,    49   );     //     ----     
+    indexMap->setGroup(  50,     50,    90,    91,    50   );     //     ----     
+    indexMap->setGroup(  51,     51,    91,    92,    51   );     //     ----    
+    indexMap->setGroup(  52,     52,    92,    93,    52   );     //     ----     
+    indexMap->setGroup(  53,     53,    93,    94,    53   );     //     ----     
+    indexMap->setGroup(  54,     54,    94,    95,    54   );     //     ----     
+    indexMap->setGroup(  55,     55,    95,    96,    55   );     //
+    indexMap->setGroup(  56,     56,    96,    97,    56   );     //
+    indexMap->setGroup(  57,     57,    97,    98,    57   );     //
+    indexMap->setGroup(  58,     58,    98,    99,    58   );     //
+    indexMap->setGroup(  59,     59,    99,    80,    59   );     // -------------
+
+    indexMap->setGroup(  60,      1,    40,    41,    60   );     // -------------
+    indexMap->setGroup(  61,      2,    41,    42,    61   );     //
+    indexMap->setGroup(  62,      3,    42,    43,    62   );     //
+    indexMap->setGroup(  63,      4,    43,    44,    63   );     //
+    indexMap->setGroup(  64,      5,    44,    45,    64   );     //
+    indexMap->setGroup(  65,      6,    45,    46,    65   );     //     ----
+    indexMap->setGroup(  66,      7,    46,    47,    66   );     //     ----     
+    indexMap->setGroup(  67,      8,    47,    48,    67   );     //     ----     
+    indexMap->setGroup(  68,      9,    48,    49,    68   );     //     here    
+    indexMap->setGroup(  69,     10,    49,    50,    69   );     //     ----     
+    indexMap->setGroup(  70,     11,    50,    51,    70   );     //     ----     
+    indexMap->setGroup(  71,     12,    51,    52,    71   );     //     ----    
+    indexMap->setGroup(  72,     13,    52,    53,    72   );     //     ----     
+    indexMap->setGroup(  73,     14,    53,    54,    73   );     //     ----     
+    indexMap->setGroup(  74,     15,    54,    55,    74   );     //     ----     
+    indexMap->setGroup(  75,     16,    55,    56,    75   );     //
+    indexMap->setGroup(  76,     17,    56,    57,    76   );     //
+    indexMap->setGroup(  77,     18,    57,    58,    77   );     //
+    indexMap->setGroup(  78,     19,    58,    59,    78   );     //
+    indexMap->setGroup(  79,      0,    59,    40,    79   );     // -------------
+
+    indexMap->setGroup(  80,     40,     0,     1,    80   );     // -------------
+    indexMap->setGroup(  81,     41,     1,     2,    81   );     //
+    indexMap->setGroup(  82,     42,     2,     3,    82   );     //
+    indexMap->setGroup(  83,     43,     3,     4,    83   );     //
+    indexMap->setGroup(  84,     44,     4,     5,    84   );     //
+    indexMap->setGroup(  85,     45,     5,     6,    85   );     //     ----
+    indexMap->setGroup(  86,     46,     6,     7,    86   );     //     ----     
+    indexMap->setGroup(  87,     47,     7,     8,    87   );     //     ----     
+    indexMap->setGroup(  88,     48,     8,     9,    88   );     //     ----    
+    indexMap->setGroup(  89,     49,     9,    10,    89   );     //     here     
+    indexMap->setGroup(  90,     50,    10,    11,    90   );     //     ----     
+    indexMap->setGroup(  91,     51,    11,    12,    91   );     //     ----    
+    indexMap->setGroup(  92,     52,    12,    13,    92   );     //     ----     
+    indexMap->setGroup(  93,     53,    13,    14,    93   );     //     ----     
+    indexMap->setGroup(  94,     54,    14,    15,    94   );     //     ----     
+    indexMap->setGroup(  95,     55,    15,    16,    95   );     //
+    indexMap->setGroup(  96,     56,    16,    17,    96   );     //
+    indexMap->setGroup(  97,     57,    17,    18,    97   );     //
+    indexMap->setGroup(  98,     58,    18,    19,    98   );     //
+    indexMap->setGroup(  99,     59,    19,     0,    99   );     // -------------
+
+    indexMap->setGroup(  100,    20,     0,     1,    100  );     // -------------
+    indexMap->setGroup(  101,    21,     1,     2,    101  );     //
+    indexMap->setGroup(  102,    22,     2,     3,    102  );     //
+    indexMap->setGroup(  103,    23,     3,     4,    103  );     //
+    indexMap->setGroup(  104,    24,     4,     5,    104  );     //
+    indexMap->setGroup(  105,    25,     5,     6,    105  );     //     ----
+    indexMap->setGroup(  106,    26,     6,     7,    106  );     //     ----     
+    indexMap->setGroup(  107,    27,     7,     8,    107  );     //     ----     
+    indexMap->setGroup(  108,    28,     8,     9,    108  );     //     ----    
+    indexMap->setGroup(  109,    29,     9,    10,    109  );     //     ----     
+    indexMap->setGroup(  110,    30,    10,    11,    110  );     //     here     
+    indexMap->setGroup(  111,    31,    11,    12,    111  );     //     ----    
+    indexMap->setGroup(  112,    32,    12,    13,    112  );     //     ----     
+    indexMap->setGroup(  113,    33,    13,    14,    113  );     //     ----     
+    indexMap->setGroup(  114,    34,    14,    15,    114  );     //     ----     
+    indexMap->setGroup(  115,    35,    15,    16,    115  );     //
+    indexMap->setGroup(  116,    36,    16,    17,    116  );     //
+    indexMap->setGroup(  117,    37,    17,    18,    117  );     //
+    indexMap->setGroup(  118,    38,    18,    19,    118  );     //
+    indexMap->setGroup(  119,    39,    19,     0,    119  );     // -------------
+
+    indexMap->setGroup(  120,     1,    20,    21,    120  );     // -------------
+    indexMap->setGroup(  121,     2,    21,    22,    121  );     //
+    indexMap->setGroup(  122,     3,    22,    23,    122  );     //
+    indexMap->setGroup(  123,     4,    23,    24,    123  );     //
+    indexMap->setGroup(  124,     5,    24,    25,    124  );     //
+    indexMap->setGroup(  125,     6,    25,    26,    125  );     //     ----
+    indexMap->setGroup(  126,     7,    26,    27,    126  );     //     ----     
+    indexMap->setGroup(  127,     8,    27,    28,    127  );     //     ----     
+    indexMap->setGroup(  128,     9,    28,    29,    128  );     //     ----    
+    indexMap->setGroup(  129,    10,    29,    30,    129  );     //     ----     
+    indexMap->setGroup(  130,    11,    30,    31,    130  );     //     ----     
+    indexMap->setGroup(  131,    12,    31,    32,    131  );     //     here    
+    indexMap->setGroup(  132,    13,    32,    33,    132  );     //     ----     
+    indexMap->setGroup(  133,    14,    33,    34,    133  );     //     ----     
+    indexMap->setGroup(  134,    15,    34,    35,    134  );     //     ----     
+    indexMap->setGroup(  135,    16,    35,    36,    135  );     //
+    indexMap->setGroup(  136,    17,    36,    37,    136  );     //
+    indexMap->setGroup(  137,    18,    37,    38,    137  );     //
+    indexMap->setGroup(  138,    19,    38,    39,    138  );     //
+    indexMap->setGroup(  139,     0,    39,    20,    139  );     // -------------
+
+    indexMap->setGroup(  140,    61,    20,    21,    140  );     // -------------
+    indexMap->setGroup(  141,    62,    21,    22,    141  );     //
+    indexMap->setGroup(  142,    63,    22,    23,    142  );     //
+    indexMap->setGroup(  143,    64,    23,    24,    143  );     //
+    indexMap->setGroup(  144,    65,    24,    25,    144  );     //
+    indexMap->setGroup(  145,    66,    25,    26,    145  );     //     ----
+    indexMap->setGroup(  146,    67,    26,    27,    146  );     //     ----     
+    indexMap->setGroup(  147,    68,    27,    28,    147  );     //     ----     
+    indexMap->setGroup(  148,    69,    28,    29,    148  );     //     ----    
+    indexMap->setGroup(  149,    70,    29,    30,    149  );     //     ----     
+    indexMap->setGroup(  150,    71,    30,    31,    150  );     //     ----     
+    indexMap->setGroup(  151,    72,    31,    32,    151  );     //     ----    
+    indexMap->setGroup(  152,    73,    32,    33,    152  );     //     here     
+    indexMap->setGroup(  153,    74,    33,    34,    153  );     //     ----     
+    indexMap->setGroup(  154,    75,    34,    35,    154  );     //     ----     
+    indexMap->setGroup(  155,    76,    35,    36,    155  );     //
+    indexMap->setGroup(  156,    77,    36,    37,    156  );     //
+    indexMap->setGroup(  157,    78,    37,    38,    157  );     //
+    indexMap->setGroup(  158,    79,    38,    39,    158  );     //
+    indexMap->setGroup(  159,    60,    39,    20,    159  );     // -------------
+
+    indexMap->setGroup(  160,    20,    60,    61,    160  );     // -------------
+    indexMap->setGroup(  161,    21,    61,    62,    161  );     //
+    indexMap->setGroup(  162,    22,    62,    63,    162  );     //
+    indexMap->setGroup(  163,    23,    63,    64,    163  );     //
+    indexMap->setGroup(  164,    24,    64,    65,    164  );     //
+    indexMap->setGroup(  165,    25,    65,    66,    165  );     //     ----
+    indexMap->setGroup(  166,    26,    66,    67,    166  );     //     ----     
+    indexMap->setGroup(  167,    27,    67,    68,    167  );     //     ----     
+    indexMap->setGroup(  168,    28,    68,    69,    168  );     //     ----    
+    indexMap->setGroup(  169,    29,    69,    70,    169  );     //     ----     
+    indexMap->setGroup(  170,    30,    70,    71,    170  );     //     ----     
+    indexMap->setGroup(  171,    31,    71,    72,    171  );     //     ----    
+    indexMap->setGroup(  172,    32,    72,    73,    172  );     //     ----     
+    indexMap->setGroup(  173,    33,    73,    74,    173  );     //     here     
+    indexMap->setGroup(  174,    34,    74,    75,    174  );     //     ----     
+    indexMap->setGroup(  175,    35,    75,    76,    175  );     //
+    indexMap->setGroup(  176,    36,    76,    77,    176  );     //
+    indexMap->setGroup(  177,    37,    77,    78,    177  );     //
+    indexMap->setGroup(  178,    38,    78,    79,    178  );     //
+    indexMap->setGroup(  179,    39,    79,    60,    179  );     // -------------
+
+    indexMap->setGroup(  180,   100,    60,    61,    180  );     // -------------
+    indexMap->setGroup(  181,   100,    61,    62,    181  );     //
+    indexMap->setGroup(  182,   100,    62,    63,    182  );     //
+    indexMap->setGroup(  183,   100,    63,    64,    183  );     //
+    indexMap->setGroup(  184,   100,    64,    65,    184  );     //
+    indexMap->setGroup(  185,   100,    65,    66,    185  );     //     ----
+    indexMap->setGroup(  186,   100,    66,    67,    186  );     //     ----     
+    indexMap->setGroup(  187,   100,    67,    68,    187  );     //     ----     
+    indexMap->setGroup(  188,   100,    68,    69,    188  );     //     ----    
+    indexMap->setGroup(  189,   100,    69,    70,    189  );     //     ----     
+    indexMap->setGroup(  190,   100,    70,    71,    190  );     //     ----     
+    indexMap->setGroup(  191,   100,    71,    72,    191  );     //     ----    
+    indexMap->setGroup(  192,   100,    72,    73,    192  );     //     ----     
+    indexMap->setGroup(  193,   100,    73,    74,    193  );     //     ----     
+    indexMap->setGroup(  194,   100,    74,    75,    194  );     //     here     
+    indexMap->setGroup(  195,   100,    75,    76,    195  );     //
+    indexMap->setGroup(  196,   100,    76,    77,    196  );     //
+    indexMap->setGroup(  197,   100,    77,    78,    197  );     //
+    indexMap->setGroup(  198,   100,    78,    79,    198  );     //
+    indexMap->setGroup(  199,   100,    79,    60,    199  );     // -------------
+
+
+    // Space for triangle objects (which point to the verticies vectors)
+    for (int i = 0; i < triCount; i++)
+        triList[i] = new Tri3(true);
+
+    // allocate space for projection values
+    for (int i = 0; i < vertexCount; i++)
+        projectedVertexList[i] = new Vec2();
+    for (int i = 0; i < triCount; i++)
+        projectedTriList[i] = new Tri2(true);
+
+    // Store the created mesh in the class variable
+    Mesh::sphereMesh = new Mesh();
+
+    Mesh::sphereMesh->indexMap = indexMap;
+    Mesh::sphereMesh->verticies = vertexList;
+    Mesh::sphereMesh->normals = normalList;
+
+    Mesh::sphereMesh->vertexCount = vertexCount;
+    Mesh::sphereMesh->normalCount = triCount;
+    Mesh::sphereMesh->triCount = triCount;
+
+    Mesh::sphereMesh->tris = triList;
+    Mesh::sphereMesh->projectedVerticies = projectedVertexList;
+    Mesh::sphereMesh->projectedTris = projectedTriList;
+
+    // Populate tri lists with pointers
+    Mesh::sphereMesh->mapTris();
+
+    // Load normals
+    Mesh::sphereMesh->updateNormals();
 
 }

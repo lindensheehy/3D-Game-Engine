@@ -47,11 +47,26 @@ void Tri3::log() {
 
     logWrite("Tri3(", true);
     logWrite("  ");
-    this->v1->log();
+
+    if (this->v1 == nullptr)
+        logWrite("null", true);
+    else
+        this->v1->log();
+
     logWrite("  ");
-    this->v2->log();
+
+    if (this->v2 == nullptr)
+        logWrite("null", true);
+    else
+        this->v2->log();
+
     logWrite("  ");
-    this->v3->log();
+
+    if (this->v3 == nullptr)
+        logWrite("null", true);
+    else
+        this->v3->log();
+
     logWrite(")", true);
 
     return;
@@ -132,21 +147,13 @@ void Tri3::setNormal(Vec3* normal) {
 
 void Tri3::updateNormal() {
 
-    Vec3* vec1to2 = new Vec3(
-        this->v1->x - this->v2->x,
-        this->v1->y - this->v2->y,
-        this->v1->z - this->v2->z 
-    );
-    Vec3* vec1to3 = new Vec3(
-        this->v1->x - this->v3->x,
-        this->v1->y - this->v3->y,
-        this->v1->z - this->v3->z 
-    );
+    Vec3* vec1to2 = this->v1->copy()->sub(this->v2);
+    Vec3* vec1to3 = this->v1->copy()->sub(this->v3);
 
     Vec3* newNormal = vec1to2->crossProduct(vec1to3);
     newNormal->normalise();
     
-    delete this->normal;
+    if (this->normal != nullptr) delete this->normal;
     delete vec1to2, vec1to3;
 
     this->normal = newNormal;

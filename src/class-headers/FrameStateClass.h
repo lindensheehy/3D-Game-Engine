@@ -2,6 +2,10 @@
 
 #include <SDL2/SDL.h>
 
+#include <chrono>
+
+#include "../math/math.h"
+
 // For logging error cases
 #include "../log/log.h"
 
@@ -15,6 +19,55 @@ class FrameState {
     */
 
     public:
+
+        class TimeState {
+
+            /*
+                Stores everything time related needed for the code.
+                This holds current time, delta time since last frame, and fps variables.
+                This also holds anything which counts frames.
+            */
+
+            public:
+
+                /*   Instance Variables   */
+
+                // Value which increments every frame
+                int totalFrameCount;
+
+                // Time stamps
+                double frameTime;
+                double lastFrameTime;
+
+                // Delta time since last frame. requires updateDt() to be called
+                double dt;
+
+                // Counts the frames since the last full second
+                double framesSinceLastSecond;
+
+                // Saves the last full second (multiple of 1000) as a tell for when to update dt
+                double nextSecond;
+
+                // Frames per second
+                int fps;
+                
+                
+                // Constructor
+                TimeState();
+
+                /*   Instance Functions   */
+
+                // Updates the dt and frameTime variables
+                void updateDt();
+
+                // Updates the fps counter, or adds to framesSinceLastSecond
+                void updateFps();
+
+                // Does everything for the next frame. Including calling the above functions
+                void update();
+
+
+        };
 
         class MouseState {
 
@@ -152,11 +205,9 @@ class FrameState {
         };
 
         /*   Instance variables   */
-        
-        // Value which increments every frame
-        int frameCount;
 
         // Subclasses
+        TimeState* time;
         MouseState* mouse;
         KeyboardState* keys;
 
@@ -182,7 +233,7 @@ class FrameState {
         // Takes an event object from SDL2 and changes the respective value appropriately.
         void addEvent(SDL_Event* event);
 
-        // Increments frameCount + updates lastFrame to match current frame
+        // Updates everything to be ready for the next frame. Makes this become this->lastFrame
         void nextFrame();
 
 

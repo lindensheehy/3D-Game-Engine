@@ -158,8 +158,6 @@ void Camera::rotate(double yaw, double pitch, double roll) {
     this->facingDirection->set(0, 0, 1);
     this->facingDirection->rotate(-this->yaw, -this->pitch, this->roll);
 
-    this->facingDirection->log();
-
     return;
 
 }
@@ -251,7 +249,11 @@ bool Camera::canSee(Tri3* tri) {
     distance = tri->getCenter();
     distance->sub(this->pos);
 
-    return tri->isFacing(distance);
+    bool returnValue = tri->isFacing(distance);
+
+    delete distance;
+
+    return returnValue;
 
 }
 

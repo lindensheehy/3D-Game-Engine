@@ -67,6 +67,7 @@ class Mesh {
 
         // Meshes, populated from initMeshes()
         static Mesh* cubeMesh;
+        static Mesh* sphereMesh;
         static Mesh* tetrahedronMesh;
 
         /*   Instance Variables   */
@@ -108,6 +109,9 @@ class Mesh {
         // Creates a copy of the instance, and returns a pointer to it.
         Mesh* copy();
 
+        // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
+        Vec3* getCenter();
+
         // Moves all the Vec3 objects within 'verticies' by the specified distance.
         Mesh* move(double dx, double dy, double dz);
 
@@ -117,8 +121,13 @@ class Mesh {
         // Rotates all the Vec3 objects by the specified angles. just calls Vec3->rotate() for each Vec3.
         Mesh* rotate(double yaw, double pitch, double roll, Vec3* around = nullptr);
 
+        // Rotates the mesh around its center
+        Mesh* rotateSelf(double yaw, double pitch, double roll);
+
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);
+
+        void updateNormals();
 
         // This uses the IndexMap to map the Tri3 vectors so that they point to Vec3 objects from the verticies and normals lists.
         // Also does the same thing for the projected versions of both.
@@ -130,5 +139,11 @@ class Mesh {
 
         // Initializes all the standard meshes. Such as cubeMesh for example.
         static void initMeshes();
+
+    private:
+
+        // The center of the mesh. Will be updated when the flag is false.
+        Vec3* center;
+        bool centerValid;
 
 };

@@ -48,11 +48,26 @@ void Tri2::log() {
 
     logWrite("Tri2(", true);
     logWrite("  ");
-    this->v1->log();
+
+    if (this->v1 == nullptr)
+        logWrite("null", true);
+    else
+        this->v1->log();
+
     logWrite("  ");
-    this->v2->log();
+
+    if (this->v2 == nullptr)
+        logWrite("null", true);
+    else
+        this->v2->log();
+
     logWrite("  ");
-    this->v3->log();
+
+    if (this->v3 == nullptr)
+        logWrite("null", true);
+    else
+        this->v3->log();
+
     logWrite(")", true);
 
     return;

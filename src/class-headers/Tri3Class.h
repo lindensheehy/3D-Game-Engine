@@ -63,7 +63,7 @@ class Tri3 {
         // This just returns true when the angle between the Vec3 and the normal is >= 90
         bool isFacing(Vec3* vec);
 
-        // Returns a Vec3 object defining the center of the triangle. takes the average of each component.
+        // Returns a Vec3 object defining the center of the triangle. takes the average of each component. This returns a NEW object
         Vec3* getCenter();
         
 };

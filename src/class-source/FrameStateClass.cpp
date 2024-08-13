@@ -1,6 +1,70 @@
 #include "../class-headers/FrameStateClass.h"
 
 
+/*  -----------------------------------  */
+/*  ----------   TimeState   ----------  */
+/*  -----------------------------------  */
+
+// Constructor
+FrameState::TimeState::TimeState() {
+
+    // Variable initialization
+    this->totalFrameCount = 0;
+    this->framesSinceLastSecond = 0;
+    this->fps = 0;
+    this->nextSecond = 0;
+    this->dt = 0;
+
+
+    // Get time
+    auto timeVar = std::chrono::high_resolution_clock::now();
+    this->frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
+    this->lastFrameTime = frameTime;
+
+    this->updateFps();
+
+}
+
+// Instance functions
+void FrameState::TimeState::updateDt() {
+
+    auto timeVar = std::chrono::high_resolution_clock::now();
+    this->lastFrameTime = this->frameTime;
+    this->frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
+    this->dt = this->frameTime - this->lastFrameTime;
+
+}
+
+void FrameState::TimeState::updateFps() {
+
+    if (this->frameTime > this->nextSecond) {
+
+        // Reset next second
+        long long temp = (long long) ((frameTime + 1000) / 1000);
+        this->nextSecond = (double) temp * 1000;
+
+        // Store fps
+        this->fps = this->framesSinceLastSecond;
+
+        // Reset counter
+        this->framesSinceLastSecond = 0;
+
+    }
+
+}
+
+void FrameState::TimeState::update() {
+
+    this->totalFrameCount++;
+    this->framesSinceLastSecond++;
+
+    this->updateDt();
+    this->updateFps();
+
+}
+
+
+
 /*  ------------------------------------  */
 /*  ----------   MouseState   ----------  */
 /*  ------------------------------------  */
@@ -86,7 +150,7 @@ FrameState::KeyboardState::~KeyboardState() {
     delete[] this->miscKeys;
 }
 
-// Instance variables
+// Instance functions
 void FrameState::KeyboardState::setState(KeyboardState* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
@@ -295,10 +359,10 @@ bool FrameState::KeyboardState::keyIsDown(int keyCode) {
 /*  ----------   FrameState   ----------  */
 /*  ------------------------------------  */
 
-FrameState::// Contructor
-FrameState(bool hasChild /* default value = true */) {
+// Contructor
+FrameState::FrameState(bool hasChild /* default value = true */) {
 
-    this->frameCount = 0;
+    this->time = new TimeState();
     this->mouse = new MouseState();
     this->keys = new KeyboardState();
 
@@ -309,6 +373,7 @@ FrameState(bool hasChild /* default value = true */) {
 
 // Destructor
 FrameState::~FrameState() {
+    if (this->time != nullptr) delete this->time;
     if (this->mouse != nullptr) delete this->mouse;
     if (this->keys != nullptr) delete this->keys;
     if (this->lastFrame != nullptr) delete this->lastFrame;
@@ -379,7 +444,8 @@ void FrameState::nextFrame() {
     if (this->lastFrame == nullptr) return;
 
     this->lastFrame->setState(this);
-    this->frameCount++;
+
+    this->time->update();
 
     return;
 
@@ -423,7 +489,6 @@ void FrameState::setState(FrameState* state) {
         return;
     }
 
-    this->frameCount = state->frameCount;
     this->mouse->setState(state->mouse);
     this->keys->setState(state->keys);
 }

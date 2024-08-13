@@ -19,6 +19,8 @@ g++ main.cpp ^
     %objdir%GuiClass.o ^
     %objdir%DrawerClass.o ^
     %objdir%FrameStateClass.o ^
+    %objdir%FontClass.o ^
+    %objdir%PhysicsObjectClass.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

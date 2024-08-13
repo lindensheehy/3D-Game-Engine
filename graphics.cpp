@@ -7,8 +7,24 @@
 #include "src/class-headers/MeshClass.h"
 #include "src/class-headers/CameraClass.h"
 #include "src/class-headers/DisplayClass.h"
+#include "src/class-headers/FontClass.h"
 
 #include "src/log/log.h"
+
+bool drawNormals;
+
+class MeshSet {
+
+    /*
+        Contains a set of meshes in the form of a doubly linked list
+        This can be added and removed from, and this way a group of meshes can be rendered and drawn together
+    */
+
+    public:
+
+
+
+};
 
 void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
 
@@ -56,28 +72,34 @@ void drawMesh(Mesh* mesh, Drawer* drawer, Camera* camera, Display* display) {
     Vec2* vecStart = new Vec2(); 
     Vec2* vecEnd = new Vec2();
 
-    Vec3* triCenter;
-    Vec3* normalOffset;
-    Vec3* triNormal;
-
     // Draw Normals
-    for (int i = 0; i < mesh->triCount; i++) {
+    if (drawNormals) {
+        for (int i = 0; i < mesh->triCount; i++) {
 
-        // Skip if tri cant be seen face on by cam
-        if (!camera->canSee(mesh->tris[i])) continue;
+            // Skip if tri cant be seen face on by cam
+            if (!camera->canSee(mesh->tris[i])) continue;
 
-        // Get projected coords for normal start and end
-        triCenter = mesh->tris[i]->getCenter();
-        normalOffset = mesh->tris[i]->normal->copy()->normalise(1);
-        triNormal = triCenter->copy()->add(normalOffset);
+            Vec3* triCenter;
+            Vec3* normalOffset;
+            Vec3* triNormal;
 
-        camera->project(triCenter, vecStart);
-        camera->project(triNormal, vecEnd);
-        display->toDisplayPos(vecStart);
-        display->toDisplayPos(vecEnd);
+            // Get projected coords for normal start and end
+            triCenter = mesh->tris[i]->getCenter();
+            normalOffset = mesh->tris[i]->normal->copy()->normalise(1);
+            triNormal = triCenter->copy()->add(normalOffset);
 
-        drawer->drawLine(Color::RED, vecStart, vecEnd);
+            camera->project(triCenter, vecStart);
+            camera->project(triNormal, vecEnd);
+            display->toDisplayPos(vecStart);
+            display->toDisplayPos(vecEnd);
 
+            drawer->drawLine(Color::RED, vecStart, vecEnd);
+
+            delete triCenter;
+            delete normalOffset;
+            delete triNormal;
+
+        }
     }
 
     delete vecStart; delete vecEnd;
@@ -137,16 +159,56 @@ void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 }
 
 // Static variables for objects to draw, reimplement later
-Mesh* cube1;
-Mesh* cube2;
+Mesh** meshes;
+
+Font* font;
 
 void initGraphics() {
 
-    // Init cube mesh then move it away and make it bigger
-    cube1 = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 50);
-    cube1->setColor(Color::WHITE);
+    drawNormals = false;
 
-    //cube2 = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 10, 0)->rotate(0, 10, 0);
+    font = new Font();
+    font->init();
+
+    meshes = new Mesh*[28];
+
+    Uint32 colorKeys[] = {
+        Color::WHITE,
+        Color::BLUE,
+        Color::RED,
+        Color::GREEN,
+        Color::GREY,
+        Color::BLACK
+    };
+
+    double offsetx = -50;
+    double offsety = -50;
+
+    for (int i = 0; i < 25; i++) {
+
+        int size = (i % 4) + 16; 
+        meshes[i] = Mesh::sphereMesh->copy()->scale(size, size, size);
+        meshes[i]->move(offsetx, offsety, 100);
+        meshes[i]->setColor(colorKeys[i % 6]);
+
+        offsetx += 25;
+
+        // When its above 50, im using 60 in case of float errors
+        if (offsetx > 60) {
+            offsetx = -50;
+            offsety += 25;
+        }
+
+    }
+
+    meshes[25] = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 50);
+    meshes[25]->setColor(Color::WHITE);
+
+    meshes[26] = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 20, 50);
+    meshes[26]->setColor(Color::GREY);
+
+    meshes[27] = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0);
+    meshes[27]->setColor(Color::BLUE);
 
 }
 
@@ -173,29 +235,42 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
         return;
     }
 
+    if (frameState->wasRightJustPressed()) {
+        drawNormals = !drawNormals;
+    }
+
+    // Rotate things based on keypresses
+    if (frameState->keyIsDown(SDLK_j)) {
+        for (int i = 0; i < 28; i++) {
+            meshes[i]->rotateSelf(1, 0, 0);
+        }
+    }
+
+    if (frameState->keyIsDown(SDLK_k)) {
+        for (int i = 0; i < 28; i++) {
+            meshes[i]->rotateSelf(0, 1, 0);
+        }
+    }
+
+    if (frameState->keyIsDown(SDLK_l)) {
+        for (int i = 0; i < 28; i++) {
+            meshes[i]->rotateSelf(0, 0, 1);
+        }
+    }
+
     drawSky(drawer, camera, display);
 
-    camera->project(cube1);
-    display->toDisplayPos(cube1);
-    drawMesh(cube1, drawer, camera, display);
+    for (int i = 0; i < 28; i++) {
+        camera->project(meshes[i]);
+        display->toDisplayPos(meshes[i]);
+        drawMesh(meshes[i], drawer, camera, display);
+    }
+    
 
-    // camera->project(cube2);
-    // display->toDisplayPos(cube2);
-    // drawMesh(cube2, drawer, camera, display);
-
-    // Vec3* camFacingVec = camera->facingDirection->copy()->scale(50);
-    // Vec3* camFacingVecStart = new Vec3(0, 0, 0);
-    // Vec2* projectedCamFacingVec = new Vec2();
-    // Vec2* projectedCamFacingVecStart = new Vec2();
-    // camera->project(camFacingVec, projectedCamFacingVec);
-    // camera->project(camFacingVecStart, projectedCamFacingVecStart);
-    // display->toDisplayPos(projectedCamFacingVec);
-    // display->toDisplayPos(projectedCamFacingVecStart);
-
-    // drawer->drawLine(Color::RED, projectedCamFacingVecStart, projectedCamFacingVec);
-
-    // delete camFacingVec, camFacingVecStart;
-    // delete projectedCamFacingVec, projectedCamFacingVecStart;
+    // Draw the fps
+    drawer->drawRect(Color::BLACK, 0, 0, 30, 13);
+    font->drawer = drawer;
+    font->drawInt(frameState->time->fps, 6, 3, Color::WHITE);
 
     return;
 
