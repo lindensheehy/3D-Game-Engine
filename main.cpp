@@ -1,14 +1,12 @@
 #define SDL_MAIN_HANDLED
 
-#include "src/class-headers/ColorClass.h"
-#include "src/class-headers/DrawerClass.h"
-#include "src/class-headers/FrameStateClass.h"
-#include "src/class-headers/CameraClass.h"
-#include "src/class-headers/DisplayClass.h"
-#include "src/class-headers/MeshClass.h"
-#include "src/class-headers/GuiClass.h"
+#include "src/include/Drawer.h"
+#include "src/include/FrameState.h"
+#include "src/include/Camera.h"
+#include "src/include/Mesh.h"
+#include "src/include/Gui.h"
+#include "src/include/Log.h"
 
-#include "src/log/log.h"
 #include "graphics.cpp"
 
 Gui* gui = nullptr;
@@ -87,7 +85,7 @@ int main(int argc, char* argv[]) {
     camera1->setPos(0, 0, -10);
     camera1->setFov(90, 54);
     camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
-    camera1->movementSpeed = 10;
+    camera1->movementSpeed = 50;
 
 
     // Main event loop
@@ -118,10 +116,6 @@ int main(int argc, char* argv[]) {
         drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
         gui->flip();
         delete drawer;
-
-        //std::cout << "(" << camera1->yaw << ", " << camera1->pitch << ")";
-        //std::cout << " - (" << camera1->pos->x << ", " << camera1->pos->y << ", " << camera1->pos->z << ")" << std::endl;
-        //std::cout << " - (" << camera1->facingDirection->x << ", " << camera1->facingDirection->y << ", " << camera1->facingDirection->z << ")" << std::endl;
 
         // Make current frameState become last frame
         frameState->nextFrame();

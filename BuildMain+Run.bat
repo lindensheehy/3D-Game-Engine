@@ -21,6 +21,7 @@ g++ main.cpp ^
     %objdir%FrameStateClass.o ^
     %objdir%FontClass.o ^
     %objdir%PhysicsObjectClass.o ^
+    %objdir%MeshSetClass.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

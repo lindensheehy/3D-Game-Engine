@@ -1,7 +1,7 @@
 :: Build libraries
 
 :: Paths
-set srcdir=src/class-source/
+set srcdir=src/src/
 set objdir=src/obj/
 set SDLinclude=-I SDL2/include -L SDL2/lib -l SDL2 -l SDL2main
 
@@ -18,80 +18,52 @@ g++ -c src/lodepng/lodepng.cpp ^
 :: Mine
 
 :: Math
-g++ -c src/math/math.cpp ^
-    -o %objdir%math.o
+g++ -c %srcdir%Math.cpp ^
+    -o %objdir%Math.o
 
 :: Log
-g++ -c src/log/log.cpp ^
-    -o %objdir%log.o
+g++ -c %srcdir%Log.cpp ^
+    -o %objdir%Log.o
 
-:: Vec2
-g++ -c %srcdir%Vec2Class.cpp ^
-    -o %objdir%Vec2Class.o
+:: Vec
+g++ -c %srcdir%Vec.cpp ^
+    -o %objdir%Vec.o
 
-:: Vec3
-g++ -c %srcdir%Vec3Class.cpp ^
-    -o %objdir%Vec3Class.o
-
-:: Tri2
-g++ -c %srcdir%Tri2Class.cpp ^
-    -o %objdir%Tri2Class.o
-
-:: Tri3
-g++ -c %srcdir%Tri3Class.cpp ^
-    -o %objdir%Tri3Class.o
+:: Tri
+g++ -c %srcdir%Tri.cpp ^
+    -o %objdir%Tri.o
 
 
 :: The rest of the libraries require SDL2 includes
 
 :: Camera
-g++ -c %srcdir%CameraClass.cpp ^
-    -o %objdir%CameraClass.o ^
+g++ -c %srcdir%Camera.cpp ^
+    -o %objdir%Camera.o ^
     %SDLinclude%
 
 :: Mesh
-g++ -c %srcdir%MeshClass.cpp ^
-    -o %objdir%MeshClass.o ^
-    %SDLinclude%
-
-:: Color
-g++ -c %srcdir%ColorClass.cpp ^
-    -o %objdir%ColorClass.o ^
-    %SDLinclude%
-
-:: PNG
-g++ -c %srcdir%PNGClass.cpp ^
-    -o %objdir%PNGClass.o ^
-    %SDLinclude%
-
-:: Display
-g++ -c %srcdir%DisplayClass.cpp ^
-    -o %objdir%DisplayClass.o ^
+g++ -c %srcdir%Mesh.cpp ^
+    -o %objdir%Mesh.o ^
     %SDLinclude%
 
 :: Gui
-g++ -c %srcdir%GuiClass.cpp ^
-    -o %objdir%GuiClass.o ^
+g++ -c %srcdir%Gui.cpp ^
+    -o %objdir%Gui.o ^
     %SDLinclude%
 
 :: Drawer
-g++ -c %srcdir%DrawerClass.cpp ^
-    -o %objdir%DrawerClass.o ^
+g++ -c %srcdir%Drawer.cpp ^
+    -o %objdir%Drawer.o ^
     %SDLinclude%
 
 :: FrameState
-g++ -c %srcdir%FrameStateClass.cpp ^
-    -o %objdir%FrameStateClass.o ^
+g++ -c %srcdir%FrameState.cpp ^
+    -o %objdir%FrameState.o ^
     %SDLinclude%
 
-:: Font
-g++ -c %srcdir%FontClass.cpp ^
-    -o %objdir%FontClass.o ^
-    %SDLinclude%
-
-:: PhysicsObject
-g++ -c %srcdir%PhysicsObjectClass.cpp ^
-    -o %objdir%PhysicsObjectClass.o ^
+:: MeshSet
+g++ -c %srcdir%ObjectSet.cpp ^
+    -o %objdir%ObjectSet.o ^
     %SDLinclude%
 
 
@@ -99,22 +71,16 @@ g++ -c %srcdir%PhysicsObjectClass.cpp ^
 
 :: Compile main.exe
 g++ main.cpp ^
-    %objdir%math.o ^
-    %objdir%log.o ^
-    %objdir%Vec2Class.o ^
-    %objdir%Vec3Class.o ^
-    %objdir%Tri2Class.o ^
-    %objdir%Tri3Class.o ^
-    %objdir%CameraClass.o ^
-    %objdir%MeshClass.o ^
-    %objdir%ColorClass.o ^
-    %objdir%PNGClass.o ^
-    %objdir%DisplayClass.o ^
-    %objdir%GuiClass.o ^
-    %objdir%DrawerClass.o ^
-    %objdir%FrameStateClass.o ^
-    %objdir%FontClass.o ^
-    %objdir%PhysicsObjectClass.o ^
+    %objdir%Math.o ^
+    %objdir%Log.o ^
+    %objdir%Vec.o ^
+    %objdir%Tri.o ^
+    %objdir%Camera.o ^
+    %objdir%Mesh.o ^
+    %objdir%Gui.o ^
+    %objdir%Drawer.o ^
+    %objdir%FrameState.o ^
+    %objdir%ObjectSet.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%
