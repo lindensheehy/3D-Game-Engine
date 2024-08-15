@@ -284,7 +284,7 @@ Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
 
 }
 
-Mesh* Mesh::setColor(uint32 color) {
+Mesh* Mesh::setColor(Uint32 color) {
     this->color = color;
     return this;
 }

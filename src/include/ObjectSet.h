@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Mesh.h"
 #include "Camera.h"
 #include "Drawer.h"

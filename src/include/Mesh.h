@@ -84,7 +84,7 @@ class Mesh {
         int vertexCount, normalCount, triCount;
 
         // The color which the mesh should appear as.
-        uint32 color;
+        Uint32 color;
 
         // Maps vecs from verticies and normals to tris
         IndexMap* indexMap;
@@ -127,7 +127,7 @@ class Mesh {
         Mesh* rotateSelf(double yaw, double pitch, double roll);
 
         // Sets the color of the mesh
-        Mesh* setColor(uint32 color);
+        Mesh* setColor(Uint32 color);
 
         void updateNormals();
 

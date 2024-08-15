@@ -6,18 +6,18 @@
 /* --------------------------- */
 
 // Contructors
-Color::Color(uint32 color) {
+Color::Color(Uint32 color) {
 
     this->rawValue = color;
 
     // This gets the sub values at each 8 bit interval of the 32 bit input
-    this->opacityValue = (uint8) (color >> 24);
-    this->redValue = (uint8) (color >> 16);
-    this->greenValue = (uint8) (color >> 8);
-    this->blueValue = (uint8) (color);
+    this->opacityValue = (Uint8) (color >> 24);
+    this->redValue = (Uint8) (color >> 16);
+    this->greenValue = (Uint8) (color >> 8);
+    this->blueValue = (Uint8) (color);
 }
 
-Color::Color(uint8 o, uint8 r, uint8 g, uint8 b) {
+Color::Color(Uint8 o, Uint8 r, Uint8 g, Uint8 b) {
 
     this->redValue = r;
     this->greenValue = g;
@@ -36,13 +36,13 @@ Color::Color(uint8 o, uint8 r, uint8 g, uint8 b) {
 }
 
 // Class functions
-uint32 Color::setBrightness(uint32 color, double newBrightness) {
+Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
 
     // Unpack color code
-    uint8 opacityValue = (uint8) (color >> 24);
-    uint8 redValue = (uint8) (color >> 16);
-    uint8 greenValue = (uint8) (color >> 8);
-    uint8 blueValue = (uint8) (color);
+    Uint8 opacityValue = (Uint8) (color >> 24);
+    Uint8 redValue = (Uint8) (color >> 16);
+    Uint8 greenValue = (Uint8) (color >> 8);
+    Uint8 blueValue = (Uint8) (color);
 
     // Update values
     redValue *= newBrightness;
@@ -50,7 +50,7 @@ uint32 Color::setBrightness(uint32 color, double newBrightness) {
     blueValue *= newBrightness;
 
     // Repack color code
-    uint32 newColor = 0x00000000;
+    Uint32 newColor = 0x00000000;
     newColor |= opacityValue;
     newColor <<= 8;
     newColor |= redValue;
