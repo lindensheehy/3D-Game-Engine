@@ -205,11 +205,25 @@ Mesh* Mesh::move(double dx, double dy, double dz) {
 
 }
 
+Mesh* Mesh::scale(double factor) {
+
+    for (int i = 0; i < this->vertexCount; i++) {
+        this->verticies[i]->scale(factor, factor, factor);
+    }
+
+    this->centerValid = false;
+
+    return this;
+
+}
+
 Mesh* Mesh::scale(double fx, double fy, double fz) {
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->scale(fx, fy, fz);
     }
+
+    this->updateNormals();
 
     this->centerValid = false;
 
@@ -296,27 +310,30 @@ void Mesh::updateNormals() {
         Vec3* triCenter = tri->getCenter();                     // New object
         Vec3* normalOffset = newNormal->copy()->scale(0.05);    // New object
 
-        double dist1 = triCenter->distanceTo(meshCenter);
         triCenter->add(normalOffset);
+        double dist1 = triCenter->distanceTo(meshCenter);
+        triCenter->sub(normalOffset)->sub(normalOffset);
         double dist2 = triCenter->distanceTo(meshCenter);
 
         delete triCenter, normalOffset;
 
         // Flip if its facing towards the center
-        if (dist2 < dist1) newNormal->scale(-1);
+        if (dist1 < dist2) newNormal->scale(-1);
 
         // Place the found normal into its place in the list
         int _, index; // The underscore represents a value which isnt wanted/needed
 
         this->indexMap->getGroup(i, &_, &_, &_, &index);
 
-        if (this->normals[index] != nullptr) delete this->normals[index];
-        this->normals[index] = newNormal;
+        if (this->normals[index] == nullptr) {
+            this->normals[index] = newNormal;
+            continue;
+        };
+
+        this->normals[index]->set(newNormal);
+        delete newNormal;
 
     }
-
-    // Update the tris
-    this->mapTris();
 
 }
 

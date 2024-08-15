@@ -132,6 +132,7 @@ class Vec3 {
         void log();
 
         // Sets the components of the Vec3 to specific values
+        Vec3* set(Vec3* other);
         Vec3* set(double x, double y, double z);
 
         // Acts similar to '=='. Returns true if all components are equal to each other

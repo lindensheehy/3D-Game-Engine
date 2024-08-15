@@ -115,6 +115,7 @@ class Mesh {
         Mesh* move(double dx, double dy, double dz);
 
         // Scales the mesh by a given factor on each axis. Simply applies these factors to each component of every Vec3 object.
+        Mesh* scale(double factor);
         Mesh* scale(double fx, double fy, double fz);
 
         // Rotates all the Vec3 objects by the specified angles. just calls Vec3->rotate() for each vertex.

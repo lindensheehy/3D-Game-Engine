@@ -1,4 +1,5 @@
 new stuff:
+- add a depth buffer to the drawer class using barycentric coordinates to determine depth
 - add tests for more functions
 - add multiple color meshes
     - let each tri be a different color

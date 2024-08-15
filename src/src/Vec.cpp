@@ -254,6 +254,13 @@ void Vec3::log() {
     
 }
 
+Vec3* Vec3::set(Vec3* other) {
+    this->x = other->x;
+    this->y = other->y;
+    this->z = other->z;
+    return this;
+}
+
 Vec3* Vec3::set(double x, double y, double z) {
     this->x = x;
     this->y = y;

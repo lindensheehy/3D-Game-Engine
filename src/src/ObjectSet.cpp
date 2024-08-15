@@ -1,45 +1,50 @@
 #include "../include/ObjectSet.h"
 
 
-/* -------------------- */
-/* --- StaticObject --- */
-/* -------------------- */
 
 
+/* -------------- */
+/* --- Object --- */
+/* -------------- */
 
-/* --------------------- */
-/* --- PhysicsObject --- */
-/* --------------------- */
+// Constructors
+Object::Object() {
+    this->mesh = nullptr;
+}
+
+Object::Object(Mesh* mesh) {
+    this->mesh = mesh;
+}
 
 
 
 /* ----------------------- */
-/* --- StaticSet::Node --- */
+/* --- ObjectSet::Node --- */
 /* ----------------------- */
 
 // Constructors
-StaticSet::Node::Node() {
+ObjectSet::Node::Node() {
     this->next = nullptr;
     this->last = nullptr;
     this->obj = nullptr;
     this->id = 0;
 }
 
-StaticSet::Node::Node(StaticObject* obj) {
+ObjectSet::Node::Node(Object* obj) {
     this->next = nullptr;
     this->last = nullptr;
     this->obj = obj;
     this->id = 0;
 }
 
-StaticSet::Node::Node(int id) {
+ObjectSet::Node::Node(int id) {
     this->next = nullptr;
     this->last = nullptr;
     this->obj = nullptr;
     this->id = id;
 }
 
-StaticSet::Node::Node(StaticObject* obj, int id) {
+ObjectSet::Node::Node(Object* obj, int id) {
     this->next = nullptr;
     this->last = nullptr;
     this->obj = obj;
@@ -47,15 +52,15 @@ StaticSet::Node::Node(StaticObject* obj, int id) {
 }
 
 // Instance Functions
-bool StaticSet::Node::isFirst() {
+bool ObjectSet::Node::isFirst() {
     return (this->last == nullptr);
 }
 
-bool StaticSet::Node::isLast() {
+bool ObjectSet::Node::isLast() {
     return (this->next == nullptr);
 }
 
-void StaticSet::Node::log() {
+void ObjectSet::Node::log() {
 
     if (this->last == nullptr)
         logWrite("null");
@@ -78,11 +83,11 @@ void StaticSet::Node::log() {
 
 
 /* ----------------- */
-/* --- StaticSet --- */
+/* --- ObjectSet --- */
 /* ----------------- */
 
 // Constructor
-StaticSet::StaticSet() {
+ObjectSet::ObjectSet() {
     this->first = nullptr;
     this->last = nullptr;
 
@@ -91,7 +96,7 @@ StaticSet::StaticSet() {
 }
 
 // Destructor
-StaticSet::~StaticSet() {
+ObjectSet::~ObjectSet() {
     
     Node* currentRef = this->first;
     Node* nextRef = this->first->next;
@@ -111,7 +116,7 @@ StaticSet::~StaticSet() {
 }
 
 // Instance Functions
-void StaticSet::pushBack(StaticObject* obj) {
+void ObjectSet::pushBack(Object* obj) {
     
     this->pushBack(obj, this->nextFreeId);
 
@@ -121,7 +126,7 @@ void StaticSet::pushBack(StaticObject* obj) {
 
 }
 
-void StaticSet::pushBack(StaticObject* mesh, int id) {
+void ObjectSet::pushBack(Object* mesh, int id) {
     
     Node* newNode = new Node(mesh, id);
 
@@ -151,7 +156,7 @@ void StaticSet::pushBack(StaticObject* mesh, int id) {
 
 }
 
-void StaticSet::pushFront(StaticObject* mesh) {
+void ObjectSet::pushFront(Object* mesh) {
     
     this->pushFront(mesh, this->nextFreeId);
 
@@ -161,7 +166,7 @@ void StaticSet::pushFront(StaticObject* mesh) {
 
 }
 
-void StaticSet::pushFront(StaticObject* mesh, int id) {
+void ObjectSet::pushFront(Object* mesh, int id) {
 
     Node* newNode = new Node(mesh, id);
 
@@ -191,10 +196,10 @@ void StaticSet::pushFront(StaticObject* mesh, int id) {
     
 }
 
-StaticObject* StaticSet::popBack() {
+Object* ObjectSet::popBack() {
 
     Node* ret;
-    StaticObject* obj;
+    Object* obj;
 
     // Empty list
     if (this->first == nullptr && this->last == nullptr) {
@@ -229,10 +234,10 @@ StaticObject* StaticSet::popBack() {
 
 }
 
-StaticObject* StaticSet::popFront() {
+Object* ObjectSet::popFront() {
 
     Node* ret;
-    StaticObject* obj;
+    Object* obj;
 
     // Empty list
     if (this->first == nullptr && this->last == nullptr) {
@@ -267,7 +272,7 @@ StaticObject* StaticSet::popFront() {
     
 }
 
-StaticObject* StaticSet::popById(int id) {
+Object* ObjectSet::popById(int id) {
 
     Node* current = this->first;
 
@@ -280,7 +285,7 @@ StaticObject* StaticSet::popById(int id) {
             current->last->next = current->next;
             current->next->last = current->last;
 
-            StaticObject* ret = current->obj;
+            Object* ret = current->obj;
 
             delete current;
             this->length--;
@@ -295,7 +300,7 @@ StaticObject* StaticSet::popById(int id) {
 
 }
 
-StaticObject* StaticSet::getById(int id) {
+Object* ObjectSet::getById(int id) {
 
     Node* current = this->first;
 
@@ -312,14 +317,14 @@ StaticObject* StaticSet::getById(int id) {
 
 }
 
-void StaticSet::iterStart(int index) {
+void ObjectSet::iterStart(int index) {
 
     this->iterCurrent = this->first;
 
     for (int i = 0; i < index; i++) {
 
         if (iterCurrent == nullptr) {
-            logWrite("Tried to start at iter at too high of an index! (StaticSet->iterStart(int))");
+            logWrite("Tried to start at iter at too high of an index! (ObjectSet->iterStart(int))");
             return;
         }
 
@@ -329,7 +334,7 @@ void StaticSet::iterStart(int index) {
 
 }
 
-StaticObject* StaticSet::iterGetObj() {
+Object* ObjectSet::iterGetObj() {
 
     if (this->iterCurrent == nullptr) return nullptr;
 
@@ -337,7 +342,7 @@ StaticObject* StaticSet::iterGetObj() {
 
 }
 
-int StaticSet::iterGetId() {
+int ObjectSet::iterGetId() {
 
     if (this->iterCurrent == nullptr) return -1;
 
@@ -345,7 +350,7 @@ int StaticSet::iterGetId() {
 
 }
 
-void StaticSet::iterNext() {
+void ObjectSet::iterNext() {
 
     if (this->iterCurrent == nullptr) return;
 
@@ -354,7 +359,7 @@ void StaticSet::iterNext() {
 
 }
 
-void StaticSet::iterLast() {
+void ObjectSet::iterLast() {
 
     if (this->iterCurrent == nullptr) return;
 
@@ -363,13 +368,13 @@ void StaticSet::iterLast() {
 
 }
 
-bool StaticSet::iterIsDone() {
+bool ObjectSet::iterIsDone() {
 
     return (this->iterCurrent == nullptr);
 
 }
 
-void StaticSet::swap(Node* node1, Node* node2) {
+void ObjectSet::swap(Node* node1, Node* node2) {
 
     // Different handling for when the two nodes are adjacent
     if (node1->next == node2) {
@@ -435,7 +440,7 @@ void StaticSet::swap(Node* node1, Node* node2) {
 
 }
 
-void StaticSet::projectAll(Camera* camera, Display* display) {
+void ObjectSet::projectAll(Camera* camera, Display* display) {
 
     Node* current = this->first;
 
@@ -455,10 +460,10 @@ void StaticSet::projectAll(Camera* camera, Display* display) {
 
 }
 
-void StaticSet::sortByDistance(Camera* camera) {
+void ObjectSet::sortByDistance(Camera* camera) {
 
     /*
-        Bubble sort approach using StaticSet::swap(Node*, Node*)
+        Bubble sort approach using ObjectSet::swap(Node*, Node*)
     */
 
     for (int i = 0; i < this->length - 1; i++) {
@@ -493,16 +498,16 @@ void StaticSet::sortByDistance(Camera* camera) {
 
 }
 
-void StaticSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
+void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (drawer == nullptr) {
-        logWrite("Called StaticSet->drawAll(Drawer*, Camera*) with 'drawer' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAll(Drawer*, Camera*) with 'drawer' as a null pointer!", true);
         return;
     }
 
     if (camera == nullptr) {
-        logWrite("Called StaticSet->drawAll(Drawer*, Camera*) with 'camera' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAll(Drawer*, Camera*) with 'camera' as a null pointer!", true);
         return;
     }
 
@@ -512,7 +517,7 @@ void StaticSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
     // Main set up
     this->iterStart(0);
-    StaticObject* currentObject;
+    Object* currentObject;
     Mesh* currentMesh;
 
     // Main loop
@@ -544,33 +549,36 @@ void StaticSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
 }
 
-void StaticSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
+void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (drawer == nullptr) {
-        logWrite("Called StaticSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
         return;
     }
 
     if (camera == nullptr) {
-        logWrite("Called StaticSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
         return;
     }
 
     if (display == nullptr) {
-        logWrite("Called StaticSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
         return;
     }
 
+    // Pre Set up
+    this->projectAll(camera, display);
     this->sortByDistance(camera);
-    this->iterStart(0);
-    StaticObject* currentObject;
-    Mesh* currentMesh;
 
-    // For drawing normals
+    // Main set up
+    this->iterStart(0);
+    Object* currentObject;
+    Mesh* currentMesh;
     Vec2* vecStart = new Vec2(); 
     Vec2* vecEnd = new Vec2();
 
+    // Main loop
     while (!this->iterIsDone()) {
 
         currentObject = this->iterGetObj();
@@ -629,9 +637,9 @@ void StaticSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
 }
 
-void StaticSet::log() {
+void ObjectSet::log() {
 
-    logWrite("StaticSet( length = ");
+    logWrite("ObjectSet( length = ");
     logWrite(this->length, true);
 
     Node* current = this->first;
@@ -652,15 +660,3 @@ void StaticSet::log() {
     return;
 
 }
-
-
-
-/* ------------------------ */
-/* --- PhysicsSet::Node --- */
-/* ------------------------ */
-
-
-
-/* ------------------ */
-/* --- PhsyicsSet --- */
-/* ------------------ */

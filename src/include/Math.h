@@ -9,7 +9,7 @@
 
 // This doesnt need to be extremely high becuase its just for trig functions and such
 #ifndef inf
-#define inf 1e12
+#define inf 1e100
 #endif
 
 // For degree conversion

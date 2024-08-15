@@ -121,12 +121,15 @@ class Drawer {
         The pixel buffer is simply a single dimension array, and the buffer width represents the length of each 'set' within the array.
         Treating the pixel buffer as a 2d array acts as follows:
         buffer[2][3] = buffer[(2 * bufferHeight) + 3], where 2,3 is x,y
+        This class supports the use of depth. When including depth values into function calls, the depthBuffer will be checked before writing pixels
+        Depth is optional, and any call where depth is not included will be drawn at depth 0, while NOT updating the depthBuffer values
     */
 
     public:
         
         // Instance variables
         Uint32* buffer;
+        double* depthBuffer;
         unsigned int bufferHeight, bufferWidth;
         unsigned int bufferSize;
 
@@ -137,18 +140,26 @@ class Drawer {
 
         /*   Instance functions   */
 
+        // Returns the 1d index cooresponding to a 2d set of indices
+        int bufferIndex(int x, int y);
+
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(Uint32 pixel, int x, int y);
+        void writePixel(Uint32 pixel, int x, int y, double depth);
 
         // Draws a straight line from (x1, y1) to (x2, y2) in the given color
         void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2);
 
         // Same as above, but uses Vec2 objects. These objects are NOT deleted by this function call and must be handled properly
         void drawLine(Uint32 pixel, Vec2* from, Vec2* to);
+        void drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2);
 
         // Draws a straight line along a given axis. Similar to drawLine, but less complex.
         void drawVerticalLine(Uint32 pixel, int startY, int endY, int x);
+        void drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2);
         void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y);
+        void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
 
         // Draws a FILLED rectangle from (x1, y1) to (x2, y2)
         void drawRect(Uint32 pixel, int x1, int y1, int x2, int y2);
@@ -158,18 +169,23 @@ class Drawer {
 
         // Draws an elipse at a given location, with a given radius along each axis.
         void drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy);
+        void drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth);
 
         // Same as above, but only one radius allowed.
         void drawCircle(Uint32 pixel, int locationx, int locationy, int radius);
+        void drawCircle(Uint32 pixel, int locationx, int locationy, int radius, double depth);
 
         // Draws a FILLED triangle which uses (x1, y1), (x2, y2), and (x3, y3) as vertices
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
+        void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
 
         // Same as above but uses a Tri2 object. This object is NOT deleted by this function call and must be handled properly
         void drawTriangle(Uint32 pixel, Tri2* tri);
+        void drawTriangle(Uint32 pixel, Tri2* tri, double depth1, double depth2, double depth3);
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
+        void drawpng(PNG* file, int x, int y, double depth);
 
 };
 

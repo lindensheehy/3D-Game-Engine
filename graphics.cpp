@@ -64,8 +64,7 @@ void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 }
 
 // Static variables for objects to draw, reimplement later
-StaticSet* staticSet;
-PhysicsSet* physicsSet;
+ObjectSet* objects;
 Font* font;
 
 void initGraphics() {
@@ -75,24 +74,36 @@ void initGraphics() {
     font = new Font();
     font->init();
 
-    staticSet = new StaticSet();
-    StaticObject* newStaticObject;
+    objects = new ObjectSet();
+    Object* newObject;
 
-    newStaticObject = new StaticObject();
-    newStaticObject->mesh = Mesh::cubeMesh->copy()->scale(15, 15, 15)->move(0, 0, 50)->setColor(Color::WHITE);
-    staticSet->pushBack(newStaticObject, 1);
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
+    objects->pushBack(newObject, 1);
 
-    newStaticObject = new StaticObject();
-    newStaticObject->mesh = Mesh::cubeMesh->copy()->scale(5, 5, 5)->move(0, 20, 50)->setColor(Color::GREY);
-    staticSet->pushBack(newStaticObject, 2);
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
+    objects->pushBack(newObject, 2);
 
-    newStaticObject = new StaticObject();
-    newStaticObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
-    staticSet->pushBack(newStaticObject, 3);
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 3);
 
-    newStaticObject = new StaticObject();
-    newStaticObject->mesh = Mesh::capsuleMesh->copy()->scale(15, 15, 15)->move(0, -20, 50)->setColor(Color::GREEN);
-    staticSet->pushBack(newStaticObject, 4);
+    newObject = new Object();
+    newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
+    objects->pushBack(newObject, 4);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 5);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    objects->pushBack(newObject, 6);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 7);
 
 }
 
@@ -125,8 +136,8 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
 
     drawSky(drawer, camera, display);
     
-    if (drawNormals) staticSet->drawAllWithNormals(drawer, camera, display);
-    else staticSet->drawAll(drawer, camera, display);
+    if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
+    else objects->drawAll(drawer, camera, display);
 
     // Draw the fps
     drawer->drawRect(Color::BLACK, 0, 0, 30, 13);
