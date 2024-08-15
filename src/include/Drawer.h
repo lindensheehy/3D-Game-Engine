@@ -120,18 +120,26 @@ class Drawer {
 
     public:
         
-        // Instance variables
+        /*   Instance variables   */
+        
         Uint32* buffer;
         double* depthBuffer;
         unsigned int bufferHeight, bufferWidth;
         unsigned int bufferSize;
 
 
-        // Constructor
+        // Constructors
+        Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput);
         Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput);
+
+        // Destructor
+        ~Drawer();
 
 
         /*   Instance functions   */
+
+        // Sets all the values in the depth buffer to infinity
+        void resetDepthBuffer();
 
         // Returns the 1d index cooresponding to a 2d set of indices
         int bufferIndex(int x, int y);

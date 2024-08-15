@@ -6,7 +6,7 @@
 
 #include "Log.h"
 
-// Related classes
+
 class Object {
     
     /*

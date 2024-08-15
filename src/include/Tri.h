@@ -5,6 +5,7 @@
 // For logging error cases
 #include "Log.h"
 
+
 class Tri2 {
 
     /*
@@ -59,7 +60,7 @@ class Tri3 {
 
     /*
         Similar to Tri2, but for 3d. This also contains a normal vector.
-        There are several other functions here becuase these are the objects used for all program physics items items.
+        There are several other functions here becuase these are the objects used for all the Mesh objects.
     */
 
     public:

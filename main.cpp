@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     initGraphics();
 
     FrameState* frameState = new FrameState();
-    Drawer* drawer;
+    Drawer* drawer = new Drawer(gui->windowWidth, gui->windowHeight);
     SDL_Event event;
     int mouseX, mouseY;
 
@@ -111,11 +111,11 @@ int main(int argc, char* argv[]) {
 
         // Draw stuff
         gui->getBuffer();
-        drawer = new Drawer(gui->buffer, gui->windowWidth, gui->windowHeight);
+        drawer->buffer = gui->buffer;
+        drawer->resetDepthBuffer();
         drawer->fillScreen(Color::BLACK);
         drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
         gui->flip();
-        delete drawer;
 
         // Make current frameState become last frame
         frameState->nextFrame();

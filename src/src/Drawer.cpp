@@ -226,7 +226,22 @@ bool PNG::setChannel(int x, int y, char channel, Uint8 value) {
 /* ---------- Drawer ---------- */
 /* ---------------------------- */
 
-// Constructor
+// Constructors
+Drawer::Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
+
+    this->buffer = nullptr;
+    this->bufferWidth = bufferWidthInput;
+    this->bufferHeight = bufferHeightInput;
+    this->bufferSize = bufferHeightInput * bufferWidthInput;
+
+    // Depth buffer
+    this->depthBuffer = new double[this->bufferSize];
+    for (int i = 0; i < this->bufferSize; i++) {
+        this->depthBuffer[i] = inf;
+    }
+
+}
+
 Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
 
     this->buffer = buffer;
@@ -242,7 +257,20 @@ Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
 
 }
 
+// Destructor
+Drawer::~Drawer() {
+    delete[] this->depthBuffer;
+}
+
 // Instance functions
+void Drawer::resetDepthBuffer() {
+
+    for (int i = 0; i < this->bufferSize; i++) {
+        this->depthBuffer[i] = inf;
+    }
+
+}
+
 int Drawer::bufferIndex(int x, int y) {
 
     if (x >= this->bufferWidth || x < 0) return -1;
