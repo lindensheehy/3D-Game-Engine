@@ -16,6 +16,7 @@ class Mesh {
         The reason there is a verticies list and a tri list is to simplify transformations and to use less memory
         The verticies list stores the actual points, and the tris list only point to values in the verticies list
         Same goes for the normals
+        The projected vertices use Vec3 objects to store depth. the x,y values are the screen coordinates and the z is the depth
     */
 
     public:
@@ -89,11 +90,11 @@ class Mesh {
         // Maps vecs from verticies and normals to tris
         IndexMap* indexMap;
 
-        // Contains the position on the window which thier respective points from the Vec3 list should appear
-        Vec2** projectedVerticies;
+        // Contains the position on the window which thier respective points from the Vec3 list should appear. Vec3 to hold depth
+        Vec3** projectedVerticies;
 
         // Same as 'tris' list. all the vecs witihin these triangles are the same ones from 'projectedVerticies' list.
-        Tri2** projectedTris;
+        Tri3** projectedTris;
 
 
         // Constructor

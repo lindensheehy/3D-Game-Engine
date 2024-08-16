@@ -506,8 +506,8 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
     }
 
     // Reset relative values
-    relativeX = this->x;
-    relativeZ = this->z;
+    relativeX = this->x - aroundX;
+    relativeZ = this->z - aroundZ;
 
     if (pitch != 0) {
 
@@ -522,8 +522,8 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
     }
 
     // Reset relative values
-    relativeY = this->y;
-    relativeZ = this->z;
+    relativeY = this->y - aroundY;
+    relativeZ = this->z - aroundZ;
 
     if (roll != 0) {
 

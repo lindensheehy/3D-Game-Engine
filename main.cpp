@@ -92,10 +92,6 @@ int main(int argc, char* argv[]) {
     bool leave = false;
     while (!leave) {
 
-        // Logging
-        logWrite("Frame ", false);
-        logWrite(frameState->time->totalFrameCount, true);
-
         // Mouse position
         SDL_GetMouseState(&mouseX, &mouseY);
         frameState->mouse->setPos(mouseX, mouseY);

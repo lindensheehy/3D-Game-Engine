@@ -59,8 +59,11 @@ class PNG {
     public:
 
         // Indexes for color channels of each pixel in the buffer array returned by lodepng
-        // I just used char becuase they dont need to be big, values are 0-3
-        static const char RED, GREEN, BLUE, OPACITY;
+        // I just used char becuase they dont need to be big
+        static const char RED = 0;
+        static const char GREEN = 1;
+        static const char BLUE = 2;
+        static const char OPACITY = 3;
 
 
         /*   Instance variables   */
@@ -180,9 +183,9 @@ class Drawer {
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
 
-        // Same as above but uses a Tri2 object. This object is NOT deleted by this function call and must be handled properly
+        // Same as above but uses a Tri object. This object is NOT deleted by this function call and must be handled properly. The Tri3 call includes depth.
         void drawTriangle(Uint32 pixel, Tri2* tri);
-        void drawTriangle(Uint32 pixel, Tri2* tri, double depth1, double depth2, double depth3);
+        void drawTriangle(Uint32 pixel, Tri3* tri);
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);

@@ -134,6 +134,21 @@ void drawGraphics(Drawer* drawer, FrameState* frameState, Camera* camera, Displa
     if (frameState->keyJustDown(SDLK_n))
         drawNormals = !drawNormals;
 
+    if (frameState->keyIsDown(SDLK_j))
+        objects->getById(6)->mesh->rotateSelf(1, 0, 0);
+
+    if (frameState->keyIsDown(SDLK_k))
+        objects->getById(6)->mesh->rotateSelf(0, 1, 0);
+
+    if (frameState->keyIsDown(SDLK_l))
+        objects->getById(6)->mesh->rotateSelf(0, 0, 1);
+
+    if (frameState->keyIsDown(SDLK_o))
+        objects->getById(5)->mesh->move(0, 0.5, 0);
+
+    if (frameState->keyIsDown(SDLK_p))
+        objects->getById(5)->mesh->move(0, -0.5, 0);
+
     drawSky(drawer, camera, display);
     
     if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);

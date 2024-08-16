@@ -39,7 +39,6 @@ int round(double x) {
 
 }
 
-/*   -----   sqrt   -----   */
 double sqrt(double x, double tolerance) {
     /*
         This function makes use of the Newton Raphson method to find the sqrt of x as follows:
@@ -85,7 +84,7 @@ double sqrt(double x, double tolerance) {
     if (x == 0) return 0;
 
     // This will break the loop after a set number of iterations
-    int maxIterations = 10;
+    int maxIterations = 25;
 
     // Newton Raphson method
     double y = x;
@@ -232,7 +231,6 @@ double tan(double x) {
 
 }
 
-// Arctan defined first because it is used for the other two
 double arctan(double x) {
     /*
         Returns radians
@@ -458,6 +456,18 @@ void swap(int* var1, int* var2) {
     */
 
     int temp = *var1;
+    *var1 = *var2;
+    *var2 = temp;
+    return;
+
+}
+
+void swap(double* var1, double* var2) {
+    /*
+        Just swaps the values in var1 and var2 using pointers to those values
+    */
+
+    double temp = *var1;
     *var1 = *var2;
     *var2 = temp;
     return;

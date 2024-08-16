@@ -12,6 +12,10 @@ Tri2::Tri2(bool nullPointers /* default value = false */) {
         nullPointers flag allows the pointers to be manually set instead of autocreating objects
     */
 
+    this->depth1 = 0;
+    this->depth2 = 0;
+    this->depth3 = 0;
+
     if (nullPointers) {
         this->v1 = nullptr;
         this->v2 = nullptr;

@@ -82,6 +82,9 @@ class Camera {
         // The values will be given in terms of fov (0 -> 1 is one fov length) so they dont mean anything for drawing until converted using a Display object
         void project(Vec3* vec, Vec2* displayPos);
 
+        // Same as above, but places distance between point and camera position into the z coordinate of displayPos
+        void project(Vec3* vec, Vec3* displayPos);
+
         // Runs the function above for all the verticies in a mesh
         void project(Mesh* mesh);
 
@@ -135,6 +138,9 @@ class Display {
         // This takes the fov factor from the output of a projection call, and turns it into a pixel position on the gui window.
         // The return values of this are placed into the components of the input vector. meaning the old values are overwritten
         void toDisplayPos(Vec2* vec);
+
+        // Same as above but supports depth in the z value. the z value is not changed by this call
+        void toDisplayPos(Vec3* vec);
 
         // Does the above step for each vertex in a mesh
         void toDisplayPos(Mesh* mesh);

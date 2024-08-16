@@ -140,8 +140,8 @@ Mesh* Mesh::copy() {
     newCopy->verticies = new Vec3*[this->vertexCount];
     newCopy->normals = new Vec3*[this->normalCount];
     newCopy->tris = new Tri3*[this->triCount];
-    newCopy->projectedVerticies = new Vec2*[this->vertexCount];
-    newCopy->projectedTris = new Tri2*[this->triCount];
+    newCopy->projectedVerticies = new Vec3*[this->vertexCount];
+    newCopy->projectedTris = new Tri3*[this->triCount];
 
     // Fill lists
     for (int i = 0; i < this->vertexCount; i++)
@@ -154,11 +154,11 @@ Mesh* Mesh::copy() {
 
     for (int i = 0; i < this->triCount; i++) {
         newCopy->tris[i] = new Tri3(true);
-        newCopy->projectedTris[i] = new Tri2(true);
+        newCopy->projectedTris[i] = new Tri3(true);
     }
 
     for (int i = 0; i < this->vertexCount; i++) 
-        newCopy->projectedVerticies[i] = new Vec2();
+        newCopy->projectedVerticies[i] = new Vec3();
 
     // Copy index map
     newCopy->indexMap = this->indexMap->copy();
@@ -268,10 +268,14 @@ Mesh* Mesh::rotateSelf(Vec3* angle) {
 
 Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
 
+    logWrite("rotate:", true);
+
     // This doesnt create any new object
     Vec3* center = this->getCenter();
+    center->log();
 
     for (int i = 0; i < this->vertexCount; i++) {
+        this->verticies[i]->log();
         this->verticies[i]->rotate(yaw, pitch, roll, center);
     }
 
@@ -279,6 +283,8 @@ Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
     for (int i = 0; i < this->normalCount; i++) {
         this->normals[i]->rotate(yaw, pitch, roll);
     }
+
+    logWrite("Done!\n\n", true);
 
     return this;
 
@@ -376,20 +382,29 @@ void Mesh::initMeshes() {
     Vec3** vertexList;
     Vec3** normalList;
     Tri3** triList;
-    Vec2** projectedVertexList;
-    Tri2** projectedTriList;
+    Vec3** projectedVertexList;
+    Tri3** projectedTriList;
     IndexMap* indexMap;
+
+    int vertexCount;
+    int triCount;
+    int normalCount;
 
     /* ------------------- */
     /* ---  Cube Mesh  --- */
     /* ------------------- */
 
+    vertexCount = 8;
+    triCount = 12;
+    normalCount = 6;
+
+
     // Create lists
-    vertexList = new Vec3*[8];
-    normalList = new Vec3*[6];
-    triList = new Tri3*[12];
-    projectedVertexList = new Vec2*[8];
-    projectedTriList = new Tri2*[12];
+    vertexList = new Vec3*[vertexCount];
+    normalList = new Vec3*[normalCount];
+    triList = new Tri3*[triCount];
+    projectedVertexList = new Vec3*[vertexCount];
+    projectedTriList = new Tri3*[triCount];
     
     // Load verticies
     vertexList[0] = new Vec3(-0.5, -0.5, -0.5);
@@ -410,7 +425,7 @@ void Mesh::initMeshes() {
     normalList[5] = new Vec3(0, 0, 1);
 
     // Load index map
-    indexMap = new IndexMap(12);
+    indexMap = new IndexMap(triCount);
     //              triangle     v2      normal
     //                 ||   v1   ||   v3   ||
     //                 \/   \/   \/   \/   \/
@@ -428,14 +443,14 @@ void Mesh::initMeshes() {
     indexMap->setGroup(11,  1,   7,   5,   5); // facing +z
 
     // Space for triangle objects (which point to the verticies vectors)
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < triCount; i++)
         triList[i] = new Tri3(true);
 
     // allocate space for projection values
-    for (int i = 0; i < 8; i++) 
-        projectedVertexList[i] = new Vec2();
-    for (int i = 0; i < 12; i++)
-        projectedTriList[i] = new Tri2(true);
+    for (int i = 0; i < vertexCount; i++) 
+        projectedVertexList[i] = new Vec3();
+    for (int i = 0; i < triCount; i++)
+        projectedTriList[i] = new Tri3(true);
 
     // Store the created mesh in the class variable
     Mesh::cubeMesh = new Mesh();
@@ -444,9 +459,9 @@ void Mesh::initMeshes() {
     Mesh::cubeMesh->verticies = vertexList;
     Mesh::cubeMesh->normals = normalList;
 
-    Mesh::cubeMesh->vertexCount = 8;
-    Mesh::cubeMesh->normalCount = 6;
-    Mesh::cubeMesh->triCount = 12;
+    Mesh::cubeMesh->vertexCount = vertexCount;
+    Mesh::cubeMesh->triCount = triCount;
+    Mesh::cubeMesh->normalCount = normalCount;
 
     Mesh::cubeMesh->tris = triList;
     Mesh::cubeMesh->projectedVerticies = projectedVertexList;
@@ -459,15 +474,16 @@ void Mesh::initMeshes() {
     /* ---  Sphere Mesh  --- */
     /* --------------------- */
 
-    int triCount = 200;
-    int vertexCount = 102;
+    vertexCount = 102;
+    triCount = 200;
+    normalCount = 200;
 
     // Create lists
     vertexList = new Vec3*[vertexCount];
-    normalList = new Vec3*[triCount];
+    normalList = new Vec3*[normalCount];
     triList = new Tri3*[triCount];
-    projectedVertexList = new Vec2*[vertexCount];
-    projectedTriList = new Tri2*[triCount];
+    projectedVertexList = new Vec3*[vertexCount];
+    projectedTriList = new Tri3*[triCount];
     
     // Load verticies
 
@@ -779,9 +795,9 @@ void Mesh::initMeshes() {
 
     // allocate space for projection values
     for (int i = 0; i < vertexCount; i++)
-        projectedVertexList[i] = new Vec2();
+        projectedVertexList[i] = new Vec3();
     for (int i = 0; i < triCount; i++)
-        projectedTriList[i] = new Tri2(true);
+        projectedTriList[i] = new Tri3(true);
 
     // Store the created mesh in the class variable
     Mesh::sphereMesh = new Mesh();
@@ -791,8 +807,8 @@ void Mesh::initMeshes() {
     Mesh::sphereMesh->normals = normalList;
 
     Mesh::sphereMesh->vertexCount = vertexCount;
-    Mesh::sphereMesh->normalCount = triCount;
     Mesh::sphereMesh->triCount = triCount;
+    Mesh::sphereMesh->normalCount = normalCount;
 
     Mesh::sphereMesh->tris = triList;
     Mesh::sphereMesh->projectedVerticies = projectedVertexList;
@@ -810,15 +826,16 @@ void Mesh::initMeshes() {
     /* ---  Capsule Mesh  --- */
     /* ---------------------- */
 
-    triCount = 240;
     vertexCount = 122;
+    triCount = 240;
+    normalCount = 240;
 
     // Create lists
     vertexList = new Vec3*[vertexCount];
-    normalList = new Vec3*[triCount];
+    normalList = new Vec3*[normalCount];
     triList = new Tri3*[triCount];
-    projectedVertexList = new Vec2*[vertexCount];
-    projectedTriList = new Tri2*[triCount];
+    projectedVertexList = new Vec3*[vertexCount];
+    projectedTriList = new Tri3*[triCount];
     
     // Load verticies
 
@@ -1171,9 +1188,9 @@ void Mesh::initMeshes() {
 
     // allocate space for projection values
     for (int i = 0; i < vertexCount; i++)
-        projectedVertexList[i] = new Vec2();
+        projectedVertexList[i] = new Vec3();
     for (int i = 0; i < triCount; i++)
-        projectedTriList[i] = new Tri2(true);
+        projectedTriList[i] = new Tri3(true);
 
     // Store the created mesh in the class variable
     Mesh::capsuleMesh = new Mesh();
@@ -1183,7 +1200,7 @@ void Mesh::initMeshes() {
     Mesh::capsuleMesh->normals = normalList;
 
     Mesh::capsuleMesh->vertexCount = vertexCount;
-    Mesh::capsuleMesh->normalCount = triCount;
+    Mesh::capsuleMesh->normalCount = normalCount;
     Mesh::capsuleMesh->triCount = triCount;
 
     Mesh::capsuleMesh->tris = triList;

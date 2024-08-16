@@ -10,8 +10,9 @@ class Tri2 {
 
     /*
         Represents a triangle in 2d space.
-        Simply holds 3 Vec2 objects, and has setters.
-        Theres really not all that much to do in 2d.
+        Holds 3 Vec2 objects, and has setters.
+        This also includes a depth value for each vertex which is optional. 
+        Depth is used to hold distance between the 3d vertex and the camera from projection.
     */
 
     public:
@@ -20,6 +21,10 @@ class Tri2 {
         Vec2* v1;
         Vec2* v2;
         Vec2* v3;
+
+        double depth1;
+        double depth2;
+        double depth3;
 
 
         /*   Constructor   */

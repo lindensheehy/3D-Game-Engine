@@ -28,7 +28,7 @@ int round(double x);
 /*   -----   sqrt   -----   */
 
 // Returns a value within the given tolerance from the actual square root of x
-double sqrt(double x, double tolerance = 0.001);
+double sqrt(double x, double tolerance = 0.000001);
 
 
 /*   --------------------------   */
@@ -72,6 +72,7 @@ double inRange(double num, double from, double to);
 
 // Swaps the values in two memory locations.
 void swap(int* var1, int* var2);
+void swap(double* var1, double* var2);
 
 // Returns the angle between two points in DEGREES.
 // This angle is from a vertical line on (x1, y1) to (x2, y2)

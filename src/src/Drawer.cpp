@@ -69,12 +69,6 @@ Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
 /* ---------- PNG ---------- */
 /* ------------------------- */
 
-// Color indexes. Used to parse the return data from lodepng
-const char PNG::RED = 0;
-const char PNG::GREEN = 1;
-const char PNG::BLUE = 2;
-const char PNG::OPACITY = 3;
-
 // Constructor from filename
 PNG::PNG(const char* filename) {
 
@@ -266,6 +260,7 @@ Drawer::~Drawer() {
 void Drawer::resetDepthBuffer() {
 
     for (int i = 0; i < this->bufferSize; i++) {
+        //logWrite(this->depthBuffer[i], true);
         this->depthBuffer[i] = inf;
     }
 
@@ -308,6 +303,7 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth) {
     if (depth > this->depthBuffer[index]) return;
 
     buffer[index] = pixel;
+    depthBuffer[index] = depth;
 
     return;
 }
@@ -392,20 +388,39 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double 
 
 }
 
-void Drawer::drawVerticalLine(Uint32 pixel, int startY, int endY, int x) {
-    for (int i = startY; i <= endY; i++) {
+void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
+
+    if (y1 > y2) {
+        swap(&y1, &y2);
+    }
+
+    for (int i = y1; i <= y2; i++) {
         this->writePixel(pixel, x, i);
     }
+
 }
 
-void Drawer::drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2) {
+void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2) {
 
-    double distDepth = depth2 - depth1;
-
-    for (int i = startY; i <= endY; i++) {
-        double d = depth1 + (distDepth * ( (i - startY) / (endY - startY) ));
-        this->writePixel(pixel, x, i, d);
+    if (y1 > y2) {
+        swap(&y1, &y2);
+        swap(&depth1, &depth2);
     }
+
+    if (y1 == y2) {
+        double d = max(depth1, depth2);
+        this->writePixel(pixel, x, y1, d);
+        return;
+    }
+
+    double depthSlope = (depth2 - depth1) / (y2 - y1);
+    double d = depth1;
+
+    for (int i = y1; i <= y2; i++) {
+        this->writePixel(pixel, x, i, d);
+        d += depthSlope;
+    }
+
 }
 
 void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y) {
@@ -466,6 +481,23 @@ void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
+void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth) {
+
+    int limit = radiusx * radiusy;
+    double factorx = sqrt( radiusy / radiusx );
+    double factory = 1 / factorx;
+
+    for (int i = -radiusx; i < radiusx; i++) {
+        for (int j = -radiusy; j < radiusy; j++) {
+
+            if ( ((factorx * i) * (factorx * i)) + ((factory * j) * (factory * j)) < limit ) {
+                this->writePixel(pixel, locationx + i, locationy + j, depth);
+            }
+            
+        }
+    }
+}
+
 void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius) {
 
     int limit = radius * radius;
@@ -475,6 +507,21 @@ void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius) 
 
             if ( (i * i) + (j * j) < limit ) {
                 this->writePixel(pixel, locationx + i, locationy + j);
+            }
+            
+        }
+    }
+}
+
+void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius, double depth) {
+
+    int limit = radius * radius;
+
+    for (int i = -radius; i < radius; i++) {
+        for (int j = -radius; j < radius; j++) {
+
+            if ( (i * i) + (j * j) < limit ) {
+                this->writePixel(pixel, locationx + i, locationy + j, depth);
             }
             
         }
@@ -607,17 +654,17 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
     // Cases where the 'triangle' should just be drawn as a line, meaning two verticies share the same coordinates
     if ( x1 == x2 && y1 == y2 ) {
-        this->drawLine(pixel, x1, y1, x3, y3);
+        this->drawLine(pixel, x1, y1, x3, y3, depth1, depth3);
         return;
     }
 
     if ( x1 == x3 && y1 == y3 ) {
-        this->drawLine(pixel, x1, y1, x2, y2);
+        this->drawLine(pixel, x1, y1, x2, y2, depth1, depth2);
         return;
     }
 
     if ( x2 == x3 && y2 == y3 ) {
-        this->drawLine(pixel, x2, y2, x1, y1);
+        this->drawLine(pixel, x1, y1, x2, y2, depth1, depth2);
         return;
     }
 
@@ -625,16 +672,19 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
     if (x2 < x1) {
         swap(&x1, &x2);
         swap(&y1, &y2);
+        swap(&depth1, &depth2);
     }
 
     if (x3 < x1) {
         swap(&x1, &x3);
         swap(&y1, &y3);
+        swap(&depth1, &depth3);
     }
 
     if (x3 < x2) {
         swap(&x2, &x3);
         swap(&y2, &y3);
+        swap(&depth2, &depth3);
     }
 
     // These are the y values the line will go to/from for each x
@@ -644,50 +694,115 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
     double actualStartY = y1;
     double actualEndY = y1;
 
-    // Find slopes, 1e250 slope means that they have the same x value
-    double slopeLeftMid;
-    double slopeMidRight;
-    double slopeLeftRight;
+    double startDepth, endDepth;
+    double actualStartDepth = depth1;
+    double actualEndDepth = depth1;
+
+    // Find slopes, inf slope means that they have the same x value
+    double slopeLeftMid, slopeLeftMidDepth;
+    double slopeMidRight, slopeMidRightDepth;
+    double slopeLeftRight, slopeLeftRightDepth;
 
     // Slope between left-most point and the middle point
-    if (x1 != x2) slopeLeftMid = ((double) (y2 - y1)) / (double) (x2 - x1);
-    else slopeLeftMid = inf; // just a big number representing infinity
+    if (x1 != x2) {
+        slopeLeftMid = ((double) (y2 - y1)) / ((double) (x2 - x1));
+        slopeLeftMidDepth = ((double) (depth2 - depth1)) / ((double) (x2 - x1));
+    }
+
+    else slopeLeftMid = inf;
 
     // Slope between middle point and the right-most point
-    if (x2 != x3) slopeMidRight = ((double) (y3 - y2)) / (double) (x3 - x2);
-    else slopeMidRight = inf; // just a big number representing infinity
+    if (x2 != x3) {
+        slopeMidRight = ((double) (y3 - y2)) / (double) (x3 - x2);
+        slopeMidRightDepth = ((double) (depth3 - depth2)) / ((double) (x3 - x2));
+    }
+
+    else slopeMidRight = inf;
 
     // Slope between the left-most point and the right-most point
-    if (x1 != x3) slopeLeftRight = ((double) (y3 - y1)) / (double) (x3 - x1);
-    else slopeLeftRight = inf; // just a big number representing infinity
+    if (x1 != x3) {
+        slopeLeftRight = ((double) (y3 - y1)) / (double) (x3 - x1);
+        slopeLeftRightDepth = ((double) (depth3 - depth1)) / ((double) (x3 - x1));
+    }
+
+    else slopeLeftRight = inf;
 
     // this checks if all the points have the same x coordinate and draws a single line accordingly
     // Since the points are sorted, if the lowest (left) and highest (right) have the same x, so does the middle
     if (slopeLeftRight == inf) {
-        startY = min(min(y1, y2), y3);
-        endY = max(max(y1, y2), y3);
-        this->drawVerticalLine(pixel, startY, endY, x1);
+
+        // Sort by y values (least to greatest)
+        if (y2 < y1) {
+            swap(&x1, &x2);
+            swap(&y1, &y2);
+            swap(&depth1, &depth2);
+        }
+
+        if (y3 < y1) {
+            swap(&x1, &x3);
+            swap(&y1, &y3);
+            swap(&depth1, &depth3);
+        }
+
+        if (y3 < y2) {
+            swap(&x2, &x3);
+            swap(&y2, &y3);
+            swap(&depth2, &depth3);
+        }
+
+        this->drawVerticalLine(pixel, y1, y2, x1, depth1, depth2);
+        this->drawVerticalLine(pixel, y2, y3, x1, depth2, depth3);
+
         return;
+
     }
 
     // From left to right until the mid vertex is hit
     if (slopeLeftMid != inf) {
+
         for (int i = x1; i < x2; i++) {
 
             actualStartY += slopeLeftMid;
             actualEndY += slopeLeftRight;
 
-            startY = min(actualStartY, actualEndY);
-            endY = max(actualStartY, actualEndY);
+            actualStartDepth += slopeLeftMidDepth;
+            actualEndDepth += slopeLeftRightDepth;
 
-            this->drawVerticalLine(pixel, startY, endY, i);
+            if (actualStartY > actualEndY) {
+
+                startY = (int) actualEndY;
+                endY = (int) actualStartY;
+
+                startDepth = actualEndDepth;
+                endDepth = actualStartDepth;
+            
+            }
+
+            else {
+
+                startY = (int) actualStartY;
+                endY = (int) actualEndY;
+
+                startDepth = actualStartDepth;
+                endDepth = actualEndDepth;
+
+            }
+
+            this->drawVerticalLine(pixel, startY, endY, i, startDepth, endDepth);
 
         }
+
+    }
     
     // When the two left points have the same x, the startY and endY need to be adjusted becuase the first loop was skipped
-    } else {
+    else {
+
         actualStartY = y2;
         actualEndY = y1;
+
+        actualStartDepth = depth2;
+        actualEndDepth = depth1;
+
     }
     
     // Carry on from the last loop
@@ -697,10 +812,30 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
             actualStartY += slopeMidRight;
             actualEndY += slopeLeftRight;
 
-            startY = min(actualStartY, actualEndY);
-            endY = max(actualStartY, actualEndY);
+            actualStartDepth += slopeMidRightDepth;
+            actualEndDepth += slopeLeftRightDepth;
 
-            this->drawVerticalLine(pixel, startY, endY, i);
+            if (actualStartY > actualEndY) {
+
+                startY = (int) actualEndY;
+                endY = (int) actualStartY;
+
+                startDepth = actualEndDepth;
+                endDepth = actualStartDepth;
+            
+            }
+
+            else {
+
+                startY = (int) actualStartY;
+                endY = (int) actualEndY;
+
+                startDepth = actualStartDepth;
+                endDepth = actualEndDepth;
+
+            }
+
+            this->drawVerticalLine(pixel, startY, endY, i, startDepth, endDepth);
 
         }
     }
@@ -745,6 +880,42 @@ void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
 
 }
 
+void Drawer::drawTriangle(Uint32 pixel, Tri3* tri) {
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (tri == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        return;
+    }
+
+    if (tri->v1 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v2 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v3 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        return;
+    }
+    
+    int x1 = (int) round(tri->v1->x);
+    int y1 = (int) round(tri->v1->y);
+    int x2 = (int) round(tri->v2->x);
+    int y2 = (int) round(tri->v2->y);
+    int x3 = (int) round(tri->v3->x);
+    int y3 = (int) round(tri->v3->y);
+
+    this->drawTriangle(pixel, x1, y1, x2, y2, x3, y3, tri->v1->z, tri->v2->z, tri->v3->z);
+
+    return;
+
+}
+
 void Drawer::drawpng(PNG* file, int x, int y) {
 
     if (x + file->width > bufferWidth) return;
@@ -761,6 +932,30 @@ void Drawer::drawpng(PNG* file, int x, int y) {
 
             if (pixel->opacityValue != 0x00) {
                 this->writePixel(pixel->rawValue, i, j);
+            }
+
+        }
+    }
+    
+    return;
+}
+
+void Drawer::drawpng(PNG* file, int x, int y, double depth) {
+
+    if (x + file->width > bufferWidth) return;
+    if (y + file->height > bufferHeight) return;
+    
+    if (this->buffer == nullptr) {
+        return;
+    }
+
+    for (int i = x; i < (x + file->width); i++) {
+        for (int j = y; j < (y + file->height); j++) {
+
+            Color* pixel = file->getPixel(i - x, j - y);
+
+            if (pixel->opacityValue != 0x00) {
+                this->writePixel(pixel->rawValue, i, j, depth);
             }
 
         }
