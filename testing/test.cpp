@@ -1,7 +1,7 @@
-#include "../src/log/log.h"
+#include "../src/include/Log.h"
 
 // Libs for functions to test
-#include "../src/math/math.h"
+#include "../src/include/Math.h"
 
 
 // Test counters

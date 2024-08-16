@@ -268,14 +268,10 @@ Mesh* Mesh::rotateSelf(Vec3* angle) {
 
 Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
 
-    logWrite("rotate:", true);
-
     // This doesnt create any new object
     Vec3* center = this->getCenter();
-    center->log();
 
     for (int i = 0; i < this->vertexCount; i++) {
-        this->verticies[i]->log();
         this->verticies[i]->rotate(yaw, pitch, roll, center);
     }
 
@@ -283,8 +279,6 @@ Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
     for (int i = 0; i < this->normalCount; i++) {
         this->normals[i]->rotate(yaw, pitch, roll);
     }
-
-    logWrite("Done!\n\n", true);
 
     return this;
 
