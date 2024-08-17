@@ -74,15 +74,13 @@ void Gui::exit() {
 }
 
 void Gui::getBuffer() {
-    int windowWidthTemp = this->windowWidth;
-    SDL_LockTexture(this->texture, nullptr, (void**) &(this->buffer), &windowWidthTemp);
+    SDL_LockTexture(this->texture, nullptr, (void**) &(this->buffer), &this->pitch);
 }
 
 void Gui::flip() {
-    int windowWidthTemp = this->windowWidth;
     SDL_UnlockTexture(this->texture);
-    SDL_UpdateTexture(this->texture, nullptr, this->buffer, windowWidthTemp * sizeof(Uint32));
-    SDL_RenderClear(this->renderer);
+    SDL_UpdateTexture(this->texture, nullptr, this->buffer, this->pitch);
+    //SDL_RenderClear(this->renderer);
     SDL_RenderCopy(this->renderer, this->texture, nullptr, nullptr);
     SDL_RenderPresent(this->renderer);
 }

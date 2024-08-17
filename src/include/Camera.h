@@ -139,7 +139,7 @@ class Display {
         // The return values of this are placed into the components of the input vector. meaning the old values are overwritten
         void toDisplayPos(Vec2* vec);
 
-        // Same as above but supports depth in the z value. the z value is not changed by this call
+        // Same as above but supports depth in the z value. the z value is upscaled by 2^8 times in this
         void toDisplayPos(Vec3* vec);
 
         // Does the above step for each vertex in a mesh

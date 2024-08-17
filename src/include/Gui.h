@@ -21,6 +21,9 @@ class Gui {
 
         // Window size
         int windowWidth, windowHeight;
+        
+        // Used for sdl. stores the amount of bytes per row of pixels
+        int pitch;
 
         // SDL stuff for drawing to the window
         SDL_Window* window;

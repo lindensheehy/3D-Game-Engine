@@ -23,3 +23,5 @@ main.exe
 
 :: pause for debugging purposes
 pause
+
+:: vscode-fold-0

@@ -230,9 +230,8 @@ Drawer::Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
 
     // Depth buffer
     this->depthBuffer = new double[this->bufferSize];
-    for (int i = 0; i < this->bufferSize; i++) {
+    for (int i = 0; i < this->bufferSize; i++)
         this->depthBuffer[i] = inf;
-    }
 
 }
 
@@ -245,9 +244,8 @@ Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
 
     // Depth buffer
     this->depthBuffer = new double[this->bufferSize];
-    for (int i = 0; i < this->bufferSize; i++) {
+    for (int i = 0; i < this->bufferSize; i++)
         this->depthBuffer[i] = inf;
-    }
 
 }
 
@@ -259,19 +257,27 @@ Drawer::~Drawer() {
 // Instance functions
 void Drawer::resetDepthBuffer() {
 
-    for (int i = 0; i < this->bufferSize; i++) {
-        //logWrite(this->depthBuffer[i], true);
+    for (int i = 0; i < this->bufferSize; i++)
         this->depthBuffer[i] = inf;
-    }
 
 }
 
 int Drawer::bufferIndex(int x, int y) {
 
-    if (x >= this->bufferWidth || x < 0) return -1;
-    if (y >= this->bufferHeight || y < 0) return -1;
+    if (!this->inBufferRange(x, y)) return -1;
 
     return (y * this->bufferWidth) + x;
+
+}
+
+bool Drawer::inBufferRange(int x, int y) {
+
+    return (
+        x >= 0 &&
+        x < this->bufferWidth &&
+        y >= 0 &&
+        y < this->bufferHeight
+    );
 
 }
 
@@ -297,9 +303,8 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth) {
     }
 
     int index = this->bufferIndex(x, y);
-
-    // Skip cases
     if (index == -1) return;
+
     if (depth > this->depthBuffer[index]) return;
 
     buffer[index] = pixel;
@@ -402,23 +407,42 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
 
 void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2) {
 
-    if (y1 > y2) {
-        swap(&y1, &y2);
-        swap(&depth1, &depth2);
-    }
+    // Skip if coordinates are out of range
+    if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;
 
     if (y1 == y2) {
-        double d = max(depth1, depth2);
+        double d = min(depth1, depth2);
         this->writePixel(pixel, x, y1, d);
         return;
     }
 
-    double depthSlope = (depth2 - depth1) / (y2 - y1);
-    double d = depth1;
+    double depthSlope;
+    double d;
 
-    for (int i = y1; i <= y2; i++) {
-        this->writePixel(pixel, x, i, d);
-        d += depthSlope;
+    if (y1 < y2) {
+
+        depthSlope = (depth2 - depth1) / (y2 - y1);
+        d = depth1;
+
+        for (int i = y1; i <= y2; i++) {
+            this->writePixel(pixel, x, i, d);
+            d += depthSlope;
+        }
+
+
+    }
+
+    else {
+
+        depthSlope = (depth1 - depth2) / (y1 - y2);
+        d = depth2;
+
+        for (int i = y2; i <= y1; i++) {
+            this->writePixel(pixel, x, i, d);
+            d += depthSlope;
+        }
+
+
     }
 
 }
@@ -648,25 +672,30 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
         First find where each point stands in relation to eachother, then from the lowest x go to the highest x
     */
+  
 
-    // When all 3 points have the same coordinates we just return and draw nothing
-    if ( x1 == x2 && x2 == x3 && y1 == y2 && y2 == y3 ) return;
+    bool oneIsTwo = (x1 == x2) && (y1 == y2);
+    bool twoIsThree = (x2 == x3) && (y2 == y3);
+    bool oneIsThree = (x1 == x3) && (y1 == y3);
 
-    // Cases where the 'triangle' should just be drawn as a line, meaning two verticies share the same coordinates
-    if ( x1 == x2 && y1 == y2 ) {
+    // Cases where the 'triangle' has more than one point with the same coordinates, so these are checked here for quick handling
+    if ( oneIsTwo ) {
+
+        // If two also equals three, all three coordinates are the same, so just return.
+        // I should draw a single pixel in this case, but its not really worth it as it will barely be noticable
+        if (twoIsThree) return;
+
         this->drawLine(pixel, x1, y1, x3, y3, depth1, depth3);
         return;
+
     }
 
-    if ( x1 == x3 && y1 == y3 ) {
+    // Either of these cases draw the same line
+    if ( oneIsThree || twoIsThree) {
         this->drawLine(pixel, x1, y1, x2, y2, depth1, depth2);
         return;
     }
 
-    if ( x2 == x3 && y2 == y3 ) {
-        this->drawLine(pixel, x1, y1, x2, y2, depth1, depth2);
-        return;
-    }
 
     // Sort the coordinates by their x values from least to greatest (left to right)
     if (x2 < x1) {
@@ -689,106 +718,85 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
     // These are the y values the line will go to/from for each x
     // The doubles store the actual value, and the ints are rounded
-    // The actual values may not actually be start and end as they say and might be backwards, thats why the min and max functions are used later
-    int startY, endY;
-    double actualStartY = y1;
-    double actualEndY = y1;
+    // The actual values may not actually be start and end as they say and might be backwards
+    double startY = (double) y1;
+    double endY = (double) y1;
+    int startYInt, endYInt;
 
-    double startDepth, endDepth;
-    double actualStartDepth = depth1;
-    double actualEndDepth = depth1;
+    double slope12;
+    double slope23;
+    double slope13;
 
-    // Find slopes, inf slope means that they have the same x value
-    double slopeLeftMid, slopeLeftMidDepth;
-    double slopeMidRight, slopeMidRightDepth;
-    double slopeLeftRight, slopeLeftRightDepth;
+    double startDepth = depth1;
+    double endDepth = depth1;
+
+    double slopeDepth12;
+    double slopeDepth23;
+    double slopeDepth13;
+
+    bool invalidSlope12 = false;
+    bool invalidSlope23 = false;
+    bool invalidSlope13 = false;
+
 
     // Slope between left-most point and the middle point
     if (x1 != x2) {
-        slopeLeftMid = ((double) (y2 - y1)) / ((double) (x2 - x1));
-        slopeLeftMidDepth = ((double) (depth2 - depth1)) / ((double) (x2 - x1));
+        slope12 = (double) (y2 - y1) / (x2 - x1);
+        slopeDepth12 = (depth2 - depth1) / (x2 - x1);
     }
 
-    else slopeLeftMid = inf;
+    else invalidSlope12 = true;
 
     // Slope between middle point and the right-most point
     if (x2 != x3) {
-        slopeMidRight = ((double) (y3 - y2)) / (double) (x3 - x2);
-        slopeMidRightDepth = ((double) (depth3 - depth2)) / ((double) (x3 - x2));
+        slope23 = (double) (y3 - y2) / (x3 - x2);
+        slopeDepth23 = (depth3 - depth2) / (x3 - x2);
     }
 
-    else slopeMidRight = inf;
+    else invalidSlope23 = true;
 
     // Slope between the left-most point and the right-most point
     if (x1 != x3) {
-        slopeLeftRight = ((double) (y3 - y1)) / (double) (x3 - x1);
-        slopeLeftRightDepth = ((double) (depth3 - depth1)) / ((double) (x3 - x1));
+        slope13 = (double) (y3 - y1) / (x3 - x1);
+        slopeDepth13 = (depth3 - depth1) / (x3 - x1);
     }
 
-    else slopeLeftRight = inf;
+    else invalidSlope13 = true;
 
-    // this checks if all the points have the same x coordinate and draws a single line accordingly
-    // Since the points are sorted, if the lowest (left) and highest (right) have the same x, so does the middle
-    if (slopeLeftRight == inf) {
 
-        // Sort by y values (least to greatest)
-        if (y2 < y1) {
-            swap(&x1, &x2);
-            swap(&y1, &y2);
-            swap(&depth1, &depth2);
-        }
+    // this checks if all the points have the same x coordinate and draws a single line accordingly (in two parts)
+    // If the slope between 1 and 2, and the slope between 2 and 3 are both inf, theres no need to check the slope between 1 and 3.
+    if (invalidSlope13) {
 
-        if (y3 < y1) {
-            swap(&x1, &x3);
-            swap(&y1, &y3);
-            swap(&depth1, &depth3);
-        }
+        if (y1 < y2)
+            this->drawVerticalLine(pixel, y1, y2, x1, depth1, depth2);
+        else
+            this->drawVerticalLine(pixel, y2, y1, x1, depth2, depth1);
 
-        if (y3 < y2) {
-            swap(&x2, &x3);
-            swap(&y2, &y3);
-            swap(&depth2, &depth3);
-        }
-
-        this->drawVerticalLine(pixel, y1, y2, x1, depth1, depth2);
-        this->drawVerticalLine(pixel, y2, y3, x1, depth2, depth3);
+        if (y2 < y3)
+            this->drawVerticalLine(pixel, y2, y3, x1, depth2, depth3);
+        else
+            this->drawVerticalLine(pixel, y3, y2, x1, depth3, depth2);
 
         return;
 
     }
 
     // From left to right until the mid vertex is hit
-    if (slopeLeftMid != inf) {
+    if (!invalidSlope12) {
 
         for (int i = x1; i < x2; i++) {
 
-            actualStartY += slopeLeftMid;
-            actualEndY += slopeLeftRight;
+            startY += slope12;
+            endY += slope13;
 
-            actualStartDepth += slopeLeftMidDepth;
-            actualEndDepth += slopeLeftRightDepth;
+            startYInt = (int) startY;
+            endYInt = (int) endY;
 
-            if (actualStartY > actualEndY) {
+            startDepth += slopeDepth12;
+            endDepth += slopeDepth13;
 
-                startY = (int) actualEndY;
-                endY = (int) actualStartY;
-
-                startDepth = actualEndDepth;
-                endDepth = actualStartDepth;
-            
-            }
-
-            else {
-
-                startY = (int) actualStartY;
-                endY = (int) actualEndY;
-
-                startDepth = actualStartDepth;
-                endDepth = actualEndDepth;
-
-            }
-
-            this->drawVerticalLine(pixel, startY, endY, i, startDepth, endDepth);
+            this->drawVerticalLine(pixel, startYInt, endYInt, i, startDepth, endDepth);
 
         }
 
@@ -797,47 +805,32 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
     // When the two left points have the same x, the startY and endY need to be adjusted becuase the first loop was skipped
     else {
 
-        actualStartY = y2;
-        actualEndY = y1;
+        startY = (double) y2;
+        endY = (double) y1;
 
-        actualStartDepth = depth2;
-        actualEndDepth = depth1;
+        startDepth = depth2;
+        endDepth = depth1;
 
     }
     
     // Carry on from the last loop
-    if (slopeMidRight != inf) {
+    if (!invalidSlope23) {
+
         for (int i = x2; i < x3; i++) {
 
-            actualStartY += slopeMidRight;
-            actualEndY += slopeLeftRight;
+            startY += slope23;
+            endY += slope13;
 
-            actualStartDepth += slopeMidRightDepth;
-            actualEndDepth += slopeLeftRightDepth;
+            startYInt = (int) startY;
+            endYInt = (int) endY;
 
-            if (actualStartY > actualEndY) {
+            startDepth += slopeDepth23;
+            endDepth += slopeDepth13;
 
-                startY = (int) actualEndY;
-                endY = (int) actualStartY;
-
-                startDepth = actualEndDepth;
-                endDepth = actualStartDepth;
-            
-            }
-
-            else {
-
-                startY = (int) actualStartY;
-                endY = (int) actualEndY;
-
-                startDepth = actualStartDepth;
-                endDepth = actualEndDepth;
-
-            }
-
-            this->drawVerticalLine(pixel, startY, endY, i, startDepth, endDepth);
+            this->drawVerticalLine(pixel, startYInt, endYInt, i, startDepth, endDepth);
 
         }
+
     }
 
     return;
@@ -910,7 +903,11 @@ void Drawer::drawTriangle(Uint32 pixel, Tri3* tri) {
     int x3 = (int) round(tri->v3->x);
     int y3 = (int) round(tri->v3->y);
 
-    this->drawTriangle(pixel, x1, y1, x2, y2, x3, y3, tri->v1->z, tri->v2->z, tri->v3->z);
+    double d1 = tri->v1->z;
+    double d2 = tri->v2->z;
+    double d3 = tri->v3->z;
+
+    this->drawTriangle(pixel, x1, y1, x2, y2, x3, y3, d1, d2, d3);
 
     return;
 

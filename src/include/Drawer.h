@@ -6,6 +6,7 @@
 
 #include "Vec.h"
 #include "Tri.h"
+#include "LinkedList.h"
 
 #include "Math.h"
 #include "Log.h"
@@ -126,9 +127,11 @@ class Drawer {
         /*   Instance variables   */
         
         Uint32* buffer;
-        double* depthBuffer;
         unsigned int bufferHeight, bufferWidth;
         unsigned int bufferSize;
+
+        // The depth buffer stores the distance between each pixel and the camera. this allows meshes to be drawn in any order while appearing accurately.
+        double* depthBuffer;
 
 
         // Constructors
@@ -146,6 +149,9 @@ class Drawer {
 
         // Returns the 1d index cooresponding to a 2d set of indices
         int bufferIndex(int x, int y);
+
+        // Returns true if the coordinate exists in the buffer
+        bool inBufferRange(int x, int y);
 
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(Uint32 pixel, int x, int y);
@@ -190,6 +196,9 @@ class Drawer {
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
         void drawpng(PNG* file, int x, int y, double depth);
+
+        // Adds a point to the depth buffer range. This updates the range if the point lies outside the current range
+        void addPoint(int x, int y);
 
 };
 

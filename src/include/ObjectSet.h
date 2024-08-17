@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LinkedList.h"
 #include "Mesh.h"
 #include "Camera.h"
 #include "Drawer.h"
@@ -38,6 +39,30 @@ class Object {
 
         /*   Instance Functions   */
 
+        // Creates a copy of the instance, and returns a pointer to it.
+        Object* copy();
+
+        // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
+        Vec3* getCenter();
+
+        // Moves the object in space by the specified distance.
+        Object* move(double dx, double dy, double dz);
+
+        // Scales the object by a given factor on each axis
+        Object* scale(double factor);
+        Object* scale(double fx, double fy, double fz);
+
+        // Rotates the object by the specified angles. rotates around (0, 0, 0) if no around vector is given
+        Object* rotate(Vec3* angle, Vec3* around);
+        Object* rotate(double yaw, double pitch, double roll, Vec3* around = nullptr);
+
+        // Rotates the object around its center
+        Object* rotateSelf(Vec3* angle);
+        Object* rotateSelf(double yaw, double pitch, double roll);
+
+        // Sets the color of the object
+        Object* setColor(Uint32 color);
+
         bool collides(Object* other);
 
         void doGravity();
@@ -57,54 +82,6 @@ class ObjectSet {
 
     public:
 
-        class Node {
-
-            /*
-                Item for the doubly linked list
-                Includes an object type, and a string tag
-            */
-
-            public:
-
-                /*   Instance Variables   */
-
-                Node* next;
-                Node* last;
-
-                Object* obj;
-                int id;
-
-                // Optional ones for physics
-                double mass;
-                double frictionFactor;
-                double bounceFactor;
-
-
-                /*   Constructors   */
-                Node();
-                Node(Object* obj);
-                Node(int id);
-                Node(Object* obj, int id);
-
-
-                /*   Instance Functions   */
-
-                // Returns true if this node is the first node in the list.
-                bool isFirst();
-
-                // Returns true if this node is the last node in the list.
-                bool isLast();
-                
-                // Logs the node in the format:  last id <- this id -> next id
-                void log();
-
-        };
-
-        /*   Instance Variables   */
-
-        int length;
-
-
         // Constructor
         ObjectSet();
 
@@ -113,6 +90,9 @@ class ObjectSet {
 
 
         /*   Instance Functions   */
+
+        // Returns the length of the internal linked list
+        int getLength();
         
         void pushBack(Object* obj);
         void pushBack(Object* obj, int id);
@@ -149,9 +129,6 @@ class ObjectSet {
         // Projects all the objects into window coordinates
         void projectAll(Camera* camera, Display* display);
 
-        // Sorts the nodes based on distance between the object center and the camera pos. Sorting is done from greatest to largest
-        void sortByDistance(Camera* camera);
-
         // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest
         void drawAll(Drawer* drawer, Camera* camera, Display* display);
 
@@ -165,17 +142,7 @@ class ObjectSet {
         
         /*   Instance Variables   */
 
-        // Node objects shouldnt be used outside of the class
-        Node* first;
-        Node* last;
-        Node* iterCurrent;
-
-        // No reason to make this public
-        int nextFreeId;
-
-        /*   Instance Functions   */
-
-        // Swaps the two nodes in the list. This changes the affected nodes, as well as those around them.
-        void swap(Node* node1, Node* node2);
+        // List shouldnt be directly accessed
+        LinkedList<Object*>* list;
 
 };

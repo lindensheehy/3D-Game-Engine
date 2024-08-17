@@ -1,4 +1,4 @@
-#include "../include/FrameState.h"
+#include "../include/State.h"
 
 
 /*  -----------------------------------  */
@@ -6,7 +6,7 @@
 /*  -----------------------------------  */
 
 // Constructor
-FrameState::TimeState::TimeState() {
+State::TimeState::TimeState() {
 
     // Variable initialization
     this->totalFrameCount = 0;
@@ -26,7 +26,7 @@ FrameState::TimeState::TimeState() {
 }
 
 // Instance functions
-void FrameState::TimeState::updateDt() {
+void State::TimeState::updateDt() {
 
     auto timeVar = std::chrono::high_resolution_clock::now();
     this->lastFrameTime = this->frameTime;
@@ -35,7 +35,7 @@ void FrameState::TimeState::updateDt() {
 
 }
 
-void FrameState::TimeState::updateFps() {
+void State::TimeState::updateFps() {
 
     if (this->frameTime > this->nextSecond) {
 
@@ -53,13 +53,20 @@ void FrameState::TimeState::updateFps() {
 
 }
 
-void FrameState::TimeState::update() {
+void State::TimeState::update() {
 
     this->totalFrameCount++;
     this->framesSinceLastSecond++;
 
     this->updateDt();
     this->updateFps();
+
+}
+
+double State::TimeState::getTimeMillis() {
+
+    auto timeVar = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
 
 }
 
@@ -70,7 +77,7 @@ void FrameState::TimeState::update() {
 /*  ------------------------------------  */
 
 // Contructor
-FrameState::MouseState::MouseState() {
+State::MouseState::MouseState() {
     this->leftButtonIsDown = false;
     this->rightButtonIsDown = false;
     this->posX = 0;
@@ -78,7 +85,7 @@ FrameState::MouseState::MouseState() {
 }
 
 // Instance functions
-void FrameState::MouseState::setState(MouseState* state) {
+void State::MouseState::setState(MouseState* state) {
     this->leftButtonIsDown = state->leftButtonIsDown;
     this->rightButtonIsDown = state->rightButtonIsDown;
     this->middleButtonIsDown = state->middleButtonIsDown;
@@ -86,31 +93,31 @@ void FrameState::MouseState::setState(MouseState* state) {
     this->posY = state->posY;
 }
 
-void FrameState::MouseState::leftButtonDown() {
+void State::MouseState::leftButtonDown() {
     this->leftButtonIsDown = true;
 }
 
-void FrameState::MouseState::leftButtonUp() {
+void State::MouseState::leftButtonUp() {
     this->leftButtonIsDown = false;
 }
 
-void FrameState::MouseState::middleButtonDown() {
+void State::MouseState::middleButtonDown() {
     this->middleButtonIsDown = true;
 }
 
-void FrameState::MouseState::middleButtonUp() {
+void State::MouseState::middleButtonUp() {
     this->middleButtonIsDown = false;
 }
 
-void FrameState::MouseState::rightButtonDown() {
+void State::MouseState::rightButtonDown() {
     this->rightButtonIsDown = true;
 }
 
-void FrameState::MouseState::rightButtonUp() {
+void State::MouseState::rightButtonUp() {
     this->rightButtonIsDown = false;
 }
 
-void FrameState::MouseState::setPos(int x, int y) {
+void State::MouseState::setPos(int x, int y) {
     this->posX = x;
     this->posY = y;
 }
@@ -122,7 +129,7 @@ void FrameState::MouseState::setPos(int x, int y) {
 /*  -------------------------------------  */
 
 // Constructor
-FrameState::KeyboardState::KeyboardState() {
+State::KeyboardState::KeyboardState() {
 
     this->letterKeys = new bool[26];
     this->numKeys = new bool[10];
@@ -144,18 +151,18 @@ FrameState::KeyboardState::KeyboardState() {
 }
 
 // Destructor
-FrameState::KeyboardState::~KeyboardState() {
+State::KeyboardState::~KeyboardState() {
     delete[] this->letterKeys;
     delete[] this->numKeys;
     delete[] this->miscKeys;
 }
 
 // Instance functions
-void FrameState::KeyboardState::setState(KeyboardState* state) {
+void State::KeyboardState::setState(KeyboardState* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {
-        logWrite("Called FrameState::KeyboardState->setState(KeyboardState*) on a null pointer!", true);
+        logWrite("Called State::KeyboardState->setState(KeyboardState*) on a null pointer!", true);
         return;
     }
 
@@ -172,7 +179,7 @@ void FrameState::KeyboardState::setState(KeyboardState* state) {
     }
 }
 
-bool* FrameState::KeyboardState::getKeyRef(int keyCode) {
+bool* State::KeyboardState::getKeyRef(int keyCode) {
 
     /*
         Returns a pointer to the key boolean value within the instance variables
@@ -327,7 +334,7 @@ bool* FrameState::KeyboardState::getKeyRef(int keyCode) {
     return nullptr;
 }
 
-void FrameState::KeyboardState::setKeyDown(int keyCode) {
+void State::KeyboardState::setKeyDown(int keyCode) {
 
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = true;
@@ -336,7 +343,7 @@ void FrameState::KeyboardState::setKeyDown(int keyCode) {
 
 }
 
-void FrameState::KeyboardState::setKeyUp(int keyCode) {
+void State::KeyboardState::setKeyUp(int keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = false;
@@ -345,7 +352,7 @@ void FrameState::KeyboardState::setKeyUp(int keyCode) {
 
 }
 
-bool FrameState::KeyboardState::keyDown(int keyCode) {
+bool State::KeyboardState::keyDown(int keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
@@ -356,23 +363,23 @@ bool FrameState::KeyboardState::keyDown(int keyCode) {
 
 
 /*  ------------------------------------  */
-/*  ----------   FrameState   ----------  */
+/*  ----------   State   ----------  */
 /*  ------------------------------------  */
 
 // Contructor
-FrameState::FrameState(bool hasChild /* default value = true */) {
+State::State(bool hasChild /* default value = true */) {
 
     this->time = new TimeState();
     this->mouse = new MouseState();
     this->keys = new KeyboardState();
 
-    if (hasChild) this->lastFrame = new FrameState(false);
+    if (hasChild) this->lastFrame = new State(false);
     else this->lastFrame = nullptr;
 
 }
 
 // Destructor
-FrameState::~FrameState() {
+State::~State() {
     if (this->time != nullptr) delete this->time;
     if (this->mouse != nullptr) delete this->mouse;
     if (this->keys != nullptr) delete this->keys;
@@ -380,11 +387,11 @@ FrameState::~FrameState() {
 }
 
 // Instance functions
-void FrameState::addEvent(SDL_Event* event) {
+void State::addEvent(SDL_Event* event) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (event == nullptr) {
-        logWrite("Called FrameState->addEvent(SDL_Event*) on a null pointer!", true);
+        logWrite("Called State->addEvent(SDL_Event*) on a null pointer!", true);
         return;
     }
 
@@ -439,7 +446,7 @@ void FrameState::addEvent(SDL_Event* event) {
     return;
 }
 
-void FrameState::nextFrame() {
+void State::nextFrame() {
 
     if (this->lastFrame == nullptr) return;
 
@@ -451,37 +458,37 @@ void FrameState::nextFrame() {
 
 }
 
-bool FrameState::wasLeftJustPressed() {
+bool State::wasLeftJustPressed() {
     return (this->mouse->leftButtonIsDown && !this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool FrameState::wasRightJustPressed() {
+bool State::wasRightJustPressed() {
     return (this->mouse->rightButtonIsDown && !this->lastFrame->mouse->rightButtonIsDown);
 }
 
-bool FrameState::wasLeftJustReleased() {
+bool State::wasLeftJustReleased() {
     return (!this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool FrameState::wasRightJustReleased() {
+bool State::wasRightJustReleased() {
     return (!this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
-int FrameState::deltaMousePosX() {
+int State::deltaMousePosX() {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posX) - (this->lastFrame->mouse->posX);
 }
 
-int FrameState::deltaMousePosY() {
+int State::deltaMousePosY() {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posY) - (this->lastFrame->mouse->posY);
 }
 
-bool FrameState::keyIsDown(int keyCode) {
+bool State::keyIsDown(int keyCode) {
     return this->keys->keyDown(keyCode);
 }
 
-bool FrameState::keyJustDown(int keyCode) {
+bool State::keyJustDown(int keyCode) {
 
     bool isDown = this->keys->keyDown(keyCode);
     bool wasDown = this->lastFrame->keys->keyDown(keyCode);
@@ -490,11 +497,11 @@ bool FrameState::keyJustDown(int keyCode) {
 
 }
 
-void FrameState::setState(FrameState* state) {
+void State::setState(State* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {
-        logWrite("Called FrameState->setState(FrameState*) on a null pointer!", true);
+        logWrite("Called State->setState(State*) on a null pointer!", true);
         return;
     }
 

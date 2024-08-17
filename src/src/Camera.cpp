@@ -293,6 +293,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     displayPos->y = locationY;
 
     // Get distance between point and camera for the z value of displayPos
+    // Calling sqrt directly to change the tolerance to 1/256 which is the decimal accuracy of the depth buffer
     displayPos->z = relative->magnitude();
 
     delete relative;

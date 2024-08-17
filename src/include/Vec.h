@@ -37,6 +37,10 @@ class Vec2 {
         // Logs the vector in the format "Vec2( x, y )"
         void log();
 
+        // Sets the values of the components
+        Vec2* set(Vec2* other);
+        Vec2* set(double x, double y);
+
         // Acts similar to '=='. Returns true if all components are equal to each other
         bool is(double x, double y);
         bool is(Vec2* other);
@@ -131,7 +135,7 @@ class Vec3 {
         // Logs the vector in the format "Vec3( x, y, z )"
         void log();
 
-        // Sets the components of the Vec3 to specific values
+        // Sets the values of the components
         Vec3* set(Vec3* other);
         Vec3* set(double x, double y, double z);
 

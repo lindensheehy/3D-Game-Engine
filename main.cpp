@@ -1,7 +1,7 @@
 #define SDL_MAIN_HANDLED
 
 #include "src/include/Drawer.h"
-#include "src/include/FrameState.h"
+#include "src/include/State.h"
 #include "src/include/Camera.h"
 #include "src/include/Mesh.h"
 #include "src/include/Gui.h"
@@ -11,7 +11,7 @@
 
 Gui* gui = nullptr;
 
-void handleInput(FrameState* frameState, Camera* camera) {
+void handleInput(State* state, Camera* camera) {
 
     /*
         ---  Directional Movement  ---
@@ -24,21 +24,21 @@ void handleInput(FrameState* frameState, Camera* camera) {
     */
 
     // Find distance to move based on the delta time of the frame
-    double dist = camera->movementSpeed * (frameState->time->dt / 1000);
+    double dist = camera->movementSpeed * (state->time->dt / 1000);
 
-    if (frameState->keyIsDown(SDLK_LSHIFT)) 
+    if (state->keyIsDown(SDLK_LSHIFT)) 
         dist *= camera->sprintFactor;
 
     // Vertical Movement
-    if (frameState->keyIsDown(SDLK_SPACE)) camera->pos->y += dist; // Up
-    if (frameState->keyIsDown(SDLK_LCTRL)) camera->pos->y -= dist; // Down
+    if (state->keyIsDown(SDLK_SPACE)) camera->pos->y += dist; // Up
+    if (state->keyIsDown(SDLK_LCTRL)) camera->pos->y -= dist; // Down
 
     // Horizontal Movement
     Vec2* cameraMovVec = new Vec2();
-    if (frameState->keyIsDown(SDLK_w)) cameraMovVec->y += dist; // Forward
-    if (frameState->keyIsDown(SDLK_s)) cameraMovVec->y -= dist; // Backward
-    if (frameState->keyIsDown(SDLK_a)) cameraMovVec->x -= dist; // Left
-    if (frameState->keyIsDown(SDLK_d)) cameraMovVec->x += dist; // Right
+    if (state->keyIsDown(SDLK_w)) cameraMovVec->y += dist; // Forward
+    if (state->keyIsDown(SDLK_s)) cameraMovVec->y -= dist; // Backward
+    if (state->keyIsDown(SDLK_a)) cameraMovVec->x -= dist; // Left
+    if (state->keyIsDown(SDLK_d)) cameraMovVec->x += dist; // Right
 
     // Move camera based on its rotation
     cameraMovVec->rotate(-camera->yaw);
@@ -47,12 +47,12 @@ void handleInput(FrameState* frameState, Camera* camera) {
     delete cameraMovVec;
 
     /*  ---  Camera Rotation  ---  */
-    if (frameState->mouse->leftButtonIsDown) {
+    if (state->mouse->leftButtonIsDown) {
 
         // 0.2 is just a random number I chose becuase it felt good in the app
         double mouseSensitivity = 0.2;
-        double camDeltaYaw = (double) frameState->deltaMousePosX();
-        double camDeltaPitch = (double) frameState->deltaMousePosY();
+        double camDeltaYaw = (double) state->deltaMousePosX();
+        double camDeltaPitch = (double) state->deltaMousePosY();
         camera->rotate( camDeltaYaw * mouseSensitivity, -camDeltaPitch * mouseSensitivity, 0 );
 
     }
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
     Mesh::initMeshes();
     initGraphics();
 
-    FrameState* frameState = new FrameState();
+    State* state = new State();
     Drawer* drawer = new Drawer(gui->windowWidth, gui->windowHeight);
     SDL_Event event;
     int mouseX, mouseY;
@@ -94,30 +94,30 @@ int main(int argc, char* argv[]) {
 
         // Mouse position
         SDL_GetMouseState(&mouseX, &mouseY);
-        frameState->mouse->setPos(mouseX, mouseY);
+        state->mouse->setPos(mouseX, mouseY);
         
         // Handle SDL events
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
-            else frameState->addEvent(&event);
+            else state->addEvent(&event);
         }
 
         // Does all the user input handling
-        handleInput(frameState, camera1);
+        handleInput(state, camera1);
 
         // Draw stuff
         gui->getBuffer();
         drawer->buffer = gui->buffer;
         drawer->resetDepthBuffer();
-        drawer->fillScreen(Color::BLACK);
-        drawGraphics(drawer, frameState, camera1, display1); // from graphics.cpp
+        //drawer->fillScreen(Color::BLACK);
+        drawGraphics(drawer, state, camera1, display1); // from graphics.cpp
         gui->flip();
 
-        // Make current frameState become last frame
-        frameState->nextFrame();
+        // Make current state become last frame
+        state->nextFrame();
     }
 
-    delete frameState;
+    delete state;
     delete camera1;
     delete display1;
 

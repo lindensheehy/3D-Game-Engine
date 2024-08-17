@@ -1,15 +1,16 @@
-#pragma once
+#define SDL_MAIN_HANDLED
 
-#include "src/include/Drawer.h"
-#include "src/include/State.h"
-#include "src/include/Vec.h"
-#include "src/include/Mesh.h"
-#include "src/include/Camera.h"
-#include "src/include/ObjectSet.h"    
+#include "../src/include/Drawer.h"
+#include "../src/include/State.h"
+#include "../src/include/Camera.h"
+#include "../src/include/Mesh.h"
+#include "../src/include/Gui.h"
+#include "../src/include/Log.h"
+#include "../src/include/ObjectSet.h"
 
-#include "src/include/Log.h"
-
-bool drawNormals;
+Gui* gui = nullptr;
+ObjectSet* objects;
+Font* font;
 
 void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 
@@ -73,13 +74,7 @@ void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 
 }
 
-// Static variables for objects to draw, reimplement later
-ObjectSet* objects;
-Font* font;
-
 void initGraphics() {
-
-    drawNormals = false;
 
     font = new Font();
     font->init();
@@ -117,58 +112,93 @@ void initGraphics() {
 
 }
 
-void drawGraphics(Drawer* drawer, State* state, Camera* camera, Display* display) {
+int main(int argc, char* argv[]) {
 
-    // Address error cases, but dont kill the process yet in case its not fatal
-    if (drawer == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'drawer' as a null pointer!", true);
-        return;
+    // Start the gui window
+    gui = new Gui(1000, 600);
+    gui->init();
+
+    // Sets up the objects to be drawn and the camera
+    Mesh::initMeshes();
+    initGraphics();
+
+    State* state = new State();
+    Drawer* drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+    SDL_Event event;
+    int mouseX, mouseY;
+
+    // Init main camera and the associated display
+    Display* display1 = new Display(gui->windowWidth, gui->windowHeight);
+    Camera* camera1 = new Camera();
+    camera1->setPos(0, 0, -10);
+    camera1->setFov(90, 54);
+    camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
+    camera1->movementSpeed = 50;
+
+
+    double startTime;
+    double endTime;
+    double runningTotal;
+
+
+    // Main event loop, runs for 500 frames, 10 times
+    bool leave = false;
+
+    for (int i = 0; i < 25; i++) {
+
+        startTime = state->time->getTimeMillis();    
+
+        for (int i = 0; i < 500; i++) {
+
+            // Mouse position
+            SDL_GetMouseState(&mouseX, &mouseY);
+            state->mouse->setPos(mouseX, mouseY);
+            
+            // Handle SDL events
+            while (SDL_PollEvent(&event) != 0) {
+                if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
+                else state->addEvent(&event);
+            }
+
+            if (leave) break;
+
+            // Draw stuff
+            gui->getBuffer();
+            drawer->buffer = gui->buffer;
+            drawer->resetDepthBuffer();
+
+            drawSky(drawer, camera1, display1);
+            objects->drawAll(drawer, camera1, display1);
+            drawer->drawRect(Color::BLACK, 0, 0, 30, 13);
+            font->drawer = drawer;
+            font->drawInt(state->time->fps, 6, 3, Color::WHITE);
+
+            gui->flip();
+
+            // Make current state become last frame
+            state->nextFrame();
+
+        }
+
+        endTime = state->time->getTimeMillis();
+
+        double elapsedTime = endTime - startTime;
+        std::cout << "executed in " << elapsedTime << " ms" << std::endl;
+
+        runningTotal += elapsedTime;
+
     }
 
-    if (state == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'state' as a null pointer!", true);
-        return;
-    }
+    delete state;
+    delete camera1;
+    delete display1;
 
-    if (camera == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'camera' as a null pointer!", true);
-        return;
-    }
+    // Destroy the window and quit SDL
+    gui->exit();
 
-    if (display == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'display' as a null pointer!", true);
-        return;
-    }
+    double elapsedTime = endTime - startTime;
+    std::cout << "average execution time:  " << runningTotal / 25 << " ms" << std::endl;
 
-    // Toggle normal vector drawing
-    if (state->keyJustDown(SDLK_n))
-        drawNormals = !drawNormals;
-
-    if (state->keyIsDown(SDLK_j))
-        objects->getById(6)->mesh->rotateSelf(1, 0, 0);
-
-    if (state->keyIsDown(SDLK_k))
-        objects->getById(6)->mesh->rotateSelf(0, 1, 0);
-
-    if (state->keyIsDown(SDLK_l))
-        objects->getById(6)->mesh->rotateSelf(0, 0, 1);
-
-    if (state->keyIsDown(SDLK_o))
-        objects->getById(5)->mesh->move(0, 0.5, 0);
-
-    if (state->keyIsDown(SDLK_p))
-        objects->getById(5)->mesh->move(0, -0.5, 0);
-
-    drawSky(drawer, camera, display);
-    
-    if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
-    else objects->drawAll(drawer, camera, display);
-
-    // Draw the fps
-    drawer->drawRect(Color::BLACK, 0, 0, 30, 13);
-    font->drawer = drawer;
-    font->drawInt(state->time->fps, 6, 3, Color::WHITE);
-
-    return;
+    return 0;
 
 }

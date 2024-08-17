@@ -73,6 +73,7 @@ double inRange(double num, double from, double to);
 // Swaps the values in two memory locations.
 void swap(int* var1, int* var2);
 void swap(double* var1, double* var2);
+void swap(unsigned int* var1, unsigned int* var2);
 
 // Returns the angle between two points in DEGREES.
 // This angle is from a vertical line on (x1, y1) to (x2, y2)
@@ -105,6 +106,11 @@ inline double max(double var1, double var2) {
     return (var1 > var2) ? var1 : var2;
 }
 
+// Returns the greater value (unsigned int)
+inline unsigned int max(unsigned int var1, unsigned int var2) {
+    return (var1 > var2) ? var1 : var2;
+}
+
 // Returns the lesser value (int)
 inline int min(int var1, int var2) {
     return (var1 < var2) ? var1 : var2;
@@ -112,5 +118,10 @@ inline int min(int var1, int var2) {
 
 // Returns the lesser value (double)
 inline double min(double var1, double var2) {
+    return (var1 < var2) ? var1 : var2;
+}
+
+// Returns the lesser value (unsigned int)
+inline unsigned int min(unsigned int var1, unsigned int var2) {
     return (var1 < var2) ? var1 : var2;
 }

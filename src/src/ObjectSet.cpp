@@ -1,8 +1,6 @@
 #include "../include/ObjectSet.h"
 
 
-
-
 /* -------------- */
 /* --- Object --- */
 /* -------------- */
@@ -18,481 +16,129 @@ Object::Object(Mesh* mesh) {
 
 
 
-/* ----------------------- */
-/* --- ObjectSet::Node --- */
-/* ----------------------- */
-
-// Constructors
-ObjectSet::Node::Node() {
-    this->next = nullptr;
-    this->last = nullptr;
-    this->obj = nullptr;
-    this->id = 0;
-}
-
-ObjectSet::Node::Node(Object* obj) {
-    this->next = nullptr;
-    this->last = nullptr;
-    this->obj = obj;
-    this->id = 0;
-}
-
-ObjectSet::Node::Node(int id) {
-    this->next = nullptr;
-    this->last = nullptr;
-    this->obj = nullptr;
-    this->id = id;
-}
-
-ObjectSet::Node::Node(Object* obj, int id) {
-    this->next = nullptr;
-    this->last = nullptr;
-    this->obj = obj;
-    this->id = id;
-}
-
-// Instance Functions
-bool ObjectSet::Node::isFirst() {
-    return (this->last == nullptr);
-}
-
-bool ObjectSet::Node::isLast() {
-    return (this->next == nullptr);
-}
-
-void ObjectSet::Node::log() {
-
-    if (this->last == nullptr)
-        logWrite("null");
-    else
-        logWrite(this->last->id);
-
-    logWrite(" <- ");
-    logWrite(this->id);
-    logWrite(" -> ");
-
-    if (this->next == nullptr)
-        logWrite("null", true);
-    else
-        logWrite(this->next->id, true);
-
-    return;
-
-}
-
-
-
 /* ----------------- */
 /* --- ObjectSet --- */
 /* ----------------- */
 
 // Constructor
 ObjectSet::ObjectSet() {
-    this->first = nullptr;
-    this->last = nullptr;
 
-    this->length = 0;
-    this->nextFreeId = 0;
+    this->list = new LinkedList<Object*>();
+
 }
 
 // Destructor
 ObjectSet::~ObjectSet() {
     
-    Node* currentRef = this->first;
-    Node* nextRef = this->first->next;
-
-    while (true) {
-
-        delete currentRef;
-        
-        // Break case
-        if (nextRef == nullptr) break;
-
-        currentRef = nextRef;
-        nextRef = currentRef->next;
-
-    }
+    delete this->list;
 
 }
 
 // Instance Functions
+int ObjectSet::getLength() {
+
+    return this->list->length;
+
+}
+
 void ObjectSet::pushBack(Object* obj) {
     
-    this->pushBack(obj, this->nextFreeId);
-
-    this->nextFreeId++;
-
+    this->list->pushBack(obj);
     return;
 
 }
 
-void ObjectSet::pushBack(Object* mesh, int id) {
+void ObjectSet::pushBack(Object* obj, int id) {
     
-    Node* newNode = new Node(mesh, id);
-
-    this->length++;
-
-    // Empty list
-    if (this->first == nullptr && this->last == nullptr) {
-        this->first = newNode;
-        this->last = newNode;
-        return;
-    }
-
-    // Length 1 list
-    if (this->first == this->last) {
-        this->last = newNode;
-        this->first->next = newNode;
-        newNode->last = this->first;
-        return;
-    }
-
-    // Length >2 list
-    this->last->next = newNode;
-    newNode->last = this->last;
-    this->last = newNode;
-
+    this->list->pushBack(obj, id);
     return;
 
 }
 
-void ObjectSet::pushFront(Object* mesh) {
-    
-    this->pushFront(mesh, this->nextFreeId);
+void ObjectSet::pushFront(Object* obj) {
 
-    this->nextFreeId++;
-
+    this->list->pushFront(obj);
     return;
 
 }
 
-void ObjectSet::pushFront(Object* mesh, int id) {
+void ObjectSet::pushFront(Object* obj, int id) {
 
-    Node* newNode = new Node(mesh, id);
-
-    this->length++;
-
-    // Empty list
-    if (this->first == nullptr && this->last == nullptr) {
-        this->first = newNode;
-        this->last = newNode;
-        return;
-    }
-
-    // Length 1 list
-    if (this->first == this->last) {
-        this->first = newNode;
-        this->last->last = newNode;
-        newNode->next = this->last;
-        return;
-    }
-
-    // Length >2 list
-    this->first->last = newNode;
-    newNode->next = this->first;
-    this->first = newNode;
-
+    this->list->pushFront(obj, id);
     return;
     
 }
 
 Object* ObjectSet::popBack() {
 
-    Node* ret;
-    Object* obj;
-
-    // Empty list
-    if (this->first == nullptr && this->last == nullptr) {
-        return nullptr;
-    }
-
-    this->length--;
-
-    // Length 1 list
-    if (this->first == this->last) {
-
-        ret = this->last;
-        this->last = nullptr;
-        this->first = nullptr;
-
-        obj = ret->obj;
-        delete ret;
-
-        return obj;
-
-    }
-
-    // Length >2 list
-    ret = this->last;
-    this->last = ret->last;
-    this->last->next = nullptr;
-
-    obj = ret->obj;
-    delete ret;
-
-    return obj;
+    return this->list->popBack();
 
 }
 
 Object* ObjectSet::popFront() {
 
-    Node* ret;
-    Object* obj;
-
-    // Empty list
-    if (this->first == nullptr && this->last == nullptr) {
-        return nullptr;
-    }
-
-    this->length--;
-
-    // Length 1 list
-    if (this->first == this->last) {
-
-        ret = this->first;
-        this->last = nullptr;
-        this->first = nullptr;
-
-        obj = ret->obj;
-        delete ret;
-
-        return obj;
-
-    }
-
-    // Length >2 list
-    ret = this->first;
-    this->first = ret->next;
-    this->first->last = nullptr;
-
-    obj = ret->obj;
-    delete ret;
-
-    return obj;
+    return this->list->popFront();
     
 }
 
 Object* ObjectSet::popById(int id) {
 
-    Node* current = this->first;
-
-    while (true) {
-
-        if (current == nullptr) return nullptr;
-
-        if (current->id == id) {
-
-            current->last->next = current->next;
-            current->next->last = current->last;
-
-            Object* ret = current->obj;
-
-            delete current;
-            this->length--;
-
-            return ret;
-
-        }
-
-        current = current->next;
-
-    }
+    return this->list->popById(id);
 
 }
 
 Object* ObjectSet::getById(int id) {
 
-    Node* current = this->first;
-
-    while (true) {
-
-        if (current == nullptr) return nullptr;
-
-        if (current->id == id)
-            return current->obj;
-
-        current = current->next;
-
-    }
+    return this->list->getById(id);
 
 }
 
 void ObjectSet::iterStart(int index) {
 
-    this->iterCurrent = this->first;
-
-    for (int i = 0; i < index; i++) {
-
-        if (iterCurrent == nullptr) {
-            logWrite("Tried to start at iter at too high of an index! (ObjectSet->iterStart(int))");
-            return;
-        }
-
-        this->iterCurrent = this->iterCurrent->next;
-
-    }
+    this->list->iterStart(index);
 
 }
 
 Object* ObjectSet::iterGetObj() {
 
-    if (this->iterCurrent == nullptr) return nullptr;
-
-    return this->iterCurrent->obj;
+    return this->list->iterGetObj();
 
 }
 
 int ObjectSet::iterGetId() {
 
-    if (this->iterCurrent == nullptr) return -1;
-
-    return this->iterCurrent->id;
+    return this->list->iterGetId();
 
 }
 
 void ObjectSet::iterNext() {
 
-    if (this->iterCurrent == nullptr) return;
-
-    this->iterCurrent = this->iterCurrent->next;
-    return;
+    this->list->iterNext();
 
 }
 
 void ObjectSet::iterLast() {
 
-    if (this->iterCurrent == nullptr) return;
-
-    this->iterCurrent = this->iterCurrent->last;
-    return;
+    this->list->iterLast();
 
 }
 
 bool ObjectSet::iterIsDone() {
 
-    return (this->iterCurrent == nullptr);
-
-}
-
-void ObjectSet::swap(Node* node1, Node* node2) {
-
-    // Different handling for when the two nodes are adjacent
-    if (node1->next == node2) {
-        
-        // Update adjacent node pointers
-        if (node1->last != nullptr) node1->last->next = node2;
-        else this->first = node2;
-        if (node2->next != nullptr) node2->next->last = node1;
-        else this->last = node1;
-
-        // Update affected node pointers
-        node1->next = node2->next;
-        node2->next = node1;
-
-        node2->last = node1->last;
-        node1->last = node2;
-
-        return;
-
-    }
-
-    if (node2->next == node2) {
-        
-        // Update adjacent node pointers
-        if (node2->last != nullptr) node2->last->next = node1;
-        else this->first = node1;
-        if (node1->next != nullptr) node1->next->last = node2;
-        else this->last = node2;
-
-        // Update affected node pointers
-        node2->next = node1->next;
-        node1->next = node2;
-
-        node1->last = node2->last;
-        node2->last = node1;
-
-        return;
-
-    }
-
-    // Get adjacent nodes
-    Node* node1Last = node1->last;
-    Node* node1Next = node1->next;
-
-    Node* node2Last = node2->last;
-    Node* node2Next = node2->next;
-
-    // Update adjacent node pointers
-    if (node1Last != nullptr) node1Last->next = node2;
-    if (node1Next != nullptr) node1Next->last = node2;
-
-    if (node2Last != nullptr) node2Last->next = node1;
-    if (node2Next != nullptr) node2Next->last = node1;
-
-    // Update affected node pointers
-    node1->next = node2Next;
-    node1->last = node2Last;
-
-    node2->last = node1Last;
-    node2->next = node1Next;
-
-    return;
+    return this->list->iterIsDone();
 
 }
 
 void ObjectSet::projectAll(Camera* camera, Display* display) {
 
-    Node* current = this->first;
+    Mesh* currentMesh;
 
-    for (int i = 0; i < this->length; i++) {
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
-        if (current == nullptr) {
-            logWrite("Null Iteration!", true);
-            break;
-        }
+        currentMesh = this->iterGetObj()->mesh;
 
-        camera->project(current->obj->mesh);
-        display->toDisplayPos(current->obj->mesh);
-
-        current = current->next;
-
-    }
-
-}
-
-void ObjectSet::sortByDistance(Camera* camera) {
-
-    /*
-        Bubble sort approach using ObjectSet::swap(Node*, Node*)
-    */
-
-    for (int i = 0; i < this->length - 1; i++) {
-
-        Node* current = this->first;
-        Node* next = current->next;
-
-        for (int j = 0; j < (this->length - (i + 1)); j++) {
-
-            if (current == nullptr || next == nullptr) {
-                logWrite("nullptr issue!", true);
-                break;
-            }
-
-            Vec3* currentMeshPos = current->obj->mesh->getCenter();
-            Vec3* nextMeshPos = next->obj->mesh->getCenter();
-            Vec3* camPos = camera->pos;
-            double currentDist = currentMeshPos->distanceTo(camPos);
-            double nextDist = nextMeshPos->distanceTo(camPos);
-
-            if (currentDist < nextDist)
-                this->swap(current, next);
-
-            else 
-                current = next;
-            
-            next = current->next;
-
-        }
+        camera->project(currentMesh);
+        display->toDisplayPos(currentMesh);
 
     }
 
@@ -511,20 +157,14 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
         return;
     }
 
-    // Pre Set up
+    // Set up
     this->projectAll(camera, display);
-    this->sortByDistance(camera);
-
-    // Main set up
-    this->iterStart(0);
-    Object* currentObject;
     Mesh* currentMesh;
 
     // Main loop
-    while (!this->iterIsDone()) {
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
-        currentObject = this->iterGetObj();
-        currentMesh = currentObject->mesh;
+        currentMesh = this->iterGetObj()->mesh;
 
         for (int i = 0; i < currentMesh->triCount; i++) {
         
@@ -542,8 +182,6 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             drawer->drawTriangle(shade, currentMesh->projectedTris[i]);
 
         }
-
-        this->iterNext();
 
     }
 
@@ -567,22 +205,16 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
         return;
     }
 
-    // Pre Set up
+    // Set up
     this->projectAll(camera, display);
-    this->sortByDistance(camera);
-
-    // Main set up
-    this->iterStart(0);
-    Object* currentObject;
     Mesh* currentMesh;
     Vec2* vecStart = new Vec2(); 
     Vec2* vecEnd = new Vec2();
 
     // Main loop
-    while (!this->iterIsDone()) {
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
-        currentObject = this->iterGetObj();
-        currentMesh = currentObject->mesh;
+        currentMesh = this->iterGetObj()->mesh;
 
         for (int i = 0; i < currentMesh->triCount; i++) {
         
@@ -629,8 +261,6 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
         }
 
-        this->iterNext();
-
     }
 
     delete vecStart; delete vecEnd;
@@ -639,24 +269,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
 void ObjectSet::log() {
 
-    logWrite("ObjectSet( length = ");
-    logWrite(this->length, true);
-
-    Node* current = this->first;
-
-    while (true) {
-
-        if (current == nullptr) break;
-
-        logWrite("  ");
-        current->log();
-
-        current = current->next;
-
-    }
-
-    logWrite(")", true);
-
+    this->list->log();
     return;
 
 }

@@ -9,7 +9,7 @@
 #include "Log.h"
 
 
-class FrameState {
+class State {
 
     /*
         This class serves to handle events from frame to frame.
@@ -64,6 +64,9 @@ class FrameState {
 
                 // Does everything for the next frame. Including calling the above functions
                 void update();
+
+                // Returns the current time in milliseconds
+                double getTimeMillis();
 
 
         };
@@ -210,21 +213,21 @@ class FrameState {
         MouseState* mouse;
         KeyboardState* keys;
 
-        // This is another FrameState object which hold the state of the previous frame.
+        // This is another State object which hold the state of the previous frame.
         // Used to let some events happen once when an event happens, rather than repeating while its held.
-        FrameState* lastFrame;
+        State* lastFrame;
 
 
         /*   Constructor   */
 
         // hasChild determines if the lastFrame instance variable should be created.
         // This is set to true for the version created in the program, then false for the actual lastFrame instance.
-        // The option therefore exists to create FrameState with no child, but there is no reason to do this.
-        FrameState(bool hasChild = true);
+        // The option therefore exists to create State with no child, but there is no reason to do this.
+        State(bool hasChild = true);
 
 
         // Destructor
-        ~FrameState();
+        ~State();
 
 
         /*   Instance functions   */
@@ -260,6 +263,6 @@ class FrameState {
     private:
 
         // Basically a 'set-all' function. It sets every instance variable of this instance, to that of another instance.
-        void setState(FrameState* state);
+        void setState(State* state);
 
 };

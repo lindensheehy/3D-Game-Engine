@@ -37,6 +37,27 @@ void Vec2::log() {
     
 }
 
+Vec2* Vec2::set(Vec2* other) {
+
+    if (other == nullptr) {
+        logWrite("Called Vec2->set(Vec2*) on a null pointer!", true);
+        return this;
+    }
+
+    this->x = other->x;
+    this->y = other->y;
+    return this;
+
+}
+
+Vec2* Vec2::set(double x, double y) {
+
+    this->x = x;
+    this->y = y;
+    return this;
+
+}
+
 bool Vec2::is(double x, double y) {
 
     return (
@@ -255,10 +276,17 @@ void Vec3::log() {
 }
 
 Vec3* Vec3::set(Vec3* other) {
+
+    if (other == nullptr) {
+        logWrite("Called Vec3->set(Vec3*) on a null pointer!", true);
+        return this;
+    }
+
     this->x = other->x;
     this->y = other->y;
     this->z = other->z;
     return this;
+
 }
 
 Vec3* Vec3::set(double x, double y, double z) {
