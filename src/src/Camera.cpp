@@ -364,6 +364,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
     // Adjust the left side of the fov to be within the negatives rather than above 180
     if (angleYaw > 180)
         angleYaw -= 360;
+        logWrite("testtt", true);
 
     double camYawRange = this->fov->x / 2;
     double locationX = range(angleYaw, -camYawRange, camYawRange);
