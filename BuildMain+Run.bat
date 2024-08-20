@@ -13,7 +13,7 @@ g++ main.cpp ^
     %objdir%Mesh.o ^
     %objdir%Gui.o ^
     %objdir%Drawer.o ^
-    %objdir%FrameState.o ^
+    %objdir%State.o ^
     %objdir%ObjectSet.o ^
     %objdir%lodepng.o ^
     -o main.exe ^

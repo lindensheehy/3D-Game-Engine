@@ -18,6 +18,8 @@ Display* display;
 Camera* camera;
 ObjectSet* objects;
 
+bool gravity;
+
 void handleInput(State* state, Camera* camera) {
 
     /*
@@ -33,7 +35,7 @@ void handleInput(State* state, Camera* camera) {
     // Find distance to move based on the delta time of the frame
     double dist = camera->movementSpeed * (state->time->dt / 1000);
 
-    if (state->keyIsDown(SDLK_LSHIFT)) 
+    if (state->keyIsDown(SDLK_LSHIFT))
         dist *= camera->sprintFactor;
 
     // Vertical Movement
@@ -83,6 +85,24 @@ void handleInput(State* state, Camera* camera) {
 
     if (state->keyIsDown(SDLK_p))
         objects->getById(5)->mesh->move(0, -0.5, 0);
+
+    // Toggles gravity
+    if (state->keyJustDown(SDLK_g))
+        if (gravity) {
+            std::cout << "gravity off" << std::endl;
+            objects->setAllGravity(0.0);
+            gravity = false;
+        }
+
+        else {
+            std::cout << "gravity on" << std::endl;
+            objects->setAllGravity(-30);
+            gravity = true;
+        }
+
+    // Gives all the objects some vertical velocity
+    if (state->keyJustDown(SDLK_z))
+        objects->setVelocityAll(0, 25, 0);
 
 }
 
@@ -141,7 +161,7 @@ void init() {
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 7);
 
-    objects->setAllGravity(-5);
+    gravity = false;
 
 }
 
