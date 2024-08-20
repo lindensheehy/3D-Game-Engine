@@ -181,73 +181,6 @@ void Camera::rotate(double yaw, double pitch, double roll) {
 
 }
 
-void Camera::project(Vec3* vec, Vec2* displayPos) {
-
-    /*
-        This returns a value between 0 and 1 which determines how far along each axis the given point should be drawn
-        Can return values outside the 0-1 range, in this case the point lies off screen, but the location might still be needed
-        These values are returned through the displayPos argument
-    */
-
-    // Address error cases, but dont kill the process yet in case its not fatal
-    if (vec == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec2*) with 'vec' being a null pointer!", true);
-        return;
-    }
-
-    if (displayPos == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec2*) with 'displayPos' being a null pointer!", true);
-        return;
-    }
-    
-    // Get points location relative to the cameras position and rotation
-    Vec3* relative = vec->copy();
-    relative->sub(this->pos);
-    relative->rotate(this->yaw, 0, 0);
-    relative->rotate(0, this->pitch, 0);
-
-    // If the point is behind the camera
-    if (relative->z < 0) {
-        delete relative;
-        displayPos->x = -1;
-        displayPos->y = -1;
-        return;
-    }
-
-    // Find the distance along the x,z axis, and the dy from the camera to the vec, this is used to find pitch
-    double dist = distance2(relative->x, relative->z);
-    double dy = relative->y;
-
-    // Get the angle the point makes from the camera position on
-    double angleYaw = getAngle(relative->x, relative->z);       // Angle from the +z axis
-    double anglePitch = getAngle(dist, dy);                     // Angle from the +y axis
-    anglePitch = (double) 90 - anglePitch;                                   // Now this is from the x,z plane, where positive is towards y+
-
-    // Gets the screen position given the angles found and the camera rotation angles
-    /* ---  YAW  --- */
-
-    // Adjust the left side of the fov to be within the negatives rather than above 180
-    if (angleYaw > 180)
-        angleYaw -= 360;
-
-    double camYawRange = this->fov->x / 2;
-    double locationX = range(angleYaw, -camYawRange, camYawRange);
-
-    /* ---  PITCH  --- */
-
-    double camPitchRange = this->fov->y / 2;
-    double locationY = range(anglePitch, -camPitchRange, camPitchRange);
-
-    // Store the final value
-    displayPos->x = locationX;
-    displayPos->y = locationY;
-
-    delete relative;
-
-    return;
-
-}
-
 void Camera::project(Vec3* vec, Vec3* displayPos) {
 
     /*
@@ -266,51 +199,12 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     }
     
     // Get points location relative to the cameras position and rotation
-    Vec3* relative = vec->copy();
-    relative->sub(this->pos);
-    relative->rotate(this->yaw, 0, 0);
-    relative->rotate(0, this->pitch, 0);
+    displayPos = vec->copy();
+    displayPos->sub(this->pos);
+    displayPos->rotate(this->yaw, 0, 0);
+    displayPos->rotate(0, this->pitch, 0);
 
-    // If the point is behind the camera
-    if (relative->z < 0) {
-        delete relative;
-        displayPos->x = -1;
-        displayPos->y = -1;
-        return;
-    }
-
-    // Find the distance along the x,z axis, and the dy from the camera to the vec, this is used to find pitch
-    double dist = distance2(relative->x, relative->z);
-    double dy = relative->y;
-
-    // Get the angle the point makes from the camera position on
-    double angleYaw = getAngle(relative->x, relative->z);       // Angle from the +z axis
-    double anglePitch = getAngle(dist, dy);                     // Angle from the +y axis
-    anglePitch = (double) 90 - anglePitch;                                   // Now this is from the x,z plane, where positive is towards y+
-
-    // Gets the screen position given the angles found and the camera rotation angles
-    /* ---  YAW  --- */
-
-    // Adjust the left side of the fov to be within the negatives rather than above 180
-    if (angleYaw > 180)
-        angleYaw -= 360;
-
-    double camYawRange = this->fov->x / 2;
-    double locationX = range(angleYaw, -camYawRange, camYawRange);
-
-    /* ---  PITCH  --- */
-
-    double camPitchRange = this->fov->y / 2;
-    double locationY = range(anglePitch, -camPitchRange, camPitchRange);
-
-    // Store the final value
-    displayPos->x = locationX;
-    displayPos->y = locationY;
-
-    // Find the depth
-    displayPos->z = relative->magnitude();
-
-    delete relative;
+    displayPos->project();
 
     return;
     
@@ -325,64 +219,28 @@ void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (vec == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec3*) with 'vec' being a null pointer!", true);
+        logWrite("Called Camera->project(Vec3*, Vec3*, Vec3*) with 'vec' being a null pointer!", true);
         return;
     }
 
     if (displayPos == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec3*) with 'displayPos' being a null pointer!", true);
+        logWrite("Called Camera->project(Vec3*, Vec3*, Vec3*) with 'displayPos' being a null pointer!", true);
+        return;
+    }
+
+    if (offset == nullptr) {
+        logWrite("Called Camera->project(Vec3*, Vec3*, Vec3*) with 'offset' being a null pointer!", true);
         return;
     }
     
     // Get points location relative to the cameras position and rotation
-    Vec3* relative = vec->copy();
-    relative->add(offset);
-    relative->sub(this->pos);
-    relative->rotate(this->yaw, 0, 0);
-    relative->rotate(0, this->pitch, 0);
+    displayPos = vec->copy();
+    displayPos->add(offset);
+    displayPos->sub(this->pos);
+    displayPos->rotate(this->yaw, 0, 0);
+    displayPos->rotate(0, this->pitch, 0);
 
-    // If the point is behind the camera
-    if (relative->z < 0) {
-        delete relative;
-        displayPos->x = -1;
-        displayPos->y = -1;
-        return;
-    }
-
-    // Find the distance along the x,z axis, and the dy from the camera to the vec, this is used to find pitch
-    double dist = distance2(relative->x, relative->z);
-    double dy = relative->y;
-
-    // Get the angle the point makes from the camera position on
-    double angleYaw = getAngle(relative->x, relative->z);       // Angle from the +z axis
-    double anglePitch = getAngle(dist, dy);                     // Angle from the +y axis
-    anglePitch = (double) 90 - anglePitch;                                   // Now this is from the x,z plane, where positive is towards y+
-
-    // Gets the screen position given the angles found and the camera rotation angles
-    /* ---  YAW  --- */
-
-    // Adjust the left side of the fov to be within the negatives rather than above 180
-    if (angleYaw > 180)
-        angleYaw -= 360;
-        logWrite("testtt", true);
-
-    double camYawRange = this->fov->x / 2;
-    double locationX = range(angleYaw, -camYawRange, camYawRange);
-
-    /* ---  PITCH  --- */
-
-    double camPitchRange = this->fov->y / 2;
-    double locationY = range(anglePitch, -camPitchRange, camPitchRange);
-
-    // Store the final value
-    displayPos->x = locationX;
-    displayPos->y = locationY;
-
-    // Get distance between point and camera for the z value of displayPos
-    // Calling sqrt directly to change the tolerance to 1/256 which is the decimal accuracy of the depth buffer
-    displayPos->z = relative->magnitude();
-
-    delete relative;
+    displayPos->project();
 
     return;
 

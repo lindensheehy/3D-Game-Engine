@@ -192,6 +192,9 @@ class Vec3 {
         // Each rotation occurs COUNTER CLOCKWISE assuming you are looking down upon the rotation.
         void rotate(double yaw, double pitch, double roll, Vec3* around = nullptr);
 
+        // Projects the point to 2d space. The z value becomes the depth. The values of the components are changed
+        void project();
+
     private:
 
         /*   Instance variables   */

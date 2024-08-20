@@ -581,8 +581,8 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
     // Set up
     this->projectAll(camera, display);
     Mesh* currentMesh;
-    Vec2* vecStart = new Vec2(); 
-    Vec2* vecEnd = new Vec2();
+    Vec3* vecStart = new Vec3(); 
+    Vec3* vecEnd = new Vec3();
 
     // Main loop
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
@@ -626,7 +626,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             display->toDisplayPos(vecStart);
             display->toDisplayPos(vecEnd);
 
-            drawer->drawLine(Color::RED, vecStart, vecEnd);
+            drawer->drawLine(Color::RED, vecStart->x, vecStart->y, vecEnd->x, vecEnd->y);
 
             delete triCenter;
             delete normalOffset;

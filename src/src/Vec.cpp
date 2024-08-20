@@ -567,3 +567,27 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
 
     return;
 }
+
+void Vec3::project() {
+
+    // Constant. Can be changed
+    double focalLength = 10;
+
+    // If the point is behind the camera
+    if (this->z < 0) {
+        this->x = -1;
+        this->y = -1;
+        this->z = inf;
+        return;
+    }
+
+    double depth = this->magnitude();
+
+    this->x = (this->x * focalLength) / this->z;
+    this->y = (this->y * focalLength) / this->z;
+
+    this->z = depth;
+
+    return;
+
+}
