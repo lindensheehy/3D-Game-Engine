@@ -150,6 +150,21 @@ void Camera::setLightingVec(Vec3* lightingVec) {
     return;
 }
 
+void Camera::setPreset(int preset) {
+
+    switch (preset) {
+
+        case 0:
+            this->setPos(0, 0, -10);
+            this->setFov(90, 54);
+            this->setLightingVec(1, -5, 2); // downfacing off axis lighting
+            this->movementSpeed = 50;
+            break;
+
+    }
+
+}
+
 void Camera::rotate(double yaw, double pitch, double roll) {
 
     // Update angles
@@ -167,6 +182,7 @@ void Camera::rotate(double yaw, double pitch, double roll) {
 }
 
 void Camera::project(Vec3* vec, Vec2* displayPos) {
+
     /*
         This returns a value between 0 and 1 which determines how far along each axis the given point should be drawn
         Can return values outside the 0-1 range, in this case the point lies off screen, but the location might still be needed
@@ -233,10 +249,9 @@ void Camera::project(Vec3* vec, Vec2* displayPos) {
 }
 
 void Camera::project(Vec3* vec, Vec3* displayPos) {
+
     /*
-        This returns a value between 0 and 1 which determines how far along each axis the given point should be drawn
-        Can return values outside the 0-1 range, in this case the point lies off screen, but the location might still be needed
-        These values are returned through the displayPos argument
+        Same as above, but this one places the distance between the point and the camera pos into the z component of displayPos
     */
 
     // Address error cases, but dont kill the process yet in case its not fatal
@@ -292,6 +307,76 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     displayPos->x = locationX;
     displayPos->y = locationY;
 
+    // Find the depth
+    displayPos->z = relative->magnitude();
+
+    delete relative;
+
+    return;
+    
+}
+
+void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
+
+    /*
+        Same as above, but this one allows for the point to be treated as though its in a different location.
+        'offset' acts as a relative position for the point from (0, 0, 0), so it is simply added to 'relative'
+    */
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (vec == nullptr) {
+        logWrite("Called Camera->project(Vec3*, Vec3*) with 'vec' being a null pointer!", true);
+        return;
+    }
+
+    if (displayPos == nullptr) {
+        logWrite("Called Camera->project(Vec3*, Vec3*) with 'displayPos' being a null pointer!", true);
+        return;
+    }
+    
+    // Get points location relative to the cameras position and rotation
+    Vec3* relative = vec->copy();
+    relative->add(offset);
+    relative->sub(this->pos);
+    relative->rotate(this->yaw, 0, 0);
+    relative->rotate(0, this->pitch, 0);
+
+    // If the point is behind the camera
+    if (relative->z < 0) {
+        delete relative;
+        displayPos->x = -1;
+        displayPos->y = -1;
+        return;
+    }
+
+    // Find the distance along the x,z axis, and the dy from the camera to the vec, this is used to find pitch
+    double dist = distance2(relative->x, relative->z);
+    double dy = relative->y;
+
+    // Get the angle the point makes from the camera position on
+    double angleYaw = getAngle(relative->x, relative->z);       // Angle from the +z axis
+    double anglePitch = getAngle(dist, dy);                     // Angle from the +y axis
+    anglePitch = (double) 90 - anglePitch;                                   // Now this is from the x,z plane, where positive is towards y+
+
+    // Gets the screen position given the angles found and the camera rotation angles
+    /* ---  YAW  --- */
+
+    // Adjust the left side of the fov to be within the negatives rather than above 180
+    if (angleYaw > 180)
+        angleYaw -= 360;
+
+    double camYawRange = this->fov->x / 2;
+    double locationX = range(angleYaw, -camYawRange, camYawRange);
+
+    /* ---  PITCH  --- */
+
+    double camPitchRange = this->fov->y / 2;
+    double locationY = range(anglePitch, -camPitchRange, camPitchRange);
+
+    // Store the final value
+    displayPos->x = locationX;
+    displayPos->y = locationY;
+
     // Get distance between point and camera for the z value of displayPos
     // Calling sqrt directly to change the tolerance to 1/256 which is the decimal accuracy of the depth buffer
     displayPos->z = relative->magnitude();
@@ -299,7 +384,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     delete relative;
 
     return;
-    
+
 }
 
 void Camera::project(Mesh* mesh) {
@@ -317,11 +402,47 @@ void Camera::project(Mesh* mesh) {
 
 }
 
+void Camera::project(Mesh* mesh, Vec3* offset) {
+
+    // Address error case, but dont kill the process yet in case its not fatal
+    if (mesh == nullptr) {
+        logWrite("Called Camera->relativeProject(Mesh*, Vec3*) with 'mesh' being a null pointer!", true);
+        return;
+    }
+
+    if (offset == nullptr) {
+        logWrite("Called Camera->relativeProject(Mesh*, Vec3*) with 'offset' being a null pointer!", true);
+        return;
+    }
+    
+    // This uses the other project function to project each of the mesh verticies to the meshes projectedVerticies
+    for (int i = 0; i < mesh->vertexCount; i++) {
+        this->project(mesh->verticies[i], mesh->projectedVerticies[i], offset);
+    }
+
+}
+
 bool Camera::canSee(Tri3* tri) {
 
     // Find the distance to the triangle, relative to the camera position
     Vec3* distance;
     distance = tri->getCenter();
+    distance->sub(this->pos);
+
+    bool returnValue = tri->isFacing(distance);
+
+    delete distance;
+
+    return returnValue;
+
+}
+
+bool Camera::canSee(Tri3* tri, Vec3* offset) {
+
+    // Find the distance to the triangle, relative to the camera position, accounting for offset
+    Vec3* distance;
+    distance = tri->getCenter();
+    distance->add(offset);
     distance->sub(this->pos);
 
     bool returnValue = tri->isFacing(distance);

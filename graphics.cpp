@@ -9,7 +9,17 @@
 
 #include "src/include/Log.h"
 
+Font* font;
 bool drawNormals;
+
+void initGraphics() {
+
+    drawNormals = false;
+
+    font = new Font();
+    font->init();
+
+}
 
 void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 
@@ -73,96 +83,45 @@ void drawSky(Drawer* drawer, Camera* camera, Display* display) {
 
 }
 
-// Static variables for objects to draw, reimplement later
-ObjectSet* objects;
-Font* font;
-
-void initGraphics() {
-
-    drawNormals = false;
-
-    font = new Font();
-    font->init();
-
-    objects = new ObjectSet();
-    Object* newObject;
-
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
-    objects->pushBack(newObject, 1);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
-    objects->pushBack(newObject, 2);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 3);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
-    objects->pushBack(newObject, 4);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 5);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
-    objects->pushBack(newObject, 6);
-
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 7);
-
-}
-
-void drawGraphics(Drawer* drawer, State* state, Camera* camera, Display* display) {
+void drawGraphics(ObjectSet* objectSet, Drawer* drawer, State* state, Camera* camera, Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
+    if (objectSet == nullptr) {
+        logWrite("Called drawGraphics(ObjectSet*, Drawer*, State*, Camera*, Display*) with 'objectSet' as a null pointer!", true);
+        return;
+    }
+
     if (drawer == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        logWrite("Called drawGraphics(ObjectSet*, Drawer*, State*, Camera*, Display*) with 'drawer' as a null pointer!", true);
         return;
     }
 
     if (state == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'state' as a null pointer!", true);
+        logWrite("Called drawGraphics(ObjectSet*, Drawer*, State*, Camera*, Display*) with 'state' as a null pointer!", true);
         return;
     }
 
     if (camera == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        logWrite("Called drawGraphics(ObjectSet*, Drawer*, State*, Camera*, Display*) with 'camera' as a null pointer!", true);
         return;
     }
 
     if (display == nullptr) {
-        logWrite("Called drawGraphics(Drawer*, State*, Camera*, Display*) with 'display' as a null pointer!", true);
+        logWrite("Called drawGraphics(ObjectSet*, Drawer*, State*, Camera*, Display*) with 'display' as a null pointer!", true);
         return;
     }
 
-    // Toggle normal vector drawing
+    // Toggle normal vector drawing on key n
     if (state->keyJustDown(SDLK_n))
         drawNormals = !drawNormals;
 
-    if (state->keyIsDown(SDLK_j))
-        objects->getById(6)->mesh->rotateSelf(1, 0, 0);
-
-    if (state->keyIsDown(SDLK_k))
-        objects->getById(6)->mesh->rotateSelf(0, 1, 0);
-
-    if (state->keyIsDown(SDLK_l))
-        objects->getById(6)->mesh->rotateSelf(0, 0, 1);
-
-    if (state->keyIsDown(SDLK_o))
-        objects->getById(5)->mesh->move(0, 0.5, 0);
-
-    if (state->keyIsDown(SDLK_p))
-        objects->getById(5)->mesh->move(0, -0.5, 0);
-
     drawSky(drawer, camera, display);
     
-    if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
-    else objects->drawAll(drawer, camera, display);
+    // Draw all the objects
+    if (drawNormals) 
+        objectSet->drawAllWithNormals(drawer, camera, display);
+    else 
+        objectSet->drawAll(drawer, camera, display);
 
     // Draw the fps
     drawer->drawRect(Color::BLACK, 0, 0, 30, 13);

@@ -193,6 +193,18 @@ Vec3* Mesh::getCenter() {
 
 }
 
+Mesh* Mesh::move(Vec3* dist) {
+
+    // Log the error case
+    if (dist == nullptr) {
+        logWrite("Called Mesh->move(Vec3*) on a null pointer!", true);
+        return nullptr;
+    }
+
+    return this->move(dist->x, dist->y, dist->z);
+
+}
+
 Mesh* Mesh::move(double dx, double dy, double dz) {
 
     for (int i = 0; i < this->vertexCount; i++) {
@@ -233,6 +245,12 @@ Mesh* Mesh::scale(double fx, double fy, double fz) {
 
 Mesh* Mesh::rotate(Vec3* angle, Vec3* around /* default value = nullptr */) {
 
+    // Log the error case
+    if (angle == nullptr) {
+        logWrite("Called Mesh->rotate(Vec3*, Vec3*) with 'angle' being a null pointer!", true);
+        return nullptr;
+    }
+
     this->rotate(angle->x, angle->y, angle->z, around);
 
     return this;
@@ -259,6 +277,12 @@ Mesh* Mesh::rotate(double yaw, double pitch, double roll, Vec3* around /* defaul
 }
 
 Mesh* Mesh::rotateSelf(Vec3* angle) {
+    
+    // Log the error case
+    if (angle == nullptr) {
+        logWrite("Called Mesh->rotateSelf(Vec3*) on a null pointer!", true);
+        return nullptr;
+    }
 
     this->rotateSelf(angle->x, angle->y, angle->z);
 

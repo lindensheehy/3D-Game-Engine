@@ -72,6 +72,9 @@ class Camera {
         void setLightingVec(double x, double y, double z);
         void setLightingVec(Vec3* lightingVec);
 
+        // Sets all the instance variables to one of the presets
+        void setPreset(int preset);
+
 
         // This rotates the camera based on the input angles in DEGREES
         // Also updates the facing direction vector
@@ -82,14 +85,17 @@ class Camera {
         // The values will be given in terms of fov (0 -> 1 is one fov length) so they dont mean anything for drawing until converted using a Display object
         void project(Vec3* vec, Vec2* displayPos);
 
-        // Same as above, but places distance between point and camera position into the z coordinate of displayPos
+        // here the places distance between point and camera position into the z coordinate of displayPos
         void project(Vec3* vec, Vec3* displayPos);
+        void project(Vec3* vec, Vec3* displayPos, Vec3* offset);
 
-        // Runs the function above for all the verticies in a mesh
+        // Runs the functions above for all the verticies in a mesh
         void project(Mesh* mesh);
+        void project(Mesh* mesh, Vec3* offset);
 
         // Returns true if the camera can see the triangle, based on the location of the tri relative to the cam, and the normal vector of the tri
         bool canSee(Tri3* tri);
+        bool canSee(Tri3* tri, Vec3* offset);
 
     private:
 

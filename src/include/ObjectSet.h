@@ -12,6 +12,7 @@ class Object {
     
     /*
         This class contains a mesh alongside some variables for handling physics interactions
+        Most of the instance functions here just directly call the same function from Mesh class
     */
 
     public:
@@ -22,9 +23,10 @@ class Object {
 
         Vec3* pos;
         Vec3* velocity;
-        Vec3* acceleration;
+        Vec3* gravity;
 
         double mass;
+        double gravityFactor;
         double frictionFactor;
         double bounceFactor;
 
@@ -46,6 +48,7 @@ class Object {
         Vec3* getCenter();
 
         // Moves the object in space by the specified distance.
+        Object* move(Vec3* dist);
         Object* move(double dx, double dy, double dz);
 
         // Scales the object by a given factor on each axis
@@ -54,7 +57,7 @@ class Object {
 
         // Rotates the object by the specified angles. rotates around (0, 0, 0) if no around vector is given
         Object* rotate(Vec3* angle, Vec3* around);
-        Object* rotate(double yaw, double pitch, double roll, Vec3* around = nullptr);
+        Object* rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */);
 
         // Rotates the object around its center
         Object* rotateSelf(Vec3* angle);
@@ -63,9 +66,13 @@ class Object {
         // Sets the color of the object
         Object* setColor(Uint32 color);
 
-        bool collides(Object* other);
+        // Updates all the physics variables of this object based on a delta time
+        void doPhysics(double dt);
 
-        void doGravity();
+        // Simple collision check. the object will act as though there is an infinite mass plane at a y level
+        void doFloorCollision(double y);
+
+        bool collides(Object* other);
 
 
 };
@@ -125,6 +132,33 @@ class ObjectSet {
 
         // Returns true if iterCurrent equals nullptr
         bool iterIsDone();
+
+
+        /*   Functions to affect all objects in the set   */
+
+        // Changes the position of all the objects
+        void moveAll(Vec3* dist);
+        void moveAll(double dx, double dy, double dz);
+
+        // Sets the position of all the objects
+        void setPosAll(Vec3* pos);
+        void setPosAll(double x, double y, double z);
+
+        // Adds velocity to all the objects
+        void addVelocityAll(Vec3* v);
+        void addVelocityAll(double vx, double vy, double vz);
+
+        // Sets the velocity of all the objects
+        void setVelocityAll(Vec3* v);
+        void setVelocityAll(double vx, double vy, double vz);
+
+        // Sets the gravitational acceleration for all objects in the set
+        void setAllGravity(Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
+        void setAllGravity(double gx, double gy, double gz);  // Sets all the instance variables to these values
+        void setAllGravity(double gy);  // Sets the gravity to just down or up
+
+        // Calls Object->doPhysics for all in the set
+        void doAllPhysics(double dt);
 
         // Projects all the objects into window coordinates
         void projectAll(Camera* camera, Display* display);

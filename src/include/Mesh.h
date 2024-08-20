@@ -113,6 +113,7 @@ class Mesh {
         Vec3* getCenter();
 
         // Moves all the Vec3 objects within 'verticies' by the specified distance.
+        Mesh* move(Vec3* dist);
         Mesh* move(double dx, double dy, double dz);
 
         // Scales the mesh by a given factor on each axis. Simply applies these factors to each component of every Vec3 object.

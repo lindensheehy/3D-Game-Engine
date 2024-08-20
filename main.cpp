@@ -8,8 +8,15 @@
 #include "src/include/Log.h"
 
 #include "graphics.cpp"
+#include "physics.cpp"
 
-Gui* gui = nullptr;
+// Global declarations
+Gui* gui;
+State* state;
+Drawer* drawer;
+Display* display;
+Camera* camera;
+ObjectSet* objects;
 
 void handleInput(State* state, Camera* camera) {
 
@@ -57,44 +64,102 @@ void handleInput(State* state, Camera* camera) {
 
     }
 
+
+    /*   Temporary stuff   */
+
+    // This rotates the white sphere on the left when pressing keys j,k,l
+    if (state->keyIsDown(SDLK_j))
+        objects->getById(6)->mesh->rotateSelf(1, 0, 0);
+
+    if (state->keyIsDown(SDLK_k))
+        objects->getById(6)->mesh->rotateSelf(0, 1, 0);
+
+    if (state->keyIsDown(SDLK_l))
+        objects->getById(6)->mesh->rotateSelf(0, 0, 1);
+
+    // This moves the blue oval inside the white sphere when pressing keys o,p
+    if (state->keyIsDown(SDLK_o))
+        objects->getById(5)->mesh->move(0, 0.5, 0);
+
+    if (state->keyIsDown(SDLK_p))
+        objects->getById(5)->mesh->move(0, -0.5, 0);
+
 }
 
-int main(int argc, char* argv[]) {
-
-    // Start the gui window
-    gui = new Gui(1000, 600);
-    gui->init();
+void init() {
 
     // Log stuff
     logInit("log.txt");
     logClear();
     logWrite("Starting...", true);
 
-    // Sets up the objects to be drawn and the camera
+    // Start the gui window
+    gui = new Gui(1000, 600);
+    gui->init();
+
+    // Init all the working objects
+    state = new State();
+    drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+    display = new Display(gui->windowWidth, gui->windowHeight);
+    camera = new Camera();
+    camera->setPreset(0);
+
+    // Sets up the default meshes, and creates the objects to be drawn
     Mesh::initMeshes();
     initGraphics();
 
-    State* state = new State();
-    Drawer* drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+
+    // Create and populate the object set
+    objects = new ObjectSet();
+    Object* newObject;
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
+    objects->pushBack(newObject, 1);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
+    objects->pushBack(newObject, 2);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 3);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
+    objects->pushBack(newObject, 4);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 5);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    objects->pushBack(newObject, 6);
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 7);
+
+    objects->setAllGravity(-5);
+
+}
+
+int main(int argc, char* argv[]) {
+
+    // Starts up everything needed for the main loop
+    init();
+
+    // Declarations for the main loop
     SDL_Event event;
-    int mouseX, mouseY;
-
-    // Init main camera and the associated display
-    Display* display1 = new Display(gui->windowWidth, gui->windowHeight);
-    Camera* camera1 = new Camera();
-    camera1->setPos(0, 0, -10);
-    camera1->setFov(90, 54);
-    camera1->setLightingVec(1, -5, 2); // downfacing off axis lighting
-    camera1->movementSpeed = 50;
-
-
-    // Main event loop
     bool leave = false;
+
+
+    // Main loop
     while (!leave) {
 
         // Mouse position
-        SDL_GetMouseState(&mouseX, &mouseY);
-        state->mouse->setPos(mouseX, mouseY);
+        SDL_GetMouseState(   &(state->mouse->posX),   &(state->mouse->posY)   );
         
         // Handle SDL events
         while (SDL_PollEvent(&event) != 0) {
@@ -103,23 +168,27 @@ int main(int argc, char* argv[]) {
         }
 
         // Does all the user input handling
-        handleInput(state, camera1);
+        handleInput(state, camera);
 
         // Draw stuff
         gui->getBuffer();
         drawer->buffer = gui->buffer;
         drawer->resetDepthBuffer();
-        //drawer->fillScreen(Color::BLACK);
-        drawGraphics(drawer, state, camera1, display1); // from graphics.cpp
+
+        // Do the main work. functions from other files
+        drawGraphics(objects, drawer, state, camera, display); // from graphics.cpp
+        doPhysics(objects, state); // from physics.cpp
+
         gui->flip();
 
         // Make current state become last frame
         state->nextFrame();
+
     }
 
     delete state;
-    delete camera1;
-    delete display1;
+    delete camera;
+    delete display;
 
     // Destroy the window and quit SDL
     gui->exit();
