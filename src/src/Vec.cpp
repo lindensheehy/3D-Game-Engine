@@ -570,8 +570,14 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
 
 void Vec3::project() {
 
+    /*
+        Find a 2d coordinate coorsponding to a 3d point.
+        depth (distance from camera) goes in the z component
+    */
+
     // Constant. Can be changed
-    double focalLength = 10;
+    double focalLengthX = 0.6;
+    double focalLengthY = 1;
 
     // If the point is behind the camera
     if (this->z < 0) {
@@ -583,8 +589,12 @@ void Vec3::project() {
 
     double depth = this->magnitude();
 
-    this->x = (this->x * focalLength) / this->z;
-    this->y = (this->y * focalLength) / this->z;
+    this->x = (this->x * focalLengthX) / this->z;
+    this->y = (this->y * focalLengthY) / this->z;
+
+    // adjust so its relative to the top left rather than middle
+    this->x += 0.5;
+    this->y += 0.5;
 
     this->z = depth;
 

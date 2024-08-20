@@ -199,7 +199,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     }
     
     // Get points location relative to the cameras position and rotation
-    displayPos = vec->copy();
+    displayPos->set(vec);
     displayPos->sub(this->pos);
     displayPos->rotate(this->yaw, 0, 0);
     displayPos->rotate(0, this->pitch, 0);
@@ -234,7 +234,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
     }
     
     // Get points location relative to the cameras position and rotation
-    displayPos = vec->copy();
+    displayPos->set(vec);
     displayPos->add(offset);
     displayPos->sub(this->pos);
     displayPos->rotate(this->yaw, 0, 0);
@@ -400,10 +400,10 @@ void Display::toDisplayPos(Vec3* vec) {
         return;
     }
 
-    int drawPosx = (int) (vec->x * (double) this->width);
+    double drawPosx = vec->x * (double) this->width;
     drawPosx += this->widthOffset;
 
-    int drawPosy = this->height - (int) (vec->y * (double) this->height); // minus because y=0 is at the top
+    double drawPosy = this->height - (vec->y * (double) this->height); // minus because y=0 is at the top
     drawPosy += this->heightOffset;
 
     vec->x = drawPosx;
