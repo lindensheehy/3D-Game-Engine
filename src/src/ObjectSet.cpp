@@ -540,6 +540,13 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
         currentObj = this->iterGetObj();
 
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
+
+            // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
+            if (
+                currentObj->mesh->projectedTris[i]->v1->z == inf ||
+                currentObj->mesh->projectedTris[i]->v2->z == inf ||
+                currentObj->mesh->projectedTris[i]->v3->z == inf
+            ) continue;
         
             // Skip if tri cant be seen by cam on the outfacing side
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;

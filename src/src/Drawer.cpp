@@ -1266,12 +1266,12 @@ void Font::drawString(const char* string, int x, int y, Uint32 color) {
 void Font::drawInt(int num, int x, int y, Uint32 color) {
 
     double a = (double) num;
-    int b; // for casting a into
+    int b; // for casting 'a' into
     int counter = 0;
 
     int dx = 0;
 
-    while (a > 1) {
+    while (a >= 1) {
         a /= 10;
         counter++;
     }
