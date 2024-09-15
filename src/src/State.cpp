@@ -191,143 +191,143 @@ bool* State::KeyboardState::getKeyRef(int keyCode) {
         // Letter keys
         case SDLK_a:
             return &( this->letterKeys[letterKeyIndex::a] );
-            break;
+
         case SDLK_b:
             return &( this->letterKeys[letterKeyIndex::b] );
-            break;
+
         case SDLK_c:
             return &( this->letterKeys[letterKeyIndex::c] );
-            break;
+
         case SDLK_d:
             return &( this->letterKeys[letterKeyIndex::d] );
-            break;
+
         case SDLK_e:
             return &( this->letterKeys[letterKeyIndex::e] );
-            break;
+
         case SDLK_f:
             return &( this->letterKeys[letterKeyIndex::f] );
-            break;
+
         case SDLK_g:
             return &( this->letterKeys[letterKeyIndex::g] );
-            break;
+
         case SDLK_h:
             return &( this->letterKeys[letterKeyIndex::h] );
-            break;
+
         case SDLK_i:
             return &( this->letterKeys[letterKeyIndex::i] );
-            break;
+
         case SDLK_j:
             return &( this->letterKeys[letterKeyIndex::j] );
-            break;
+
         case SDLK_k:
             return &( this->letterKeys[letterKeyIndex::k] );
-            break;
+
         case SDLK_l:
             return &( this->letterKeys[letterKeyIndex::l] );
-            break;
+
         case SDLK_m:
             return &( this->letterKeys[letterKeyIndex::m] );
-            break;
+
         case SDLK_n:
             return &( this->letterKeys[letterKeyIndex::n] );
-            break;
+
         case SDLK_o:
             return &( this->letterKeys[letterKeyIndex::o] );
-            break;
+
         case SDLK_p:
             return &( this->letterKeys[letterKeyIndex::p] );
-            break;
+
         case SDLK_q:
             return &( this->letterKeys[letterKeyIndex::q] );
-            break;
+
         case SDLK_r:
             return &( this->letterKeys[letterKeyIndex::r] );
-            break;
+
         case SDLK_s:
             return &( this->letterKeys[letterKeyIndex::s] );
-            break;
+
         case SDLK_t:
             return &( this->letterKeys[letterKeyIndex::t] );
-            break;
+
         case SDLK_u:
             return &( this->letterKeys[letterKeyIndex::u] );
-            break;
+
         case SDLK_v:
             return &( this->letterKeys[letterKeyIndex::v] );
-            break;
+
         case SDLK_w:
             return &( this->letterKeys[letterKeyIndex::w] );
-            break;
+
         case SDLK_x:
             return &( this->letterKeys[letterKeyIndex::x] );
-            break;
+
         case SDLK_y:
             return &( this->letterKeys[letterKeyIndex::y] );
-            break;
+
         case SDLK_z:
             return &( this->letterKeys[letterKeyIndex::z] );
-            break;
+
 
         // Number keys
         case SDLK_0:
             return &( this->numKeys[numKeyIndex::zero] );
-            break;
+
         case SDLK_1:
             return &( this->numKeys[numKeyIndex::one] );
-            break;
+
         case SDLK_2:
             return &( this->numKeys[numKeyIndex::two] );
-            break;
+
         case SDLK_3:
             return &( this->numKeys[numKeyIndex::three] );
-            break;
+
         case SDLK_4:
             return &( this->numKeys[numKeyIndex::four] );
-            break;
+
         case SDLK_5:
             return &( this->numKeys[numKeyIndex::five] );
-            break;
+
         case SDLK_6:
             return &( this->numKeys[numKeyIndex::six] );
-            break;
+
         case SDLK_7:
             return &( this->numKeys[numKeyIndex::seven] );
-            break;
+
         case SDLK_8:
             return &( this->numKeys[numKeyIndex::eight] );
-            break;
+
         case SDLK_9:
             return &( this->numKeys[numKeyIndex::nine] );
-            break;
+
 
         // Misc keys
         case SDLK_BACKSPACE:
             return &( this->miscKeys[miscKeyIndex::backspace] );
-            break;
+
         case SDLK_TAB:
             return &( this->miscKeys[miscKeyIndex::tab] );
-            break;
+
         case SDLK_RETURN:
             return &( this->miscKeys[miscKeyIndex::enter] );
-            break;
+
         case SDLK_ESCAPE:
             return &( this->miscKeys[miscKeyIndex::escape] );
-            break;
+
         case SDLK_SPACE:
             return &( this->miscKeys[miscKeyIndex::space] );
-            break;
+
         case SDLK_CAPSLOCK:
             return &( this->miscKeys[miscKeyIndex::capslock] );
-            break;
+
         case SDLK_LCTRL:
             return &( this->miscKeys[miscKeyIndex::control] );
-            break;
+
         case SDLK_LSHIFT:
             return &( this->miscKeys[miscKeyIndex::shift] );
-            break;
+
         case SDLK_LALT:
             return &( this->miscKeys[miscKeyIndex::alt] );
-            break;
+
 
     }
 

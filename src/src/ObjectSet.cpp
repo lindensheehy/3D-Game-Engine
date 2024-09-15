@@ -312,66 +312,6 @@ void ObjectSet::pushFront(Object* obj, int id) {
     
 }
 
-Object* ObjectSet::popBack() {
-
-    return this->list->popBack();
-
-}
-
-Object* ObjectSet::popFront() {
-
-    return this->list->popFront();
-    
-}
-
-Object* ObjectSet::popById(int id) {
-
-    return this->list->popById(id);
-
-}
-
-Object* ObjectSet::getById(int id) {
-
-    return this->list->getById(id);
-
-}
-
-void ObjectSet::iterStart(int index) {
-
-    this->list->iterStart(index);
-
-}
-
-Object* ObjectSet::iterGetObj() {
-
-    return this->list->iterGetObj();
-
-}
-
-int ObjectSet::iterGetId() {
-
-    return this->list->iterGetId();
-
-}
-
-void ObjectSet::iterNext() {
-
-    this->list->iterNext();
-
-}
-
-void ObjectSet::iterLast() {
-
-    this->list->iterLast();
-
-}
-
-bool ObjectSet::iterIsDone() {
-
-    return this->list->iterIsDone();
-
-}
-
 void ObjectSet::moveAll(Vec3* dist) {
 
     // Log the error case
@@ -587,45 +527,52 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
     // Set up
     this->projectAll(camera, display);
-    Mesh* currentMesh;
+    Object* currentObj;
     Vec3* vecStart = new Vec3(); 
     Vec3* vecEnd = new Vec3();
 
     // Main loop
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
-        currentMesh = this->iterGetObj()->mesh;
+        currentObj = this->iterGetObj();
 
-        for (int i = 0; i < currentMesh->triCount; i++) {
+        for (int i = 0; i < currentObj->mesh->triCount; i++) {
+
+            // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
+            if (
+                currentObj->mesh->projectedTris[i]->v1->z == inf ||
+                currentObj->mesh->projectedTris[i]->v2->z == inf ||
+                currentObj->mesh->projectedTris[i]->v3->z == inf
+            ) continue;
         
             // Skip if tri cant be seen by cam on the outfacing side
-            if (!camera->canSee(currentMesh->tris[i])) continue;
+            if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             // Find a shade based on the lighting vec
-            double lightAngle = currentMesh->tris[i]->normal->getAngle(camera->lightingVec);
+            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
-            Uint32 shade = currentMesh->color;
+            Uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
-            drawer->drawTriangle(shade, currentMesh->projectedTris[i]);
+            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
 
         }
 
         // Draw normals
-        for (int i = 0; i < currentMesh->triCount; i++) {
+        for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
             // Skip if tri cant be seen face on by cam
-            if (!camera->canSee(currentMesh->tris[i])) continue;
+            if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             Vec3* triCenter;
             Vec3* normalOffset;
             Vec3* triNormal;
 
             // Get projected coords for normal start and end
-            triCenter = currentMesh->tris[i]->getCenter();
-            normalOffset = currentMesh->tris[i]->normal->copy()->normalise(1);
+            triCenter = currentObj->mesh->tris[i]->getCenter()->add(currentObj->pos);
+            normalOffset = currentObj->mesh->tris[i]->normal->copy()->normalise(1);
             triNormal = triCenter->copy()->add(normalOffset);
 
             camera->project(triCenter, vecStart);
@@ -633,7 +580,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             display->toDisplayPos(vecStart);
             display->toDisplayPos(vecEnd);
 
-            drawer->drawLine(Color::RED, vecStart->x, vecStart->y, vecEnd->x, vecEnd->y);
+            drawer->drawLine(Color::RED, vecStart->x, vecStart->y, vecEnd->x, vecEnd->y, vecStart->z, vecEnd->z);
 
             delete triCenter;
             delete normalOffset;

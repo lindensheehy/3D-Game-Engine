@@ -106,32 +106,34 @@ class ObjectSet {
         void pushFront(Object* obj);
         void pushFront(Object* obj, int id);
 
-        Object* popBack();
-        Object* popFront();
+        // The following functions are inlined becuase they simply call the same function name from LinkedList
+
+        inline Object* popBack() { return this->list->popBack(); }
+        inline Object* popFront() { return this->list->popFront(); }
 
         // Pops the node with this id. If the id doesnt exist in the list, this returns nullptr
-        Object* popById(int id);
+        inline Object* popById(int id) { return this->list->popById(id); }
 
         // Returns a reference to the object with a given id. DOES NOT change the internal list.
-        Object* getById(int id);
+        inline Object* getById(int id) { return this->list->getById(id); }
 
         // Sets the instance variable iterCurrent to an index, from where the other iterator functions can be called
-        void iterStart(int index);
+        inline void iterStart(int index) { this->list->iterStart(index); }
 
         // Returns the object of iterCurrent. Returns nullptr if the iterator is at null
-        Object* iterGetObj();
+        inline Object* iterGetObj() { return this->list->iterGetObj(); }
 
         // Returns the id of iterCurrent. Returns -1 if the iterator is at null
-        int iterGetId();
+        inline int iterGetId() { return this->list->iterGetId(); }
 
         // Moves the iterator forward 1
-        void iterNext();
+        inline void iterNext() { this->list->iterNext(); }
 
         // Moves the iterator back 1
-        void iterLast();
+        inline void iterLast() { this->list->iterLast(); }
 
         // Returns true if iterCurrent equals nullptr
-        bool iterIsDone();
+        inline bool iterIsDone() { return this->list->iterIsDone(); }
 
 
         /*   Functions to affect all objects in the set   */

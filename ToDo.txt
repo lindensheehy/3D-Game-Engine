@@ -1,11 +1,15 @@
 new stuff:
-- add a depth buffer to the drawer class using barycentric coordinates to determine depth
+- physics (the big one)
+    - collision checks
+        - bounding box for objects (probably not 1-to-1 with the mesh for easier computing)
+    - collision handling
+        - 
 - add tests for more functions
 - add multiple color meshes
     - let each tri be a different color
     - let tris be drawn as a png
-- PhysicsObject class
-    - make a doFrame(dt) function
-    - some basic collision like with the floor
 
 fixes:
+
+optimizations:
+- make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
