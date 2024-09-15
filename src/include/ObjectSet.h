@@ -106,7 +106,6 @@ class ObjectSet {
         void pushFront(Object* obj);
         void pushFront(Object* obj, int id);
 
-        // The following functions are inlined becuase they simply call the same function name from LinkedList
 
         inline Object* popBack() { return this->list->popBack(); }
         inline Object* popFront() { return this->list->popFront(); }
@@ -172,7 +171,7 @@ class ObjectSet {
         void drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display);
 
         // Logs all of the nodes in the order they stand in the list
-        void log();
+        inline void log() { this->list->log(); }
 
     private:
         

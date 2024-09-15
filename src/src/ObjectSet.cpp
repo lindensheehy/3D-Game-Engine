@@ -593,10 +593,3 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
     delete vecStart; delete vecEnd;
 
 }
-
-void ObjectSet::log() {
-
-    this->list->log();
-    return;
-
-}
