@@ -6,6 +6,8 @@
 
 #include "Vec.h"
 #include "Tri.h"
+#include "Camera.h"
+#include "State.h"
 #include "LinkedList.h"
 
 #include "Math.h"
@@ -45,6 +47,9 @@ class Color {
         // Sets the brightness of a given color (Uint32) to a double between 0-1.
         // Values higher than 1 CAN be used, but could cause overflow issues.
         static Uint32 setBrightness(Uint32 color, double newBrightness);
+
+        // Merges the rgb values of two colors based on opacity values. The sum of opacity1 and opacity2 should be 1
+        static Uint32 merge(Uint32 color1, double opacity1, Uint32 color2, double opacity2);
 
 };
 
@@ -156,20 +161,25 @@ class Drawer {
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(Uint32 pixel, int x, int y);
         void writePixel(Uint32 pixel, int x, int y, double depth);
+        void writePixel(Uint32 pixel, int x, int y, double depth, double opacity);
 
         // Draws a straight line from (x1, y1) to (x2, y2) in the given color
         void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2);
         void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2);
+        void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity);
 
         // Same as above, but uses Vec2 objects. These objects are NOT deleted by this function call and must be handled properly
         void drawLine(Uint32 pixel, Vec2* from, Vec2* to);
         void drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2);
+        void drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity);
 
-        // Draws a straight line along a given axis. Similar to drawLine, but less complex.
+        // Draws a straight line along a given axis
         void drawVerticalLine(Uint32 pixel, int startY, int endY, int x);
         void drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2);
+        void drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2, double opacity);
         void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y);
         void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
+        void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity);
 
         // Draws a FILLED rectangle from (x1, y1) to (x2, y2)
         void drawRect(Uint32 pixel, int x1, int y1, int x2, int y2);
@@ -188,50 +198,19 @@ class Drawer {
         // Draws a FILLED triangle which uses (x1, y1), (x2, y2), and (x3, y3) as vertices
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
+        void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity);
 
         // Same as above but uses a Tri object. This object is NOT deleted by this function call and must be handled properly. The Tri3 call includes depth.
         void drawTriangle(Uint32 pixel, Tri2* tri);
         void drawTriangle(Uint32 pixel, Tri3* tri);
+        void drawTriangle(Uint32 pixel, Tri3* tri, double opacity);
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
         void drawpng(PNG* file, int x, int y, double depth);
 
-        // Adds a point to the depth buffer range. This updates the range if the point lies outside the current range
-        void addPoint(int x, int y);
-
-};
-
-
-
-class Font {
-
-    /*
-        This class holds data to print text characters to the screen
-        Before using, an instance must be made by referencing a drawer instance so that this class can actually draw
-        The contructor here loads all the pixel arts for each text character
-    */
-
-    public:
-
-        // Instance Variables
-        Drawer* drawer;
-
-        // Constructors
-        Font();
-        Font(Drawer* drawer);
-
-        /*   Instance Functions   */
-
         // Loads the character pixel arts into memory
-        void init();
-
-        // Returns a pointer to the pixels for a character
-        bool* getCharRef(char ch);
-        bool* getCharRef(int num);
-
-        // Draws a set of pixels to the screen. the other draw functions rely on this
-        void drawPixels(bool* pixels, int x, int y, Uint32 color);
+        void initFont();
 
         // Draws a character to the screen, the upper left will be at (x, y)
         void drawChar(char ch, int x, int y, Uint32 color);
@@ -241,8 +220,22 @@ class Font {
 
         // Draws an integer value to the screen, the top left will be at (x, y)
         void drawInt(int num, int x, int y, Uint32 color);
-    
-    private:
+
+        // Draws the fps box in the top left
+        void drawFps(State* state);
+
+        void drawSky(Camera* camera, Display* display);
+
+    private:   
+
+        /*   The following functions dont need to be called outside this class   */
+
+        // Draws a set of pixels to the screen. the other draw functions rely on this
+        void drawPixels(bool* pixels, int x, int y, Uint32 color);
+
+        // Returns a pointer to the pixels for a character
+        bool* getCharRef(char ch);
+        bool* getCharRef(int num);
 
         /*
             Character Pixel Arts
@@ -258,7 +251,7 @@ class Font {
         // underscore is 0 (false) and 0 is 1 (true), the bool values coorespond to if they are shown or not when drawing
         // All the seperate strings here get put together by the compiler into one big string, so the /n chars are the seperators
         // | acts as a line end char
-        // String length is: char size + 1 * char count + 1 = length 2110 
+        // String length is: ( (7 * 8) + 1 ) * char count = 2166 + nullchar -> 2167
         const char* rawChars = {
 
             // A

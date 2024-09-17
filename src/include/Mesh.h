@@ -1,8 +1,9 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+
 #include "Vec.h"
 #include "Tri.h"
-#include "Drawer.h"
 
 // For logging error cases
 #include "Log.h"

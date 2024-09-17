@@ -83,7 +83,7 @@ Mesh::Mesh() {
     this->vertexCount = 0;
     this->normalCount = 0;
     this->triCount = 0;
-    this->color = Color::WHITE;
+    this->color = 0xFFFFFFFF;
 
     this->indexMap = nullptr;
 

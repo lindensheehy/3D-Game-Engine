@@ -63,6 +63,42 @@ Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
 
 }
 
+Uint32 Color::merge(Uint32 color1, double opacity1, Uint32 color2, double opacity2) {
+
+    // Unpack color codes
+    Uint8 redValue1 = (Uint8) (color1 >> 16);
+    Uint8 greenValue1 = (Uint8) (color1 >> 8);
+    Uint8 blueValue1 = (Uint8) (color1);
+
+    Uint8 redValue2 = (Uint8) (color2 >> 16);
+    Uint8 greenValue2 = (Uint8) (color2 >> 8);
+    Uint8 blueValue2 = (Uint8) (color2);
+
+    // Downscale values accordingly, ignoring opacityValue
+    redValue1 *= opacity1;
+    greenValue1 *= opacity1;
+    blueValue1 *= opacity1;
+
+    redValue2 *= opacity2;
+    greenValue2 *= opacity2;
+    blueValue2 *= opacity2;
+
+    // Get resulting color codes, using the first set to store this to avoid unnecessary variables
+    redValue1 += redValue2;
+    greenValue1 += greenValue2;
+    blueValue1 += blueValue2;
+
+    // Pack resulting color code
+    Uint32 newColor = 0x0000FF00; // This FF will become the opacity value after the bit shifts
+    newColor |= redValue1;
+    newColor <<= 8;
+    newColor |= greenValue1;
+    newColor <<= 8;
+    newColor |= blueValue1;
+
+    return newColor;
+
+}
 
 
 /* ------------------------- */
@@ -233,6 +269,8 @@ Drawer::Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
     for (int i = 0; i < this->bufferSize; i++)
         this->depthBuffer[i] = inf;
 
+    this->chars = nullptr;
+
 }
 
 Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
@@ -247,11 +285,21 @@ Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
     for (int i = 0; i < this->bufferSize; i++)
         this->depthBuffer[i] = inf;
 
+    this->chars = nullptr;
+
 }
 
 // Destructor
 Drawer::~Drawer() {
+
     delete[] this->depthBuffer;
+
+    for (int i = 0; i < 38; i++) {
+        if (this->chars[i] != nullptr) delete[] this->chars[i];
+    }
+
+    delete[] this->chars;
+
 }
 
 // Instance functions
@@ -291,7 +339,7 @@ void Drawer::writePixel(Uint32 pixel, int x, int y) {
     int index = this->bufferIndex(x, y);
     if (index == -1) return;
 
-    buffer[index] = pixel;
+    this->buffer[index] = pixel;
 
     return;
     
@@ -308,10 +356,32 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth) {
 
     if (depth > this->depthBuffer[index]) return;
 
-    buffer[index] = pixel;
-    depthBuffer[index] = depth;
+    this->buffer[index] = pixel;
+    this->depthBuffer[index] = depth;
 
     return;
+
+}
+
+void Drawer::writePixel(Uint32 pixel, int x, int y, double depth, double opacity) {
+
+    if (this->buffer == nullptr) {
+        return;
+    }
+
+    int index = this->bufferIndex(x, y);
+    if (index == -1) return;
+
+    if (depth > this->depthBuffer[index]) return;
+
+    // Find effective color based on pixel color, opacity, and color behind
+    Uint32 originalPixel = this->buffer[index];
+    Uint32 result = Color::merge(pixel, opacity, originalPixel, 1 - opacity);
+
+    this->buffer[index] = result;
+
+    return;
+
 }
 
 void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2) {
@@ -358,6 +428,29 @@ void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth
 
 }
 
+void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity) {
+
+    if (this->buffer == nullptr) {
+        return;
+    }
+    
+    int distx = x2 - x1;
+    int disty = y2 - y1;
+    double distDepth = depth2 - depth1;
+
+    int totalDist = max(abs(distx), abs(disty));
+
+    for (int i = 0; i < totalDist; i++) {
+        int x = floor( (x1) + (distx * ( (double) i / totalDist)) );
+        int y = floor( (y1) + (disty * ( (double) i / totalDist)) );
+        double d = (depth1) + (distDepth * ( (double) i / totalDist ));
+        this->writePixel(pixel, x, y, d, opacity);
+    }
+
+    return;
+
+}
+
 void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
@@ -390,6 +483,24 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double 
     }
 
     this->drawLine(pixel, from->x, from->y, to->x, to->y, depth1, depth2);
+    return;
+
+}
+
+void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity) {
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (from == nullptr) {
+        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
+        return;
+    }
+
+    if (to == nullptr) {
+        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
+        return;
+    }
+
+    this->drawLine(pixel, from->x, from->y, to->x, to->y, depth1, depth2, opacity);
     return;
 
 }
@@ -448,6 +559,48 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
 
 }
 
+void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2, double opacity) {
+
+    // Skip if coordinates are out of range
+    if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;
+
+    if (y1 == y2) {
+        double d = min(depth1, depth2);
+        this->writePixel(pixel, x, y1, d, opacity);
+        return;
+    }
+
+    double depthSlope;
+    double d;
+
+    if (y1 < y2) {
+
+        depthSlope = (depth2 - depth1) / (y2 - y1);
+        d = depth1;
+
+        for (int i = y1; i <= y2; i++) {
+            this->writePixel(pixel, x, i, d, opacity);
+            d += depthSlope;
+        }
+
+
+    }
+
+    else {
+
+        depthSlope = (depth1 - depth2) / (y1 - y2);
+        d = depth2;
+
+        for (int i = y2; i <= y1; i++) {
+            this->writePixel(pixel, x, i, d, opacity);
+            d += depthSlope;
+        }
+
+
+    }
+
+}
+
 void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y) {
     for (int i = startX; i <= endX; i++) {
         this->writePixel(pixel, i, y);
@@ -462,6 +615,18 @@ void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, doubl
         double d = depth1 + (distDepth * ( (i - startX) / (endX - startX) ));
         this->writePixel(pixel, i, y, d);
     }
+
+}
+
+void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity) {
+
+    double distDepth = depth2 - depth1;
+
+    for (int i = startX; i <= endX; i++) {
+        double d = depth1 + (distDepth * ( (i - startX) / (endX - startX) ));
+        this->writePixel(pixel, i, y, d, opacity);
+    }
+    
 }
 
 void Drawer::drawRect(Uint32 pixel, int startx, int starty, int endx, int endy) {
@@ -838,6 +1003,177 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
+void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity) {
+
+    /*
+        This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
+        First find where each point stands in relation to eachother, then from the lowest x go to the highest x
+    */
+  
+
+    bool oneIsTwo = (x1 == x2) && (y1 == y2);
+    bool twoIsThree = (x2 == x3) && (y2 == y3);
+    bool oneIsThree = (x1 == x3) && (y1 == y3);
+
+    // Cases where the 'triangle' has more than one point with the same coordinates, so these are checked here for quick handling
+    if ( oneIsTwo ) {
+
+        // If two also equals three, all three coordinates are the same, so just return.
+        // I should draw a single pixel in this case, but its not really worth it as it will barely be noticable
+        if (twoIsThree) return;
+
+        this->drawLine(pixel, x1, y1, x3, y3, depth1, depth3, opacity);
+        return;
+
+    }
+
+    // Either of these cases draw the same line
+    if ( oneIsThree || twoIsThree) {
+        this->drawLine(pixel, x1, y1, x2, y2, depth1, depth2, opacity);
+        return;
+    }
+
+
+    // Sort the coordinates by their x values from least to greatest (left to right)
+    if (x2 < x1) {
+        swap(&x1, &x2);
+        swap(&y1, &y2);
+        swap(&depth1, &depth2);
+    }
+
+    if (x3 < x1) {
+        swap(&x1, &x3);
+        swap(&y1, &y3);
+        swap(&depth1, &depth3);
+    }
+
+    if (x3 < x2) {
+        swap(&x2, &x3);
+        swap(&y2, &y3);
+        swap(&depth2, &depth3);
+    }
+
+    // These are the y values the line will go to/from for each x
+    // The doubles store the actual value, and the ints are rounded
+    // The actual values may not actually be start and end as they say and might be backwards
+    double startY = (double) y1;
+    double endY = (double) y1;
+    int startYInt, endYInt;
+
+    double slope12;
+    double slope23;
+    double slope13;
+
+    double startDepth = depth1;
+    double endDepth = depth1;
+
+    double slopeDepth12;
+    double slopeDepth23;
+    double slopeDepth13;
+
+    bool invalidSlope12 = false;
+    bool invalidSlope23 = false;
+    bool invalidSlope13 = false;
+
+
+    // Slope between left-most point and the middle point
+    if (x1 != x2) {
+        slope12 = (double) (y2 - y1) / (x2 - x1);
+        slopeDepth12 = (depth2 - depth1) / (x2 - x1);
+    }
+
+    else invalidSlope12 = true;
+
+    // Slope between middle point and the right-most point
+    if (x2 != x3) {
+        slope23 = (double) (y3 - y2) / (x3 - x2);
+        slopeDepth23 = (depth3 - depth2) / (x3 - x2);
+    }
+
+    else invalidSlope23 = true;
+
+    // Slope between the left-most point and the right-most point
+    if (x1 != x3) {
+        slope13 = (double) (y3 - y1) / (x3 - x1);
+        slopeDepth13 = (depth3 - depth1) / (x3 - x1);
+    }
+
+    else invalidSlope13 = true;
+
+
+    // this checks if all the points have the same x coordinate and draws a single line accordingly (in two parts)
+    // If the slope between 1 and 2, and the slope between 2 and 3 are both inf, theres no need to check the slope between 1 and 3.
+    if (invalidSlope13) {
+
+        if (y1 < y2)
+            this->drawVerticalLine(pixel, y1, y2, x1, depth1, depth2, opacity);
+        else
+            this->drawVerticalLine(pixel, y2, y1, x1, depth2, depth1, opacity);
+
+        if (y2 < y3)
+            this->drawVerticalLine(pixel, y2, y3, x1, depth2, depth3, opacity);
+        else
+            this->drawVerticalLine(pixel, y3, y2, x1, depth3, depth2, opacity);
+
+        return;
+
+    }
+
+    // From left to right until the mid vertex is hit
+    if (!invalidSlope12) {
+
+        for (int i = x1; i < x2; i++) {
+
+            startY += slope12;
+            endY += slope13;
+
+            startYInt = (int) startY;
+            endYInt = (int) endY;
+
+            startDepth += slopeDepth12;
+            endDepth += slopeDepth13;
+
+            this->drawVerticalLine(pixel, startYInt, endYInt, i, startDepth, endDepth, opacity);
+
+        }
+
+    }
+    
+    // When the two left points have the same x, the startY and endY need to be adjusted becuase the first loop was skipped
+    else {
+
+        startY = (double) y2;
+        endY = (double) y1;
+
+        startDepth = depth2;
+        endDepth = depth1;
+
+    }
+    
+    // Carry on from the last loop
+    if (!invalidSlope23) {
+
+        for (int i = x2; i < x3; i++) {
+
+            startY += slope23;
+            endY += slope13;
+
+            startYInt = (int) startY;
+            endYInt = (int) endY;
+
+            startDepth += slopeDepth23;
+            endDepth += slopeDepth13;
+
+            this->drawVerticalLine(pixel, startYInt, endYInt, i, startDepth, endDepth, opacity);
+
+        }
+
+    }
+
+    return;
+
+}
+
 void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
@@ -914,6 +1250,46 @@ void Drawer::drawTriangle(Uint32 pixel, Tri3* tri) {
 
 }
 
+void Drawer::drawTriangle(Uint32 pixel, Tri3* tri, double opacity) {
+
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (tri == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        return;
+    }
+
+    if (tri->v1 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v2 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        return;
+    }
+
+    if (tri->v3 == nullptr) {
+        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        return;
+    }
+    
+    int x1 = (int) round(tri->v1->x);
+    int y1 = (int) round(tri->v1->y);
+    int x2 = (int) round(tri->v2->x);
+    int y2 = (int) round(tri->v2->y);
+    int x3 = (int) round(tri->v3->x);
+    int y3 = (int) round(tri->v3->y);
+
+    double d1 = tri->v1->z;
+    double d2 = tri->v2->z;
+    double d3 = tri->v3->z;
+
+    this->drawTriangle(pixel, x1, y1, x2, y2, x3, y3, d1, d2, d3, opacity);
+
+    return;
+
+}
+
 void Drawer::drawpng(PNG* file, int x, int y) {
 
     if (x + file->width > bufferWidth) return;
@@ -962,23 +1338,7 @@ void Drawer::drawpng(PNG* file, int x, int y, double depth) {
     return;
 }
 
-
-
-/* -------------------------- */
-/* ---------- Font ---------- */
-/* -------------------------- */
-
-// Constructors
-Font::Font() {
-    this->drawer = nullptr;
-}
-
-Font::Font(Drawer* drawer) {
-    this->drawer = drawer;
-}
-
-// Instance Functions
-void Font::init() {
+void Drawer::initFont() {
 
     this->chars = new bool*[38];
 
@@ -1028,7 +1388,113 @@ void Font::init() {
 
 }
 
-bool* Font::getCharRef(char ch) {
+void Drawer::drawChar(char ch, int x, int y, Uint32 color) {
+
+    if (this->chars == nullptr) {
+        logWrite("Called Drawer->drawChar() without calling Drawer->initFont()!", true);
+        return;
+    }
+
+    bool* pixels = this->getCharRef(ch);
+
+    this->drawPixels(pixels, x, y, color);
+
+}
+
+void Drawer::drawString(const char* string, int x, int y, Uint32 color) {
+
+    if (this->chars == nullptr) {
+        logWrite("Called Drawer->drawString() without calling Drawer->initFont()!", true);
+        return;
+    }
+
+    int dx = 0;
+
+    for (int i = 0; string[i] != '\0'; i++) {
+
+        this->drawChar(string[i], x + dx, y, color);
+        dx += 6;
+
+    }
+    
+}
+
+void Drawer::drawInt(int num, int x, int y, Uint32 color) {
+
+    if (this->chars == nullptr) {
+        logWrite("Called Drawer->drawInt() without calling Drawer->initFont()!", true);
+        return;
+    }
+
+    double a = (double) num;
+    int b; // for casting 'a' into
+    int counter = 0;
+
+    int dx = 0;
+
+    while (a >= 1) {
+        a /= 10;
+        counter++;
+    }
+
+    for (; counter != 0; counter--) {
+
+        // Add the next digit of num
+        a *= 10;
+        b = (int) a;
+
+        // Get last digit
+        b %= 10;
+
+        bool* pixels = this->getCharRef(b);
+
+        this->drawPixels(pixels, x + dx, y, color);
+        dx += 6;
+
+    }
+
+}
+
+void Drawer::drawFps(State* state) {
+
+    if (state == nullptr) {
+        logWrite("Called Drawer->drawFps(State) on a nullptr!", true);
+        return;
+    }
+
+    if (this->chars == nullptr) {
+        logWrite("Called Drawer->drawFps() without calling Drawer->initFont()!", true);
+        return;
+    }
+
+    this->drawRect(Color::BLACK, 0, 0, 30, 13);
+    this->drawInt(state->time->fps, 6, 3, Color::WHITE);
+
+}
+
+void Drawer::drawPixels(bool* pixels, int x, int y, Uint32 color) {
+
+    if (pixels == nullptr) return;
+    
+    int dx = 0;
+    int dy = 0;
+
+    for (int i = 0; i < 49; i++) {
+
+        if (pixels[i])
+            this->writePixel(color, x + dx, y + dy);
+
+        dx++;
+        if (dx > 6) {
+            dx = 0;
+            dy++;
+        }
+
+    }
+
+}
+
+bool* Drawer::getCharRef(char ch) {
 
     /*
         Because the chars 'a' - 'z' are in order for their cooresponding integer value, I can use this to simplify the indexing
@@ -1061,7 +1527,7 @@ bool* Font::getCharRef(char ch) {
 
 }
 
-bool* Font::getCharRef(int num) {
+bool* Drawer::getCharRef(int num) {
 
     // Return ref to null char if the int is negative or not single digit
     if ( num < 0 || num > 9 ) {
@@ -1073,80 +1539,57 @@ bool* Font::getCharRef(int num) {
 
 }
 
-void Font::drawPixels(bool* pixels, int x, int y, Uint32 color) {
+void Drawer::drawSky(Camera* camera, Display* display) {
 
-    if (pixels == nullptr) return;
-    
-    int dx = 0;
-    int dy = 0;
-
-    for (int i = 0; i < 49; i++) {
-
-        if (pixels[i])
-            this->drawer->writePixel(color, x + dx, y + dy);
-
-        dx++;
-        if (dx > 6) {
-            dx = 0;
-            dy++;
-        }
-
+    // Address error cases, but dont kill the process yet in case its not fatal
+    if (camera == nullptr) {
+        logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        return;
     }
 
-}
-
-void Font::drawChar(char ch, int x, int y, Uint32 color) {
-
-    if (this->drawer == nullptr) return;
-
-    bool* pixels = this->getCharRef(ch);
-
-    this->drawPixels(pixels, x, y, color);
-
-}
-
-void Font::drawString(const char* string, int x, int y, Uint32 color) {
-
-    if (this->drawer == nullptr) return;
-
-    int dx = 0;
-
-    for (int i = 0; string[i] != '\0'; i++) {
-
-        this->drawChar(string[i], x + dx, y, color);
-        dx += 6;
-
-    }
-    
-}
-
-void Font::drawInt(int num, int x, int y, Uint32 color) {
-
-    double a = (double) num;
-    int b; // for casting 'a' into
-    int counter = 0;
-
-    int dx = 0;
-
-    while (a >= 1) {
-        a /= 10;
-        counter++;
+    if (display == nullptr) {
+        logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
+        return;
     }
 
-    for (; counter != 0; counter--) {
+    // Find the height on the display to draw the skyline
+    Vec2* heightVec = new Vec2(display->height, 0);
+    heightVec->rotate(camera->pitch);
+    double height = (display->height / 2) + heightVec->y;
+    delete heightVec;
 
-        // Add the next digit of num
-        a *= 10;
-        b = (int) a;
-
-        // Get last digit
-        b %= 10;
-
-        bool* pixels = this->getCharRef(b);
-
-        this->drawPixels(pixels, x + dx, y, color);
-        dx += 6;
-
+    // If the camera is facing down enough that no sky is visible
+    if (height < 0) {
+        this->fillScreen(Color::BLACK);
+        return;
     }
+
+    // Draw the rectangles
+    uint32_t skyColorLight = 0xFF323296; // o->FF, r->32, g->32, b->96
+    uint32_t skyColorDark = 0xFF161648; // o->FF, r->16, g->16, b->48
+
+    this->drawRect(
+        skyColorLight, 
+        display->widthOffset, 
+        display->heightOffset, 
+        display->widthOffset + display->width, 
+        display->heightOffset + (height - (double) 25)
+    );
+    this->drawRect(
+        skyColorDark, 
+        display->widthOffset, 
+        display->heightOffset + (height - (double) 25), 
+        display->widthOffset + display->width, 
+        display->heightOffset + height
+    );
+    this->drawRect(
+        Color::BLACK, 
+        display->widthOffset, 
+        display->heightOffset + height, 
+        display->widthOffset + display->width, 
+        display->heightOffset + display->height
+    );
+
+    return;
 
 }

@@ -454,6 +454,12 @@ void ObjectSet::projectAll(Camera* camera, Display* display) {
 
 void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
+    this->drawAll(drawer, camera, display, 1);
+
+}
+
+void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double opacity) {
+
     // Log the error cases
     if (drawer == nullptr) {
         logWrite("Called ObjectSet->drawAll(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
@@ -499,7 +505,10 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
-            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
+            if (opacity == 1)
+                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
+            else
+                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], opacity);
 
         }
 
@@ -508,6 +517,12 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 }
 
 void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
+
+    this->drawAllWithNormals(drawer, camera, display, 1);
+
+}
+
+void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, double opacity) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (drawer == nullptr) {
@@ -555,8 +570,11 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             Uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
-            // Draw the tri    
-            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
+            // Draw the tri
+            if (opacity == 1)
+                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
+            else
+                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], opacity);
 
         }
 

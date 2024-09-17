@@ -7,7 +7,6 @@
 #include "src/include/Gui.h"
 #include "src/include/Log.h"
 
-#include "graphics.cpp"
 #include "physics.cpp"
 
 // Global declarations
@@ -16,8 +15,13 @@ State* state;
 Drawer* drawer;
 Display* display;
 Camera* camera;
-ObjectSet* objects;
 
+Object* selectedObject;
+
+ObjectSet* opaqueObjects;
+ObjectSet* transparentObjects;
+
+bool drawNormals;
 bool gravity;
 
 void handleInput(State* state, Camera* camera) {
@@ -69,40 +73,56 @@ void handleInput(State* state, Camera* camera) {
 
     /*   Temporary stuff   */
 
+    // Toggle normal vector drawing on key n
+    if (state->keyJustDown(SDLK_n))
+        drawNormals = !drawNormals;
+
+    Object* affectedObject = nullptr;
+
     // This rotates the white sphere on the left when pressing keys j,k,l
-    if (state->keyIsDown(SDLK_j))
-        objects->getById(6)->mesh->rotateSelf(1, 0, 0);
+    if (state->keyIsDown(SDLK_j)) {
+        affectedObject = transparentObjects->getById(6);
+        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(1, 0, 0);
+    }
 
-    if (state->keyIsDown(SDLK_k))
-        objects->getById(6)->mesh->rotateSelf(0, 1, 0);
+    if (state->keyIsDown(SDLK_k)) {
+        affectedObject = transparentObjects->getById(6);
+        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(0, 1, 0);
+    }
 
-    if (state->keyIsDown(SDLK_l))
-        objects->getById(6)->mesh->rotateSelf(0, 0, 1);
+    if (state->keyIsDown(SDLK_l)) {
+        affectedObject = transparentObjects->getById(6);
+        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(0, 0, 1);
+    }
 
     // This moves the blue oval inside the white sphere when pressing keys o,p
-    if (state->keyIsDown(SDLK_o))
-        objects->getById(5)->mesh->move(0, 0.5, 0);
+    if (state->keyIsDown(SDLK_o)) {
+        affectedObject = opaqueObjects->getById(5);
+        if (affectedObject != nullptr) affectedObject->mesh->move(0, 0.5, 0);
+    }
 
-    if (state->keyIsDown(SDLK_p))
-        objects->getById(5)->mesh->move(0, -0.5, 0);
+    if (state->keyIsDown(SDLK_p)) {
+        affectedObject = opaqueObjects->getById(5);
+        if (affectedObject != nullptr) affectedObject->mesh->move(0, -0.5, 0);
+    }
 
     // Toggles gravity
     if (state->keyJustDown(SDLK_g))
         if (gravity) {
             std::cout << "gravity off" << std::endl;
-            objects->setAllGravity(0.0);
+            opaqueObjects->setAllGravity(0.0);
             gravity = false;
         }
 
         else {
             std::cout << "gravity on" << std::endl;
-            objects->setAllGravity(-30);
+            opaqueObjects->setAllGravity(-30);
             gravity = true;
         }
 
     // Gives all the objects some vertical velocity
     if (state->keyJustDown(SDLK_z))
-        objects->setVelocityAll(0, 25, 0);
+        opaqueObjects->setVelocityAll(0, 25, 0);
 
 }
 
@@ -119,49 +139,53 @@ void init() {
 
     // Init all the working objects
     state = new State();
-    drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+
     display = new Display(gui->windowWidth, gui->windowHeight);
     camera = new Camera();
     camera->setPreset(0);
 
+    drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+    drawer->initFont();
+
     // Sets up the default meshes, and creates the objects to be drawn
     Mesh::initMeshes();
-    initGraphics();
 
 
     // Create and populate the object set
-    objects = new ObjectSet();
+    opaqueObjects = new ObjectSet();
+    transparentObjects = new ObjectSet();
     Object* newObject;
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
-    objects->pushBack(newObject, 1);
+    transparentObjects->pushBack(newObject, 1);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
-    objects->pushBack(newObject, 2);
+    opaqueObjects->pushBack(newObject, 2);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 3);
+    opaqueObjects->pushBack(newObject, 3);
 
     newObject = new Object();
     newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
-    objects->pushBack(newObject, 4);
+    opaqueObjects->pushBack(newObject, 4);
 
     newObject = new Object();
     newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 5);
+    opaqueObjects->pushBack(newObject, 5);
 
     newObject = new Object();
     newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
-    objects->pushBack(newObject, 6);
+    transparentObjects->pushBack(newObject, 6);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 7);
+    opaqueObjects->pushBack(newObject, 7);
 
     gravity = false;
+    drawNormals = false;
 
 }
 
@@ -178,7 +202,7 @@ int main(int argc, char* argv[]) {
     // Main loop
     while (!leave) {
 
-        // Mouse position
+        // Update mouse position
         SDL_GetMouseState(   &(state->mouse->posX),   &(state->mouse->posY)   );
         
         // Handle SDL events
@@ -190,18 +214,34 @@ int main(int argc, char* argv[]) {
         // Does all the user input handling
         handleInput(state, camera);
 
-        // Draw stuff
+        // Handle the physics for the frame
+        opaqueObjects->doAllPhysics(state->time->dt);
+        transparentObjects->doAllPhysics(state->time->dt);
+
+        // Prep the pixel and depth buffers
         gui->getBuffer();
         drawer->buffer = gui->buffer;
         drawer->resetDepthBuffer();
+        drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
-        // Do the main work. functions from other files
-        drawGraphics(objects, drawer, state, camera, display); // from graphics.cpp
-        doPhysics(objects, state); // from physics.cpp
+        // Draw all the objects
+        if (drawNormals) {
+            opaqueObjects->drawAllWithNormals(drawer, camera, display, 0.5);
+            transparentObjects->drawAllWithNormals(drawer, camera, display, 0.2);
+        }
 
+        else {
+            opaqueObjects->drawAll(drawer, camera, display);
+            transparentObjects->drawAll(drawer, camera, display, 0.5);
+        }
+        
+        // Draw the fps counter
+        drawer->drawFps(state);
+
+        // Update the GUI
         gui->flip();
 
-        // Make current state become last frame
+        // Tell State that the frame is over
         state->nextFrame();
 
     }
@@ -209,9 +249,11 @@ int main(int argc, char* argv[]) {
     delete state;
     delete camera;
     delete display;
+    delete drawer;
 
     // Destroy the window and quit SDL
     gui->exit();
+    delete gui;
 
     return 0;
 

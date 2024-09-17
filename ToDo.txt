@@ -1,13 +1,19 @@
 new stuff:
-- physics (the big one)
+- physics
     - collision checks
         - bounding box for objects (probably not 1-to-1 with the mesh for easier computing)
     - collision handling
-        - 
+        - seperate functions for each set of two objects
 - add tests for more functions
 - add multiple color meshes
     - let each tri be a different color
     - let tris be drawn as a png
+- add a crosshair
+- add functionailty to pick an object by looking at it and tranform that specific object
+    - ray cast to find an object
+        - probably just check each object rather than actually stepping along a ray since theres few objects in the scene
+    - have a way to mark an object as chosen such that controls can tranform it
+        - probably the simplest way is to store an Object* which contains one from the set
 
 fixes:
 

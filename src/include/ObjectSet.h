@@ -164,11 +164,13 @@ class ObjectSet {
         // Projects all the objects into window coordinates
         void projectAll(Camera* camera, Display* display);
 
-        // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest
+        // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest, optional opacity value from 0-1
         void drawAll(Drawer* drawer, Camera* camera, Display* display);
+        void drawAll(Drawer* drawer, Camera* camera, Display* display, double opacity);
 
         // Does the same as drawAll(), but also draws red normal vectors on all the tris
         void drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display);
+        void drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, double opacity);
 
         // Logs all of the nodes in the order they stand in the list
         inline void log() { this->list->log(); }
