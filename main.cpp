@@ -16,10 +16,10 @@ Drawer* drawer;
 Display* display;
 Camera* camera;
 
+int selectedObjectId;
 Object* selectedObject;
 
-ObjectSet* opaqueObjects;
-ObjectSet* transparentObjects;
+ObjectSet* objects;
 
 bool drawNormals;
 bool gravity;
@@ -77,52 +77,78 @@ void handleInput(State* state, Camera* camera) {
     if (state->keyJustDown(SDLK_n))
         drawNormals = !drawNormals;
 
-    Object* affectedObject = nullptr;
+    // Pick object based on id, this cycles through all the objects with ids 1-7
+    bool changeObject = false;
 
-    // This rotates the white sphere on the left when pressing keys j,k,l
-    if (state->keyIsDown(SDLK_j)) {
-        affectedObject = transparentObjects->getById(6);
-        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(1, 0, 0);
+    if (state->keyJustDown(SDLK_q)) {
+        selectedObjectId--;
+        if (selectedObjectId < 1) selectedObjectId += 7;
+        changeObject = true;
     }
 
-    if (state->keyIsDown(SDLK_k)) {
-        affectedObject = transparentObjects->getById(6);
-        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(0, 1, 0);
+    if (state->keyJustDown(SDLK_e)) {
+        selectedObjectId++;
+        if (selectedObjectId > 7) selectedObjectId -= 7;
+        changeObject = true;
     }
 
-    if (state->keyIsDown(SDLK_l)) {
-        affectedObject = transparentObjects->getById(6);
-        if (affectedObject != nullptr) affectedObject->mesh->rotateSelf(0, 0, 1);
+    if (changeObject) {
+        selectedObject->opacity = 1;
+        selectedObject = objects->getById(selectedObjectId);
+        selectedObject->opacity = 0.5;
     }
 
-    // This moves the blue oval inside the white sphere when pressing keys o,p
-    if (state->keyIsDown(SDLK_o)) {
-        affectedObject = opaqueObjects->getById(5);
-        if (affectedObject != nullptr) affectedObject->mesh->move(0, 0.5, 0);
-    }
+    // This rotates the selected object when pressing keys j,k,l
+    if (state->keyIsDown(SDLK_j))
+        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(1, 0, 0);
 
-    if (state->keyIsDown(SDLK_p)) {
-        affectedObject = opaqueObjects->getById(5);
-        if (affectedObject != nullptr) affectedObject->mesh->move(0, -0.5, 0);
-    }
+    if (state->keyIsDown(SDLK_k))
+        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 1, 0);
+
+    if (state->keyIsDown(SDLK_l))
+        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 0, 1);
+
+    // This moves the selected object along the y-axis when pressing keys o,p
+    if (state->keyIsDown(SDLK_o))
+        if (selectedObject != nullptr) selectedObject->move(0, 0.5, 0);
+
+    if (state->keyIsDown(SDLK_p))
+        if (selectedObject != nullptr) selectedObject->move(0, -0.5, 0);
+
+    // This moves the selected object along the x-axis when pressing keys o,p
+    if (state->keyIsDown(SDLK_u))
+        if (selectedObject != nullptr) selectedObject->move(0.5, 0, 0);
+
+    if (state->keyIsDown(SDLK_i))
+        if (selectedObject != nullptr) selectedObject->move(-0.5, 0, 0);
+
+    // This moves the selected object along the z-axis when pressing keys o,p
+    if (state->keyIsDown(SDLK_t))
+        if (selectedObject != nullptr) selectedObject->move(0, 0, 0.5);
+
+    if (state->keyIsDown(SDLK_y))
+        if (selectedObject != nullptr) selectedObject->move(0, 0, -0.5);
 
     // Toggles gravity
-    if (state->keyJustDown(SDLK_g))
+    if (state->keyJustDown(SDLK_g)) {
+        
         if (gravity) {
             std::cout << "gravity off" << std::endl;
-            opaqueObjects->setAllGravity(0.0);
+            objects->setAllGravity(0.0);
             gravity = false;
         }
 
         else {
             std::cout << "gravity on" << std::endl;
-            opaqueObjects->setAllGravity(-30);
+            objects->setAllGravity(-30);
             gravity = true;
         }
 
+    }
+
     // Gives all the objects some vertical velocity
     if (state->keyJustDown(SDLK_z))
-        opaqueObjects->setVelocityAll(0, 25, 0);
+        objects->setVelocityAll(0, 25, 0);
 
 }
 
@@ -152,40 +178,42 @@ void init() {
 
 
     // Create and populate the object set
-    opaqueObjects = new ObjectSet();
-    transparentObjects = new ObjectSet();
+    objects = new ObjectSet();
     Object* newObject;
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
-    transparentObjects->pushBack(newObject, 1);
+    objects->pushBack(newObject, 1);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
-    opaqueObjects->pushBack(newObject, 2);
+    objects->pushBack(newObject, 2);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
-    opaqueObjects->pushBack(newObject, 3);
+    objects->pushBack(newObject, 3);
 
     newObject = new Object();
     newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
-    opaqueObjects->pushBack(newObject, 4);
+    objects->pushBack(newObject, 4);
 
     newObject = new Object();
     newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
-    opaqueObjects->pushBack(newObject, 5);
+    objects->pushBack(newObject, 5);
 
     newObject = new Object();
     newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
-    transparentObjects->pushBack(newObject, 6);
+    objects->pushBack(newObject, 6);
 
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
-    opaqueObjects->pushBack(newObject, 7);
+    objects->pushBack(newObject, 7);
 
     gravity = false;
     drawNormals = false;
+
+    selectedObjectId = 1;
+    selectedObject = objects->getById(1);
 
 }
 
@@ -215,8 +243,7 @@ int main(int argc, char* argv[]) {
         handleInput(state, camera);
 
         // Handle the physics for the frame
-        opaqueObjects->doAllPhysics(state->time->dt);
-        transparentObjects->doAllPhysics(state->time->dt);
+        objects->doAllPhysics(state->time->dt);
 
         // Prep the pixel and depth buffers
         gui->getBuffer();
@@ -226,17 +253,16 @@ int main(int argc, char* argv[]) {
 
         // Draw all the objects
         if (drawNormals) {
-            opaqueObjects->drawAllWithNormals(drawer, camera, display, 0.5);
-            transparentObjects->drawAllWithNormals(drawer, camera, display, 0.2);
+            objects->drawAllWithNormals(drawer, camera, display, 0.5);
         }
 
         else {
-            opaqueObjects->drawAll(drawer, camera, display);
-            transparentObjects->drawAll(drawer, camera, display, 0.5);
+            objects->drawAll(drawer, camera, display);
         }
         
-        // Draw the fps counter
-        drawer->drawFps(state);
+        // Draw the UI
+        drawer->drawFps(state, display);
+        drawer->drawCrosshair(display);
 
         // Update the GUI
         gui->flip();

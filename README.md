@@ -31,3 +31,16 @@ Because I restricted my library use so much, I had to write an extensive set of 
 To run this project, simply run "BuildAll+Run.bat". This script file compiles all the dependancies to .o files, and then builds and runs main.
 
 I added the SDL2 includes to this repository. They are the 64 bit versions, so if you are on a 32 bit system, read the README in the SDL2 folder for instructions to build and run
+
+Current version notes and controls:
+- You are a camera in a 3d plane with a few objects in front of you
+- w,a,s,d are the movement keys for your camera, plus space and ctrl to ascend and descend respectively
+- shift is the 'sprint' button, this just increases your movement speed in all directions
+- holding left click and moving your mouse around on the window lets you look around
+- you can 'select' an object by pressing q and e, then you can cycle through them using those same keys, the selected object appears partially transparent
+- keys j,k,l rotate the selected object in the 3 planes
+- keys o,p translate the selected object along the y-axis
+- keys u,i translate the selected object along the x-axis
+- keys t,y translate the selected object along the z-axis
+- gravity can be toggled on by pressing g, not this only affects the objects and not your camera
+- you can 'jump' the objects by pressing z, this only looks like a jump if gravity is on

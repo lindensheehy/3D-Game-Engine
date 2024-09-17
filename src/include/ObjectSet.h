@@ -25,6 +25,8 @@ class Object {
         Vec3* velocity;
         Vec3* gravity;
 
+        double opacity;
+
         double mass;
         double gravityFactor;
         double frictionFactor;

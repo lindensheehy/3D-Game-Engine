@@ -14,6 +14,8 @@ Object::Object() {
     this->velocity = new Vec3();
     this->gravity = new Vec3();
 
+    this->opacity = 1;
+
     this->mass = 100;
     this->gravityFactor = 1;
     this->frictionFactor = 1;
@@ -30,6 +32,8 @@ Object::Object(Mesh* mesh) {
     this->pos = new Vec3();
     this->velocity = new Vec3();
     this->gravity = new Vec3();
+
+    this->opacity = 1;
 
     this->mass = 100;
     this->gravityFactor = 1;
@@ -454,12 +458,6 @@ void ObjectSet::projectAll(Camera* camera, Display* display) {
 
 void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
-    this->drawAll(drawer, camera, display, 1);
-
-}
-
-void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double opacity) {
-
     // Log the error cases
     if (drawer == nullptr) {
         logWrite("Called ObjectSet->drawAll(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
@@ -480,7 +478,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double
     this->projectAll(camera, display);
     Object* currentObj;
 
-    // Main loop
+    // First loop for opaque objects
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
         currentObj = this->iterGetObj();
@@ -505,10 +503,40 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
-            if (opacity == 1)
+            if (currentObj->opacity == 1)
                 drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
-            else
-                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], opacity);
+
+        }
+
+    }
+
+    // Second loop for transparent objects
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+
+        currentObj = this->iterGetObj();
+
+        for (int i = 0; i < currentObj->mesh->triCount; i++) {
+
+            // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
+            if (
+                currentObj->mesh->projectedTris[i]->v1->z == inf ||
+                currentObj->mesh->projectedTris[i]->v2->z == inf ||
+                currentObj->mesh->projectedTris[i]->v3->z == inf
+            ) continue;
+        
+            // Skip if tri cant be seen by cam on the outfacing side
+            if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
+
+            // Find a shade based on the lighting vec
+            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            double lightFactor = lightAngle / 180;
+
+            Uint32 shade = currentObj->mesh->color;
+            shade = Color::setBrightness(shade, lightFactor);
+
+            // Draw the tri    
+            if (currentObj->opacity != 1)
+                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], currentObj->opacity);
 
         }
 
@@ -516,13 +544,13 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double
 
 }
 
-void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
+void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double opacity) {
 
-    this->drawAllWithNormals(drawer, camera, display, 1);
+    
 
 }
 
-void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, double opacity) {
+void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (drawer == nullptr) {
@@ -571,10 +599,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri
-            if (opacity == 1)
-                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
-            else
-                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], opacity);
+            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
 
         }
 
@@ -609,5 +634,11 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
     }
 
     delete vecStart; delete vecEnd;
+
+}
+
+void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, double opacity) {
+
+    
 
 }

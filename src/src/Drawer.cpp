@@ -601,30 +601,98 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
 
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y) {
-    for (int i = startX; i <= endX; i++) {
+void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y) {
+
+    if (x1 > x2) {
+        swap(&x1, &x2);
+    }
+
+    for (int i = x1; i <= x2; i++) {
         this->writePixel(pixel, i, y);
     }
+
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2) {
+void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double depth1, double depth2) {
 
-    double distDepth = depth2 - depth1;
+    // Skip if coordinates are out of range
+    if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
 
-    for (int i = startX; i <= endX; i++) {
-        double d = depth1 + (distDepth * ( (i - startX) / (endX - startX) ));
-        this->writePixel(pixel, i, y, d);
+    if (x1 == x2) {
+        double d = min(depth1, depth2);
+        this->writePixel(pixel, x1, y, d);
+        return;
+    }
+
+    double depthSlope;
+    double d;
+
+    if (x1 < x2) {
+
+        depthSlope = (depth2 - depth1) / (x2 - x1);
+        d = depth1;
+
+        for (int i = x1; i <= x2; i++) {
+            this->writePixel(pixel, i, y, d);
+            d += depthSlope;
+        }
+
+
+    }
+
+    else {
+
+        depthSlope = (depth1 - depth2) / (x1 - x2);
+        d = depth2;
+
+        for (int i = x2; i <= x1; i++) {
+            this->writePixel(pixel, i, y, d);
+            d += depthSlope;
+        }
+
+
     }
 
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity) {
+void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double depth1, double depth2, double opacity) {
 
-    double distDepth = depth2 - depth1;
+    // Skip if coordinates are out of range
+    if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
 
-    for (int i = startX; i <= endX; i++) {
-        double d = depth1 + (distDepth * ( (i - startX) / (endX - startX) ));
-        this->writePixel(pixel, i, y, d, opacity);
+    if (x1 == x2) {
+        double d = min(depth1, depth2);
+        this->writePixel(pixel, x1, y, d, opacity);
+        return;
+    }
+
+    double depthSlope;
+    double d;
+
+    if (x1 < x2) {
+
+        depthSlope = (depth2 - depth1) / (x2 - x1);
+        d = depth1;
+
+        for (int i = x1; i <= x2; i++) {
+            this->writePixel(pixel, i, y, d, opacity);
+            d += depthSlope;
+        }
+
+
+    }
+
+    else {
+
+        depthSlope = (depth1 - depth2) / (x1 - x2);
+        d = depth2;
+
+        for (int i = x2; i <= x1; i++) {
+            this->writePixel(pixel, i, y, d, opacity);
+            d += depthSlope;
+        }
+
+
     }
     
 }
@@ -1455,7 +1523,7 @@ void Drawer::drawInt(int num, int x, int y, Uint32 color) {
 
 }
 
-void Drawer::drawFps(State* state) {
+void Drawer::drawFps(State* state, Display* display) {
 
     if (state == nullptr) {
         logWrite("Called Drawer->drawFps(State) on a nullptr!", true);
@@ -1467,8 +1535,8 @@ void Drawer::drawFps(State* state) {
         return;
     }
 
-    this->drawRect(Color::BLACK, 0, 0, 30, 13);
-    this->drawInt(state->time->fps, 6, 3, Color::WHITE);
+    this->drawRect(Color::BLACK, display->widthOffset, display->heightOffset, display->widthOffset + 50, display->heightOffset + 13);
+    this->drawInt(state->time->fps, 12, 3, Color::WHITE);
 
 }
 
@@ -1591,5 +1659,23 @@ void Drawer::drawSky(Camera* camera, Display* display) {
     );
 
     return;
+
+}
+
+void Drawer::drawCrosshair(Display* display) {
+
+    int centerX = display->middleX();
+    int centerY = display->middleY();
+    
+    // Middle dot
+    this->writePixel(Color::WHITE, centerX, centerY);
+
+    // Vertical lines
+    this->drawVerticalLine(Color::WHITE, centerY - 6, centerY - 12, centerX);
+    this->drawVerticalLine(Color::WHITE, centerY + 6, centerY + 12, centerX);
+
+    // Horizontal lines
+    this->drawHorizontalLine(Color::WHITE, centerX - 6, centerX - 12, centerY);
+    this->drawHorizontalLine(Color::WHITE, centerX + 6, centerX + 12, centerY);
 
 }

@@ -222,9 +222,13 @@ class Drawer {
         void drawInt(int num, int x, int y, Uint32 color);
 
         // Draws the fps box in the top left
-        void drawFps(State* state);
+        void drawFps(State* state, Display* display);
 
+        // Draws the sky based on the camera pitch
         void drawSky(Camera* camera, Display* display);
+
+        // Draws a crosshair in the center of the display
+        void drawCrosshair(Display* display);
 
     private:   
 

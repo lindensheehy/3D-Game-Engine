@@ -288,34 +288,74 @@ class LinkedList {
         // Pops the node with this id. If the id doesnt exist in the list, this returns nullptr
         type popById(int id) {
 
-            Node* current = this->first;
+            logWrite("starting pop by id", true);
 
-            while (true) {
+            if (this->length == 0) return nullptr;
 
-                if (current == nullptr) return nullptr;
+            logWrite("passed len=0", true);
 
-                if (current->id == id) {
+            if (this->length == 1) {
 
-                    current->last->next = current->next;
-                    current->next->last = current->last;
+                if (this->first->id != id) return nullptr;
 
-                    type ret = current->item;
+                type ret = this->first->item;
 
-                    delete current;
+                delete this->first;
+                this->length--;
+
+                this->first = nullptr;
+                this->last = nullptr;
+
+                return ret;
+
+            }
+
+            logWrite("passed len=1", true);
+
+            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+
+                logWrite("loop for id ");
+                logWrite(this->iterGetId(), true);
+
+                if (this->iterGetId() == id) {
+
+                    logWrite("found", true);
+                    
+                    if (this->iterCurrent->last != nullptr) 
+                        this->iterCurrent->last->next = this->iterCurrent->next;
+
+                    if (this->iterCurrent->next != nullptr) 
+                        this->iterCurrent->next->last = this->iterCurrent->last;
+
+                    type ret = this->iterGetObj();
+
+                    delete this->iterCurrent;
                     this->length--;
 
                     return ret;
 
                 }
 
-                current = current->next;
-
             }
+
+            logWrite("left without finding", true);
+
+            return nullptr;
 
         }
 
         // Returns a reference to the object with a given id. DOES NOT change the internal list.
         type getById(int id) {
+
+            if (this->length == 0) return nullptr;
+
+            if (this->length == 1) {
+
+                if (this->first->id != id) return nullptr;
+
+                return this->first->item;
+
+            }
 
             Node* current = this->first;
 
