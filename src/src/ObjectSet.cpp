@@ -483,6 +483,8 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
         currentObj = this->iterGetObj();
 
+        if (currentObj->opacity != 1) continue;
+
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
             // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
@@ -503,8 +505,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
-            if (currentObj->opacity == 1)
-                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
+            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
 
         }
 
@@ -515,6 +516,8 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
         currentObj = this->iterGetObj();
 
+        if (currentObj->opacity == 1) continue;
+
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
             // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
@@ -535,8 +538,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
-            if (currentObj->opacity != 1)
-                drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], currentObj->opacity);
+            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], currentObj->opacity);
 
         }
 

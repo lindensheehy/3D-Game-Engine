@@ -41,6 +41,7 @@ int round(double x) {
 
 double sqrt(double x, double tolerance) {
     /*
+    
         This function makes use of the Newton Raphson method to find the sqrt of x as follows:
 
         let     x = the input value
@@ -66,12 +67,13 @@ double sqrt(double x, double tolerance) {
         y_n+1  =  y_n -  ( -----  -  ------ )  =  ( -----  +  -------- )
                          (   2        2y_n  )     (   2         2y_n   )
 
-        Which is  ->  y_n+1  =  0.5 * ( -y_n + (x / y_n) )
+        Which is  ->  y_n+1  =  0.5 * ( y_n + (x / y_n) )
 
         This solves for sqrt(x) as the root of f(y).
 
         The Newton Raphson method repeats over several iterations to approximate the value of sqrt(x)
         When the value is only changed by the designated tolerance (0.001 by default) on a given iteration, the function ends and the value is returned.
+
     */
 
     // Address error case, but dont kill the process yet in case its not fatal
@@ -239,7 +241,7 @@ double arctan(double x) {
         1.  This way of calculating only works if the value of x is in (-1, 1)
             If the value is outside that range, 1/x is used instead and the angle is given as (pi/2 - found angle)
 
-        2.  Im using power series to calculate the angle, but for performance im only using the first 5 terms.
+        2.  Im using a power series to calculate the angle, but for performance im only using the first 5 terms.
             This series is accurate until around |x| > 0.76
 
             That being:
@@ -378,8 +380,8 @@ double arccos(double x) {
         Arccos is undefined outside (-1, 1)
         So when given a value outside that range, I log an error and simply return 0.
 
-        This identity is also weird becuase it gives values of x < 0, a return value pi lower than it should be
-        So theres simply a check at the end of fix that.
+        This identity is also weird becuase for values of x < 0, the return value is pi lower than it should be
+        Theres simply a check at the end of fix this.
     */
 
     // Address error case, but dont kill the process yet in case its not fatal

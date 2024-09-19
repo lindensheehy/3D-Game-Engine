@@ -572,10 +572,10 @@ void Vec3::project() {
 
     /*
         Find a 2d coordinate coorsponding to a 3d point.
-        depth (distance from camera) goes in the z component
+        depth (length of the vector, which represents distance from camera in drawing) goes in the z component
     */
 
-    // Constant. Can be changed
+    // Constant. Is currently proportional to display size
     double focalLengthX = 0.6;
     double focalLengthY = 1;
 
