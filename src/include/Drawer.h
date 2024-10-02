@@ -20,12 +20,19 @@ class Color {
 
         // Constant color codes
         // Bytes are [opacity][red][green][blue]
-        static const Uint32 RED    = 0xFFFF0000;
-        static const Uint32 GREEN  = 0xFF00FF00;
-        static const Uint32 BLUE   = 0xFF0000FF;
-        static const Uint32 BLACK  = 0xFF000000;
-        static const Uint32 WHITE  = 0xFFFFFFFF;
-        static const Uint32 GREY   = 0xFF888888;
+        static const Uint32 RED         = 0xFFFF0000;
+        static const Uint32 GREEN       = 0xFF00FF00;
+        static const Uint32 BLUE        = 0xFF0000FF;
+        static const Uint32 BLACK       = 0xFF000000;
+        static const Uint32 WHITE       = 0xFFFFFFFF;
+        static const Uint32 GREY        = 0xFF888888;
+        static const Uint32 DARKGREY    = 0xFF333333;
+
+        // For UI drawing
+        static const Uint32 BACKGROUND  = 0xFF303030;
+        static const Uint32 LIGHTER     = 0xFF505050;
+        static const Uint32 DARKER      = 0xFF181818;
+        static const Uint32 ACCENT      = 0xFFA78BFA;
 
 
         /*   Instance variables   */
@@ -181,8 +188,13 @@ class Drawer {
         void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
         void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity);
 
-        // Draws a FILLED rectangle from (x1, y1) to (x2, y2)
+        // Draws a HOLLOW rectangle
         void drawRect(Uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawRect(Uint32 pixel, Vec2* pos1, Vec2* pos2);
+
+        // Draws a FILLED rectangle
+        void drawRectFilled(Uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawRectFilled(Uint32 pixel, Vec2* pos1, Vec2* pos2);
 
         // Fills whole buffer with a given color
         void fillScreen(Uint32 pixel);
@@ -192,8 +204,10 @@ class Drawer {
         void drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth);
 
         // Same as above, but only one radius allowed.
-        void drawCircle(Uint32 pixel, int locationx, int locationy, int radius);
-        void drawCircle(Uint32 pixel, int locationx, int locationy, int radius, double depth);
+        void drawCircle(Uint32 pixel, int x, int y, int radius);
+        void drawCircle(Uint32 pixel, Vec2* pos, int radius);
+        void drawCircle(Uint32 pixel, int x, int y, int radius, double depth);
+        void drawCircle(Uint32 pixel, Vec2* pos, int radius, double depth);
 
         // Draws a FILLED triangle which uses (x1, y1), (x2, y2), and (x3, y3) as vertices
         void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
@@ -207,19 +221,22 @@ class Drawer {
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
+        void drawpng(PNG* file, Vec2* pos);
         void drawpng(PNG* file, int x, int y, double depth);
+        void drawpng(PNG* file, Vec2* pos, double depth);
 
         // Loads the character pixel arts into memory
         void initFont();
 
         // Draws a character to the screen, the upper left will be at (x, y)
-        void drawChar(char ch, int x, int y, Uint32 color);
+        void drawChar(Uint32 pixel, char ch, int x, int y);
 
         // Draws a string to the screen, the top left will be at (x, y)
-        void drawString(const char* string, int x, int y, Uint32 color);
+        void drawString(Uint32 pixel, const char* string, int x, int y);
+        void drawString(Uint32 pixel, const char* string, Vec2* pos);
 
         // Draws an integer value to the screen, the top left will be at (x, y)
-        void drawInt(int num, int x, int y, Uint32 color);
+        void drawInt(Uint32 pixel, int num, int x, int y);
 
         // Draws the fps box in the top left
         void drawFps(State* state, Display* display);
@@ -235,7 +252,7 @@ class Drawer {
         /*   The following functions dont need to be called outside this class   */
 
         // Draws a set of pixels to the screen. the other draw functions rely on this
-        void drawPixels(bool* pixels, int x, int y, Uint32 color);
+        void drawPixels(Uint32 pixel, bool* pixels, int x, int y);
 
         // Returns a pointer to the pixels for a character
         bool* getCharRef(char ch);

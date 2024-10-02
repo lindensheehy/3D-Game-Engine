@@ -1,6 +1,7 @@
 #define SDL_MAIN_HANDLED
 
 #include "src/include/Drawer.h"
+#include "src/include/Window.h"
 #include "src/include/State.h"
 #include "src/include/Camera.h"
 #include "src/include/Mesh.h"
@@ -23,6 +24,8 @@ ObjectSet* objects;
 
 bool drawNormals;
 bool gravity;
+
+Window* window;
 
 void handleInput(State* state, Camera* camera) {
 
@@ -181,6 +184,8 @@ void init() {
     objects = new ObjectSet();
     Object* newObject;
 
+    /*   Main Objects   */
+
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
@@ -209,11 +214,22 @@ void init() {
     newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 7);
 
+
+    /*   Floor   */
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy()->scale(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
+    objects->pushBack(newObject, 8);
+
+
     gravity = false;
     drawNormals = false;
 
     selectedObjectId = 1;
     selectedObject = objects->getById(1);
+
+    window = new Window(100, 100, 300, 150);
+    window->addElement(WindowElement::createTopBar(300, "Transform"));
 
 }
 
@@ -262,6 +278,7 @@ int main(int argc, char* argv[]) {
         
         // Draw the UI
         drawer->drawFps(state, display);
+        window->draw(drawer);
         drawer->drawCrosshair(display);
 
         // Update the GUI

@@ -7,19 +7,14 @@ set SDLinclude=-I SDL2/include -L SDL2/lib -l SDL2 -l SDL2main
 
 
 
-:: Mesh
-g++ -c %srcdir%Mesh.cpp ^
-    -o %objdir%Mesh.o ^
-    %SDLinclude%
-
 :: Drawer
 g++ -c %srcdir%Drawer.cpp ^
     -o %objdir%Drawer.o ^
     %SDLinclude%
 
-:: ObjectSet
-g++ -c %srcdir%ObjectSet.cpp ^
-    -o %objdir%ObjectSet.o ^
+:: Window
+g++ -c %srcdir%Window.cpp ^
+    -o %objdir%Window.o ^
     %SDLinclude%
 
 
@@ -37,6 +32,7 @@ g++ main.cpp ^
     %objdir%Drawer.o ^
     %objdir%State.o ^
     %objdir%ObjectSet.o ^
+    %objdir%Window.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

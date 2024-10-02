@@ -697,7 +697,30 @@ void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double dept
     
 }
 
-void Drawer::drawRect(Uint32 pixel, int startx, int starty, int endx, int endy) {
+void Drawer::drawRect(Uint32 pixel, int x1, int y1, int x2, int y2) {
+
+    if (this->buffer == nullptr) {
+        return;
+    }
+
+    this->drawVerticalLine(pixel, y1, y2, x1);
+    this->drawVerticalLine(pixel, y1, y2, x2);
+    this->drawHorizontalLine(pixel, x1, x2, y1);
+    this->drawHorizontalLine(pixel, x1, x2, y2);
+
+    return;
+
+}
+
+void Drawer::drawRect(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
+
+    this->drawRect(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
+
+    return;
+    
+}
+
+void Drawer::drawRectFilled(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -706,20 +729,29 @@ void Drawer::drawRect(Uint32 pixel, int startx, int starty, int endx, int endy) 
     int incerementI = 1;
     int incerementJ = 1;
 
-    if ( startx > endx ) incerementI = -1;
-    if ( starty > endy ) incerementJ = -1;
+    if ( x1 > x2 ) incerementI = -1;
+    if ( y1 > y2 ) incerementJ = -1;
 
-    for (int i = startx; i != endx; i += incerementI) {
-        for (int j = starty; j != endy; j += incerementJ) {
+    for (int i = x1; i != x2; i += incerementI) {
+        for (int j = y1; j != y2; j += incerementJ) {
             this->writePixel(pixel, i, j);
         }
     }
 
     return;
+
+}
+
+void Drawer::drawRectFilled(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
+
+    this->drawRectFilled(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
+
+    return;
+    
 }
 
 void Drawer::fillScreen(Uint32 pixel) {
-    this->drawRect(pixel, 0, 0, this->bufferWidth, this->bufferHeight);
+    this->drawRectFilled(pixel, 0, 0, this->bufferWidth, this->bufferHeight);
 }
 
 void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy) {
@@ -756,7 +788,7 @@ void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
-void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius) {
+void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius) {
 
     int limit = radius * radius;
 
@@ -764,14 +796,20 @@ void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius) 
         for (int j = -radius; j < radius; j++) {
 
             if ( (i * i) + (j * j) < limit ) {
-                this->writePixel(pixel, locationx + i, locationy + j);
+                this->writePixel(pixel, x + i, y + j);
             }
             
         }
     }
 }
 
-void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius, double depth) {
+void Drawer::drawCircle(Uint32 pixel, Vec2* pos, int radius) {
+
+    this->drawCircle(pixel, pos->x, pos->y, radius);
+
+}
+
+void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius, double depth) {
 
     int limit = radius * radius;
 
@@ -779,11 +817,17 @@ void Drawer::drawCircle(Uint32 pixel, int locationx, int locationy, int radius, 
         for (int j = -radius; j < radius; j++) {
 
             if ( (i * i) + (j * j) < limit ) {
-                this->writePixel(pixel, locationx + i, locationy + j, depth);
+                this->writePixel(pixel, x + i, y + j, depth);
             }
             
         }
     }
+}
+
+void Drawer::drawCircle(Uint32 pixel, Vec2* pos, int radius, double depth) {
+
+    this->drawCircle(pixel, pos->x, pos->y, radius, depth);
+
 }
 
 void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
@@ -1358,19 +1402,19 @@ void Drawer::drawTriangle(Uint32 pixel, Tri3* tri, double opacity) {
 
 }
 
-void Drawer::drawpng(PNG* file, int x, int y) {
+void Drawer::drawpng(PNG* texture, int x, int y) {
 
-    if (x + file->width > bufferWidth) return;
-    if (y + file->height > bufferHeight) return;
+    if (x + texture->width > bufferWidth) return;
+    if (y + texture->height > bufferHeight) return;
     
     if (this->buffer == nullptr) {
         return;
     }
 
-    for (int i = x; i < (x + file->width); i++) {
-        for (int j = y; j < (y + file->height); j++) {
+    for (int i = x; i < (x + texture->width); i++) {
+        for (int j = y; j < (y + texture->height); j++) {
 
-            Color* pixel = file->getPixel(i - x, j - y);
+            Color* pixel = texture->getPixel(i - x, j - y);
 
             if (pixel->opacityValue != 0x00) {
                 this->writePixel(pixel->rawValue, i, j);
@@ -1382,19 +1426,25 @@ void Drawer::drawpng(PNG* file, int x, int y) {
     return;
 }
 
-void Drawer::drawpng(PNG* file, int x, int y, double depth) {
+void Drawer::drawpng(PNG* texture, Vec2* pos) {
 
-    if (x + file->width > bufferWidth) return;
-    if (y + file->height > bufferHeight) return;
+    this->drawpng(texture, pos->x, pos->y);
+
+}
+
+void Drawer::drawpng(PNG* texture, int x, int y, double depth) {
+
+    if (x + texture->width > bufferWidth) return;
+    if (y + texture->height > bufferHeight) return;
     
     if (this->buffer == nullptr) {
         return;
     }
 
-    for (int i = x; i < (x + file->width); i++) {
-        for (int j = y; j < (y + file->height); j++) {
+    for (int i = x; i < (x + texture->width); i++) {
+        for (int j = y; j < (y + texture->height); j++) {
 
-            Color* pixel = file->getPixel(i - x, j - y);
+            Color* pixel = texture->getPixel(i - x, j - y);
 
             if (pixel->opacityValue != 0x00) {
                 this->writePixel(pixel->rawValue, i, j, depth);
@@ -1404,6 +1454,12 @@ void Drawer::drawpng(PNG* file, int x, int y, double depth) {
     }
     
     return;
+}
+
+void Drawer::drawpng(PNG* texture, Vec2* pos, double depth) {
+
+    this->drawpng(texture, pos->x, pos->y, depth);
+
 }
 
 void Drawer::initFont() {
@@ -1456,7 +1512,7 @@ void Drawer::initFont() {
 
 }
 
-void Drawer::drawChar(char ch, int x, int y, Uint32 color) {
+void Drawer::drawChar(Uint32 pixel, char ch, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawChar() without calling Drawer->initFont()!", true);
@@ -1465,11 +1521,13 @@ void Drawer::drawChar(char ch, int x, int y, Uint32 color) {
 
     bool* pixels = this->getCharRef(ch);
 
-    this->drawPixels(pixels, x, y, color);
+    this->drawPixels(pixel, pixels, x, y);
+    
+    return;
 
 }
 
-void Drawer::drawString(const char* string, int x, int y, Uint32 color) {
+void Drawer::drawString(Uint32 pixel, const char* string, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawString() without calling Drawer->initFont()!", true);
@@ -1480,14 +1538,23 @@ void Drawer::drawString(const char* string, int x, int y, Uint32 color) {
 
     for (int i = 0; string[i] != '\0'; i++) {
 
-        this->drawChar(string[i], x + dx, y, color);
+        this->drawChar(pixel, string[i], x + dx, y);
         dx += 6;
 
     }
+
+    return;
     
 }
 
-void Drawer::drawInt(int num, int x, int y, Uint32 color) {
+void Drawer::drawString(Uint32 pixel, const char* string, Vec2* pos) {
+
+    this->drawString(pixel, string, pos->x, pos->y);
+    return;
+
+}
+
+void Drawer::drawInt(Uint32 pixel, int num, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawInt() without calling Drawer->initFont()!", true);
@@ -1516,7 +1583,7 @@ void Drawer::drawInt(int num, int x, int y, Uint32 color) {
 
         bool* pixels = this->getCharRef(b);
 
-        this->drawPixels(pixels, x + dx, y, color);
+        this->drawPixels(pixel, pixels, x + dx, y);
         dx += 6;
 
     }
@@ -1535,12 +1602,12 @@ void Drawer::drawFps(State* state, Display* display) {
         return;
     }
 
-    this->drawRect(Color::BLACK, display->widthOffset, display->heightOffset, display->widthOffset + 50, display->heightOffset + 13);
+    this->drawRectFilled(Color::BLACK, display->widthOffset, display->heightOffset, display->widthOffset + 50, display->heightOffset + 13);
     this->drawInt(state->time->fps, 12, 3, Color::WHITE);
 
 }
 
-void Drawer::drawPixels(bool* pixels, int x, int y, Uint32 color) {
+void Drawer::drawPixels(Uint32 pixel, bool* pixels, int x, int y) {
 
     if (pixels == nullptr) return;
     
@@ -1550,7 +1617,7 @@ void Drawer::drawPixels(bool* pixels, int x, int y, Uint32 color) {
     for (int i = 0; i < 49; i++) {
 
         if (pixels[i])
-            this->writePixel(color, x + dx, y + dy);
+            this->writePixel(pixel, x + dx, y + dy);
 
         dx++;
         if (dx > 6) {
@@ -1636,21 +1703,21 @@ void Drawer::drawSky(Camera* camera, Display* display) {
     uint32_t skyColorLight = 0xFF323296; // o->FF, r->32, g->32, b->96
     uint32_t skyColorDark = 0xFF161648; // o->FF, r->16, g->16, b->48
 
-    this->drawRect(
+    this->drawRectFilled(
         skyColorLight, 
         display->widthOffset, 
         display->heightOffset, 
         display->widthOffset + display->width, 
         display->heightOffset + (height - (double) 25)
     );
-    this->drawRect(
+    this->drawRectFilled(
         skyColorDark, 
         display->widthOffset, 
         display->heightOffset + (height - (double) 25), 
         display->widthOffset + display->width, 
         display->heightOffset + height
     );
-    this->drawRect(
+    this->drawRectFilled(
         Color::BLACK, 
         display->widthOffset, 
         display->heightOffset + height, 
