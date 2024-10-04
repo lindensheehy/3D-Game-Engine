@@ -1,5 +1,7 @@
 #include "../include/Window.h"
 
+
+
 /* ----------------------------------- */
 /* ---------- WindowElement ---------- */
 /* ----------------------------------- */
@@ -9,6 +11,8 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
     this->pos = new Vec2(posx, posy);
     this->size = new Vec2(sizex, sizey);
+
+    this->endPos = this->pos->copy()->add(this->size);
 
     this->children = new LinkedList<WindowElement*>();
 
@@ -22,6 +26,8 @@ WindowElement::~WindowElement() {
     if (this->pos != nullptr) delete this->pos;
     if (this->size != nullptr) delete this->size;
 
+    if (this->endPos != nullptr) delete this->endPos;
+
     if (this->children->length > 0) {
         WindowElement* child;
         for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
@@ -29,7 +35,7 @@ WindowElement::~WindowElement() {
             if (child != nullptr) delete child;
         }
     }
-
+    
     if (this->children != nullptr) delete this->children;
 
 }
@@ -39,6 +45,47 @@ void WindowElement::draw(Drawer* drawer, Vec2* offset) {
 
     // Log becuase this shouldnt be called ever
     logWrite("Called WindowElement->draw()!", true);
+
+}
+
+WindowElement* WindowElement::doClick(int x, int y, Vec2* offset) {
+
+    Vec2* newPos = this->pos->copy()->add(offset);
+    Vec2* newEndPos = this->endPos->copy()->add(offset);
+
+    // If the click lies outside the element, it will (or at least should) lie outside its children
+    if (
+        x > newEndPos->x || 
+        x < newPos->x ||
+        y > newEndPos->y || 
+        y < newPos->y 
+    ) return nullptr;
+
+    // Since now the click must lie inside this element, if this is BUTTON type, I return this and skip checking the children
+    if (this->type == BUTTON) return this;
+
+    // Otherwise, I will check the children
+
+    WindowElement* current;        // The window checked on the given iteration
+    WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
+
+    for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
+
+        current = this->children->iterGetObj();
+        found = current->doClick(x, y, newPos);
+
+        if (found != nullptr) return found;
+
+    }
+
+    // If none of the children were clicked on, I return this
+    return this;
+
+}
+
+void WindowElement::onClick() {
+
+    if (this->action != nullptr) this->action->run();
 
 }
 
@@ -57,16 +104,32 @@ void WindowElement::drawChildren(Drawer* drawer, Vec2* offset) {
 }
 
 // Class Functions
-WindowElement* WindowElement::createTopBar(int width, const char* title) {
+WindowElement* WindowElement::createTopBar(Window* window, const char* title) {
 
-    WindowElement* mainElement = new WindowFilledRect(1, 1, width - 1, 20);
+    // Parent for all the elements in the top bar
+    WindowElement* mainElement = new WindowFilledRect(1, 1, window->size->x - 1, 18);
     mainElement->color = Color::LIGHTER;
 
+    // Text element for the title of the window
     WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
     titleElement->color = Color::WHITE;
 
-    WindowElement* CloseButtonElement = new WindowFilledRect(width - 21, 0, 20, 20);
+    // The parent element for the close tab button
+    WindowElement* CloseButtonElement = new WindowButton(window->size->x - 19, 0, 18, 18);
     CloseButtonElement->color = Color::RED;
+    CloseButtonElement->action = new ActionCloseWindow(window);
+
+    // Two white lines to form the X on the close tab button
+    WindowElement* line1 = new WindowLine(3, 2, 13, 13);
+    WindowElement* line2 = new WindowLine(15, 2, -13, 13);
+    line1->color = Color::WHITE;
+    line2->color = Color::WHITE;
+    line1->action = CloseButtonElement->action;
+    line2->action = CloseButtonElement->action;
+
+    // Add the lines to the button
+    CloseButtonElement->addChild(line1);
+    CloseButtonElement->addChild(line2);
 
     mainElement->addChild(titleElement);
     mainElement->addChild(CloseButtonElement);
@@ -75,6 +138,38 @@ WindowElement* WindowElement::createTopBar(int width, const char* title) {
 
 }
 
+
+
+/* -------------------------------- */
+/* ---------- WindowLine ---------- */
+/* -------------------------------- */
+
+// Constructor
+WindowLine::WindowLine(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
+
+    this->endPos = new Vec2(posx, posy);
+    endPos->add(sizex, sizey);
+
+    this->type = VISUAL;
+
+}
+
+// Instance Functions
+void WindowLine::draw(Drawer* drawer, Vec2* offset) {
+
+    Vec2* newOffset = this->pos->copy()->add(offset);
+    Vec2* newEndPos = this->endPos->copy()->add(offset);
+
+    drawer->drawLine(this->color, newOffset, newEndPos);
+    this->drawChildren(drawer, newOffset);
+
+    delete newOffset;
+    delete newEndPos;
+
+}
+
+
+
 /* -------------------------------------- */
 /* ---------- WindowFilledRect ---------- */
 /* -------------------------------------- */
@@ -82,16 +177,7 @@ WindowElement* WindowElement::createTopBar(int width, const char* title) {
 // Constructor
 WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->endPos = new Vec2(posx, posy);
-    endPos->add(sizex, sizey);
-
-}
-
-// Destructor
-WindowFilledRect::~WindowFilledRect() {
-    
-    logWrite("filled rect destructor", true);
-    if (this->endPos != nullptr) delete this->endPos;
+    this->type = VISUAL;
 
 }
 
@@ -109,6 +195,8 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
+
+
 /* ---------------------------------------- */
 /* ---------- WindowOutlinedRect ---------- */
 /* ---------------------------------------- */
@@ -116,14 +204,7 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 // Constructor
 WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->endPos = this->pos->copy()->add(this->size);
-
-}
-
-// Destructor
-WindowOutlinedRect::~WindowOutlinedRect() {
-    
-    if (this->endPos != nullptr) delete this->endPos;
+    this->type = VISUAL;
 
 }
 
@@ -140,6 +221,8 @@ void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
     delete newEndPos;
 
 }
+
+
 
 /* ---------------------------------- */
 /* ---------- WindowCircle ---------- */
@@ -174,6 +257,8 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
+
+
 /* -------------------------------- */
 /* ---------- WindowText ---------- */
 /* -------------------------------- */
@@ -182,6 +267,8 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 WindowText::WindowText(int posx, int posy, int sizex, int sizey, const char* text) : WindowElement(posx, posy, sizex, sizey) {
     
     this->text = text;
+
+    this->type = TEXT;
 
 }
 
@@ -197,7 +284,8 @@ void WindowText::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-// Constructor
+
+
 /* ----------------------------------- */
 /* ---------- WindowTexture ---------- */
 /* ----------------------------------- */
@@ -206,6 +294,8 @@ void WindowText::draw(Drawer* drawer, Vec2* offset) {
 WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture) : WindowElement(posx, posy, sizex, sizey) {
     
     this->texture = texture;
+
+    this->type = VISUAL;
 
 }
 
@@ -227,6 +317,35 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
     delete newOffset;
 
 }
+
+
+
+/* ---------------------------------- */
+/* ---------- WindowButton ---------- */
+/* ---------------------------------- */
+
+// Constructor
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
+
+    this->type = BUTTON;
+
+}
+
+// Instance Functions
+void WindowButton::draw(Drawer* drawer, Vec2* offset) {
+
+    Vec2* newOffset = this->pos->copy()->add(offset);
+    Vec2* newEndPos = this->endPos->copy()->add(offset);
+
+    drawer->drawRectFilled(this->color, newOffset, newEndPos);
+    this->drawChildren(drawer, newOffset);
+
+    delete newOffset;
+    delete newEndPos;
+
+}
+
+
 
 /* ---------------------------- */
 /* ---------- Window ---------- */
@@ -284,9 +403,103 @@ void Window::draw(Drawer* drawer) {
 
 }
 
+WindowElement* Window::doClick(int x, int y) {
+
+    // If the click lies outside the window, it will (or at least should) lie outside its children
+    if (
+        x > this->endPos->x || 
+        x < this->pos->x ||
+        y > this->endPos->y || 
+        y < this->pos->y 
+    ) return nullptr;
+
+    WindowElement* current;        // The window checked on the given iteration
+    WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
+
+    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+
+        current = this->elements->iterGetObj();
+        found = current->doClick(x, y, this->pos);
+
+        if (found != nullptr) return found;
+
+    }
+
+    return nullptr;
+
+}
+
 void Window::addElement(WindowElement* element) {
 
     this->elements->pushBack(element);
     return;
+
+}
+
+
+
+/* ---------------------------- */
+/* ---------- Action ---------- */
+/* ---------------------------- */
+
+// Constructor
+Action::Action() {
+
+}
+
+// Destructor
+Action::~Action() {
+
+}
+
+
+
+/* ------------------------------------ */
+/* ---------- ActionLogWrite ---------- */
+/* ------------------------------------ */
+
+// Constructor
+ActionLogWrite::ActionLogWrite(const char* message) {
+
+    this->message = message;
+
+}
+
+// Destructor
+ActionLogWrite::~ActionLogWrite() {
+    // The Window object should be handled manually it doesnt make sense to delete it here.
+    // Keeping this in case that changes or I add other instance variables
+}
+
+// Instance Functions
+void ActionLogWrite::run() {
+
+    logWrite(message, true);
+
+}
+
+
+
+/* --------------------------------- */
+/* ---------- CloseWindow ---------- */
+/* --------------------------------- */
+
+// Constructor
+ActionCloseWindow::ActionCloseWindow(Window* window) {
+
+    this->window = window;
+
+}
+
+// Destructor
+ActionCloseWindow::~ActionCloseWindow() {
+    // The Window object should be handled manually it doesnt make sense to delete it here.
+    // Keeping this in case that changes or I add other instance variables
+}
+
+// Instance Functions
+void ActionCloseWindow::run() {
+
+    
 
 }

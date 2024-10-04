@@ -1602,8 +1602,11 @@ void Drawer::drawFps(State* state, Display* display) {
         return;
     }
 
-    this->drawRectFilled(Color::BLACK, display->widthOffset, display->heightOffset, display->widthOffset + 50, display->heightOffset + 13);
-    this->drawInt(state->time->fps, 12, 3, Color::WHITE);
+    int w = display->widthOffset;
+    int h = display->heightOffset;
+
+    this->drawRectFilled(Color::BLACK, w, h, w + 50, h + 13);
+    this->drawInt(Color::WHITE, state->time->fps, 12, 3);
 
 }
 

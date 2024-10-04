@@ -16,3 +16,4 @@ fixes:
 
 optimizations:
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
+- add a draw queue which will have one (or maybe more) threads to work only on drawing, while the main thread can do the math and feed the stuff that needs to be drawn to the queue

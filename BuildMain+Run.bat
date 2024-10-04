@@ -16,6 +16,7 @@ g++ main.cpp ^
     %objdir%State.o ^
     %objdir%ObjectSet.o ^
     %objdir%Window.o ^
+    %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

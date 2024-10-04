@@ -5,6 +5,18 @@
 #include "LinkedList.h"
 
 
+// Declarations becuase theres some circular dependancy here
+class Window;
+class Action;
+
+
+enum ElementType {
+    NONE,
+    TEXT,
+    VISUAL,
+    BUTTON
+};
+
 
 class WindowElement {
 
@@ -14,12 +26,18 @@ class WindowElement {
 
         Uint32 color;
 
+
         /*   Instance Variables   */
 
         Vec2* pos; // Relative to parent
         Vec2* size;
 
+        Action* action;
+
         LinkedList<WindowElement*>* children;
+
+        ElementType type = NONE;
+
 
         // Constructor
         WindowElement(int posx, int posy, int sizex, int sizey);
@@ -27,17 +45,26 @@ class WindowElement {
         // Destructor
         virtual ~WindowElement();
 
+
         /*   Instance Functions   */
 
         // Offset should be the position of the parent, since all elements are stored in relative positions
         virtual void draw(Drawer* drawer, Vec2* offset);
 
+        // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
+        WindowElement* doClick(int x, int y, Vec2* offset);
+
+        // Runs the action associated with the element. Does nothing if no action has been associated.
+        void onClick();
+
+        // Adds a child element to this element
         void addChild(WindowElement* child);
+
 
         /*   Class Functions   */
         
         // Returns a NEW WindowElement for the top bar of a window containing the window title, and the buttons
-        static WindowElement* createTopBar(int width, const char* title);
+        static WindowElement* createTopBar(Window* window, const char* title);
 
         static WindowElement* createSlider(int width);
 
@@ -45,8 +72,29 @@ class WindowElement {
 
     protected:
 
+        /*   Instance Variables   */
+        
+        // Used for detecting clicks, and drawing for some subclasses
+        Vec2* endPos;
+
+
+        /*   Instance functions   */
+
         // This function assumes the given offset already accounts for this->pos
         void drawChildren(Drawer* drawer, Vec2* offset);
+
+};
+
+
+class WindowLine : public WindowElement {
+
+    public:
+
+        // Constructor
+        WindowLine(int x1, int y1, int x2, int y2);
+
+        // Instance Function
+        void draw(Drawer* drawer, Vec2* offset) override;
 
 };
 
@@ -58,16 +106,8 @@ class WindowFilledRect : public WindowElement {
         // Constructor
         WindowFilledRect(int posx, int posy, int sizex, int sizey);
 
-        // Destructor
-        ~WindowFilledRect() override;
-
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
-
-    private:
-
-        // Used for drawing, stores the coordinates of pos + size
-        Vec2* endPos;
 
 };
 
@@ -79,16 +119,8 @@ class WindowOutlinedRect : public WindowElement {
         // Constructor
         WindowOutlinedRect(int posx, int posy, int sizex, int sizey);
 
-        // Destructor
-        ~WindowOutlinedRect() override;
-
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
-
-    private:
-
-        // Used for drawing, stores the coordinates of pos + size
-        Vec2* endPos;
 
 };
 
@@ -152,6 +184,25 @@ class WindowTexture : public WindowElement {
 };
 
 
+class WindowButton : public WindowElement {
+
+    /*
+        Class for buttons which should have some on click effect
+        Note: Any buttons which are children of buttons WILL NOT be found as clicked since the search stops once it finds the first button
+        This concept also applies to overlapping buttons, whenever clicking two at the same time, only one will act
+    */
+
+    public:
+
+        // Constructor
+        WindowButton(int posx, int posy, int sizex, int sizey);
+
+        // Instance Function
+        void draw(Drawer* drawer, Vec2* offset) override;
+
+};
+
+
 class Window {
 
     public:
@@ -179,12 +230,78 @@ class Window {
 
         /*   Instance Functions   */
 
+        // Draws the window and all its elements
         void draw(Drawer* drawer);
 
+        // Returns the element that covers the click location. Return nullptr if none do
+        WindowElement* doClick(int x, int y);
+
+        // Adds an element to the window
         void addElement(WindowElement* element);
 
     private:
 
         Vec2* endPos; // Used for drawing, stores the coordinates of pos + size
+
+};
+
+
+class Action {
+
+    public:
+
+        /*   Instance Variables   */
+
+        // Constructor
+        Action();
+
+        // Destructor
+        virtual ~Action();
+
+        /*   Instance Functions   */
+
+        virtual void run() {}
+
+};
+
+
+class ActionLogWrite : public Action {
+
+    public:
+
+        /*   Instance Variables   */
+
+        const char* message;
+
+        // Constructor
+        ActionLogWrite(const char* message);
+
+        // Destructor
+        ~ActionLogWrite() override;
+
+        /*   Instance Functions   */
+
+        void run() override;
+
+};
+
+
+class ActionCloseWindow : public Action {
+
+    public:
+
+        /*   Instance Variables   */
+
+        Window* window;
+
+        // Constructor
+        ActionCloseWindow(Window* window);
+
+        // Destructor
+        ~ActionCloseWindow() override;
+
+        /*   Instance Functions   */
+
+        void run() override;
 
 };

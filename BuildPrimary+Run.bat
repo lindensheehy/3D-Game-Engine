@@ -17,6 +17,11 @@ g++ -c %srcdir%Window.cpp ^
     -o %objdir%Window.o ^
     %SDLinclude%
 
+:: UI
+g++ -c %srcdir%UI.cpp ^
+    -o %objdir%UI.o ^
+    %SDLinclude%
+
 
 :: Build main.exe
 
@@ -33,6 +38,7 @@ g++ main.cpp ^
     %objdir%State.o ^
     %objdir%ObjectSet.o ^
     %objdir%Window.o ^
+    %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
     %SDLinclude%

@@ -1,11 +1,11 @@
 #define SDL_MAIN_HANDLED
 
 #include "src/include/Drawer.h"
-#include "src/include/Window.h"
 #include "src/include/State.h"
 #include "src/include/Camera.h"
 #include "src/include/Mesh.h"
 #include "src/include/Gui.h"
+#include "src/include/UI.h"
 #include "src/include/Log.h"
 
 #include "physics.cpp"
@@ -25,7 +25,7 @@ ObjectSet* objects;
 bool drawNormals;
 bool gravity;
 
-Window* window;
+UI* ui;
 
 void handleInput(State* state, Camera* camera) {
 
@@ -153,6 +153,9 @@ void handleInput(State* state, Camera* camera) {
     if (state->keyJustDown(SDLK_z))
         objects->setVelocityAll(0, 25, 0);
 
+    // Give the state to the UI to handle
+    ui->doInput(state);
+
 }
 
 void init() {
@@ -228,8 +231,8 @@ void init() {
     selectedObjectId = 1;
     selectedObject = objects->getById(1);
 
-    window = new Window(100, 100, 300, 150);
-    window->addElement(WindowElement::createTopBar(300, "Transform"));
+    ui = new UI();
+    ui->createWindowTransform(selectedObject);
 
 }
 
@@ -278,7 +281,7 @@ int main(int argc, char* argv[]) {
         
         // Draw the UI
         drawer->drawFps(state, display);
-        window->draw(drawer);
+        ui->draw(drawer);
         drawer->drawCrosshair(display);
 
         // Update the GUI

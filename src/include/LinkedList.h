@@ -287,14 +287,58 @@ class LinkedList {
 
         }
 
-        // Pops the node with this id. If the id doesnt exist in the list, this returns nullptr
-        type popById(int id) {
-
-            logWrite("starting pop by id", true);
+        type pop(type item) {
 
             if (this->length == 0) return nullptr;
 
-            logWrite("passed len=0", true);
+            if (this->length == 1) {
+
+                if (this->first->item != item) return nullptr;
+
+                type ret = this->first->item;
+
+                delete this->first;
+                this->length--;
+
+                this->first = nullptr;
+                this->last = nullptr;
+
+                return ret;
+
+            }
+
+            type current;
+
+            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+
+                current = this->iterGetObj();
+
+                if (current == item) {
+                    
+                    if (this->iterCurrent->last != nullptr) 
+                        this->iterCurrent->last->next = this->iterCurrent->next;
+
+                    if (this->iterCurrent->next != nullptr) 
+                        this->iterCurrent->next->last = this->iterCurrent->last;
+
+                    delete this->iterCurrent;
+                    this->length--;
+
+                    return current;
+
+                }
+
+            }
+
+            // If none found return null
+            return nullptr;
+
+        }
+
+        // Pops the node with this id. If the id doesnt exist in the list, this returns nullptr
+        type popById(int id) {
+
+            if (this->length == 0) return nullptr;
 
             if (this->length == 1) {
 
@@ -312,16 +356,9 @@ class LinkedList {
 
             }
 
-            logWrite("passed len=1", true);
-
             for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
-                logWrite("loop for id ");
-                logWrite(this->iterGetId(), true);
-
                 if (this->iterGetId() == id) {
-
-                    logWrite("found", true);
                     
                     if (this->iterCurrent->last != nullptr) 
                         this->iterCurrent->last->next = this->iterCurrent->next;
@@ -340,8 +377,6 @@ class LinkedList {
 
             }
 
-            logWrite("left without finding", true);
-
             return nullptr;
 
         }
@@ -359,18 +394,15 @@ class LinkedList {
 
             }
 
-            Node* current = this->first;
+            int current;
 
-            while (true) {
-
-                if (current == nullptr) return nullptr;
-
-                if (current->id == id)
-                    return current->item;
-
-                current = current->next;
-
+            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+                current = this->iterGetId();
+                if (current == id) return this->iterGetObj();
             }
+
+            // If none found return null
+            return nullptr;
 
         }
 
