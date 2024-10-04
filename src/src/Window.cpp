@@ -62,14 +62,14 @@ WindowElement* WindowElement::createTopBar(int width, const char* title) {
     WindowElement* mainElement = new WindowFilledRect(1, 1, width - 1, 20);
     mainElement->color = Color::LIGHTER;
 
-    // WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
-    // titleElement->color = Color::WHITE;
+    WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
+    titleElement->color = Color::WHITE;
 
-    // WindowElement* CloseButtonElement = new WindowFilledRect(width - 21, 0, 20, 20);
-    // CloseButtonElement->color = Color::RED;
+    WindowElement* CloseButtonElement = new WindowFilledRect(width - 21, 0, 20, 20);
+    CloseButtonElement->color = Color::RED;
 
-    // mainElement->addChild(titleElement);
-    // mainElement->addChild(CloseButtonElement);
+    mainElement->addChild(titleElement);
+    mainElement->addChild(CloseButtonElement);
 
     return mainElement;
 
