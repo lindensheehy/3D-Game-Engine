@@ -113,6 +113,8 @@ class LinkedList {
         // Destructor
         ~LinkedList() {
 
+            if (this->length == 0) return;
+
             Node* currentRef = this->first;
             Node* nextRef = this->first->next;
 
@@ -376,6 +378,8 @@ class LinkedList {
         void iterStart(int index) {
 
             this->iterCurrent = this->first;
+
+            if (index == 0) return;
 
             for (int i = 0; i < index; i++) {
 

@@ -228,9 +228,6 @@ void init() {
     selectedObjectId = 1;
     selectedObject = objects->getById(1);
 
-    window = new Window(100, 100, 300, 150);
-    window->addElement(WindowElement::createTopBar(300, "Transform"));
-
 }
 
 int main(int argc, char* argv[]) {
@@ -262,27 +259,35 @@ int main(int argc, char* argv[]) {
         objects->doAllPhysics(state->time->dt);
 
         // Prep the pixel and depth buffers
-        gui->getBuffer();
-        drawer->buffer = gui->buffer;
-        drawer->resetDepthBuffer();
-        drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
+        //gui->getBuffer();
+        //drawer->buffer = gui->buffer;
+        //drawer->resetDepthBuffer();
+        //drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
         // Draw all the objects
         if (drawNormals) {
-            objects->drawAllWithNormals(drawer, camera, display, 0.5);
+            //objects->drawAllWithNormals(drawer, camera, display, 0.5);
         }
 
         else {
-            objects->drawAll(drawer, camera, display);
+            //objects->drawAll(drawer, camera, display);
         }
         
         // Draw the UI
-        drawer->drawFps(state, display);
-        window->draw(drawer);
-        drawer->drawCrosshair(display);
+        //drawer->drawFps(state, display);
+        //drawer->drawCrosshair(display);
+
+        // window = new Window(100, 100, 300, 150);
+        // window->addElement(WindowElement::createTopBar(300, "Transform"));
+        // //window->draw(drawer);
+        // delete window;
+
+        // WindowElement* temp = WindowElement::createTopBar(300, "transform");
+        WindowElement* temp = new WindowFilledRect(100, 100, 100, 100);
+        delete temp;
 
         // Update the GUI
-        gui->flip();
+        //gui->flip();
 
         // Tell State that the frame is over
         state->nextFrame();

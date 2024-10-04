@@ -17,8 +17,20 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 // Destrcutor
 WindowElement::~WindowElement() {
 
+    logWrite("general destructor", true);
+
     if (this->pos != nullptr) delete this->pos;
     if (this->size != nullptr) delete this->size;
+
+    if (this->children->length > 0) {
+        WindowElement* child;
+        for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
+            child = this->children->iterGetObj();
+            if (child != nullptr) delete child;
+        }
+    }
+
+    if (this->children != nullptr) delete this->children;
 
 }
 
@@ -50,14 +62,14 @@ WindowElement* WindowElement::createTopBar(int width, const char* title) {
     WindowElement* mainElement = new WindowFilledRect(1, 1, width - 1, 20);
     mainElement->color = Color::LIGHTER;
 
-    WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
-    titleElement->color = Color::WHITE;
+    // WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
+    // titleElement->color = Color::WHITE;
 
-    WindowElement* CloseButtonElement = new WindowFilledRect(width - 21, 0, 20, 20);
-    CloseButtonElement->color = Color::RED;
+    // WindowElement* CloseButtonElement = new WindowFilledRect(width - 21, 0, 20, 20);
+    // CloseButtonElement->color = Color::RED;
 
-    mainElement->addChild(titleElement);
-    mainElement->addChild(CloseButtonElement);
+    // mainElement->addChild(titleElement);
+    // mainElement->addChild(CloseButtonElement);
 
     return mainElement;
 
@@ -67,12 +79,23 @@ WindowElement* WindowElement::createTopBar(int width, const char* title) {
 /* ---------- WindowFilledRect ---------- */
 /* -------------------------------------- */
 
+// Constructor
 WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->endPos = this->pos->copy()->add(this->size);
+    this->endPos = new Vec2(posx, posy);
+    endPos->add(sizex, sizey);
 
 }
 
+// Destructor
+WindowFilledRect::~WindowFilledRect() {
+    
+    logWrite("filled rect destructor", true);
+    if (this->endPos != nullptr) delete this->endPos;
+
+}
+
+// Instance Functions
 void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
@@ -90,12 +113,21 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------- WindowOutlinedRect ---------- */
 /* ---------------------------------------- */
 
+// Constructor
 WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
 
     this->endPos = this->pos->copy()->add(this->size);
 
 }
 
+// Destructor
+WindowOutlinedRect::~WindowOutlinedRect() {
+    
+    if (this->endPos != nullptr) delete this->endPos;
+
+}
+
+// Instance Functions
 void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
@@ -113,6 +145,7 @@ void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------- WindowCircle ---------- */
 /* ---------------------------------- */
 
+// Constructor
 WindowCircle::WindowCircle(int posx, int posy, int size) : WindowElement(posx, posy, size, size) {
 
     this->middle = this->size->copy()->scale(0.5)->add(this->pos);
@@ -120,6 +153,14 @@ WindowCircle::WindowCircle(int posx, int posy, int size) : WindowElement(posx, p
 
 }
 
+// Destructor
+WindowCircle::~WindowCircle() {
+    
+    if (this->middle != nullptr) delete this->middle;
+
+}
+
+// Instance Functions
 void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
@@ -137,12 +178,14 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 /* ---------- WindowText ---------- */
 /* -------------------------------- */
 
+// Constructor
 WindowText::WindowText(int posx, int posy, int sizex, int sizey, const char* text) : WindowElement(posx, posy, sizex, sizey) {
     
     this->text = text;
 
 }
 
+// Instance Functions
 void WindowText::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
@@ -154,16 +197,26 @@ void WindowText::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
+// Constructor
 /* ----------------------------------- */
 /* ---------- WindowTexture ---------- */
 /* ----------------------------------- */
 
+// Constructor
 WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture) : WindowElement(posx, posy, sizex, sizey) {
     
     this->texture = texture;
 
 }
 
+// Destructor
+WindowTexture::~WindowTexture() {
+    
+    if (this->texture != nullptr) delete this->texture;
+
+}
+
+// Instance Functions
 void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
@@ -207,6 +260,17 @@ Window::~Window() {
 
     if (this->pos != nullptr) delete this->pos;
     if (this->size != nullptr) delete this->size;
+    if (this->endPos != nullptr) delete this->endPos;
+
+    if (this->elements->length > 0) {
+        WindowElement* element;
+        for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+            element = this->elements->iterGetObj();
+            if (element != nullptr) delete element;
+        }
+    }
+
+    if (this->elements != nullptr) delete this->elements;
 
 }
 

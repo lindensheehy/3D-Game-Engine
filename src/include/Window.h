@@ -6,7 +6,6 @@
 
 
 
-
 class WindowElement {
 
     public:
@@ -26,7 +25,7 @@ class WindowElement {
         WindowElement(int posx, int posy, int sizex, int sizey);
 
         // Destructor
-        ~WindowElement();
+        virtual ~WindowElement();
 
         /*   Instance Functions   */
 
@@ -46,10 +45,6 @@ class WindowElement {
 
     protected:
 
-        // Also used for drawing, only used for CIRCLE types
-        Vec2* middle;
-        int radius;
-
         // This function assumes the given offset already accounts for this->pos
         void drawChildren(Drawer* drawer, Vec2* offset);
 
@@ -62,6 +57,9 @@ class WindowFilledRect : public WindowElement {
 
         // Constructor
         WindowFilledRect(int posx, int posy, int sizex, int sizey);
+
+        // Destructor
+        ~WindowFilledRect() override;
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -81,6 +79,9 @@ class WindowOutlinedRect : public WindowElement {
         // Constructor
         WindowOutlinedRect(int posx, int posy, int sizex, int sizey);
 
+        // Destructor
+        ~WindowOutlinedRect() override;
+
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
 
@@ -98,6 +99,9 @@ class WindowCircle : public WindowElement {
 
         // Constructor
         WindowCircle(int posx, int posy, int size);
+
+        // Destructor
+        ~WindowCircle() override;
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -134,6 +138,9 @@ class WindowTexture : public WindowElement {
 
         // Constructor
         WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture);
+
+        // Destructor
+        ~WindowTexture() override;
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
