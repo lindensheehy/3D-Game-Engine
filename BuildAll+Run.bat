@@ -66,10 +66,6 @@ g++ -c %srcdir%ObjectSet.cpp ^
     -o %objdir%ObjectSet.o ^
     %SDLinclude%
 
-:: Window
-g++ -c %srcdir%Window.cpp ^
-    -o %objdir%Window.o ^
-    %SDLinclude%
 
 :: UI
 g++ -c %srcdir%UI.cpp ^
@@ -91,7 +87,6 @@ g++ main.cpp ^
     %objdir%Drawer.o ^
     %objdir%State.o ^
     %objdir%ObjectSet.o ^
-    %objdir%Window.o ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^

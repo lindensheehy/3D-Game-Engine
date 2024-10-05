@@ -12,11 +12,6 @@ g++ -c %srcdir%Drawer.cpp ^
     -o %objdir%Drawer.o ^
     %SDLinclude%
 
-:: Window
-g++ -c %srcdir%Window.cpp ^
-    -o %objdir%Window.o ^
-    %SDLinclude%
-
 :: UI
 g++ -c %srcdir%UI.cpp ^
     -o %objdir%UI.o ^
@@ -37,7 +32,6 @@ g++ main.cpp ^
     %objdir%Drawer.o ^
     %objdir%State.o ^
     %objdir%ObjectSet.o ^
-    %objdir%Window.o ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^

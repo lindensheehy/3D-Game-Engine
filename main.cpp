@@ -96,9 +96,14 @@ void handleInput(State* state, Camera* camera) {
     }
 
     if (changeObject) {
-        selectedObject->opacity = 1;
+        if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
+    }
+
+    if (state->keyJustDown(SDLK_RETURN)) {
+        if (selectedObject != nullptr) selectedObject->opacity = 1;
+        selectedObject = nullptr;
     }
 
     // This rotates the selected object when pressing keys j,k,l
@@ -152,6 +157,9 @@ void handleInput(State* state, Camera* camera) {
     // Gives all the objects some vertical velocity
     if (state->keyJustDown(SDLK_z))
         objects->setVelocityAll(0, 25, 0);
+
+    if (state->keyJustDown(SDLK_0))
+        ui->createWindowTransform(selectedObject);
 
     // Give the state to the UI to handle
     ui->doInput(state);
@@ -229,7 +237,6 @@ void init() {
     drawNormals = false;
 
     selectedObjectId = 1;
-    selectedObject = objects->getById(1);
 
     ui = new UI();
     ui->createWindowTransform(selectedObject);
