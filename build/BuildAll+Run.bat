@@ -1,16 +1,16 @@
 :: Build libraries
 
 :: Paths
-set srcdir=src/src/
-set objdir=src/obj/
-set SDLinclude=-I SDL2/include -L SDL2/lib -l SDL2 -l SDL2main
+set srcdir=../src/src/
+set objdir=../src/obj/
+set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 
 
 :: Not mine
 
 :: lodepng
-g++ -c src/lodepng/lodepng.cpp ^
+g++ -c ../src/lodepng/lodepng.cpp ^
     -o %objdir%lodepng.o
 
 
@@ -76,7 +76,7 @@ g++ -c %srcdir%UI.cpp ^
 :: Build main.exe
 
 :: Compile main.exe
-g++ main.cpp ^
+g++ ../main.cpp ^
     %objdir%Math.o ^
     %objdir%Log.o ^
     %objdir%Vec.o ^
@@ -90,6 +90,7 @@ g++ main.cpp ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
+    -mwindows ^
     %SDLinclude%
 
 main.exe

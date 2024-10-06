@@ -109,7 +109,7 @@ WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* t
     mainElement->color = Color::LIGHTER;
 
     // Text element for the title of the window
-    WindowElement* titleElement = new WindowText(6, 6, 0, 0, title);
+    WindowElement* titleElement = new WindowText(6, 6, title);
     titleElement->color = Color::WHITE;
 
     // The parent element for the close tab button
@@ -133,6 +133,26 @@ WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* t
     mainElement->addChild(CloseButtonElement);
 
     return mainElement;
+
+}
+
+
+
+/* ------------------------------- */
+/* ---------- WindowDiv ---------- */
+/* ------------------------------- */
+
+// Constructor
+WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
+
+// Instance Functions
+void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
+
+    Vec2* newOffset = this->pos->copy()->add(offset);
+
+    this->drawChildren(drawer, newOffset);
+
+    delete newOffset;
 
 }
 
@@ -262,9 +282,10 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------- */
 
 // Constructor
-WindowText::WindowText(int posx, int posy, int sizex, int sizey, const char* text) : WindowElement(posx, posy, sizex, sizey) {
+WindowText::WindowText(int posx, int posy, const char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
+    this->color = Color::WHITE;
 
     this->type = TEXT;
 
@@ -368,6 +389,8 @@ Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
     this->size = size;
     this->layer = layer;
 
+    this->elements = new LinkedList<WindowElement*>();
+
     this->endPos = this->pos->copy()->add(this->size);
 
 }
@@ -401,15 +424,18 @@ void Window::draw(Drawer* drawer) {
 
 }
 
-WindowElement* Window::doClick(int x, int y) {
+bool Window::hitTest(int x, int y) {
 
-    // If the click lies outside the window, it will (or at least should) lie outside its children
-    if (
-        x > this->endPos->x || 
-        x < this->pos->x ||
-        y > this->endPos->y || 
-        y < this->pos->y 
-    ) return nullptr;
+    return (
+        x < this->endPos->x && 
+        x > this->pos->x &&
+        y < this->endPos->y && 
+        y > this->pos->y 
+    );
+
+}
+
+WindowElement* Window::doClick(int x, int y) {
 
     WindowElement* current;        // The window checked on the given iteration
     WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
@@ -509,10 +535,15 @@ void ActionCloseWindow::run() {
 /* ---------- UI ---------- */
 /* ------------------------ */
 
+// static Declarations
+Vec2* UI::TransformWindowSize = new Vec2(300, 105);
+
 // Constructor
 UI::UI() {
 
     this->windows = new LinkedList<Window*>();
+
+    this->nextWindowPos = new Vec2(100, 100);
 
 }
 
@@ -549,24 +580,38 @@ void UI::deleteWindow(Window* window) {
 void UI::doInput(State* state) {
 
     // Click handling
-    if (state->mouse->leftButtonIsDown) {
+    if (state->wasLeftJustPressed()) {
 
         Window* current;        // The window checked on the given iteration
         WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
 
-        for (this->windows->iterStart(0); !this->windows->iterIsDone(); this->windows->iterNext()) {
+        for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
 
             current = this->windows->iterGetObj();
-            found = current->doClick(state->mouse->posX, state->mouse->posY);
 
-            if (found != nullptr) {
-
-                this->lastClicked = found;
-
-                if (found->type == BUTTON) found->onClick();
+            // If the click lies within the window
+            if (current->hitTest(state->mouse->posX, state->mouse->posY)) {
                 
-                if (found->type == TEXT) this->selectedTextBox = found;
-                else this->selectedTextBox = nullptr;
+                // Move the window to the front
+                // The list is drawn from front to back, so the back elements appear on top
+                this->windows->pop(current);
+                this->windows->pushBack(current);
+
+                // Find the clicked object within the window
+                found = current->doClick(state->mouse->posX, state->mouse->posY);
+
+                if (found != nullptr) {
+
+                    this->lastClicked = found;
+
+                    if (found->type == BUTTON) found->onClick();
+                    
+                    if (found->type == TEXT) this->selectedTextBox = found;
+                    else this->selectedTextBox = nullptr;
+
+                }
+
+                return;
 
             }
 
@@ -583,20 +628,65 @@ void UI::doInput(State* state) {
 
 void UI::createWindowTransform(Object* object) {
 
-    Window* newWindow = new Window(100, 100, 300, 150);
+    Vec2* windowPos = this->nextWindowPos->copy();
+    Vec2* windowSize = this->TransformWindowSize->copy();
+    Window* newWindow = new Window(windowPos, windowSize);
+    WindowElement* newElement;
 
-    newWindow->addElement(WindowElement::createTopBar(this, newWindow, "Transform"));
+    // Top bar
+    newElement = WindowElement::createTopBar(this, newWindow, "Transform");
+    newWindow->addElement(newElement);
 
-    WindowElement* temp = new WindowButton(50, 50, 50, 50);
-    temp->action = new ActionLogWrite("test");
-    newWindow->addElement(temp);
+    // Position
+    newElement = new WindowDiv(20, 30, 250, 20);
+    newElement->addChild( new WindowText(0, 7, "Position") );
+    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
+    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
+    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+    newWindow->addElement(newElement);
+
+    // Rotation
+    newElement = new WindowDiv(20, 50, 250, 20);
+    newElement->addChild( new WindowText(0, 7, "Rotation") );
+    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
+    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
+    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+    newWindow->addElement(newElement);
+
+    // Scale
+    newElement = new WindowDiv(20, 70, 250, 20);
+    newElement->addChild( new WindowText(0, 7, "Scale") );
+    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
+    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
+    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+    newWindow->addElement(newElement);
 
     this->addWindow(newWindow);
+
+    this->updateNextWindowPos();
 
 }
 
 void UI::addWindow(Window* window) {
 
     this->windows->pushBack(window);
+
+}
+
+void UI::updateNextWindowPos() {
+    
+    this->nextWindowPos->add(50, 50);
+
+    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
+    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
 
 }

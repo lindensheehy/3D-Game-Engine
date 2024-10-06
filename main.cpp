@@ -8,8 +8,6 @@
 #include "src/include/UI.h"
 #include "src/include/Log.h"
 
-#include "physics.cpp"
-
 // Global declarations
 Gui* gui;
 State* state;
@@ -85,13 +83,13 @@ void handleInput(State* state, Camera* camera) {
 
     if (state->keyJustDown(SDLK_q)) {
         selectedObjectId--;
-        if (selectedObjectId < 1) selectedObjectId += 7;
+        if (selectedObjectId < 1) selectedObjectId += 8;
         changeObject = true;
     }
 
     if (state->keyJustDown(SDLK_e)) {
         selectedObjectId++;
-        if (selectedObjectId > 7) selectedObjectId -= 7;
+        if (selectedObjectId > 8) selectedObjectId -= 8;
         changeObject = true;
     }
 
@@ -102,6 +100,7 @@ void handleInput(State* state, Camera* camera) {
     }
 
     if (state->keyJustDown(SDLK_RETURN)) {
+        logWrite((long long) selectedObject, true);
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
     }
@@ -141,13 +140,11 @@ void handleInput(State* state, Camera* camera) {
     if (state->keyJustDown(SDLK_g)) {
         
         if (gravity) {
-            std::cout << "gravity off" << std::endl;
             objects->setAllGravity(0.0);
             gravity = false;
         }
 
         else {
-            std::cout << "gravity on" << std::endl;
             objects->setAllGravity(-30);
             gravity = true;
         }
@@ -158,6 +155,7 @@ void handleInput(State* state, Camera* camera) {
     if (state->keyJustDown(SDLK_z))
         objects->setVelocityAll(0, 25, 0);
 
+    // Makes a new Transform window for the selected object
     if (state->keyJustDown(SDLK_0))
         ui->createWindowTransform(selectedObject);
 
@@ -278,13 +276,8 @@ int main(int argc, char* argv[]) {
         drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
         // Draw all the objects
-        if (drawNormals) {
-            objects->drawAllWithNormals(drawer, camera, display, 0.5);
-        }
-
-        else {
-            objects->drawAll(drawer, camera, display);
-        }
+        if (drawNormals) objects->drawAllWithNormals(drawer, camera, display, 0.5);
+        else objects->drawAll(drawer, camera, display);
         
         // Draw the UI
         drawer->drawFps(state, display);

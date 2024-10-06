@@ -287,6 +287,7 @@ class LinkedList {
 
         }
 
+        // Pops the given item from the list. If there is two, it will pop the first. If there are none, it will return nullptr
         type pop(type item) {
 
             if (this->length == 0) return nullptr;
@@ -315,11 +316,21 @@ class LinkedList {
 
                 if (current == item) {
                     
+                    // Update the node before current if necessary
                     if (this->iterCurrent->last != nullptr) 
                         this->iterCurrent->last->next = this->iterCurrent->next;
 
+                    // Otherwise, current is the first node, so update this->first accordingly
+                    else
+                        this->first = this->iterCurrent->next;
+
+                    // Update the node after current if necessary
                     if (this->iterCurrent->next != nullptr) 
                         this->iterCurrent->next->last = this->iterCurrent->last;
+
+                    // Otherwise, current is the last node, so update this->last accordingly
+                    else
+                        this->last = this->iterCurrent->last;
 
                     delete this->iterCurrent;
                     this->length--;
@@ -360,11 +371,21 @@ class LinkedList {
 
                 if (this->iterGetId() == id) {
                     
+                    // Update the node before current if necessary
                     if (this->iterCurrent->last != nullptr) 
                         this->iterCurrent->last->next = this->iterCurrent->next;
 
+                    // Otherwise, current is the first node, so update this->first accordingly
+                    else
+                        this->first = this->iterCurrent->next;
+
+                    // Update the node after current if necessary
                     if (this->iterCurrent->next != nullptr) 
                         this->iterCurrent->next->last = this->iterCurrent->last;
+
+                    // Otherwise, current is the last node, so update this->last accordingly
+                    else
+                        this->last = this->iterCurrent->last;
 
                     type ret = this->iterGetObj();
 

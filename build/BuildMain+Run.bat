@@ -1,10 +1,10 @@
 :: This only builds the main.exe, anything changed in the header files will not take effect when building this way
 
-set objdir=src/obj/
-set SDLinclude=-I SDL2/include -L SDL2/lib -l SDL2 -l SDL2main
+set objdir=../src/obj/
+set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Compile main.exe
-g++ main.cpp ^
+g++ ../main.cpp ^
     %objdir%Math.o ^
     %objdir%Log.o ^
     %objdir%Vec.o ^
@@ -18,6 +18,7 @@ g++ main.cpp ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
+    -mwindows ^
     %SDLinclude%
 
 main.exe

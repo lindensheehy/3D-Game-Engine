@@ -17,7 +17,8 @@ enum ElementType {
     NONE,
     TEXT,
     VISUAL,
-    BUTTON
+    BUTTON,
+    DRAGABLE
 };
 
 
@@ -52,6 +53,7 @@ class WindowElement {
 
         // Constructor
         WindowElement(int posx, int posy, int sizex, int sizey);
+        WindowElement(Vec2* pos, Vec2* size);
 
         // Destructor
         virtual ~WindowElement();
@@ -93,6 +95,27 @@ class WindowElement {
 
         // This function assumes the given offset already accounts for this->pos
         void drawChildren(Drawer* drawer, Vec2* offset);
+
+};
+
+
+class WindowDiv : public WindowElement {
+
+    /*
+        Serves no visual purpose, just used to group elements for easier handling
+        Similar to an HTML div
+    */
+
+    public:
+
+        // Constructor
+        WindowDiv(int posx, int posy, int sizex, int sizey);
+
+
+        // Instance Function
+
+        // Override draw to just draw children
+        void draw(Drawer* drawer, Vec2* offset) override;
 
 };
 
@@ -163,7 +186,7 @@ class WindowText : public WindowElement {
     public:
 
         // Constructor
-        WindowText(int posx, int posy, int sizex, int sizey, const char* text);
+        WindowText(int posx, int posy, const char* text);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -284,6 +307,24 @@ class ActionCloseWindow : public Action {
 };
 
 
+template<typename type>
+class ActionWriteToValue : public Action {
+
+    public:
+
+        // Constructor
+        ActionWriteToValue(type* pointer);
+
+        // Destructor
+        ~ActionWriteToValue();
+
+        /*   Instance Functions   */
+
+
+
+};
+
+
 
 // Window
 
@@ -321,6 +362,9 @@ class Window {
 
         // Draws the window and all its elements
         void draw(Drawer* drawer);
+
+        // Returns true if the click lies within the bounds of the window
+        bool hitTest(int x, int y);
 
         // Returns the element that covers the click location. Return nullptr if none do
         WindowElement* doClick(int x, int y);
@@ -376,14 +420,24 @@ class UI {
 
     private:
 
+        /*   Constants   */
+
+        static Vec2* TransformWindowSize;
+
         /*   Instance Variables   */
 
         LinkedList<Window*>* windows;
+
+        // Stores the location the next window should go, changes on every window made to mitigate window overlap
+        Vec2* nextWindowPos;
 
 
         /*   Instance Functions   */
 
         // Adds a window object to the interal linked list
         void addWindow(Window* window);
+
+        // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively
+        void updateNextWindowPos();
 
 };

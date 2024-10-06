@@ -11,6 +11,8 @@ Object::Object() {
     this->mesh = nullptr;
     
     this->pos = new Vec3();
+    this->rotation = new Vec3();
+    this->scale = new Vec3();
     this->velocity = new Vec3();
     this->gravity = new Vec3();
 
@@ -118,7 +120,7 @@ Object* Object::move(double dx, double dy, double dz) {
     
 }
 
-Object* Object::scale(double factor) {
+Object* Object::scaleBy(double factor) {
 
     // Log the error case
     if (this->mesh == nullptr) {
@@ -131,7 +133,7 @@ Object* Object::scale(double factor) {
 
 }
 
-Object* Object::scale(double fx, double fy, double fz) {
+Object* Object::scaleBy(double fx, double fy, double fz) {
 
     // Log the error case
     if (this->mesh == nullptr) {

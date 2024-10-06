@@ -22,6 +22,8 @@ class Object {
         Mesh* mesh;
 
         Vec3* pos;
+        Vec3* rotation;
+        Vec3* scale;
         Vec3* velocity;
         Vec3* gravity;
 
@@ -54,8 +56,8 @@ class Object {
         Object* move(double dx, double dy, double dz);
 
         // Scales the object by a given factor on each axis
-        Object* scale(double factor);
-        Object* scale(double fx, double fy, double fz);
+        Object* scaleBy(double factor);
+        Object* scaleBy(double fx, double fy, double fz);
 
         // Rotates the object by the specified angles. rotates around (0, 0, 0) if no around vector is given
         Object* rotate(Vec3* angle, Vec3* around);
