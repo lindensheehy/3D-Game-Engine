@@ -466,6 +466,24 @@ bool State::wasRightJustPressed() {
     return (this->mouse->rightButtonIsDown && !this->lastFrame->mouse->rightButtonIsDown);
 }
 
+bool State::wasLeftHeld() {
+
+    return (
+        this->mouse->leftButtonIsDown &&
+        this->lastFrame->mouse->leftButtonIsDown
+    );
+
+}
+
+bool State::wasRightHeld() {
+
+    return (
+        this->mouse->rightButtonIsDown &&
+        this->lastFrame->mouse->rightButtonIsDown
+    );
+
+}
+
 bool State::wasLeftJustReleased() {
     return (!this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }

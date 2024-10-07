@@ -246,6 +246,10 @@ class State {
         bool wasLeftJustPressed();
         bool wasRightJustPressed();
 
+        // Held. Returns true if the mouse has been down for the current and last frames
+        bool wasLeftHeld();
+        bool wasRightHeld();
+
         // Released
         bool wasLeftJustReleased();
         bool wasRightJustReleased();

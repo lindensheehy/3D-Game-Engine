@@ -126,7 +126,7 @@ class Drawer {
 
     /*
         This class acts as a function set to draw to a gui window.
-        A pixel buffer is the only SDL2 functionality I allowed myself to do, so this class implements all the drawing functions I need.
+        A pixel buffer is the only SDL2 functionality I allowed myself to use, so this class implements all the drawing functions I need.
         The pixel buffer is simply a single dimension array, and the buffer width represents the length of each 'set' within the array.
         Treating the pixel buffer as a 2d array acts as follows:
         buffer[2][3] = buffer[(2 * bufferHeight) + 3], where 2,3 is x,y

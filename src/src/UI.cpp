@@ -46,44 +46,58 @@ void WindowElement::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-WindowElement* WindowElement::doClick(int x, int y, Vec2* offset) {
+bool WindowElement::hitTest(int x, int y, Vec2* offset) {
 
     Vec2* newPos = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
 
-    // If the click lies outside the element, it will (or at least should) lie outside its children
-    if (
-        x > newEndPos->x || 
-        x < newPos->x ||
-        y > newEndPos->y || 
-        y < newPos->y 
-    ) return nullptr;
+    bool returnValue =  (
+        x < newEndPos->x && 
+        x > newPos->x &&
+        y < newEndPos->y && 
+        y > newPos->y 
+    );
 
-    // Since now the click must lie inside this element, if this is BUTTON type, I return this and skip checking the children
+    delete newPos;
+    delete newEndPos;
+
+    return returnValue;
+
+}
+
+WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
+
+    int x = state->mouse->posX;
+    int y = state->mouse->posY;
+
+    bool clickLands = this->hitTest(x, y, offset);
+    if (!clickLands) return nullptr;
+
+    // Run the click action (this is nothing for most elements)
+    this->onMouseLeftDown();
+
+    // Since now the click must lie inside this element, if this is any interactable type, I return this and skip checking the children
     if (this->type == BUTTON) return this;
+    if (this->type == DRAGABLE) return this;
+    if (this->type == TEXTINPUT) return this;
 
     // Otherwise, I will check the children
 
-    WindowElement* current;        // The window checked on the given iteration
+    WindowElement* current; // The child element checked on the given iteration
     WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
+    Vec2* nextOffset = offset->copy()->add(this->pos);
 
     for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
 
         current = this->children->iterGetObj();
-        found = current->doClick(x, y, newPos);
+        found = current->doInput(state, nextOffset);
 
         if (found != nullptr) return found;
 
     }
 
-    // If none of the children were clicked on, I return this
+    // If the loop completes, just return this
     return this;
-
-}
-
-void WindowElement::onClick() {
-
-    if (this->action != nullptr) this->action->run();
 
 }
 
@@ -104,35 +118,36 @@ void WindowElement::drawChildren(Drawer* drawer, Vec2* offset) {
 // Class Functions
 WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* title) {
 
-    // Parent for all the elements in the top bar
-    WindowElement* mainElement = new WindowFilledRect(1, 1, window->size->x - 1, 18);
-    mainElement->color = Color::LIGHTER;
+    // Divider for all the elements
+    WindowElement* holder = new WindowDiv(1, 1, window->size->x - 1, 18);
 
-    // Text element for the title of the window
-    WindowElement* titleElement = new WindowText(6, 6, title);
-    titleElement->color = Color::WHITE;
+    // Title plus dragable tab
+    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window);
+    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18);
+    WindowElement* titleElement = new WindowTextStatic(6, 6, title);
+    topBarColor->color = Color::LIGHTER;
+    
+    dragRect->addChild(topBarColor);
+    dragRect->addChild(titleElement);
 
     // The parent element for the close tab button
-    WindowElement* CloseButtonElement = new WindowButton(window->size->x - 19, 0, 18, 18);
+    WindowElement* CloseButtonElement = new WindowButton(window->size->x - 19, 0, 18, 18, new ActionCloseWindow(ui, window));
     CloseButtonElement->color = Color::RED;
-    CloseButtonElement->action = new ActionCloseWindow(ui, window);
 
     // Two white lines to form the X on the close tab button
     WindowElement* line1 = new WindowLine(3, 2, 13, 13);
     WindowElement* line2 = new WindowLine(15, 2, -13, 13);
     line1->color = Color::WHITE;
     line2->color = Color::WHITE;
-    line1->action = CloseButtonElement->action;
-    line2->action = CloseButtonElement->action;
 
     // Add the lines to the button
     CloseButtonElement->addChild(line1);
     CloseButtonElement->addChild(line2);
 
-    mainElement->addChild(titleElement);
-    mainElement->addChild(CloseButtonElement);
+    holder->addChild(dragRect);
+    holder->addChild(CloseButtonElement);
 
-    return mainElement;
+    return holder;
 
 }
 
@@ -252,6 +267,8 @@ WindowCircle::WindowCircle(int posx, int posy, int size) : WindowElement(posx, p
     this->middle = this->size->copy()->scale(0.5)->add(this->pos);
     this->radius = size;
 
+    this->type = VISUAL;
+
 }
 
 // Destructor
@@ -277,22 +294,22 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 
 
 
-/* -------------------------------- */
-/* ---------- WindowText ---------- */
-/* -------------------------------- */
+/* -------------------------------------- */
+/* ---------- WindowTextStatic ---------- */
+/* -------------------------------------- */
 
 // Constructor
-WindowText::WindowText(int posx, int posy, const char* text) : WindowElement(posx, posy, 0, 0) {
+WindowTextStatic::WindowTextStatic(int posx, int posy, const char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
     this->color = Color::WHITE;
 
-    this->type = TEXT;
+    this->type = VISUAL;
 
 }
 
 // Instance Functions
-void WindowText::draw(Drawer* drawer, Vec2* offset) {
+void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -318,13 +335,6 @@ WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, PNG* text
 
 }
 
-// Destructor
-WindowTexture::~WindowTexture() {
-    
-    if (this->texture != nullptr) delete this->texture;
-
-}
-
 // Instance Functions
 void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 
@@ -344,9 +354,11 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------- */
 
 // Constructor
-WindowButton::WindowButton(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = BUTTON;
+
+    this->action = action;
 
 }
 
@@ -364,99 +376,42 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
+void WindowButton::onMouseLeftDown() {
 
-
-/* ---------------------------- */
-/* ---------- Window ---------- */
-/* ---------------------------- */
-
-// Constructors
-Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
-
-    this->pos = new Vec2(posx, posy);
-    this->size = new Vec2(sizex, sizey);
-    this->layer = layer;
-
-    this->elements = new LinkedList<WindowElement*>();
-
-    this->endPos = this->pos->copy()->add(this->size);
+    this->action->run();
 
 }
 
-Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
 
-    this->pos = pos;
-    this->size = size;
-    this->layer = layer;
 
-    this->elements = new LinkedList<WindowElement*>();
+/* ------------------------------------ */
+/* ---------- WindowDragable ---------- */
+/* ------------------------------------ */
 
-    this->endPos = this->pos->copy()->add(this->size);
+// Constructor
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Window* windowToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
-}
+    this->type = DRAGABLE;
 
-// Destructor
-Window::~Window() {
-
-    if (this->pos != nullptr) delete this->pos;
-    if (this->size != nullptr) delete this->size;
-    if (this->endPos != nullptr) delete this->endPos;
-
-    if (this->elements->length > 0) {
-        WindowElement* element;
-        for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
-            element = this->elements->iterGetObj();
-            if (element != nullptr) delete element;
-        }
-    }
-
-    if (this->elements != nullptr) delete this->elements;
+    this->windowToDrag = windowToDrag;
 
 }
 
-void Window::draw(Drawer* drawer) {
+// Instance Functions
+void WindowDragable::draw(Drawer* drawer, Vec2* offset) {
 
-    drawer->drawRectFilled(this->COLOR_BASE, this->pos, this->endPos);
-    drawer->drawRect(this->COLOR_ACCENT, this->pos, this->endPos);
+    Vec2* newOffset = this->pos->copy()->add(offset);
 
-    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext())
-        this->elements->iterGetObj()->draw(drawer, this->pos);
+    this->drawChildren(drawer, newOffset);
 
-}
-
-bool Window::hitTest(int x, int y) {
-
-    return (
-        x < this->endPos->x && 
-        x > this->pos->x &&
-        y < this->endPos->y && 
-        y > this->pos->y 
-    );
+    delete newOffset;
 
 }
 
-WindowElement* Window::doClick(int x, int y) {
+void WindowDragable::onDrag(int dx, int dy) {
 
-    WindowElement* current;        // The window checked on the given iteration
-    WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
-
-    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
-
-        current = this->elements->iterGetObj();
-        found = current->doClick(x, y, this->pos);
-
-        if (found != nullptr) return found;
-
-    }
-
-    return nullptr;
-
-}
-
-void Window::addElement(WindowElement* element) {
-
-    this->elements->pushBack(element);
-    return;
+    this->windowToDrag->pos->add(dx, dy);
+    this->windowToDrag->endPos->add(dx, dy);
 
 }
 
@@ -531,6 +486,107 @@ void ActionCloseWindow::run() {
 
 
 
+/* ---------------------------- */
+/* ---------- Window ---------- */
+/* ---------------------------- */
+
+// Constructors
+Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
+
+    this->pos = new Vec2(posx, posy);
+    this->size = new Vec2(sizex, sizey);
+    this->layer = layer;
+
+    this->elements = new LinkedList<WindowElement*>();
+
+    this->endPos = this->pos->copy()->add(this->size);
+
+}
+
+Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
+
+    this->pos = pos;
+    this->size = size;
+    this->layer = layer;
+
+    this->elements = new LinkedList<WindowElement*>();
+
+    this->endPos = this->pos->copy()->add(this->size);
+
+}
+
+// Destructor
+Window::~Window() {
+
+    if (this->pos != nullptr) delete this->pos;
+    if (this->size != nullptr) delete this->size;
+    if (this->endPos != nullptr) delete this->endPos;
+
+    if (this->elements->length > 0) {
+        WindowElement* element;
+        for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+            element = this->elements->iterGetObj();
+            if (element != nullptr) delete element;
+        }
+    }
+
+    if (this->elements != nullptr) delete this->elements;
+
+}
+
+void Window::draw(Drawer* drawer) {
+
+    drawer->drawRectFilled(this->COLOR_BASE, this->pos, this->endPos);
+    drawer->drawRect(this->COLOR_ACCENT, this->pos, this->endPos);
+
+    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext())
+        this->elements->iterGetObj()->draw(drawer, this->pos);
+
+}
+
+bool Window::hitTest(int x, int y) {
+
+    return (
+        x < this->endPos->x && 
+        x > this->pos->x &&
+        y < this->endPos->y && 
+        y > this->pos->y 
+    );
+
+}
+
+void Window::addElement(WindowElement* element) {
+
+    this->elements->pushBack(element);
+    return;
+
+}
+
+WindowElement* Window::doInput(State* state) {
+
+    bool insideWindow = this->hitTest(state->mouse->posX, state->mouse->posY);
+
+    // Return nullptr if the click lies outside the bounds of the window
+    if (!insideWindow) return nullptr;
+
+    WindowElement* current; // The element checked on the given iteration
+    WindowElement* found;   // Stores the element which was clicked on, or nullptr if none
+
+    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+
+        current = this->elements->iterGetObj();
+        found = current->doInput(state, this->pos);
+
+        if (found != nullptr) return found;
+
+    }
+
+    // If the loop completes, nothing inside
+    return nullptr;
+
+}
+
+
 /* ------------------------ */
 /* ---------- UI ---------- */
 /* ------------------------ */
@@ -589,38 +645,45 @@ void UI::doInput(State* state) {
 
             current = this->windows->iterGetObj();
 
-            // If the click lies within the window
-            if (current->hitTest(state->mouse->posX, state->mouse->posY)) {
-                
-                // Move the window to the front
-                // The list is drawn from front to back, so the back elements appear on top
-                this->windows->pop(current);
-                this->windows->pushBack(current);
+            // Skip iteration if the click lands outside the window
+            bool clickLandsOnWindow = current->hitTest(state->mouse->posX, state->mouse->posY);
+            if (!clickLandsOnWindow) continue;
 
-                // Find the clicked object within the window
-                found = current->doClick(state->mouse->posX, state->mouse->posY);
+            // Since now the click must land on the window, I bring it to the front
+            // The list is drawn from front to back, so the back elements appear on top
+            this->windows->pop(current);
+            this->windows->pushBack(current);
 
-                if (found != nullptr) {
+            // Now check the children of the found window
+            found = current->doInput(state);
 
-                    this->lastClicked = found;
+            // If nothing was found, end
+            if (found == nullptr) return;
+            
+            // Otherwise, store the clicked element for later use
+            this->lastClicked = found;
 
-                    if (found->type == BUTTON) found->onClick();
-                    
-                    if (found->type == TEXT) this->selectedTextBox = found;
-                    else this->selectedTextBox = nullptr;
-
-                }
-
-                return;
-
-            }
+            return;
 
         }
+
+        // If the loop doesnt find anything, then a click landed outside all windows so remove lastClicked
+        this->lastClicked = nullptr;
+
+    }
+
+    // The rest of this function doesnt need to run if theres no lastClicked
+    if (this->lastClicked == nullptr) return;
+
+    // Drag handling
+    if (this->lastClicked->type == DRAGABLE && state->wasLeftHeld()) {
+
+        this->lastClicked->onDrag(state->deltaMousePosX(), state->deltaMousePosY());
 
     }
 
     // Text box handling
-    if (this->selectedTextBox != nullptr) {
+    if (this->lastClicked->type == TEXTINPUT) {
 
     }
 
@@ -639,34 +702,34 @@ void UI::createWindowTransform(Object* object) {
 
     // Position
     newElement = new WindowDiv(20, 30, 250, 20);
-    newElement->addChild( new WindowText(0, 7, "Position") );
-    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowTextStatic(0, 7, "Position") );
+    newElement->addChild( new WindowTextStatic(75, 7, "X") );
     newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
-    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
     newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
-    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
     newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
     newWindow->addElement(newElement);
 
     // Rotation
     newElement = new WindowDiv(20, 50, 250, 20);
-    newElement->addChild( new WindowText(0, 7, "Rotation") );
-    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowTextStatic(0, 7, "Rotation") );
+    newElement->addChild( new WindowTextStatic(75, 7, "X") );
     newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
-    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
     newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
-    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
     newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
     newWindow->addElement(newElement);
 
     // Scale
     newElement = new WindowDiv(20, 70, 250, 20);
-    newElement->addChild( new WindowText(0, 7, "Scale") );
-    newElement->addChild( new WindowText(75, 7, "X") );
+    newElement->addChild( new WindowTextStatic(0, 7, "Scale") );
+    newElement->addChild( new WindowTextStatic(75, 7, "X") );
     newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
-    newElement->addChild( new WindowText(135, 7, "Y") );
+    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
     newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
-    newElement->addChild( new WindowText(195, 7, "Z") );
+    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
     newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
     newWindow->addElement(newElement);
 

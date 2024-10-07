@@ -14,11 +14,11 @@ class UI;
 
 // Type specifier for WindowElement objects. Used for handling input to decide what to do
 enum ElementType {
-    NONE,
-    TEXT,
+    INVISIBLE,
     VISUAL,
     BUTTON,
-    DRAGABLE
+    DRAGABLE,
+    TEXTINPUT
 };
 
 
@@ -44,11 +44,9 @@ class WindowElement {
         Vec2* pos; // Relative to parent
         Vec2* size;
 
-        Action* action;
-
         LinkedList<WindowElement*>* children;
 
-        ElementType type = NONE;
+        ElementType type = INVISIBLE;
 
 
         // Constructor
@@ -64,14 +62,21 @@ class WindowElement {
         // Offset should be the position of the parent, since all elements are stored in relative positions
         virtual void draw(Drawer* drawer, Vec2* offset);
 
-        // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
-        WindowElement* doClick(int x, int y, Vec2* offset);
+        virtual bool hitTest(int x, int y, Vec2* offset);
 
-        // Runs the action associated with the element. Does nothing if no action has been associated.
-        void onClick();
+        // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
+        WindowElement* doInput(State* state, Vec2* offset);
 
         // Adds a child element to this element
         void addChild(WindowElement* child);
+
+        // Handles various input actions. No implementations here as the super class doesnt need input events
+        virtual void onMouseLeftDown() {}
+        virtual void onMouseLeftUp() {}
+        virtual void onMouseRightDown() {}
+        virtual void onMouseRightUp() {}
+        virtual void onDrag(int dx, int dy) {}
+        virtual void onKeyPress(SDL_Keycode key) {}
 
 
         /*   Class Functions   */
@@ -181,15 +186,40 @@ class WindowCircle : public WindowElement {
 };
 
 
-class WindowText : public WindowElement {
+class WindowTextStatic : public WindowElement {
+
+    /*
+        
+    */
 
     public:
 
         // Constructor
-        WindowText(int posx, int posy, const char* text);
+        WindowTextStatic(int posx, int posy, const char* text);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
+
+    private:
+
+        const char* text;
+
+};
+
+
+class WindowTextInput : public WindowElement {
+
+    public:
+
+        // Constructor
+        WindowTextInput(int posx, int posy, const char* text);
+
+        // Instance Functions
+        void draw(Drawer* drawer, Vec2* offset) override;
+
+        void onMouseLeftDown() override;
+
+        void onKeyPress(SDL_Keycode key) override;
 
     private:
 
@@ -205,11 +235,13 @@ class WindowTexture : public WindowElement {
         // Constructor
         WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture);
 
-        // Destructor
-        ~WindowTexture() override;
 
-        // Instance Function
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
+
+        // Optional call for this rather than having it in the destructor. Sometimes you might not want the PNG deleted if its used elsewhere
+        void deleteTexture() { delete this->texture; }
 
     private:
 
@@ -229,10 +261,42 @@ class WindowButton : public WindowElement {
     public:
 
         // Constructor
-        WindowButton(int posx, int posy, int sizex, int sizey);
+        WindowButton(int posx, int posy, int sizex, int sizey, Action* action);
 
-        // Instance Function
+        // Instance Functions
         void draw(Drawer* drawer, Vec2* offset) override;
+
+        void onMouseLeftDown() override;
+
+    private:
+
+        Action* action;
+
+};
+
+
+class WindowDragable : public WindowElement {
+
+    /*
+        Class for elements which should move something when dragged. 
+        For example, the top bar of a window.
+        This element is INVISIBLE, just like WindowDiv
+    */
+
+    public:
+
+        // Constructor
+        WindowDragable(int posx, int posy, int sizex, int sizey, Window* window);
+
+        /*   Instance Functions   */
+
+        void draw(Drawer* drawer, Vec2* offset) override;
+
+        void onDrag(int dx, int dy) override;
+
+    private:
+
+        Window* windowToDrag;
 
 };
 
@@ -320,6 +384,8 @@ class ActionWriteToValue : public Action {
 
         /*   Instance Functions   */
 
+        void run() override;
+
 
 
 };
@@ -346,6 +412,7 @@ class Window {
         /*   Instance Variables   */
 
         Vec2* pos;
+        Vec2* endPos; // Used for drawing, stores the coordinates of pos + size
         Vec2* size;
         int layer; // Front to back - 0 is at the front, 1 behind, and so on
 
@@ -366,15 +433,11 @@ class Window {
         // Returns true if the click lies within the bounds of the window
         bool hitTest(int x, int y);
 
-        // Returns the element that covers the click location. Return nullptr if none do
-        WindowElement* doClick(int x, int y);
-
         // Adds an element to the window
         void addElement(WindowElement* element);
 
-    private:
-
-        Vec2* endPos; // Used for drawing, stores the coordinates of pos + size
+        // Checks all the children elements against the inputs for the frame. Also brings window to front is its clicked. Returns the element clicked on, or nullptr if none
+        WindowElement* doInput(State* state);
 
 };
 
@@ -393,8 +456,7 @@ class UI {
 
         /*   Instance Variables   */
 
-        WindowElement* selectedTextBox; // Saves the last clicked textbox to type in
-        WindowElement* lastClicked; // Used for dragging elements with the mouse
+        WindowElement* lastClicked; // Saves the last clicked element to be used with input
 
 
         // Constructor
@@ -439,5 +501,5 @@ class UI {
 
         // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively
         void updateNextWindowPos();
-
+        
 };
