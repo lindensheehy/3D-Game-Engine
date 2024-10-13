@@ -452,42 +452,6 @@ double inRange(double num, double from, double to) {
     return -1;
 }
 
-void swap(int* var1, int* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
-
-    int temp = *var1;
-    *var1 = *var2;
-    *var2 = temp;
-    return;
-
-}
-
-void swap(double* var1, double* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
-
-    double temp = *var1;
-    *var1 = *var2;
-    *var2 = temp;
-    return;
-
-}
-
-void swap(unsigned int* var1, unsigned int* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
-
-    unsigned int temp = *var1;
-    *var1 = *var2;
-    *var2 = temp;
-    return;
-
-}
-
 double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
     /*
         Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)

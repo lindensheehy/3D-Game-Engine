@@ -4,6 +4,7 @@ set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Build test.exe
 g++ output-tests.cpp ^
+    %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
     %objdir%Vec.o ^
@@ -12,7 +13,7 @@ g++ output-tests.cpp ^
     %objdir%Mesh.o ^
     %objdir%Gui.o ^
     %objdir%Drawer.o ^
-    %objdir%FrameState.o ^
+    %objdir%State.o ^
     %objdir%ObjectSet.o ^
     %objdir%lodepng.o ^
     -o results/output-tests.exe ^

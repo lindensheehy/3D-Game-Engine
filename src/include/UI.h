@@ -12,7 +12,9 @@ class Action;
 class UI;
 
 
-// Type specifier for WindowElement objects. Used for handling input to decide what to do
+
+// Window Element + Sub Classes
+
 enum ElementType {
     INVISIBLE,
     VISUAL,
@@ -21,9 +23,6 @@ enum ElementType {
     TEXTINPUT
 };
 
-
-
-// Window Element + Sub Classes
 
 class WindowElement {
 
@@ -86,7 +85,7 @@ class WindowElement {
 
         static WindowElement* createSlider(int width);
 
-        static WindowElement* createTextBox(int width);
+        static WindowElement* createTextBox(int posx, int posy, int width, double* valueToWrite);
 
     protected:
 
@@ -130,7 +129,7 @@ class WindowLine : public WindowElement {
     public:
 
         // Constructor
-        WindowLine(int x1, int y1, int x2, int y2);
+        WindowLine(int x1, int y1, int x2, int y2, Uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -143,7 +142,7 @@ class WindowFilledRect : public WindowElement {
     public:
 
         // Constructor
-        WindowFilledRect(int posx, int posy, int sizex, int sizey);
+        WindowFilledRect(int posx, int posy, int sizex, int sizey, Uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -156,7 +155,7 @@ class WindowOutlinedRect : public WindowElement {
     public:
 
         // Constructor
-        WindowOutlinedRect(int posx, int posy, int sizex, int sizey);
+        WindowOutlinedRect(int posx, int posy, int sizex, int sizey, Uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -207,12 +206,21 @@ class WindowTextStatic : public WindowElement {
 };
 
 
+//template<typename valueType>
 class WindowTextInput : public WindowElement {
+
+    /*
+        Class for a text input box which should be attached to some value
+        This is attached via a class setter, which allows class specific behaviour to be handled class-side
+    */
 
     public:
 
         // Constructor
-        WindowTextInput(int posx, int posy, const char* text);
+        WindowTextInput(int posx, int posy, int width, double* valueToWrite);
+
+        // Destructor
+        ~WindowTextInput() override;
 
         // Instance Functions
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -223,7 +231,18 @@ class WindowTextInput : public WindowElement {
 
     private:
 
-        const char* text;
+        const int BUFFERSIZE = 128;
+
+        // Instance Variables
+        char* text;         // Stores the current string being displayed
+        int length;         // Stores the length of the current 'text' string
+
+        int cursorPos;      // Stores the placement of the text cursor. 0 is before the first char
+
+        double* valueToWrite; // Stores the setter which will be called when the internal string is updated
+        
+        // Instance Functions
+        void writeToValue();
 
 };
 
@@ -394,6 +413,11 @@ class ActionWriteToValue : public Action {
 
 // Window
 
+enum WindowType {
+    TRANSFORM
+};
+
+
 class Window {
 
     /*
@@ -415,6 +439,8 @@ class Window {
         Vec2* endPos; // Used for drawing, stores the coordinates of pos + size
         Vec2* size;
         int layer; // Front to back - 0 is at the front, 1 behind, and so on
+
+        WindowType type;
 
         LinkedList<WindowElement*>* elements;
 
@@ -458,6 +484,9 @@ class UI {
 
         WindowElement* lastClicked; // Saves the last clicked element to be used with input
 
+        // Windows currently open. will be nullptr if theyre not open
+        Window* transformWindow;
+
 
         // Constructor
         UI();
@@ -478,7 +507,12 @@ class UI {
         void doInput(State* state);
 
         // Creates a new "Transform" window linked to the given Object
-        void createWindowTransform(Object* object);
+        Window* createWindowTransform(Object* object);
+        Window* createWindowTransform(Object* object, int posx, int posy);
+
+        void updateWindowTransform(Object* object);
+
+        void destroyWindowTransform();
 
     private:
 
@@ -496,7 +530,7 @@ class UI {
 
         /*   Instance Functions   */
 
-        // Adds a window object to the interal linked list
+        // Adds a window object to the internal linked list
         void addWindow(Window* window);
 
         // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively

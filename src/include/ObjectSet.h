@@ -76,7 +76,17 @@ class Object {
         // Simple collision check. the object will act as though there is an infinite mass plane at a y level
         void doFloorCollision(double y);
 
+        // Updates the mesh if any vectors have been changed
+        void update();
+
         bool collides(Object* other);
+
+    private:
+
+        // Stores the last version of each vector so update() knows what to do. 
+        // pos does not need this becuase its handled object side as opposed to mesh side
+        Vec3* lastRotation;
+        Vec3* lastScale;
 
 
 };
@@ -164,6 +174,9 @@ class ObjectSet {
 
         // Calls Object->doPhysics for all in the set
         void doAllPhysics(double dt);
+
+        // Updates any objects where vectors have been changed
+        void updateAll();
 
         // Projects all the objects into window coordinates
         void projectAll(Camera* camera, Display* display);

@@ -123,9 +123,8 @@ WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* t
 
     // Title plus dragable tab
     WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window);
-    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18);
+    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18, Color::LIGHTER);
     WindowElement* titleElement = new WindowTextStatic(6, 6, title);
-    topBarColor->color = Color::LIGHTER;
     
     dragRect->addChild(topBarColor);
     dragRect->addChild(titleElement);
@@ -135,10 +134,8 @@ WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* t
     CloseButtonElement->color = Color::RED;
 
     // Two white lines to form the X on the close tab button
-    WindowElement* line1 = new WindowLine(3, 2, 13, 13);
-    WindowElement* line2 = new WindowLine(15, 2, -13, 13);
-    line1->color = Color::WHITE;
-    line2->color = Color::WHITE;
+    WindowElement* line1 = new WindowLine(3, 2, 13, 13, Color::WHITE);
+    WindowElement* line2 = new WindowLine(15, 2, -13, 13, Color::WHITE);
 
     // Add the lines to the button
     CloseButtonElement->addChild(line1);
@@ -148,6 +145,17 @@ WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* t
     holder->addChild(CloseButtonElement);
 
     return holder;
+
+}
+
+WindowElement* WindowElement::createTextBox(int posx, int posy, int width, double* valueToWrite) {
+
+    WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
+
+    newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
+    newElement->addChild( new WindowTextInput(0, 0, 35, valueToWrite) );
+
+    return newElement;
 
 }
 
@@ -178,12 +186,11 @@ void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------- */
 
 // Constructor
-WindowLine::WindowLine(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
-
-    this->endPos = new Vec2(posx, posy);
-    endPos->add(sizex, sizey);
+WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
+
+    this->color = color;
 
 }
 
@@ -208,9 +215,11 @@ void WindowLine::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------------- */
 
 // Constructor
-WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
+WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
+
+    this->color = color;
 
 }
 
@@ -235,9 +244,11 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------------- */
 
 // Constructor
-WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {
+WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
+
+    this->color = color;
 
 }
 
@@ -317,6 +328,59 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
     this->drawChildren(drawer, newOffset);
 
     delete newOffset;
+
+}
+
+
+
+/* ------------------------------------- */
+/* ---------- WindowTextInput ---------- */
+/* ------------------------------------- */
+
+// Constructor
+WindowTextInput::WindowTextInput(int posx, int posy, int width, double* valueToWrite) : WindowElement(posx, posy, width, 12) {
+
+    this->text = new char[this->BUFFERSIZE];
+    this->length = 0;
+    this->valueToWrite = valueToWrite;
+
+    this->color = Color::WHITE;
+
+}
+
+// Destructor
+WindowTextInput::~WindowTextInput() {
+    delete[] this->text;
+}
+
+// Instance Functions
+void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
+
+    doubleToString(*(this->valueToWrite), this->text, 128, 0);
+    
+    Vec2* newOffset = this->pos->copy()->add(offset);
+
+    // Give the text some padding
+    newOffset->add(3, 3);
+    drawer->drawString(this->color, this->text, newOffset);
+
+    // Remove the padding before drawing children
+    newOffset->sub(3, 3);
+    this->drawChildren(drawer, newOffset);
+
+    delete newOffset;
+
+}
+
+void WindowTextInput::onMouseLeftDown() {
+
+}
+
+void WindowTextInput::onKeyPress(SDL_Keycode) {
+
+}
+
+void WindowTextInput::writeToValue() {
 
 }
 
@@ -689,53 +753,124 @@ void UI::doInput(State* state) {
 
 }
 
-void UI::createWindowTransform(Object* object) {
+Window* UI::createWindowTransform(Object* object) {
 
-    Vec2* windowPos = this->nextWindowPos->copy();
+    if (this->transformWindow != nullptr) return nullptr;
+
+    Window* ret = this->createWindowTransform(object, this->nextWindowPos->x, this->nextWindowPos->y);
+    this->updateNextWindowPos();
+
+    this->transformWindow = ret;
+    return ret;
+
+}
+
+Window* UI::createWindowTransform(Object* object, int posx, int posy) {
+
+    if (this->transformWindow != nullptr) return nullptr;
+
+    bool nullObj = object == nullptr;
+
+    Vec2* windowPos = new Vec2(posx, posy);
     Vec2* windowSize = this->TransformWindowSize->copy();
     Window* newWindow = new Window(windowPos, windowSize);
     WindowElement* newElement;
 
     // Top bar
-    newElement = WindowElement::createTopBar(this, newWindow, "Transform");
-    newWindow->addElement(newElement);
+    newWindow->addElement( WindowElement::createTopBar(this, newWindow, "Transform") );
 
     // Position
     newElement = new WindowDiv(20, 30, 250, 20);
     newElement->addChild( new WindowTextStatic(0, 7, "Position") );
+
     newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(195, 7, "Z") );
-    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+
+    if (nullObj) {
+        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
+    }
+
+    else {
+        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->pos->x)) );
+        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->pos->y)) );
+        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->pos->z)) );
+        object->pos->log();
+    }
+
     newWindow->addElement(newElement);
 
     // Rotation
     newElement = new WindowDiv(20, 50, 250, 20);
     newElement->addChild( new WindowTextStatic(0, 7, "Rotation") );
+
     newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(195, 7, "Z") );
-    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+
+    if (nullObj) {
+        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
+    }
+
+    else {
+        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->rotation->x)) );
+        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->rotation->y)) );
+        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->rotation->z)) );
+        object->rotation->log();
+    }
+
     newWindow->addElement(newElement);
 
     // Scale
     newElement = new WindowDiv(20, 70, 250, 20);
     newElement->addChild( new WindowTextStatic(0, 7, "Scale") );
+
     newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowFilledRect(85, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowFilledRect(145, 4, 35, 12) );
     newElement->addChild( new WindowTextStatic(195, 7, "Z") );
-    newElement->addChild( new WindowFilledRect(205, 4, 35, 12) );
+
+    if (nullObj) {
+        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
+        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
+    }
+
+    else {
+        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->scale->x)) );
+        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->scale->y)) );
+        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->scale->z)) ); 
+        object->scale->log(); 
+    }
+    
     newWindow->addElement(newElement);
 
     this->addWindow(newWindow);
 
-    this->updateNextWindowPos();
+    this->transformWindow = newWindow;
+    return newWindow;
+
+}
+
+void UI::updateWindowTransform(Object* object) {
+
+    if (this->transformWindow == nullptr) return;
+
+    int posx = this->transformWindow->pos->x;
+    int posy = this->transformWindow->pos->y;
+
+    this->destroyWindowTransform();
+    this->createWindowTransform(object, posx, posy);
+
+}
+
+void UI::destroyWindowTransform() {
+
+    if (this->transformWindow != nullptr) this->deleteWindow(this->transformWindow);
+    this->transformWindow = nullptr;
 
 }
 

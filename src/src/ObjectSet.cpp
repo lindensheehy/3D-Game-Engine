@@ -10,11 +10,11 @@ Object::Object() {
 
     this->mesh = nullptr;
     
-    this->pos = new Vec3();
-    this->rotation = new Vec3();
-    this->scale = new Vec3();
-    this->velocity = new Vec3();
-    this->gravity = new Vec3();
+    this->pos = new Vec3(0, 0, 0);
+    this->rotation = new Vec3(0, 0, 0);
+    this->scale = new Vec3(1, 1, 1);
+    this->velocity = new Vec3(0, 0, 0);
+    this->gravity = new Vec3(0, 0, 0);
 
     this->opacity = 1;
 
@@ -22,6 +22,9 @@ Object::Object() {
     this->gravityFactor = 1;
     this->frictionFactor = 1;
     this->bounceFactor = 1;
+
+    this->lastRotation = this->rotation->copy();
+    this->lastScale = this->scale->copy();
 
     return;
 
@@ -92,12 +95,7 @@ Vec3* Object::getCenter() {
 Object* Object::move(Vec3* dist) {
 
     // Log the error cases
-    if (this->mesh == nullptr) {
-        logWrite("Called Object->move(Vec3*) while Object->mesh was null pointer!", true);
-        return nullptr;
-    }
-
-    if (this->mesh == nullptr) {
+    if (dist == nullptr) {
         logWrite("Called Object->move(Vec3*) with 'dist' being a null pointer!", true);
         return nullptr;
     }
@@ -109,12 +107,6 @@ Object* Object::move(Vec3* dist) {
 
 Object* Object::move(double dx, double dy, double dz) {
 
-    // Log the error case
-    if (this->mesh == nullptr) {
-        logWrite("Called Object->move(double, double, double) while Object->mesh was null pointer!", true);
-        return nullptr;
-    }
-
     this->pos->add(dx, dy, dz);
     return this;
     
@@ -122,26 +114,14 @@ Object* Object::move(double dx, double dy, double dz) {
 
 Object* Object::scaleBy(double factor) {
 
-    // Log the error case
-    if (this->mesh == nullptr) {
-        logWrite("Called Object->scale(double) while Object->mesh was nullptr!", true);
-        return nullptr;
-    }
-
-    this->mesh->scale(factor);
+    this->scale->scale(factor);
     return this;
 
 }
 
 Object* Object::scaleBy(double fx, double fy, double fz) {
 
-    // Log the error case
-    if (this->mesh == nullptr) {
-        logWrite("Called Object->move(double, double, double) while Object->mesh was nullptr!", true);
-        return nullptr;
-    }
-
-    this->mesh->scale(fx, fy ,fz);
+    this->scale->scale(fx, fy ,fz);
     return this;
 
 }
@@ -175,12 +155,12 @@ Object* Object::rotate(double yaw, double pitch, double roll, Vec3* around = nul
 Object* Object::rotateSelf(Vec3* angle) {
 
     // Log the error case
-    if (this->mesh == nullptr) {
-        logWrite("Called Object->rotateSelf(Vec3*) while Object->mesh was nullptr!", true);
+    if (angle == nullptr) {
+        logWrite("Called Object->rotateSelf(Vec3*) on a nullptr!", true);
         return nullptr;
     }
 
-    this->mesh->rotateSelf(angle);
+    this->rotation->add(angle);
     return this;
 
 }
@@ -193,7 +173,7 @@ Object* Object::rotateSelf(double yaw, double pitch, double roll) {
         return nullptr;
     }
 
-    this->mesh->rotateSelf(yaw, pitch, roll);
+    this->rotation->add(yaw, pitch, roll);
     return this;
 
 }
@@ -231,6 +211,36 @@ void Object::doFloorCollision(double y) {
 
     return;
 
+}
+
+void Object::update() {
+    
+    // Update rotation if nessecary
+    if ( !(this->rotation->is(this->lastRotation)) ) {
+
+        double dx = this->rotation->x - this->rotation->x;
+        double dy = this->rotation->y - this->rotation->y;
+        double dz = this->rotation->z - this->rotation->z;
+
+        this->mesh->rotateSelf(dx, dy, dz);
+
+        this->lastRotation->set(this->rotation);
+
+    }
+
+    // Update scale if nessecary
+    if ( !(this->scale->is(this->lastScale)) ) {
+
+        double fx = this->scale->x / this->lastScale->x;
+        double fy = this->scale->y / this->lastScale->y;
+        double fz = this->scale->z / this->lastScale->z;
+
+        this->mesh->scale(fx, fy, fz);
+
+        this->lastScale->set(this->scale);
+
+    }
+    
 }
 
 bool Object::collides(Object* other) {
@@ -432,6 +442,13 @@ void ObjectSet::doAllPhysics(double dt) {
 
 }
 
+void ObjectSet::updateAll() {
+
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
+        this->iterGetObj()->update();
+
+}
+
 void ObjectSet::projectAll(Camera* camera, Display* display) {
 
     // Log the error cases
@@ -444,6 +461,8 @@ void ObjectSet::projectAll(Camera* camera, Display* display) {
         logWrite("Called ObjectSet->projectAll(Camera*, Display*) with 'display' being on a null pointer!", true);
         return;
     }
+
+    this->updateAll();
 
     Object* currentObj;
 

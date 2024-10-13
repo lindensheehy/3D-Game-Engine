@@ -10,6 +10,7 @@
 #include "State.h"
 #include "LinkedList.h"
 
+#include "Utility.h"
 #include "Math.h"
 #include "Log.h"
 

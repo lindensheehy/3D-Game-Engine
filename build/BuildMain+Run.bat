@@ -5,6 +5,7 @@ set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Compile main.exe
 g++ ../main.cpp ^
+    %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
     %objdir%Vec.o ^
@@ -25,5 +26,3 @@ main.exe
 
 :: pause for debugging purposes
 pause
-
-:: vscode-fold-0

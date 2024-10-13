@@ -2,6 +2,7 @@
 
 // Libs for functions to test
 #include "../src/include/Math.h"
+#include "../src/include/Utility.h"
 
 
 // Test counters
@@ -164,7 +165,7 @@ int main() {
     /*  -----   Load Functions To Test   -----  */
     /*  --------------------------------------  */
 
-    // Functions from "src/math/math.h"
+    // Functions from "src/include/Math.h"
     FunctionWrapper<int, double>* funcFloor = /* ----------------------- */ new FunctionWrapper<int, double>(floor, "floor");
     FunctionWrapper<int, double>* funcRound = /* ----------------------- */ new FunctionWrapper<int, double>(round, "round");
     FunctionWrapper<double, double, double>* funcSqrt = /* ------------- */ new FunctionWrapper<double, double, double>(sqrt, "sqrt");
@@ -177,6 +178,9 @@ int main() {
     FunctionWrapper<double, double, double, double>* funcRange = /* ---- */ new FunctionWrapper<double, double, double, double>(range, "range");
     FunctionWrapper<double, double, double, double>* funcInRange = /* -- */ new FunctionWrapper<double, double, double, double>(inRange, "inRange");
     FunctionWrapper<double, double, double, double, double>* funcGetAngle = new FunctionWrapper<double, double, double, double, double>(getAngle, "getAngle");
+
+    // Functions from "src/include/Utility.h"
+    FunctionWrapper<double, char*, int>* funcStringToDouble = /* -------- */ new FunctionWrapper<double, char*, int>(stringToDouble, "stringToDouble");
 
     logWrite(
         "<div class=\"seperation\"></div>\n"
@@ -373,6 +377,24 @@ int main() {
     );
 
 
+    // StringToDouble
+    logWrite(
+        "<div class=\"seperation\"></div>\n"
+        "<h2>\n"
+        "   StringToDouble function from Utility.cpp\n"
+        "</h2>\n"
+    );
+
+    //                             Return                Input        MAXLENGTH
+    funcStringToDouble->test(         0,       (char*)    "0",           16          );
+    funcStringToDouble->test(         1,       (char*)    "1",           16          );
+    funcStringToDouble->test(        1.1,      (char*)   "1.1",          16          );
+    funcStringToDouble->test(        -1,       (char*)    "-1",          16          );
+    funcStringToDouble->test(       -1.1,      (char*)   "-1.1",         16          );
+    funcStringToDouble->test(       12345,     (char*)  "12345",         16          );
+    funcStringToDouble->test(       1000,      (char*)   "1000",         16          );
+
+
 
     // Log Results
     logWrite("\n\n");
@@ -384,6 +406,21 @@ int main() {
     logWrite(
         "</body>\n"
     );
+
+    char buffer[256];
+
+    doubleToString(0.1, buffer, 256, 6);
+    std::cout << buffer << std::endl;
+    doubleToString(1.1, buffer, 256, 6);
+    std::cout << buffer << std::endl;
+    doubleToString(-1.1, buffer, 256, 6);
+    std::cout << buffer << std::endl;
+    doubleToString(12345.12345, buffer, 256, 6);
+    std::cout << buffer << std::endl;
+    doubleToString(100000.0001, buffer, 256, 6);
+    std::cout << buffer << std::endl;
+    doubleToString(-100000.0001, buffer, 256, 6);
+    std::cout << buffer << std::endl;
 
     return 0;
 }

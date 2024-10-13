@@ -17,6 +17,10 @@ g++ -c ../src/lodepng/lodepng.cpp ^
 
 :: Mine
 
+:: Utility
+g++ -c %srcdir%Utility.cpp ^
+    -o %objdir%Utility.o
+
 :: Math
 g++ -c %srcdir%Math.cpp ^
     -o %objdir%Math.o
@@ -77,6 +81,7 @@ g++ -c %srcdir%UI.cpp ^
 
 :: Compile main.exe
 g++ ../main.cpp ^
+    %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
     %objdir%Vec.o ^
@@ -97,5 +102,3 @@ main.exe
 
 :: pause for debugging purposes
 pause
-
-:: vscode-fold-0

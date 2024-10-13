@@ -94,13 +94,16 @@ void handleInput(State* state, Camera* camera) {
     }
 
     if (changeObject) {
+
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
+
+        ui->updateWindowTransform(selectedObject);
+
     }
 
     if (state->keyJustDown(SDLK_RETURN)) {
-        logWrite((long long) selectedObject, true);
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
     }
@@ -156,8 +159,8 @@ void handleInput(State* state, Camera* camera) {
         objects->setVelocityAll(0, 25, 0);
 
     // Makes a new Transform window for the selected object
-    if (state->keyJustDown(SDLK_0))
-        ui->createWindowTransform(selectedObject);
+    // if (state->keyJustDown(SDLK_0))
+    //     ui->createWindowTransform(selectedObject);
 
     // Give the state to the UI to handle
     ui->doInput(state);
@@ -200,34 +203,41 @@ void init() {
     objects->pushBack(newObject, 1);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
     objects->pushBack(newObject, 2);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
     objects->pushBack(newObject, 3);
 
     newObject = new Object();
-    newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
+    newObject->mesh = Mesh::capsuleMesh->copy();
+    newObject->scaleBy(15)->move(0, -20, 50)->setColor(Color::GREEN);
     objects->pushBack(newObject, 4);
 
     newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::sphereMesh->copy();
+    newObject->scaleBy(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 5);
 
     newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    newObject->mesh = Mesh::sphereMesh->copy();
+    newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 6);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 7);
 
 
     /*   Floor   */
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
     objects->pushBack(newObject, 8);
 
 
