@@ -1464,16 +1464,16 @@ void Drawer::drawpng(PNG* texture, Vec2* pos, double depth) {
 
 void Drawer::initFont() {
 
-    this->chars = new bool*[38];
+    this->chars = new bool*[this->rawCharsCount];
 
-    for (int i = 0; i < 38; i++) {
+    for (int i = 0; i < this->rawCharsCount; i++) {
         this->chars[i] = new bool[49];
     }
 
     int index1 = 0;
     int index2 = 0;
 
-    for (int i = 0; i < 2167; i++) {
+    for (int i = 0; i < this->rawCharsSize; i++) {
 
         switch (this->rawChars[i]) {
             
@@ -1655,13 +1655,25 @@ bool* Drawer::getCharRef(char ch) {
         return this->chars[ (ch - '0') + 26 ];
     }
 
-    // Space char turns to 36
-    if ( ch == ' ' ) {
-        return this->chars[36];
+    // Other chars
+    switch (ch) {
+
+        // Space
+        case ' ':
+            return this->chars[36];
+        
+        // Minus / Negative Sign
+        case '-':
+            return this->chars[37];
+
+        // Period / Decimal
+        case '.':
+            return this->chars[38];
+
     }
 
     // Return null char if nothing else applies
-    return this->chars[37];
+    return this->chars[39];
 
 }
 
@@ -1669,7 +1681,7 @@ bool* Drawer::getCharRef(int num) {
 
     // Return ref to null char if the int is negative or not single digit
     if ( num < 0 || num > 9 ) {
-        return this->chars[37];
+        return this->chars[39];
     }
 
     // Since the numbers are ordered properly in my list, I use this to simplify the indexing

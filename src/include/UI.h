@@ -206,7 +206,6 @@ class WindowTextStatic : public WindowElement {
 };
 
 
-//template<typename valueType>
 class WindowTextInput : public WindowElement {
 
     /*

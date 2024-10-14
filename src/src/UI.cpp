@@ -356,7 +356,7 @@ WindowTextInput::~WindowTextInput() {
 // Instance Functions
 void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
-    doubleToString(*(this->valueToWrite), this->text, 128, 0);
+    doubleToString(*(this->valueToWrite), this->text, 128, 1);
     
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -693,7 +693,10 @@ void UI::draw(Drawer* drawer) {
 void UI::deleteWindow(Window* window) {
 
     Window* removed = this->windows->pop(window);
-    if (removed != nullptr) delete removed;
+    if (removed == nullptr) return;
+    
+    if (removed->type == TRANSFORM) this->transformWindow = nullptr;
+    delete removed;
 
 }
 
@@ -847,6 +850,7 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     }
     
     newWindow->addElement(newElement);
+    newWindow->type = TRANSFORM;
 
     this->addWindow(newWindow);
 
@@ -857,7 +861,9 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
 
 void UI::updateWindowTransform(Object* object) {
 
-    if (this->transformWindow == nullptr) return;
+    if (this->transformWindow == nullptr) {
+        this->createWindowTransform(object, 100, 100);
+    }
 
     int posx = this->transformWindow->pos->x;
     int posy = this->transformWindow->pos->y;

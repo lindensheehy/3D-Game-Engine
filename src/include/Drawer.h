@@ -273,7 +273,9 @@ class Drawer {
         // underscore is 0 (false) and 0 is 1 (true), the bool values coorespond to if they are shown or not when drawing
         // All the seperate strings here get put together by the compiler into one big string, so the /n chars are the seperators
         // | acts as a line end char
-        // String length is: ( (7 * 8) + 1 ) * char count = 2166 + nullchar -> 2167
+        // String length is: ( (7 * 8) + 1 ) * char count (40) = 2280 + nullchar -> 2281
+        const int rawCharsCount = 40;
+        const int rawCharsSize = 2281;
         const char* rawChars = {
 
             // A
@@ -643,6 +645,26 @@ class Drawer {
             "_______|"
             "_______|"
             "_______|"
+            "_______|"
+            "\n"
+
+            // Minus / Negative sign
+            "_______|"
+            "_______|"
+            "_______|"
+            "_00000_|"
+            "_______|"
+            "_______|"
+            "_______|"
+            "\n"
+
+            // Period / Decimal
+            "_______|"
+            "_______|"
+            "_______|"
+            "_______|"
+            "__00___|"
+            "__00___|"
             "_______|"
             "\n"
 
