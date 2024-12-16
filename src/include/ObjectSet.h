@@ -168,9 +168,12 @@ class ObjectSet {
         void setVelocityAll(double vx, double vy, double vz);
 
         // Sets the gravitational acceleration for all objects in the set
-        void setAllGravity(Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
-        void setAllGravity(double gx, double gy, double gz);  // Sets all the instance variables to these values
-        void setAllGravity(double gy);  // Sets the gravity to just down or up
+        void setGravityAll(Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
+        void setGravityAll(double gx, double gy, double gz);  // Sets all the instance variables to these values
+        void setGravityAll(double gy);  // Sets the gravity to just down or up
+
+        // Sets the opacity of all the objects
+        void setOpacityAll(double opacity);
 
         // Calls Object->doPhysics for all in the set
         void doAllPhysics(double dt);

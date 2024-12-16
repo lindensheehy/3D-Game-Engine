@@ -1,46 +1,55 @@
-# 3D Graphics Written in C++
-This is a 3d graphics engine I wrote in C++. A lot of the code is from the same project I made in python, but I was running into performance issues so wanted to give it a shot in C++. Though, since C++ has less provided utility than python, I still had to rewrite a lot of the code chunks.<br>
-This project uses SDL2 to create a window and give me a reference to the pixel buffer, which allowed me to write directly to that, then call another SDL function to write those pixels to the window. <br>
+# 3D Graphics Engine in C++
 
-My goals while working on this projects were:
-- Learn in depth about C++, as I have used it in the past but not extensively
-- Learn about how 3d graphics work, specifically in the context of game engines
-- Limit my library usage to as few as possible, just as a way to make me write more code, and sometimes more complex code
+This is a 3D graphics engine written in C++, designed as a personal project to push my skills in both C++ and 3D graphics programming. The goal of the project was to build a solid foundation in graphics rendering, physics (work in progress), and user interface design, all while keeping the dependencies to, in my opinion, the absolute minimum and building most of the core functionality from scratch.
 
-Although SDL2 has plenty of features I could use, I wanted to do everything I feasibly could by myself. The only SDL2 features I used are:
-- Creating a window
-- Getting and setting the pixel buffer
-- Recording input events on each frame, such as mouse movement and key presses
+## Key Features:
 
-I wanted to challenge myself, mostly to learn more about C++ so, alongside my limited use of SDL2, I restricted the libraries I'm using to, in my opinion, the bare minimum. Those being:
-- 'SDL2' of course
-- 'chrono' to get delta time on each frame
+### Rendering
+- **Depth Buffering:** Implements a basic depth buffer to ensure that objects are rendered correctly with respect to their depth in the scene.
+- **Transparency Handling:** Support for objects with varying levels of opacity, with a basic algorithm to blend transparent objects over the background and other objects.
+- **Projection & Camera System:** Uses perspective projection to simulate a 3D camera in a 2D space. The camera system can be easily extended to support multiple cameras in the future.
 
-I also used the following libraries for debugging, but the core of the project can run just fine without these:
-- 'iostream'
-- 'fstream'
-- 'iomanip'
+### Custom UI
+- **Custom UI Elements:** Supports a range of UI components, including buttons, textboxes, dividers, etc., with the ability to dynamically handle inputs and render windows on the screen.
+- **UI Hierarchy System:** The UI elements are organized hierarchically, with a parent-child relationship, making it easy to manage complex window layouts.
 
-Because I restricted my library use so much, I had to write an extensive set of dependancies before I could even start anything graphics related. Those being:
-- 'math' which contains every math function I would need from a library like cmath.
-- 'log' used to write data to an output file rather than the console. This is helpful for a case when you need to record events between frames, and are logging many lines every frame, leading to millions of lines, because you can scroll through and ctrl+f.
-- 'Vec' is an extensive vector library for 2d and 3d. These are used to hold almost every functional value in this project.
-- 'State' which takes the input events grabbed by SDL and saves them into an object such that they can more easily be worked with.
-- 'Drawer' does all the drawing to the pixel buffer, including rectangles, triangles, and elipses.
+### Physics (Work in Progress)
+- **Physics Framework Setup:** Infrastructure for handling simple physics concepts like acceleration, velocity, and position. The physics system is ready to implement features like object collisions and more detailed interactions.
 
-To run this project, simply run "BuildAll+Run.bat". This script file compiles all the dependancies to .o files, and then builds and runs main.
+## Technical Details:
 
-I added the SDL2 includes to this repository. They are the 64 bit versions, so if you are on a 32 bit system, read the README in the SDL2 folder for instructions to build and run
+- **Custom Math Library:** This project uses a custom math library for all necessary mathematical operations (e.g., `sqrt`, `sin`, `cos`, `tan`, etc.). Key functions like square roots and trigonometry are implemented from scratch using techniques like the Newton-Raphson method and Taylor series approximations.
+- **Custom Data Structures:** To manage 3D data and ensure the performance of the engine, I built custom data structures like vectors (`Vec2`, `Vec3`), triangles (`Tri2`, `Tri3`), and meshes (`Mesh`). These allow efficient manipulation of vertices, normals, and other properties needed for 3D rendering.
 
-Current version notes and controls:
-- You are a camera in a 3d plane with a few objects in front of you
-- w,a,s,d are the movement keys for your camera, plus space and ctrl to ascend and descend respectively
-- shift is the 'sprint' button, this just increases your movement speed in all directions
-- holding left click and moving your mouse around on the window lets you look around
-- you can 'select' an object by pressing q and e, then you can cycle through them using those same keys, the selected object appears partially transparent
-- keys j,k,l rotate the selected object in the 3 planes
-- keys o,p translate the selected object along the y-axis
-- keys u,i translate the selected object along the x-axis
-- keys t,y translate the selected object along the z-axis
-- gravity can be toggled on by pressing g, not this only affects the objects and not your camera
-- you can 'jump' the objects by pressing z, this only looks like a jump if gravity is on
+## Libraries & Dependencies:
+- **SDL2:** Used for window creation, handling input, and managing the pixel buffer to draw directly onto the screen.
+- **Standard C++ Libraries:** A minimal set of standard C++ libraries. Functionally, the only required library is  `chrono` for delta time, but I also use `iostream`/`fstream`/`iomanip` for debugging and logging.
+- **Custom Libraries:** This project heavily relies on custom-built libraries for anything I felt was feasible for me to implement. 
+
+## Controls:
+- **W, A, S, D:** Move the camera in the 3D space
+- **Space:** Ascend
+- **Ctrl:** Descend
+- **Shift:** Sprint (increases movement speed in all directions)
+- **Left Click + Mouse Movement:** Look around (rotate the camera)
+- **Q, E:** Select objects and cycle through them (will also create a 'Transform' window)
+- **J, K, L:** Rotate the selected object
+- **U, I:** Translate the selected object along the X-axis
+- **T, Y:** Translate the selected object along the Z-axis
+- **O, P:** Translate the selected object along the Y-axis
+- **G:** Toggle gravity on or off (only affects objects, not the camera)
+- **Z:** Make all the objects 'jump' (just gives some vertical veloctiy)
+- **N:** Show normals on all rendered triangles. These will appear as small red lines
+
+## To Do:
+- **Collision Detection:** The main goal for the next iteration is to implement object collision detection, which is crucial for a more realistic physics system.
+- **Physics Enhancements:** Adding more physics features like rigid body dynamics, forces, and complex object interactions.
+- **UI Enhancements:** Improve and expand the UI system for more advanced interactions, including dynamic window resizing and draggable elements.
+
+## How to Run:
+1. Clone the repository
+2. Navigate to the project directory
+3. Run `BuildAll+Run.bat` (Windows) to compile and run the project
+
+## Conclusion
+This is very much a passion project for me. As much as it is a learning opportunity to develop my skills, it's also driven by my interest in 3D graphics and my love for building things from scratch. I could talk for hours about any individual part of this project, because a lot of time and thought went into everything.

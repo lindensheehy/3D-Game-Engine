@@ -1387,8 +1387,10 @@ void Drawer::drawTriangle(Uint32 pixel, Tri3* tri, double opacity) {
     
     int x1 = (int) round(tri->v1->x);
     int y1 = (int) round(tri->v1->y);
+
     int x2 = (int) round(tri->v2->x);
     int y2 = (int) round(tri->v2->y);
+    
     int x3 = (int) round(tri->v3->x);
     int y3 = (int) round(tri->v3->y);
 

@@ -73,8 +73,8 @@ WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
     bool clickLands = this->hitTest(x, y, offset);
     if (!clickLands) return nullptr;
 
-    // Run the click action (this is nothing for most elements)
-    this->onMouseLeftDown();
+    // Run the input action (this is nothing for most elements)
+    this->onInput(state);
 
     // Since now the click must lie inside this element, if this is any interactable type, I return this and skip checking the children
     if (this->type == BUTTON) return this;
@@ -372,11 +372,9 @@ void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowTextInput::onMouseLeftDown() {
+void WindowTextInput::onInput(State* state) {
 
-}
-
-void WindowTextInput::onKeyPress(SDL_Keycode) {
+    if (state->wasLeftJustPressed()) this->cursorPos = 0;
 
 }
 
@@ -440,9 +438,10 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowButton::onMouseLeftDown() {
+void WindowButton::onInput(State* state) {
 
-    this->action->run();
+    if (state->wasLeftJustPressed())
+        this->action->run();
 
 }
 
@@ -472,7 +471,10 @@ void WindowDragable::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowDragable::onDrag(int dx, int dy) {
+void WindowDragable::onInput(State* state) {
+
+    int dx = state->deltaMousePosX();
+    int dy = state->deltaMousePosY();
 
     this->windowToDrag->pos->add(dx, dy);
     this->windowToDrag->endPos->add(dx, dy);
@@ -745,12 +747,14 @@ void UI::doInput(State* state) {
     // Drag handling
     if (this->lastClicked->type == DRAGABLE && state->wasLeftHeld()) {
 
-        this->lastClicked->onDrag(state->deltaMousePosX(), state->deltaMousePosY());
+        this->lastClicked->onInput(state);
 
     }
 
     // Text box handling
     if (this->lastClicked->type == TEXTINPUT) {
+
+        this->lastClicked->onInput(state);
 
     }
 

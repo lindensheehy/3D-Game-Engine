@@ -218,9 +218,9 @@ void Object::update() {
     // Update rotation if nessecary
     if ( !(this->rotation->is(this->lastRotation)) ) {
 
-        double dx = this->rotation->x - this->rotation->x;
-        double dy = this->rotation->y - this->rotation->y;
-        double dz = this->rotation->z - this->rotation->z;
+        double dx = this->rotation->x - this->lastRotation->x;
+        double dy = this->rotation->y - this->lastRotation->y;
+        double dz = this->rotation->z - this->lastRotation->z;
 
         this->mesh->rotateSelf(dx, dy, dz);
 
@@ -408,7 +408,7 @@ void ObjectSet::setVelocityAll(double vx, double vy, double vz) {
 
 }
 
-void ObjectSet::setAllGravity(Vec3* gravity) {
+void ObjectSet::setGravityAll(Vec3* gravity) {
 
     // Log the error case
     if (gravity == nullptr) {
@@ -421,17 +421,24 @@ void ObjectSet::setAllGravity(Vec3* gravity) {
 
 }
 
-void ObjectSet::setAllGravity(double gx, double gy, double gz) {
+void ObjectSet::setGravityAll(double gx, double gy, double gz) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->gravity->set(gx, gy, gz);
 
 }
 
-void ObjectSet::setAllGravity(double gy) {
+void ObjectSet::setGravityAll(double gy) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->gravity->set(0, gy, 0);
+
+}
+
+void ObjectSet::setOpacityAll(double opacity) {
+
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
+        this->iterGetObj()->opacity = opacity;
 
 }
 

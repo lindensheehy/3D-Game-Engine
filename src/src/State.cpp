@@ -131,21 +131,20 @@ void State::MouseState::setPos(int x, int y) {
 // Constructor
 State::KeyboardState::KeyboardState() {
 
-    this->letterKeys = new bool[26];
-    this->numKeys = new bool[10];
-    this->miscKeys = new bool[9];
+    this->letterKeys = new bool[this->letterKeyCount];
+    this->numKeys = new bool[this->numKeyCount];
+    this->miscKeys = new bool[this->miscKeyCount];
 
-    for (int i = 0; i < 26; i++) {
+    int i;
 
+    for (i = 0; i < this->letterKeyCount; i++)
         this->letterKeys[i] = false;
 
-        if (i < 10) 
-            this->numKeys[i] = false;
+    for (i = 0; i < this->numKeyCount; i++)
+        this->numKeys[i] = false;
 
-        if (i < 9) 
-            this->miscKeys[i] = false;
-            
-    }
+    for (i = 0; i < this->miscKeyCount; i++) 
+        this->miscKeys[i] = false;
 
     return;
 }
@@ -179,7 +178,7 @@ void State::KeyboardState::setState(KeyboardState* state) {
     }
 }
 
-bool* State::KeyboardState::getKeyRef(int keyCode) {
+bool* State::KeyboardState::getKeyRef(SDL_Keycode keyCode) {
 
     /*
         Returns a pointer to the key boolean value within the instance variables
@@ -328,13 +327,25 @@ bool* State::KeyboardState::getKeyRef(int keyCode) {
         case SDLK_LALT:
             return &( this->miscKeys[miscKeyIndex::alt] );
 
+        case SDLK_UP:
+            return &( this->miscKeys[miscKeyIndex::arrowup] );
+
+        case SDLK_DOWN:
+            return &( this->miscKeys[miscKeyIndex::arrowdown] );
+
+        case SDLK_LEFT:
+            return &( this->miscKeys[miscKeyIndex::arrowleft] );
+
+        case SDLK_RIGHT:
+            return &( this->miscKeys[miscKeyIndex::arrowright] );
+
 
     }
 
     return nullptr;
 }
 
-void State::KeyboardState::setKeyDown(int keyCode) {
+void State::KeyboardState::setKeyDown(SDL_Keycode keyCode) {
 
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = true;
@@ -343,7 +354,7 @@ void State::KeyboardState::setKeyDown(int keyCode) {
 
 }
 
-void State::KeyboardState::setKeyUp(int keyCode) {
+void State::KeyboardState::setKeyUp(SDL_Keycode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = false;
@@ -352,7 +363,7 @@ void State::KeyboardState::setKeyUp(int keyCode) {
 
 }
 
-bool State::KeyboardState::keyDown(int keyCode) {
+bool State::KeyboardState::keyDown(SDL_Keycode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
@@ -369,6 +380,9 @@ bool State::KeyboardState::keyDown(int keyCode) {
 // Contructor
 State::State(bool hasChild /* default value = true */) {
 
+    this->newKeyPresses = new SDL_Keycode[3] {SDLK_UNKNOWN, SDLK_UNKNOWN, SDLK_UNKNOWN};
+    this->newKeyPressesIndex = 0;
+
     this->time = new TimeState();
     this->mouse = new MouseState();
     this->keys = new KeyboardState();
@@ -380,10 +394,11 @@ State::State(bool hasChild /* default value = true */) {
 
 // Destructor
 State::~State() {
-    if (this->time != nullptr) delete this->time;
-    if (this->mouse != nullptr) delete this->mouse;
-    if (this->keys != nullptr) delete this->keys;
-    if (this->lastFrame != nullptr) delete this->lastFrame;
+    if (this->newKeyPresses != nullptr) delete[] this->newKeyPresses;
+    if (this->time != nullptr)          delete this->time;
+    if (this->mouse != nullptr)         delete this->mouse;
+    if (this->keys != nullptr)          delete this->keys;
+    if (this->lastFrame != nullptr)     delete this->lastFrame;
 }
 
 // Instance functions
@@ -395,58 +410,79 @@ void State::addEvent(SDL_Event* event) {
         return;
     }
 
-    // Mouse buttons down
-    if ((*event).type == SDL_MOUSEBUTTONDOWN) {
+    switch (event->type) {
 
-        if ((*event).button.button == SDL_BUTTON_LEFT) {
-            this->mouse->leftButtonDown();
-        }
+        case SDL_MOUSEBUTTONDOWN:
 
-        if ((*event).button.button == SDL_BUTTON_RIGHT) {
-            this->mouse->rightButtonDown();
-        }
+            switch (event->button.button) {
 
-        if ((*event).button.button == SDL_BUTTON_MIDDLE) {
-            this->mouse->middleButtonDown();
-        }
+                case SDL_BUTTON_LEFT:
+                    this->mouse->leftButtonDown();
+                    return;
 
-        return;
+                case SDL_BUTTON_RIGHT:
+                    this->mouse->rightButtonDown();
+                    return;
 
-    }
+                case SDL_BUTTON_MIDDLE:
+                    this->mouse->middleButtonDown();
+                    return;
 
-    // Mouse buttons up
-    if ((*event).type == SDL_MOUSEBUTTONUP) {
+            }
 
-        if ((*event).button.button == SDL_BUTTON_LEFT) {
-            this->mouse->leftButtonUp();
-        }
+            return;
 
-        if ((*event).button.button == SDL_BUTTON_RIGHT) {
-            this->mouse->rightButtonUp();
-        }
+        case SDL_MOUSEBUTTONUP:
 
-        if ((*event).button.button == SDL_BUTTON_MIDDLE) {
-            this->mouse->middleButtonUp();
-        }
+            switch (event->button.button) {
 
-        return;
+                case SDL_BUTTON_LEFT:
+                    this->mouse->leftButtonUp();
+                    return;
 
-    }
+                case SDL_BUTTON_RIGHT:
+                    this->mouse->rightButtonUp();
+                    return;
 
-    // Keyboard buttons down
-    if ((*event).type == SDL_KEYDOWN) {
-        this->keys->setKeyDown((*event).key.keysym.sym);
-    }
+                case SDL_BUTTON_MIDDLE:
+                    this->mouse->middleButtonUp();
+                    return;
 
-    // Keyboard buttons up
-    if ((*event).type == SDL_KEYUP) {
-        this->keys->setKeyUp((*event).key.keysym.sym);
+            }
+
+            return;
+
+        case SDL_KEYDOWN:
+
+            // If it wasnt down last frame, add it to newKeyPresses
+            if (
+                this->lastFrame->keys->keyDown(event->key.keysym.sym) && 
+                this->newKeyPressesIndex < 3
+            ) {
+                this->newKeyPresses[this->newKeyPressesIndex] = event->key.keysym.sym;
+                this->newKeyPressesIndex++;
+            }
+
+            this->keys->setKeyDown(event->key.keysym.sym);
+            return;
+
+        case SDL_KEYUP:
+
+            this->keys->setKeyUp(event->key.keysym.sym);
+
+            return;
+
     }
 
     return;
 }
 
 void State::nextFrame() {
+
+    this->newKeyPresses[0] = SDLK_UNKNOWN;
+    this->newKeyPresses[1] = SDLK_UNKNOWN;
+    this->newKeyPresses[2] = SDLK_UNKNOWN;
+    this->newKeyPressesIndex = 0;
 
     if (this->lastFrame == nullptr) return;
 
@@ -502,11 +538,11 @@ int State::deltaMousePosY() {
     return (this->mouse->posY) - (this->lastFrame->mouse->posY);
 }
 
-bool State::keyIsDown(int keyCode) {
+bool State::keyIsDown(SDL_Keycode keyCode) {
     return this->keys->keyDown(keyCode);
 }
 
-bool State::keyJustDown(int keyCode) {
+bool State::keyJustDown(SDL_Keycode keyCode) {
 
     bool isDown = this->keys->keyDown(keyCode);
     bool wasDown = this->lastFrame->keys->keyDown(keyCode);

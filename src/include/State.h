@@ -150,6 +150,7 @@ class State {
             private:
 
                 // Indexes for each key
+                const int letterKeyCount = 26;
                 enum letterKeyIndex : int {
                     a = 0,
                     b = 1,
@@ -179,6 +180,7 @@ class State {
                     z = 25
                 };
 
+                const int numKeyCount = 10;
                 enum numKeyIndex : int {
                     zero = 0,
                     one = 1,
@@ -192,6 +194,7 @@ class State {
                     nine = 9
                 };
 
+                const int miscKeyCount = 13;
                 enum miscKeyIndex : int {
                     space = 0,
                     control = 1,
@@ -201,20 +204,28 @@ class State {
                     tab = 5,
                     enter = 6,
                     escape = 7,
-                    backspace = 8
+                    backspace = 8,
+                    arrowup = 9,
+                    arrowdown = 10,
+                    arrowleft = 11,
+                    arrowright = 12,
                 };
 
         };
 
         /*   Instance variables   */
 
+        // Stores a set of at most 3 keys which were just pressed this frame. will store the first 3 given by SDL
+        SDL_Keycode* newKeyPresses;
+        int newKeyPressesIndex;
+
         // Subclasses
         TimeState* time;
         MouseState* mouse;
         KeyboardState* keys;
 
-        // This is another State object which hold the state of the previous frame.
-        // Used to let some events happen once when an event happens, rather than repeating while its held.
+        // This is another State object which holds the state of the previous frame.
+        // Used to let things happen once, when an event happens, rather than repeating while its held.
         State* lastFrame;
 
 
@@ -242,15 +253,15 @@ class State {
         // Checks for single mouse click events. checks if it is pressed on this frame, but wasnt pressed last frame.
         // Or the other way around for releases
 
-        // Pressed
+        // Returns true when the mouse button is down this frame, but was up last frame
         bool wasLeftJustPressed();
         bool wasRightJustPressed();
 
-        // Held. Returns true if the mouse has been down for the current and last frames
+        // Returns true when the mouse button is down this frame, and was down last frame
         bool wasLeftHeld();
         bool wasRightHeld();
 
-        // Released
+        // Returns true when the mouse button is up this frame, but was down last frame
         bool wasLeftJustReleased();
         bool wasRightJustReleased();
 

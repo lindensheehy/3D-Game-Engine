@@ -70,12 +70,7 @@ class WindowElement {
         void addChild(WindowElement* child);
 
         // Handles various input actions. No implementations here as the super class doesnt need input events
-        virtual void onMouseLeftDown() {}
-        virtual void onMouseLeftUp() {}
-        virtual void onMouseRightDown() {}
-        virtual void onMouseRightUp() {}
-        virtual void onDrag(int dx, int dy) {}
-        virtual void onKeyPress(SDL_Keycode key) {}
+        virtual void onInput(State* state) {}
 
 
         /*   Class Functions   */
@@ -224,9 +219,7 @@ class WindowTextInput : public WindowElement {
         // Instance Functions
         void draw(Drawer* drawer, Vec2* offset) override;
 
-        void onMouseLeftDown() override;
-
-        void onKeyPress(SDL_Keycode key) override;
+        void onInput(State* state) override;
 
     private:
 
@@ -284,7 +277,7 @@ class WindowButton : public WindowElement {
         // Instance Functions
         void draw(Drawer* drawer, Vec2* offset) override;
 
-        void onMouseLeftDown() override;
+        void onInput(State* state) override;
 
     private:
 
@@ -310,7 +303,7 @@ class WindowDragable : public WindowElement {
 
         void draw(Drawer* drawer, Vec2* offset) override;
 
-        void onDrag(int dx, int dy) override;
+        void onInput(State* state) override;
 
     private:
 

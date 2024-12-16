@@ -104,19 +104,23 @@ void handleInput(State* state, Camera* camera) {
     }
 
     if (state->keyJustDown(SDLK_RETURN)) {
+
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
+
+        ui->destroyWindowTransform();
+
     }
 
     // This rotates the selected object when pressing keys j,k,l
     if (state->keyIsDown(SDLK_j))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(1, 0, 0);
+        if (selectedObject != nullptr) selectedObject->rotateSelf(1, 0, 0);
 
     if (state->keyIsDown(SDLK_k))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 1, 0);
+        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 1, 0);
 
     if (state->keyIsDown(SDLK_l))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 0, 1);
+        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 0, 1);
 
     // This moves the selected object along the y-axis when pressing keys o,p
     if (state->keyIsDown(SDLK_o))
@@ -143,12 +147,12 @@ void handleInput(State* state, Camera* camera) {
     if (state->keyJustDown(SDLK_g)) {
         
         if (gravity) {
-            objects->setAllGravity(0.0);
+            objects->setGravityAll(0.0);
             gravity = false;
         }
 
         else {
-            objects->setAllGravity(-30);
+            objects->setGravityAll(-30);
             gravity = true;
         }
 
@@ -175,7 +179,7 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Gui(1000, 600);
+    gui = new Gui(1200, 700);
     gui->init();
 
     // Init all the working objects
@@ -247,7 +251,6 @@ void init() {
     selectedObjectId = 1;
 
     ui = new UI();
-    ui->createWindowTransform(selectedObject);
 
 }
 
@@ -286,7 +289,7 @@ int main(int argc, char* argv[]) {
         drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
         // Draw all the objects
-        if (drawNormals) objects->drawAllWithNormals(drawer, camera, display, 0.5);
+        if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
         else objects->drawAll(drawer, camera, display);
         
         // Draw the UI
