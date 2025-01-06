@@ -102,7 +102,7 @@ class WindowDiv : public WindowElement {
 
     /*
         Serves no visual purpose, just used to group elements for easier handling
-        Similar to an HTML div
+        Similar to an <div> element from HTML
     */
 
     public:
@@ -220,6 +220,8 @@ class WindowTextInput : public WindowElement {
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
+
+        void hideCursor();
 
     private:
 
@@ -495,8 +497,8 @@ class UI {
         // Removes a window object from the interal linked list
         void deleteWindow(Window* window);
 
-        // Checks all the ui elements against the inputs for the frame
-        void doInput(State* state);
+        // Checks all the ui elements against the inputs for the frame. Returns true if the click lands on a window
+        bool doInput(State* state);
 
         // Creates a new "Transform" window linked to the given Object
         Window* createWindowTransform(Object* object);

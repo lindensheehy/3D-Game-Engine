@@ -37,6 +37,11 @@ void handleInput(State* state, Camera* camera) {
         then rotates it based on the camera yaw and adds that to position.
     */
 
+    // Give the state to the UI to handle. 
+    // If the input is handled through the UI (based on return value), the rest of this is skipped
+    bool clickedOnUi = ui->doInput(state);
+    if (clickedOnUi) return;
+
     // Find distance to move based on the delta time of the frame
     double dist = camera->movementSpeed * (state->time->dt / 1000);
 
@@ -75,8 +80,14 @@ void handleInput(State* state, Camera* camera) {
     /*   Temporary stuff   */
 
     // Toggle normal vector drawing on key n
-    if (state->keyJustDown(SDLK_n))
+    if (state->keyJustDown(SDLK_n)) {
+
         drawNormals = !drawNormals;
+
+        if (drawNormals) objects->setOpacityAll(0.5);
+        else objects->setOpacityAll(1);
+
+    }
 
     // Pick object based on id, this cycles through all the objects with ids 1-7
     bool changeObject = false;
@@ -161,13 +172,6 @@ void handleInput(State* state, Camera* camera) {
     // Gives all the objects some vertical velocity
     if (state->keyJustDown(SDLK_z))
         objects->setVelocityAll(0, 25, 0);
-
-    // Makes a new Transform window for the selected object
-    // if (state->keyJustDown(SDLK_0))
-    //     ui->createWindowTransform(selectedObject);
-
-    // Give the state to the UI to handle
-    ui->doInput(state);
 
 }
 

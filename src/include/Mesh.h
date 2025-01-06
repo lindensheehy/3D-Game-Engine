@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
 
+#include "Utility.h"
 #include "Vec.h"
 #include "Tri.h"
 
@@ -13,11 +14,10 @@ class Mesh {
 
     /*
         This is the class used to define and transform meshes, some default meshes are populted after a call to initMeshes()
-        Contains transformation functions
         The reason there is a verticies list and a tri list is to simplify transformations and to use less memory
         The verticies list stores the actual points, and the tris list only point to values in the verticies list
         Same goes for the normals
-        The projected vertices use Vec3 objects to store depth. the x,y values are the screen coordinates and the z is the depth
+        The projected verticies use Vec3 objects to store depth. the x,y values are the screen coordinates and the z is the depth
     */
 
     public:
@@ -86,7 +86,7 @@ class Mesh {
         int vertexCount, normalCount, triCount;
 
         // The color which the mesh should appear as.
-        Uint32 color;
+        uint32 color;
 
         // Maps vecs from verticies and normals to tris
         IndexMap* indexMap;
@@ -130,7 +130,7 @@ class Mesh {
         Mesh* rotateSelf(double yaw, double pitch, double roll);
 
         // Sets the color of the mesh
-        Mesh* setColor(Uint32 color);
+        Mesh* setColor(uint32 color);
 
         void updateNormals();
 

@@ -37,17 +37,16 @@ g++ -c %srcdir%Vec.cpp ^
 g++ -c %srcdir%Tri.cpp ^
     -o %objdir%Tri.o
 
+:: Mesh
+g++ -c %srcdir%Mesh.cpp ^
+    -o %objdir%Mesh.o
+
 
 :: The rest of the libraries require SDL2 includes
 
 :: Camera
 g++ -c %srcdir%Camera.cpp ^
     -o %objdir%Camera.o ^
-    %SDLinclude%
-
-:: Mesh
-g++ -c %srcdir%Mesh.cpp ^
-    -o %objdir%Mesh.o ^
     %SDLinclude%
 
 :: Gui

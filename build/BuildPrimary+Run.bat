@@ -37,17 +37,16 @@ set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 @REM g++ -c %srcdir%Tri.cpp ^
 @REM     -o %objdir%Tri.o
 
+:: Mesh
+@REM g++ -c %srcdir%Mesh.cpp ^
+@REM     -o %objdir%Mesh.o
+
 
 :: The rest of the libraries require SDL2 includes
 
 :: Camera
 @REM g++ -c %srcdir%Camera.cpp ^
 @REM     -o %objdir%Camera.o ^
-@REM     %SDLinclude%
-
-:: Mesh
-@REM g++ -c %srcdir%Mesh.cpp ^
-@REM     -o %objdir%Mesh.o ^
 @REM     %SDLinclude%
 
 :: Gui

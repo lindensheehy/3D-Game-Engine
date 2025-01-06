@@ -604,49 +604,100 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
     Vec3* vecStart = new Vec3(); 
     Vec3* vecEnd = new Vec3();
 
-    // Main loop
+    // Loop for opaque objects
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
 
         currentObj = this->iterGetObj();
 
+        if (currentObj->opacity != 1) continue;
+
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
-            // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
+            // Skip if all the vertices are behind the camera
             if (
                 currentObj->mesh->projectedTris[i]->v1->z == inf ||
                 currentObj->mesh->projectedTris[i]->v2->z == inf ||
                 currentObj->mesh->projectedTris[i]->v3->z == inf
             ) continue;
-        
-            // Skip if tri cant be seen by cam on the outfacing side
+
+            // Skip if tri can't be seen by the camera
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
-            // Find a shade based on the lighting vec
+            // Find a shade based on the lighting vector
             double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
             Uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
-            // Draw the tri
+            // Draw the triangle
             drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
 
         }
 
-        // Draw normals
+        // Draw normals for opaque objects
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
-            // Skip if tri cant be seen face on by cam
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
-            Vec3* triCenter;
-            Vec3* normalOffset;
-            Vec3* triNormal;
+            Vec3* triCenter = currentObj->mesh->tris[i]->getCenter()->add(currentObj->pos);
+            Vec3* normalOffset = currentObj->mesh->tris[i]->normal->copy()->normalise(1);
+            Vec3* triNormal = triCenter->copy()->add(normalOffset);
 
-            // Get projected coords for normal start and end
-            triCenter = currentObj->mesh->tris[i]->getCenter()->add(currentObj->pos);
-            normalOffset = currentObj->mesh->tris[i]->normal->copy()->normalise(1);
-            triNormal = triCenter->copy()->add(normalOffset);
+            camera->project(triCenter, vecStart);
+            camera->project(triNormal, vecEnd);
+            display->toDisplayPos(vecStart);
+            display->toDisplayPos(vecEnd);
+
+            drawer->drawLine(Color::RED, vecStart->x, vecStart->y, vecEnd->x, vecEnd->y, vecStart->z, vecEnd->z);
+
+            delete triCenter;
+            delete normalOffset;
+            delete triNormal;
+
+        }
+
+    }
+
+    // Loop for transparent objects
+    for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+
+        currentObj = this->iterGetObj();
+
+        if (currentObj->opacity == 1) continue;
+
+        for (int i = 0; i < currentObj->mesh->triCount; i++) {
+
+            // Skip if all the vertices are behind the camera
+            if (
+                currentObj->mesh->projectedTris[i]->v1->z == inf ||
+                currentObj->mesh->projectedTris[i]->v2->z == inf ||
+                currentObj->mesh->projectedTris[i]->v3->z == inf
+            ) continue;
+
+            // Skip if tri can't be seen by the camera
+            if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
+
+            // Find a shade based on the lighting vector
+            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            double lightFactor = lightAngle / 180;
+
+            Uint32 shade = currentObj->mesh->color;
+            shade = Color::setBrightness(shade, lightFactor);
+
+            // Draw the triangle with transparency
+            drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], currentObj->opacity);
+
+        }
+
+        // Draw normals for transparent objects
+        for (int i = 0; i < currentObj->mesh->triCount; i++) {
+
+            if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
+
+            Vec3* triCenter = currentObj->mesh->tris[i]->getCenter()->add(currentObj->pos);
+            Vec3* normalOffset = currentObj->mesh->tris[i]->normal->copy()->normalise(1);
+            Vec3* triNormal = triCenter->copy()->add(normalOffset);
 
             camera->project(triCenter, vecStart);
             camera->project(triNormal, vecEnd);

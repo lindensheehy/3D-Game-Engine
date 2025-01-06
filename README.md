@@ -1,6 +1,6 @@
 # 3D Graphics Engine in C++
 
-This is a 3D graphics engine written in C++, designed as a personal project to push my skills in both C++ and 3D graphics programming. The goal of the project was to build a solid foundation in graphics rendering, physics (work in progress), and user interface design, all while keeping the dependencies to, in my opinion, the absolute minimum and building most of the core functionality from scratch.
+This is a 3D graphics engine written in C++, designed as a personal project to push my skills in both C++ and 3D graphics programming. The goal of this project was to learn as much as possible about C++, while also working on material I find interesting, all while keeping the dependencies to, in my opinion, the absolute minimum and building most of the core functionality from scratch. I chose to limit my use of dependencies so much because I find a lot of value in understanding how things work behind the scenes, for example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself.
 
 ## Key Features:
 

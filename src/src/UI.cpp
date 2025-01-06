@@ -374,7 +374,13 @@ void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
 void WindowTextInput::onInput(State* state) {
 
-    if (state->wasLeftJustPressed()) this->cursorPos = 0;
+    if (state->wasLeftJustPressed()) this->cursorPos = this->length;
+
+}
+
+void WindowTextInput::hideCursor() {
+
+    this->cursorPos = -1;
 
 }
 
@@ -702,7 +708,7 @@ void UI::deleteWindow(Window* window) {
 
 }
 
-void UI::doInput(State* state) {
+bool UI::doInput(State* state) {
 
     // Click handling
     if (state->wasLeftJustPressed()) {
@@ -727,12 +733,12 @@ void UI::doInput(State* state) {
             found = current->doInput(state);
 
             // If nothing was found, end
-            if (found == nullptr) return;
+            if (found == nullptr) return false;
             
             // Otherwise, store the clicked element for later use
             this->lastClicked = found;
 
-            return;
+            return true;
 
         }
 
@@ -742,7 +748,7 @@ void UI::doInput(State* state) {
     }
 
     // The rest of this function doesnt need to run if theres no lastClicked
-    if (this->lastClicked == nullptr) return;
+    if (this->lastClicked == nullptr) return false;
 
     // Drag handling
     if (this->lastClicked->type == DRAGABLE && state->wasLeftHeld()) {
@@ -757,6 +763,9 @@ void UI::doInput(State* state) {
         this->lastClicked->onInput(state);
 
     }
+
+    // If the code reaches this point, the focus should be on the UI rather than the camera controls
+    return true;
 
 }
 

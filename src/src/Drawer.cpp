@@ -329,6 +329,10 @@ bool Drawer::inBufferRange(int x, int y) {
 
 }
 
+void Drawer::clipCoordinates(int* x, int* y) {
+
+}
+
 void Drawer::writePixel(Uint32 pixel, int x, int y) {
 
     if (this->buffer == nullptr) {
@@ -519,6 +523,9 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
 
 void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2) {
 
+    // Skip if this line lies outside the screen horizontally
+    if (!this->inBufferRange(x, 0)) return;
+
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;
 
@@ -560,6 +567,9 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
 }
 
 void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2, double opacity) {
+
+    // Skip if this line lies outside the screen horizontally
+    if (!this->inBufferRange(x, 0)) return;
 
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;

@@ -37,17 +37,16 @@ g++ -Ofast -c %srcdir%Vec.cpp ^
 g++ -Ofast -c %srcdir%Tri.cpp ^
     -o %objdir%Tri.o
 
+:: Mesh
+g++ -Ofast -c %srcdir%Mesh.cpp ^
+    -o %objdir%Mesh.o
+
 
 :: The rest of the libraries require SDL2 includes
 
 :: Camera
 g++ -Ofast -c %srcdir%Camera.cpp ^
     -o %objdir%Camera.o ^
-    %SDLinclude%
-
-:: Mesh
-g++ -Ofast -c %srcdir%Mesh.cpp ^
-    -o %objdir%Mesh.o ^
     %SDLinclude%
 
 :: Gui
