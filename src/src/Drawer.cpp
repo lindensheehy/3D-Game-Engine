@@ -331,6 +331,17 @@ bool Drawer::inBufferRange(int x, int y) {
 
 void Drawer::clipCoordinates(int* x, int* y) {
 
+    if (x == nullptr) return;
+    if (y == nullptr) return;
+
+    if ( (*x) < 0 ) (*x) = 0;
+    if ( (*y) < 0 ) (*y) = 0;
+
+    if ( (*x) >= this->bufferWidth ) (*x) = this->bufferWidth - 1;
+    if ( (*y) >= this->bufferHeight ) (*y) = this->bufferHeight - 1;
+
+    return;
+
 }
 
 void Drawer::writePixel(Uint32 pixel, int x, int y) {
@@ -511,6 +522,13 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double 
 
 void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
 
+    // Skip if this line lies outside the screen horizontally
+    if (!this->inBufferRange(x, 0)) return;
+
+    // Clip y values to lie within the buffer
+    this->clipCoordinates(&x, &y1);
+    this->clipCoordinates(&x, &y2);
+
     if (y1 > y2) {
         swap(&y1, &y2);
     }
@@ -526,8 +544,9 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
 
-    // Skip if coordinates are out of range
-    if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;
+    // Clip y values to lie within the buffer
+    this->clipCoordinates(&x, &y1);
+    this->clipCoordinates(&x, &y2);
 
     if (y1 == y2) {
         double d = min(depth1, depth2);
@@ -571,8 +590,9 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
 
-    // Skip if coordinates are out of range
-    if (!this->inBufferRange(x, y1) && !this->inBufferRange(x, y2)) return;
+    // Clip y values to lie within the buffer
+    this->clipCoordinates(&x, &y1);
+    this->clipCoordinates(&x, &y2);
 
     if (y1 == y2) {
         double d = min(depth1, depth2);

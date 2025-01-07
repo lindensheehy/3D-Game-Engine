@@ -166,6 +166,9 @@ class Drawer {
         // Returns true if the coordinate exists in the buffer
         bool inBufferRange(int x, int y);
 
+        // Changes the values of the given coordinates to be within the buffer range.
+        void clipCoordinates(int* x, int* y);
+
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(Uint32 pixel, int x, int y);
         void writePixel(Uint32 pixel, int x, int y, double depth);
