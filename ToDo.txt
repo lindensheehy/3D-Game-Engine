@@ -20,7 +20,6 @@ new stuff:
 - give text boxes functionality.
 
 fixes:
-- fix drawTriangle to not have big gaps in large triangles (happens when the triangle spans the whole screen height)
 - fix depth interpolation, depth between two points is not always linear.
 
 optimizations:
