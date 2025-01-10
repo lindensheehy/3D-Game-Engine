@@ -2,85 +2,123 @@
 
 
 // Constructor
-Gui::Gui(int windowWidth, int windowHeight) {
+Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, const wchar_t* windowTitle /* default value = "Window" */) {
+
+    this->hwnd = nullptr;
+    this->buffer = nullptr;
+
+    this->windowProcFunc = windowProcFunc;
 
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
-    this->window = nullptr;
-    this->renderer = nullptr;
-    this->texture = nullptr;
+    this->windowTitle = windowTitle;
 
-    this->buffer = new Uint32[windowWidth * windowHeight];
+    // Get hInstance, since I'm not using WinMain
+    this->hInstance = GetModuleHandle(nullptr);
 
+    // Create and register Window Class
+    WNDCLASS wc = {};
+    wc.lpfnWndProc = windowProcFunc;
+    wc.hInstance = this->hInstance;
+    wc.lpszClassName = this->windowTitle;
+    RegisterClass(&wc);
+
+    // Create Window
+    this->hwnd = CreateWindowEx(
+        0,                              // Optional window styles.
+        this->windowTitle,                    // Window class
+        this->windowTitle,                    // Window text
+        WS_OVERLAPPEDWINDOW,            // Window style
+
+        // Size and position
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+        nullptr,        // Parent window    
+        nullptr,        // Menu
+        this->hInstance,      // Instance handle
+        nullptr         // Additional application data
+    );
+
+    if (!this->hwnd) {
+        logWrite("Failed to create window.", true);
+        return;
+    }
+
+    // Link this instance to the HWND
+    SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+    // Show the window
+    ShowWindow(hwnd, SW_SHOW);
+
+    // Initialize the pixel buffer
+    this->buffer = new uint32[this->windowWidth * this->windowHeight]{};
+
+    // Set up the BITMAPINFO structure
+    this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
+    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
+    this->bitmapInfo.bmiHeader.biPlanes = 1;
+    this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
+    this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+}
+
+// Destructor
+Gui::~Gui() {
+    delete[] this->buffer;
+    DestroyWindow(this->hwnd);
+    UnregisterClass(this->windowTitle, this->hInstance);
 }
 
 // Instance functions
-int Gui::init() {
-
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        logWrite("SDL init failed! from GuiClass.h in init()", true);
-        return 1;
-    }
-
-    // Create a window
-    this->window = SDL_CreateWindow(
-        "SDL2 Window", 
-        SDL_WINDOWPOS_UNDEFINED, 
-        SDL_WINDOWPOS_UNDEFINED, 
-        this->windowWidth, 
-        this->windowHeight, 
-        SDL_WINDOW_SHOWN
-    );
-
-    if (this->window == nullptr) {
-        logWrite("SDL create window failed! from GuiClass.h in init()", true);
-        return 1;
-    }
-
-    // Create renderer
-    this->renderer = SDL_CreateRenderer(
-        this->window, 
-        -1, 
-        SDL_RENDERER_ACCELERATED
-    );
-
-    if (this->renderer == nullptr) {
-        logWrite("SDL create renderer failed! from GuiClass.h in init()", true);
-        return 1;
-    }
-    
-    // Create texture
-    this->texture = SDL_CreateTexture(
-        this->renderer, 
-        SDL_PIXELFORMAT_ARGB8888, 
-        SDL_TEXTUREACCESS_STREAMING, 
-        this->windowWidth, 
-        this->windowHeight
-    );
-
-    if (this->texture == nullptr) {
-        logWrite("SDL create texture failed! from GuiClass.h in init()", true);
-        return 1;
-    }
-
-    return 0;
-}
-
-void Gui::exit() {
-    SDL_DestroyWindow(this->window);
-    SDL_Quit();
-}
-
-void Gui::getBuffer() {
-    SDL_LockTexture(this->texture, nullptr, (void**) &(this->buffer), &this->pitch);
-}
-
 void Gui::flip() {
-    SDL_UnlockTexture(this->texture);
-    SDL_UpdateTexture(this->texture, nullptr, this->buffer, this->pitch);
-    //SDL_RenderClear(this->renderer);
-    SDL_RenderCopy(this->renderer, this->texture, nullptr, nullptr);
-    SDL_RenderPresent(this->renderer);
+
+    HDC hdc = GetDC(hwnd);
+    if (!hdc) return;
+
+    // Create a compatible device context
+    HDC memDC = CreateCompatibleDC(hdc);
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, this->windowWidth, this->windowHeight);
+
+    // Select the bitmap into the memory DC
+    SelectObject(memDC, hBitmap);
+
+    // Transfer the buffer to the bitmap
+    SetDIBitsToDevice(
+        memDC, 
+        0, 0, 
+        this->windowWidth, this->windowHeight, 
+        0, 0, 
+        0, this->windowHeight, 
+        this->buffer, 
+        &this->bitmapInfo, 
+        DIB_RGB_COLORS
+    );
+
+    // Blit the bitmap to the window's device context
+    BitBlt(hdc, 0, 0, this->windowWidth, this->windowHeight, memDC, 0, 0, SRCCOPY);
+
+    // Clean up
+    DeleteObject(hBitmap);
+    DeleteDC(memDC);
+    ReleaseDC(hwnd, hdc);
+
+    this->handleMessages();
+
+    return;
+
+}
+
+void Gui::handleMessages() {
+
+    MSG msg;
+
+    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return;
+
 }

@@ -1,8 +1,10 @@
 #pragma once
 
 /*
-    These are general functions which are used across a bunch of files
+    This just contains code that should be accessible and included across all other files
 */
+
+#include <windows.h>
 
 
 typedef signed char int8;

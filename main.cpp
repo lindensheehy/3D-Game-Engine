@@ -175,6 +175,12 @@ void handleInput(State* state, Camera* camera) {
 
 }
 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    state->addEvent(uMsg, wParam, lParam);
+
+}
+
 void init() {
 
     // Log stuff
@@ -183,8 +189,7 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Gui(1200, 700);
-    gui->init();
+    gui = new Gui(WindowProc, 1200, 700, L"Game Engine");
 
     // Init all the working objects
     state = new State();

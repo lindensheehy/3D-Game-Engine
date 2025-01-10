@@ -1,12 +1,86 @@
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <chrono>
 
+#include "Utility.h"
 #include "Math.h"
 
 // For logging error cases
 #include "Log.h"
+
+const int KEYCODECOUNT = 0xFF;
+enum KeyCode : int {
+
+    // Letter Keys
+    KEY_A = 0x41,
+    KEY_B = 0x42,
+    KEY_C = 0x43,
+    KEY_D = 0x44,
+    KEY_E = 0x45,
+    KEY_F = 0x46,
+    KEY_G = 0x47,
+    KEY_H = 0x48,
+    KEY_I = 0x49,
+    KEY_J = 0x4A,
+    KEY_K = 0x4B,
+    KEY_L = 0x4C,
+    KEY_M = 0x4D,
+    KEY_N = 0x4E,
+    KEY_O = 0x4F,
+    KEY_P = 0x50,
+    KEY_Q = 0x51,
+    KEY_R = 0x52,
+    KEY_S = 0x53,
+    KEY_T = 0x54,
+    KEY_U = 0x55,
+    KEY_V = 0x56,
+    KEY_W = 0x57,
+    KEY_X = 0x58,
+    KEY_Y = 0x59,
+    KEY_Z = 0x5A,
+
+    // Number Keys
+    KEY_0 = 0x30,
+    KEY_1 = 0x31,
+    KEY_2 = 0x32,
+    KEY_3 = 0x33,
+    KEY_4 = 0x34,
+    KEY_5 = 0x35,
+    KEY_6 = 0x36,
+    KEY_7 = 0x37,
+    KEY_8 = 0x38,
+    KEY_9 = 0x39,
+
+    // Function Keys
+    KEY_F1 = 0x70,
+    KEY_F2 = 0x71,
+    KEY_F3 = 0x72,
+    KEY_F4 = 0x73,
+    KEY_F5 = 0x74,
+    KEY_F6 = 0x75,
+    KEY_F7 = 0x76,
+    KEY_F8 = 0x77,
+    KEY_F9 = 0x78,
+    KEY_F10 = 0x79,
+    KEY_F11 = 0x7A,
+    KEY_F12 = 0x7B,
+
+    // Misc Keys
+    KEY_SPACE = 0x20,
+    KEY_CONTROL = 0xA2,
+    KEY_SHIFT = 0xA0,
+    KEY_ALT = 0xA4,
+    KEY_CAPSLOCK = 0x14,
+    KEY_TAB = 0x09,
+    KEY_ENTER = 0x0D,
+    KEY_ESCAPE = 0x1B,
+    KEY_BACKSPACE = 0x08,
+    KEY_ARROWUP = 0x26,
+    KEY_ARROWDOWN = 0x28,
+    KEY_ARROWLEFT = 0x25,
+    KEY_ARROWRIGHT = 0x27
+
+};
 
 
 class State {
@@ -97,6 +171,12 @@ class State {
 
                 // These are SETTERS for all the mouse buttons
                 // To GET the value, simply use the variable since its public
+
+                // General
+                void buttonDown(WPARAM wParam);
+                void buttonUp(WPARAM wParam);
+
+                // Specified
                 void leftButtonDown();
                 void leftButtonUp();
 
@@ -121,11 +201,6 @@ class State {
 
             public:
 
-                // Instance variables
-                bool* letterKeys;
-                bool* numKeys;
-                bool* miscKeys;
-
                 // Constructor
                 KeyboardState();
 
@@ -138,78 +213,19 @@ class State {
                 void setState(KeyboardState* state);
 
                 // Returns a pointer to a keystate within one of the instance arrays, based on a given keycode from SDL2
-                bool* getKeyRef(int keyCode);
+                bool* getKeyRef(KeyCode keyCode);
 
                 // Setters for keys
-                void setKeyDown(int keyCode);
-                void setKeyUp(int keyCode);
+                void keyDown(KeyCode keyCode);
+                void keyUp(KeyCode keyCode);
 
                 // Getter for keys
-                bool keyDown(int keyCode);
+                bool keyIsDown(KeyCode keyCode);
 
             private:
 
-                // Indexes for each key
-                const int letterKeyCount = 26;
-                enum letterKeyIndex : int {
-                    a = 0,
-                    b = 1,
-                    c = 2,
-                    d = 3,
-                    e = 4,
-                    f = 5,
-                    g = 6,
-                    h = 7,
-                    i = 8,
-                    j = 9,
-                    k = 10,
-                    l = 11,
-                    m = 12,
-                    n = 13,
-                    o = 14,
-                    p = 15,
-                    q = 16,
-                    r = 17,
-                    s = 18,
-                    t = 19,
-                    u = 20,
-                    v = 21,
-                    w = 22,
-                    x = 23,
-                    y = 24,
-                    z = 25
-                };
-
-                const int numKeyCount = 10;
-                enum numKeyIndex : int {
-                    zero = 0,
-                    one = 1,
-                    two = 2,
-                    three = 3,
-                    four = 4,
-                    five = 5,
-                    six = 6,
-                    seven = 7,
-                    eight = 8,
-                    nine = 9
-                };
-
-                const int miscKeyCount = 13;
-                enum miscKeyIndex : int {
-                    space = 0,
-                    control = 1,
-                    shift = 2,
-                    alt = 3,
-                    capslock = 4,
-                    tab = 5,
-                    enter = 6,
-                    escape = 7,
-                    backspace = 8,
-                    arrowup = 9,
-                    arrowdown = 10,
-                    arrowleft = 11,
-                    arrowright = 12,
-                };
+                // Instance variable
+                bool* keyStates;
 
         };
 
@@ -244,7 +260,7 @@ class State {
         /*   Instance functions   */
 
         // Takes an event object from SDL2 and changes the respective value appropriately.
-        void addEvent(SDL_Event* event);
+        void addEvent(UINT msg, WPARAM wParam, LPARAM lParam);
 
         // Updates everything to be ready for the next frame. Makes this become this->lastFrame
         void nextFrame();
