@@ -67,8 +67,8 @@ enum KeyCode : unsigned int {
 
     // Misc Keys
     KEY_SPACE = 0x20,
-    KEY_CONTROL = 0xA2,
-    KEY_SHIFT = 0xA0,
+    KEY_CONTROL = 0x11,
+    KEY_SHIFT = 0x10,
     KEY_ALT = 0xA4,
     KEY_CAPSLOCK = 0x14,
     KEY_TAB = 0x09,
