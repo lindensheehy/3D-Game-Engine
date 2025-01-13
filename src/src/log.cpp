@@ -2,6 +2,11 @@
 
 std::ofstream outputFile;
 
+// Pretty much a std::cout function
+void consoleOut(std::string message) {
+    
+}
+
 // Init
 void logInit(std::string fileName) {
     try {

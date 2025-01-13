@@ -2,8 +2,12 @@
 
 // Basic Includes
 #include <iostream>
-#include <iomanip>
 #include <fstream>
+
+// Pretty much a std::cout function
+void consoleOut(std::string message) {
+    
+}
 
 // Init
 void logInit(std::string fileName);
@@ -24,10 +28,10 @@ void logWrite(long long message, bool newLine = false);
 void logWrite(double message, bool newLine = false);
 
 // Hex values
-// void logWrite(int8bytes message, bool newLine = false);
-// void logWrite(int2bytes message, bool newLine = false);
-// void logWrite(int4bytes message, bool newLine = false);
-// void logWrite(int1byte message, bool newLine = false);
+// void logWriteHex(int8bytes message, bool newLine = false);
+// void logWriteHex(int2bytes message, bool newLine = false);
+// void logWriteHex(int4bytes message, bool newLine = false);
+// void logWriteHex(int1byte message, bool newLine = false);
 
 // Variable Format
 void logVar(std::string message, int variable);
