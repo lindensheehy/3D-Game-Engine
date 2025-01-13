@@ -10,7 +10,7 @@ set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 :: Not mine
 
 :: lodepng
-g++ -c ../src/lodepng/lodepng.cpp ^
+g++ -Ofast -c ../src/lodepng/lodepng.cpp ^
     -o %objdir%lodepng.o
 
 
@@ -18,68 +18,58 @@ g++ -c ../src/lodepng/lodepng.cpp ^
 :: Mine
 
 :: Utility
-g++ -c %srcdir%Utility.cpp ^
+g++ -Ofast -c %srcdir%Utility.cpp ^
     -o %objdir%Utility.o
 
 :: Math
-g++ -c %srcdir%Math.cpp ^
+g++ -Ofast -c %srcdir%Math.cpp ^
     -o %objdir%Math.o
 
 :: Log
-g++ -c %srcdir%Log.cpp ^
+g++ -Ofast -c %srcdir%Log.cpp ^
     -o %objdir%Log.o
 
 :: Vec
-g++ -c %srcdir%Vec.cpp ^
+g++ -Ofast -c %srcdir%Vec.cpp ^
     -o %objdir%Vec.o
 
 :: Tri
-g++ -c %srcdir%Tri.cpp ^
+g++ -Ofast -c %srcdir%Tri.cpp ^
     -o %objdir%Tri.o
 
 :: Mesh
-g++ -c %srcdir%Mesh.cpp ^
+g++ -Ofast -c %srcdir%Mesh.cpp ^
     -o %objdir%Mesh.o
 
-
-:: The rest of the libraries require SDL2 includes
-
 :: Camera
-g++ -c %srcdir%Camera.cpp ^
-    -o %objdir%Camera.o ^
-    %SDLinclude%
+g++ -Ofast -c %srcdir%Camera.cpp ^
+    -o %objdir%Camera.o
 
 :: Gui
-g++ -c %srcdir%Gui.cpp ^
-    -o %objdir%Gui.o ^
-    %SDLinclude%
+g++ -Ofast -c %srcdir%Gui.cpp ^
+    -o %objdir%Gui.o
 
 :: Drawer
-g++ -c %srcdir%Drawer.cpp ^
-    -o %objdir%Drawer.o ^
-    %SDLinclude%
+g++ -Ofast -c %srcdir%Drawer.cpp ^
+    -o %objdir%Drawer.o
 
 :: State
-g++ -c %srcdir%State.cpp ^
-    -o %objdir%State.o ^
-    %SDLinclude%
+g++ -Ofast -c %srcdir%State.cpp ^
+    -o %objdir%State.o
 
 :: ObjectSet
-g++ -c %srcdir%ObjectSet.cpp ^
-    -o %objdir%ObjectSet.o ^
-    %SDLinclude%
-
+g++ -Ofast -c %srcdir%ObjectSet.cpp ^
+    -o %objdir%ObjectSet.o
 
 :: UI
-g++ -c %srcdir%UI.cpp ^
-    -o %objdir%UI.o ^
-    %SDLinclude%
+g++ -Ofast -c %srcdir%UI.cpp ^
+    -o %objdir%UI.o
 
 
 :: Build main.exe
 
 :: Compile main.exe
-g++ ../main.cpp ^
+g++ -Ofast ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -94,8 +84,7 @@ g++ ../main.cpp ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
-    -mwindows ^
-    %SDLinclude%
+    -mwindows
 
 main.exe
 

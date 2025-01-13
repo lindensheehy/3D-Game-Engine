@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Log.h"
+#include "Utility.h"
 
 template<typename type>
 class LinkedList {

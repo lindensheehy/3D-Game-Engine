@@ -2,17 +2,13 @@
 
 
 // Constructor
-Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, const wchar_t* windowTitle /* default value = "Window" */) {
-
-    this->hwnd = nullptr;
-    this->buffer = nullptr;
-
-    this->windowProcFunc = windowProcFunc;
+Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle /* default value = "Window" */) {
 
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
-
     this->windowTitle = windowTitle;
+
+    this->buffer = new uint32[this->windowWidth * this->windowHeight] {};
 
     // Get hInstance, since I'm not using WinMain
     this->hInstance = GetModuleHandle(nullptr);
@@ -22,37 +18,41 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, const
     wc.lpfnWndProc = windowProcFunc;
     wc.hInstance = this->hInstance;
     wc.lpszClassName = this->windowTitle;
-    RegisterClass(&wc);
+
+    if (!RegisterClass(&wc)) {
+        logWrite("Failed to create window class", true);
+        return;
+    }
+
+    int windowPosX = 400;
+    int windowPosY = 400;
 
     // Create Window
     this->hwnd = CreateWindowEx(
         0,                              // Optional window styles.
-        this->windowTitle,                    // Window class
-        this->windowTitle,                    // Window text
+        this->windowTitle,              // Window class
+        this->windowTitle,              // Window text
         WS_OVERLAPPEDWINDOW,            // Window style
 
-        // Size and position
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        // Position
+        windowPosX, windowPosY, 
+        
+        // Size
+        windowWidth, windowHeight,
 
-        nullptr,        // Parent window    
-        nullptr,        // Menu
-        this->hInstance,      // Instance handle
-        nullptr         // Additional application data
+        nullptr,            // Parent window    
+        nullptr,            // Menu
+        this->hInstance,    // Instance handle
+        nullptr             // Additional application data
     );
 
-    if (!this->hwnd) {
+    if (this->hwnd == NULL) {
         logWrite("Failed to create window.", true);
         return;
     }
 
-    // Link this instance to the HWND
-    SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-
     // Show the window
-    ShowWindow(hwnd, SW_SHOW);
-
-    // Initialize the pixel buffer
-    this->buffer = new uint32[this->windowWidth * this->windowHeight]{};
+    ShowWindow(this->hwnd, SW_SHOW);
 
     // Set up the BITMAPINFO structure
     this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -61,6 +61,9 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, const
     this->bitmapInfo.bmiHeader.biPlanes = 1;
     this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
     this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+    this->handleMessages();
+    this->flip();
 
 }
 
@@ -104,6 +107,8 @@ void Gui::flip() {
     DeleteDC(memDC);
     ReleaseDC(hwnd, hdc);
 
+    ShowWindow(hwnd, SW_SHOW);
+
     this->handleMessages();
 
     return;
@@ -115,8 +120,13 @@ void Gui::handleMessages() {
     MSG msg;
 
     while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+
+        if (msg.message == WM_QUIT) return;
+        if (msg.message == WM_PAINT) return;
+
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+
     }
 
     return;

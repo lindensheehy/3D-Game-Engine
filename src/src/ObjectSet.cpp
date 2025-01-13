@@ -178,11 +178,11 @@ Object* Object::rotateSelf(double yaw, double pitch, double roll) {
 
 }
 
-Object* Object::setColor(Uint32 color) {
+Object* Object::setColor(uint32 color) {
 
     // Log the error case
     if (this->mesh == nullptr) {
-        logWrite("Called Object->setColor(Uint32) while Object->mesh was nullptr!", true);
+        logWrite("Called Object->setColor(uint32) while Object->mesh was nullptr!", true);
         return nullptr;
     }
 
@@ -529,7 +529,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
-            Uint32 shade = currentObj->mesh->color;
+            uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
@@ -562,7 +562,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
-            Uint32 shade = currentObj->mesh->color;
+            uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the tri    
@@ -627,7 +627,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
-            Uint32 shade = currentObj->mesh->color;
+            uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the triangle
@@ -682,7 +682,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
             double lightFactor = lightAngle / 180;
 
-            Uint32 shade = currentObj->mesh->color;
+            uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
             // Draw the triangle with transparency

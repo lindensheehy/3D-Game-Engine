@@ -4,7 +4,7 @@ set objdir=../src/obj/
 set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Compile main.exe
-g++ ../main.cpp ^
+g++ -Ofast ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -19,8 +19,7 @@ g++ ../main.cpp ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
-    -mwindows ^
-    %SDLinclude%
+    -mwindows
 
 main.exe
 

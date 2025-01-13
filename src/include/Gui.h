@@ -2,9 +2,6 @@
 
 #include "Utility.h"
 
-// For logging error cases
-#include "Log.h"
-
 // Typedef to help pass a WindowProc to the constructor
 typedef LRESULT(CALLBACK* WindowProcFunc)(HWND, UINT, WPARAM, LPARAM);
 
@@ -25,14 +22,17 @@ class Gui {
         // Window size
         int windowWidth, windowHeight;
 
-        const wchar_t* windowTitle;
+        LPCSTR windowTitle;
 
         // Pixel buffer
         uint32* buffer;
 
+        HWND hwnd;                      // Handle to created window
+        HINSTANCE hInstance;            // Handle to main
+
 
         // Constructor
-        Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, const wchar_t* windowTitle = L"Window");
+        Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle = "Window");
 
         // Destructor
         ~Gui();
@@ -42,19 +42,13 @@ class Gui {
         // Tells Windows to redraw the window
         void flip();
 
+        // Sends all the messages from Windows to the WindowProc function. Will break on a WM_PAINT message so the main loop can execute before drawing
+        void handleMessages();
+
     private:
 
         /*   Instance Variables   */
 
-        HWND hwnd;                      // Handle to created window
-        HINSTANCE hInstance;            // Handle to main
-
         BITMAPINFO bitmapInfo;          // Stores info to help windows translate the pixel buffer into Uint32 format
-
-        WindowProcFunc windowProcFunc;  // This is the event handler for the window. Gets passed in the constructor
-
-        /*   Instance Functions   */
-
-        void handleMessages();
-
+        
 };

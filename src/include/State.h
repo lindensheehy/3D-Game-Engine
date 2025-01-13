@@ -3,13 +3,13 @@
 #include <chrono>
 
 #include "Utility.h"
-#include "Math.h"
 
-// For logging error cases
-#include "Log.h"
+// This is the list of keycodes my program tracks.
+// These values coorespond to both the given values from Windows, as well as the indexing of my keyStates
+enum KeyCode : unsigned int {
 
-const int KEYCODECOUNT = 0xFF;
-enum KeyCode : int {
+    // Null
+    KEY_NULL = 0x00,
 
     // Letter Keys
     KEY_A = 0x41,
@@ -118,7 +118,7 @@ class State {
                 // Counts the frames since the last full second
                 double framesSinceLastSecond;
 
-                // Saves the last full second (multiple of 1000) as a tell for when to update dt
+                // Saves the last full second + 1 (in ms, so a multiple of 1000) as a tell for when to update fps
                 double nextSecond;
 
                 // Frames per second
@@ -225,14 +225,15 @@ class State {
             private:
 
                 // Instance variable
-                bool* keyStates;
+                bool* keyStates;                        // Holds the states on all keys on the given frame
+                const int keyStatesLength = 0x100;      // Just a const value to use in loops and array declarations
 
         };
 
         /*   Instance variables   */
 
         // Stores a set of at most 3 keys which were just pressed this frame. will store the first 3 given by SDL
-        SDL_Keycode* newKeyPresses;
+        KeyCode* newKeyPresses;
         int newKeyPressesIndex;
 
         // Subclasses
@@ -244,13 +245,16 @@ class State {
         // Used to let things happen once, when an event happens, rather than repeating while its held.
         State* lastFrame;
 
+        // Handle to the window. Used for some functions
+        HWND hwnd; 
+
 
         /*   Constructor   */
 
         // hasChild determines if the lastFrame instance variable should be created.
         // This is set to true for the version created in the program, then false for the actual lastFrame instance.
         // The option therefore exists to create State with no child, but there is no reason to do this.
-        State(bool hasChild = true);
+        State(HWND hwnd, bool hasChild = true);
 
 
         // Destructor
@@ -259,8 +263,8 @@ class State {
 
         /*   Instance functions   */
 
-        // Takes an event object from SDL2 and changes the respective value appropriately.
-        void addEvent(UINT msg, WPARAM wParam, LPARAM lParam);
+        // Takes a message from Windows, and does the appropriate action. Returns non-zero if the message was not able to be handled
+        int handleMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
         // Updates everything to be ready for the next frame. Makes this become this->lastFrame
         void nextFrame();
@@ -281,15 +285,18 @@ class State {
         bool wasLeftJustReleased();
         bool wasRightJustReleased();
 
+        // Updates the instance variables for mouse position
+        void updateMousePos();
+
         // Returns the distance in pixels that the mouse has moved since last frame in the respective direction
         int deltaMousePosX();
         int deltaMousePosY();
 
         // Simply returns the bool for the key state. Does not cross check with lastFrame.
-        bool keyIsDown(int keyCode);
+        bool keyIsDown(KeyCode keyCode);
 
         // Returns true only if the key was pressed this frame, but not last frame
-        bool keyJustDown(int keyCode);
+        bool keyJustDown(KeyCode keyCode);
         
     private:
 

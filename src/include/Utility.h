@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include "Log.h"
+#include "Math.h"
+
 
 typedef signed char int8;
 typedef signed short int16;

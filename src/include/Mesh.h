@@ -1,13 +1,9 @@
 #pragma once
 
-//#include <SDL2/SDL.h>
-
 #include "Utility.h"
+
 #include "Vec.h"
 #include "Tri.h"
-
-// For logging error cases
-#include "Log.h"
 
 
 class Mesh {

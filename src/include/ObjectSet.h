@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Utility.h"
+
 #include "LinkedList.h"
 #include "Mesh.h"
 #include "Camera.h"
 #include "Drawer.h"
-
-#include "Log.h"
 
 
 class Object {
@@ -68,7 +68,7 @@ class Object {
         Object* rotateSelf(double yaw, double pitch, double roll);
 
         // Sets the color of the object
-        Object* setColor(Uint32 color);
+        Object* setColor(uint32 color);
 
         // Updates all the physics variables of this object based on a delta time
         void doPhysics(double dt);

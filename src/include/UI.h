@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utility.h"
+
 #include "Vec.h"
 #include "Drawer.h"
 #include "LinkedList.h"
@@ -35,7 +37,7 @@ class WindowElement {
 
         /*   Pre Defined Variables   */
 
-        Uint32 color;
+        uint32 color;
 
 
         /*   Instance Variables   */
@@ -124,7 +126,7 @@ class WindowLine : public WindowElement {
     public:
 
         // Constructor
-        WindowLine(int x1, int y1, int x2, int y2, Uint32 color);
+        WindowLine(int x1, int y1, int x2, int y2, uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -137,7 +139,7 @@ class WindowFilledRect : public WindowElement {
     public:
 
         // Constructor
-        WindowFilledRect(int posx, int posy, int sizex, int sizey, Uint32 color);
+        WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -150,7 +152,7 @@ class WindowOutlinedRect : public WindowElement {
     public:
 
         // Constructor
-        WindowOutlinedRect(int posx, int posy, int sizex, int sizey, Uint32 color);
+        WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color);
 
         // Instance Function
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -423,9 +425,9 @@ class Window {
 
         /*   Pre Defined Variables   */
 
-        Uint32 COLOR_BASE = Color::BACKGROUND;
-        Uint32 COLOR_ACCENT = Color::ACCENT;
-        Uint32 COLOR_TEXT = Color::BLACK;
+        uint32 COLOR_BASE = Color::BACKGROUND;
+        uint32 COLOR_ACCENT = Color::ACCENT;
+        uint32 COLOR_TEXT = Color::BLACK;
 
         /*   Instance Variables   */
 

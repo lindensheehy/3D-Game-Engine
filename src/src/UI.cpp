@@ -186,7 +186,7 @@ void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------- */
 
 // Constructor
-WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
 
@@ -215,7 +215,7 @@ void WindowLine::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------------- */
 
 // Constructor
-WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
 
@@ -244,7 +244,7 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------------- */
 
 // Constructor
-WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, Uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = VISUAL;
 

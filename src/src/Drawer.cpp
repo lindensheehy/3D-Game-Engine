@@ -6,18 +6,18 @@
 /* --------------------------- */
 
 // Contructors
-Color::Color(Uint32 color) {
+Color::Color(uint32 color) {
 
     this->rawValue = color;
 
     // This gets the sub values at each 8 bit interval of the 32 bit input
-    this->opacityValue = (Uint8) (color >> 24);
-    this->redValue = (Uint8) (color >> 16);
-    this->greenValue = (Uint8) (color >> 8);
-    this->blueValue = (Uint8) (color);
+    this->opacityValue = (uint8) (color >> 24);
+    this->redValue = (uint8) (color >> 16);
+    this->greenValue = (uint8) (color >> 8);
+    this->blueValue = (uint8) (color);
 }
 
-Color::Color(Uint8 o, Uint8 r, Uint8 g, Uint8 b) {
+Color::Color(uint8 o, uint8 r, uint8 g, uint8 b) {
 
     this->redValue = r;
     this->greenValue = g;
@@ -36,13 +36,13 @@ Color::Color(Uint8 o, Uint8 r, Uint8 g, Uint8 b) {
 }
 
 // Class functions
-Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
+uint32 Color::setBrightness(uint32 color, double newBrightness) {
 
     // Unpack color code
-    Uint8 opacityValue = (Uint8) (color >> 24);
-    Uint8 redValue = (Uint8) (color >> 16);
-    Uint8 greenValue = (Uint8) (color >> 8);
-    Uint8 blueValue = (Uint8) (color);
+    uint8 opacityValue = (uint8) (color >> 24);
+    uint8 redValue = (uint8) (color >> 16);
+    uint8 greenValue = (uint8) (color >> 8);
+    uint8 blueValue = (uint8) (color);
 
     // Update values
     redValue *= newBrightness;
@@ -50,7 +50,7 @@ Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
     blueValue *= newBrightness;
 
     // Repack color code
-    Uint32 newColor = 0x00000000;
+    uint32 newColor = 0x00000000;
     newColor |= opacityValue;
     newColor <<= 8;
     newColor |= redValue;
@@ -63,16 +63,16 @@ Uint32 Color::setBrightness(Uint32 color, double newBrightness) {
 
 }
 
-Uint32 Color::merge(Uint32 color1, double opacity1, Uint32 color2, double opacity2) {
+uint32 Color::merge(uint32 color1, double opacity1, uint32 color2, double opacity2) {
 
     // Unpack color codes
-    Uint8 redValue1 = (Uint8) (color1 >> 16);
-    Uint8 greenValue1 = (Uint8) (color1 >> 8);
-    Uint8 blueValue1 = (Uint8) (color1);
+    uint8 redValue1 = (uint8) (color1 >> 16);
+    uint8 greenValue1 = (uint8) (color1 >> 8);
+    uint8 blueValue1 = (uint8) (color1);
 
-    Uint8 redValue2 = (Uint8) (color2 >> 16);
-    Uint8 greenValue2 = (Uint8) (color2 >> 8);
-    Uint8 blueValue2 = (Uint8) (color2);
+    uint8 redValue2 = (uint8) (color2 >> 16);
+    uint8 greenValue2 = (uint8) (color2 >> 8);
+    uint8 blueValue2 = (uint8) (color2);
 
     // Downscale values accordingly, ignoring opacityValue
     redValue1 *= opacity1;
@@ -89,7 +89,7 @@ Uint32 Color::merge(Uint32 color1, double opacity1, Uint32 color2, double opacit
     blueValue1 += blueValue2;
 
     // Pack resulting color code
-    Uint32 newColor = 0x0000FF00; // This FF will become the opacity value after the bit shifts
+    uint32 newColor = 0x0000FF00; // This FF will become the opacity value after the bit shifts
     newColor |= redValue1;
     newColor <<= 8;
     newColor |= greenValue1;
@@ -124,15 +124,15 @@ PNG::PNG(const char* filename) {
 
     this->fileName = filename;
     int size = this->width * this->height;
-    this->rawData = new Uint8[size * 4];
+    this->rawData = new uint8[size * 4];
     this->pixels = new Color*[size];
 
     for (int i = 0; i < size * 4; i += 4) {
 
-        Uint8 r = (Uint8) returnData[i];
-        Uint8 g = (Uint8) returnData[i + 1];
-        Uint8 b = (Uint8) returnData[i + 2];
-        Uint8 o = (Uint8) returnData[i + 3];
+        uint8 r = (uint8) returnData[i];
+        uint8 g = (uint8) returnData[i + 1];
+        uint8 b = (uint8) returnData[i + 2];
+        uint8 o = (uint8) returnData[i + 3];
 
         this->rawData[i] = r;
         this->rawData[i + 1] = g;
@@ -161,7 +161,7 @@ PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
 
     this->fileName = nullptr;
     int size = this->width * this->height;
-    this->rawData = new Uint8[size * 4];
+    this->rawData = new uint8[size * 4];
     this->pixels = new Color*[size];
 
     for (int i = 0; i < size; i += 1) {
@@ -169,10 +169,10 @@ PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
         int x = ((i % this->width) + startx);
         int y = (int) (i / this->width) + (starty);
 
-        Uint8 r = input->getChannel( x, y, RED);
-        Uint8 g = input->getChannel( x, y, GREEN);
-        Uint8 b = input->getChannel( x, y, BLUE);
-        Uint8 o = input->getChannel( x, y, OPACITY);
+        uint8 r = input->getChannel( x, y, RED);
+        uint8 g = input->getChannel( x, y, GREEN);
+        uint8 b = input->getChannel( x, y, BLUE);
+        uint8 o = input->getChannel( x, y, OPACITY);
 
         if (r == -1 || g == -1 || b == -1 || o == -1) {
             std::cout << "color channel failed to get" << std::endl;
@@ -228,7 +228,7 @@ bool PNG::setPixel(int x, int y, Color* pixel) {
 
 }
 
-Uint8 PNG::getChannel(int x, int y, char channel) {
+uint8 PNG::getChannel(int x, int y, char channel) {
 
     if (x >= this->width || y >= this->height) return -1;
 
@@ -238,7 +238,7 @@ Uint8 PNG::getChannel(int x, int y, char channel) {
 
 }
 
-bool PNG::setChannel(int x, int y, char channel, Uint8 value) {
+bool PNG::setChannel(int x, int y, char channel, uint8 value) {
     
     if (x >= this->width || y >= this->height) return false;
 
@@ -273,7 +273,7 @@ Drawer::Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
 
 }
 
-Drawer::Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
+Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
 
     this->buffer = buffer;
     this->bufferWidth = bufferWidthInput;
@@ -344,7 +344,7 @@ void Drawer::clipCoordinates(int* x, int* y) {
 
 }
 
-void Drawer::writePixel(Uint32 pixel, int x, int y) {
+void Drawer::writePixel(uint32 pixel, int x, int y) {
 
     if (this->buffer == nullptr) {
         return;
@@ -360,7 +360,7 @@ void Drawer::writePixel(Uint32 pixel, int x, int y) {
     
 }
 
-void Drawer::writePixel(Uint32 pixel, int x, int y, double depth) {
+void Drawer::writePixel(uint32 pixel, int x, int y, double depth) {
 
     if (this->buffer == nullptr) {
         return;
@@ -378,7 +378,7 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth) {
 
 }
 
-void Drawer::writePixel(Uint32 pixel, int x, int y, double depth, double opacity) {
+void Drawer::writePixel(uint32 pixel, int x, int y, double depth, double opacity) {
 
     if (this->buffer == nullptr) {
         return;
@@ -390,8 +390,8 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth, double opacity
     if (depth > this->depthBuffer[index]) return;
 
     // Find effective color based on pixel color, opacity, and color behind
-    Uint32 originalPixel = this->buffer[index];
-    Uint32 result = Color::merge(pixel, opacity, originalPixel, 1 - opacity);
+    uint32 originalPixel = this->buffer[index];
+    uint32 result = Color::merge(pixel, opacity, originalPixel, 1 - opacity);
 
     this->buffer[index] = result;
 
@@ -399,7 +399,7 @@ void Drawer::writePixel(Uint32 pixel, int x, int y, double depth, double opacity
 
 }
 
-void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2) {
+void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -420,7 +420,7 @@ void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2) {
+void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -443,7 +443,7 @@ void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth
 
 }
 
-void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity) {
+void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity) {
 
     if (this->buffer == nullptr) {
         return;
@@ -466,16 +466,16 @@ void Drawer::drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth
 
 }
 
-void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to) {
+void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
         return;
     }
 
     if (to == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
         return;
     }
 
@@ -484,16 +484,16 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to) {
 
 }
 
-void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2) {
+void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
         return;
     }
 
     if (to == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
         return;
     }
 
@@ -502,16 +502,16 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double 
 
 }
 
-void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity) {
+void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'from' as a null pointer!", true);
         return;
     }
 
     if (to == nullptr) {
-        logWrite("Called Drawer->drawLine(Uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
+        logWrite("Called Drawer->drawLine(uint32, Vec2*, Vec2*) with 'to' as a null pointer!", true);
         return;
     }
 
@@ -520,7 +520,7 @@ void Drawer::drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double 
 
 }
 
-void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
+void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -539,7 +539,7 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x) {
 
 }
 
-void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2) {
+void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, double depth1, double depth2) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -585,7 +585,7 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
 
 }
 
-void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1, double depth2, double opacity) {
+void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, double depth1, double depth2, double opacity) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -631,7 +631,7 @@ void Drawer::drawVerticalLine(Uint32 pixel, int y1, int y2, int x, double depth1
 
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y) {
+void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y) {
 
     if (x1 > x2) {
         swap(&x1, &x2);
@@ -643,7 +643,7 @@ void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y) {
 
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double depth1, double depth2) {
+void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, double depth1, double depth2) {
 
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
@@ -685,7 +685,7 @@ void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double dept
 
 }
 
-void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double depth1, double depth2, double opacity) {
+void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, double depth1, double depth2, double opacity) {
 
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
@@ -727,7 +727,7 @@ void Drawer::drawHorizontalLine(Uint32 pixel, int x1, int x2, int y, double dept
     
 }
 
-void Drawer::drawRect(Uint32 pixel, int x1, int y1, int x2, int y2) {
+void Drawer::drawRect(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -742,7 +742,7 @@ void Drawer::drawRect(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawRect(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
+void Drawer::drawRect(uint32 pixel, Vec2* pos1, Vec2* pos2) {
 
     this->drawRect(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
 
@@ -750,7 +750,7 @@ void Drawer::drawRect(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
     
 }
 
-void Drawer::drawRectFilled(Uint32 pixel, int x1, int y1, int x2, int y2) {
+void Drawer::drawRectFilled(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -772,7 +772,7 @@ void Drawer::drawRectFilled(Uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawRectFilled(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
+void Drawer::drawRectFilled(uint32 pixel, Vec2* pos1, Vec2* pos2) {
 
     this->drawRectFilled(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
 
@@ -780,11 +780,11 @@ void Drawer::drawRectFilled(Uint32 pixel, Vec2* pos1, Vec2* pos2) {
     
 }
 
-void Drawer::fillScreen(Uint32 pixel) {
+void Drawer::fillScreen(uint32 pixel) {
     this->drawRectFilled(pixel, 0, 0, this->bufferWidth, this->bufferHeight);
 }
 
-void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy) {
+void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy) {
 
     int limit = radiusx * radiusy;
     double factorx = sqrt( radiusy / radiusx );
@@ -801,7 +801,7 @@ void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
-void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth) {
+void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth) {
 
     int limit = radiusx * radiusy;
     double factorx = sqrt( radiusy / radiusx );
@@ -818,7 +818,7 @@ void Drawer::drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
-void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius) {
+void Drawer::drawCircle(uint32 pixel, int x, int y, int radius) {
 
     int limit = radius * radius;
 
@@ -833,13 +833,13 @@ void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius) {
     }
 }
 
-void Drawer::drawCircle(Uint32 pixel, Vec2* pos, int radius) {
+void Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius) {
 
     this->drawCircle(pixel, pos->x, pos->y, radius);
 
 }
 
-void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius, double depth) {
+void Drawer::drawCircle(uint32 pixel, int x, int y, int radius, double depth) {
 
     int limit = radius * radius;
 
@@ -854,13 +854,13 @@ void Drawer::drawCircle(Uint32 pixel, int x, int y, int radius, double depth) {
     }
 }
 
-void Drawer::drawCircle(Uint32 pixel, Vec2* pos, int radius, double depth) {
+void Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius, double depth) {
 
     this->drawCircle(pixel, pos->x, pos->y, radius, depth);
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
+void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -974,7 +974,7 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3) {
+void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -1145,7 +1145,7 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity) {
+void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -1316,26 +1316,26 @@ void Drawer::drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
+void Drawer::drawTriangle(uint32 pixel, Tri2* tri) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) on a null pointer!", true);
         return;
     }
 
     if (tri->v1 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v1 as a null pointer", true);
         return;
     }
 
     if (tri->v2 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v2 as a null pointer", true);
         return;
     }
 
     if (tri->v3 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v3 as a null pointer", true);
         return;
     }
     
@@ -1352,26 +1352,26 @@ void Drawer::drawTriangle(Uint32 pixel, Tri2* tri) {
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, Tri3* tri) {
+void Drawer::drawTriangle(uint32 pixel, Tri3* tri) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) on a null pointer!", true);
         return;
     }
 
     if (tri->v1 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v1 as a null pointer", true);
         return;
     }
 
     if (tri->v2 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v2 as a null pointer", true);
         return;
     }
 
     if (tri->v3 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v3 as a null pointer", true);
         return;
     }
     
@@ -1392,26 +1392,26 @@ void Drawer::drawTriangle(Uint32 pixel, Tri3* tri) {
 
 }
 
-void Drawer::drawTriangle(Uint32 pixel, Tri3* tri, double opacity) {
+void Drawer::drawTriangle(uint32 pixel, Tri3* tri, double opacity) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) on a null pointer!", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) on a null pointer!", true);
         return;
     }
 
     if (tri->v1 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v1 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v1 as a null pointer", true);
         return;
     }
 
     if (tri->v2 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v2 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v2 as a null pointer", true);
         return;
     }
 
     if (tri->v3 == nullptr) {
-        logWrite("Called Drawer->drawTriangle(Uint32, Tri2*) with tri->v3 as a null pointer", true);
+        logWrite("Called Drawer->drawTriangle(uint32, Tri2*) with tri->v3 as a null pointer", true);
         return;
     }
     
@@ -1544,7 +1544,7 @@ void Drawer::initFont() {
 
 }
 
-void Drawer::drawChar(Uint32 pixel, char ch, int x, int y) {
+void Drawer::drawChar(uint32 pixel, char ch, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawChar() without calling Drawer->initFont()!", true);
@@ -1559,7 +1559,7 @@ void Drawer::drawChar(Uint32 pixel, char ch, int x, int y) {
 
 }
 
-void Drawer::drawString(Uint32 pixel, const char* string, int x, int y) {
+void Drawer::drawString(uint32 pixel, const char* string, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawString() without calling Drawer->initFont()!", true);
@@ -1579,14 +1579,14 @@ void Drawer::drawString(Uint32 pixel, const char* string, int x, int y) {
     
 }
 
-void Drawer::drawString(Uint32 pixel, const char* string, Vec2* pos) {
+void Drawer::drawString(uint32 pixel, const char* string, Vec2* pos) {
 
     this->drawString(pixel, string, pos->x, pos->y);
     return;
 
 }
 
-void Drawer::drawInt(Uint32 pixel, int num, int x, int y) {
+void Drawer::drawInt(uint32 pixel, int num, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawInt() without calling Drawer->initFont()!", true);
@@ -1642,7 +1642,7 @@ void Drawer::drawFps(State* state, Display* display) {
 
 }
 
-void Drawer::drawPixels(Uint32 pixel, bool* pixels, int x, int y) {
+void Drawer::drawPixels(uint32 pixel, bool* pixels, int x, int y) {
 
     if (pixels == nullptr) return;
     
@@ -1747,8 +1747,8 @@ void Drawer::drawSky(Camera* camera, Display* display) {
     }
 
     // Draw the rectangles
-    uint32_t skyColorLight = 0xFF323296; // o->FF, r->32, g->32, b->96
-    uint32_t skyColorDark = 0xFF161648; // o->FF, r->16, g->16, b->48
+    uint32 skyColorLight = 0xFF323296;  // o->FF, r->32, g->32, b->96
+    uint32 skyColorDark = 0xFF161648;   // o->FF, r->16, g->16, b->48
 
     this->drawRectFilled(
         skyColorLight, 

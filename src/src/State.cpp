@@ -170,11 +170,7 @@ void State::MouseState::setPos(int x, int y) {
 
 // Constructor
 State::KeyboardState::KeyboardState() {
-
-    this->keyStates = new bool[KEYCODECOUNT] {};
-    
-    return;
-
+    this->keyStates = new bool[this->keyStatesLength] {};
 }
 
 // Destructor
@@ -191,187 +187,28 @@ void State::KeyboardState::setState(KeyboardState* state) {
         return;
     }
 
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < this->keyStatesLength; i++)
+        this->keyStates[i] = state->keyStates[i];
 
-        this->letterKeys[i] = state->letterKeys[i];
+    return;
 
-        if (i < 10)
-            this->numKeys[i] = state->numKeys[i];
-
-        if (i < 9)
-            this->miscKeys[i] = state->miscKeys[i];
-
-    }
 }
 
-bool* State::KeyboardState::getKeyRef(int keyCode) {
+bool* State::KeyboardState::getKeyRef(KeyCode keyCode) {
 
     /*
         Returns a pointer to the key boolean value within the instance variables
         This is reused in other instance functions
     */
     
-    switch (keyCode) {
+    // Invalid value
+    if (keyCode > 0xFF) return nullptr;
 
-        // Letter keys
-        case SDLK_a:
-            return &( this->letterKeys[letterKeyIndex::a] );
+    return &(this->keyStates[keyCode]);
 
-        case SDLK_b:
-            return &( this->letterKeys[letterKeyIndex::b] );
-
-        case SDLK_c:
-            return &( this->letterKeys[letterKeyIndex::c] );
-
-        case SDLK_d:
-            return &( this->letterKeys[letterKeyIndex::d] );
-
-        case SDLK_e:
-            return &( this->letterKeys[letterKeyIndex::e] );
-
-        case SDLK_f:
-            return &( this->letterKeys[letterKeyIndex::f] );
-
-        case SDLK_g:
-            return &( this->letterKeys[letterKeyIndex::g] );
-
-        case SDLK_h:
-            return &( this->letterKeys[letterKeyIndex::h] );
-
-        case SDLK_i:
-            return &( this->letterKeys[letterKeyIndex::i] );
-
-        case SDLK_j:
-            return &( this->letterKeys[letterKeyIndex::j] );
-
-        case SDLK_k:
-            return &( this->letterKeys[letterKeyIndex::k] );
-
-        case SDLK_l:
-            return &( this->letterKeys[letterKeyIndex::l] );
-
-        case SDLK_m:
-            return &( this->letterKeys[letterKeyIndex::m] );
-
-        case SDLK_n:
-            return &( this->letterKeys[letterKeyIndex::n] );
-
-        case SDLK_o:
-            return &( this->letterKeys[letterKeyIndex::o] );
-
-        case SDLK_p:
-            return &( this->letterKeys[letterKeyIndex::p] );
-
-        case SDLK_q:
-            return &( this->letterKeys[letterKeyIndex::q] );
-
-        case SDLK_r:
-            return &( this->letterKeys[letterKeyIndex::r] );
-
-        case SDLK_s:
-            return &( this->letterKeys[letterKeyIndex::s] );
-
-        case SDLK_t:
-            return &( this->letterKeys[letterKeyIndex::t] );
-
-        case SDLK_u:
-            return &( this->letterKeys[letterKeyIndex::u] );
-
-        case SDLK_v:
-            return &( this->letterKeys[letterKeyIndex::v] );
-
-        case SDLK_w:
-            return &( this->letterKeys[letterKeyIndex::w] );
-
-        case SDLK_x:
-            return &( this->letterKeys[letterKeyIndex::x] );
-
-        case SDLK_y:
-            return &( this->letterKeys[letterKeyIndex::y] );
-
-        case SDLK_z:
-            return &( this->letterKeys[letterKeyIndex::z] );
-
-
-        // Number keys
-        case SDLK_0:
-            return &( this->numKeys[numKeyIndex::zero] );
-
-        case SDLK_1:
-            return &( this->numKeys[numKeyIndex::one] );
-
-        case SDLK_2:
-            return &( this->numKeys[numKeyIndex::two] );
-
-        case SDLK_3:
-            return &( this->numKeys[numKeyIndex::three] );
-
-        case SDLK_4:
-            return &( this->numKeys[numKeyIndex::four] );
-
-        case SDLK_5:
-            return &( this->numKeys[numKeyIndex::five] );
-
-        case SDLK_6:
-            return &( this->numKeys[numKeyIndex::six] );
-
-        case SDLK_7:
-            return &( this->numKeys[numKeyIndex::seven] );
-
-        case SDLK_8:
-            return &( this->numKeys[numKeyIndex::eight] );
-
-        case SDLK_9:
-            return &( this->numKeys[numKeyIndex::nine] );
-
-
-        // Misc keys
-        case SDLK_BACKSPACE:
-            return &( this->miscKeys[miscKeyIndex::backspace] );
-
-        case SDLK_TAB:
-            return &( this->miscKeys[miscKeyIndex::tab] );
-
-        case SDLK_RETURN:
-            return &( this->miscKeys[miscKeyIndex::enter] );
-
-        case SDLK_ESCAPE:
-            return &( this->miscKeys[miscKeyIndex::escape] );
-
-        case SDLK_SPACE:
-            return &( this->miscKeys[miscKeyIndex::space] );
-
-        case SDLK_CAPSLOCK:
-            return &( this->miscKeys[miscKeyIndex::capslock] );
-
-        case SDLK_LCTRL:
-            return &( this->miscKeys[miscKeyIndex::control] );
-
-        case SDLK_LSHIFT:
-            return &( this->miscKeys[miscKeyIndex::shift] );
-
-        case SDLK_LALT:
-            return &( this->miscKeys[miscKeyIndex::alt] );
-
-        case SDLK_UP:
-            return &( this->miscKeys[miscKeyIndex::arrowup] );
-
-        case SDLK_DOWN:
-            return &( this->miscKeys[miscKeyIndex::arrowdown] );
-
-        case SDLK_LEFT:
-            return &( this->miscKeys[miscKeyIndex::arrowleft] );
-
-        case SDLK_RIGHT:
-            return &( this->miscKeys[miscKeyIndex::arrowright] );
-
-
-    }
-
-    return nullptr;
 }
 
-void State::KeyboardState::keyDown(int keyCode) {
+void State::KeyboardState::keyDown(KeyCode keyCode) {
 
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = true;
@@ -380,7 +217,7 @@ void State::KeyboardState::keyDown(int keyCode) {
 
 }
 
-void State::KeyboardState::keyUp(int keyCode) {
+void State::KeyboardState::keyUp(KeyCode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = false;
@@ -389,7 +226,7 @@ void State::KeyboardState::keyUp(int keyCode) {
 
 }
 
-bool State::KeyboardState::keyIsDown(int keyCode) {
+bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
@@ -404,16 +241,18 @@ bool State::KeyboardState::keyIsDown(int keyCode) {
 /*  ------------------------------------  */
 
 // Contructor
-State::State(bool hasChild /* default value = true */) {
+State::State(HWND hwnd, bool hasChild /* default value = true */) {
 
-    this->newKeyPresses = new SDL_Keycode[3] {SDLK_UNKNOWN, SDLK_UNKNOWN, SDLK_UNKNOWN};
+    this->newKeyPresses = new KeyCode[3] {KEY_NULL, KEY_NULL, KEY_NULL};
     this->newKeyPressesIndex = 0;
 
     this->time = new TimeState();
     this->mouse = new MouseState();
     this->keys = new KeyboardState();
 
-    if (hasChild) this->lastFrame = new State(false);
+    this->hwnd = hwnd;
+
+    if (hasChild) this->lastFrame = new State(hwnd, false);
     else this->lastFrame = nullptr;
 
 }
@@ -428,53 +267,84 @@ State::~State() {
 }
 
 // Instance functions
-void State::addEvent(UINT msg, WPARAM wParam, LPARAM lParam) {
+int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+
+    KeyCode keyCode = (KeyCode) wParam;
 
     switch (msg) {
+
+        // Paint the window, dont need to do anything here
+        case WM_PAINT:
+            return 0;
 
         // Handle window close events
         case WM_CLOSE:
         case WM_DESTROY:
             PostQuitMessage(0);
-            return;
+            return 1;
 
         // Handle mouse button events
+        case WM_LBUTTONDOWN:
+            logWrite("Left down!", true);
+            this->mouse->leftButtonDown();
+            return 0;
+
         case WM_MBUTTONDOWN:
-            this->mouse->buttonDown(wParam);
-            return;
+            logWrite("Middle down!", true);
+            this->mouse->middleButtonDown();
+            return 0;
+
+        case WM_RBUTTONDOWN:
+            logWrite("Right down!", true);
+            this->mouse->rightButtonDown();
+            return 0;
+
+        case WM_LBUTTONUP:
+            logWrite("Left up!", true);
+            this->mouse->leftButtonUp();
+            return 0;
 
         case WM_MBUTTONUP:
-            this->mouse->buttonUp(wParam);
+            logWrite("Middle up!", true);
+            this->mouse->middleButtonUp();
+            return 0;
+
+        case WM_RBUTTONUP:
+            logWrite("Right up!", true);
+            this->mouse->rightButtonUp();
+            return 0;
 
         // Handle keyboard events
         case WM_KEYDOWN:
 
             // If it wasnt down last frame, add it to newKeyPresses
             if (
-                this->lastFrame->keys->keyIsDown(wParam) && 
+                this->lastFrame->keys->keyIsDown(keyCode) && 
                 this->newKeyPressesIndex < 3
             ) {
-                this->newKeyPresses[this->newKeyPressesIndex] = wParam;
+                this->newKeyPresses[this->newKeyPressesIndex] = keyCode;
                 this->newKeyPressesIndex++;
             }
 
-            this->keys->keyDown(wParam);
-            return;
+            this->keys->keyDown(keyCode);
+            return 0;
 
         case WM_KEYUP:
-            this->keys->keyUp(wParam);
-            return;
+            this->keys->keyUp(keyCode);
+            return 0;
 
     }
 
-    return;
+    // If the message was not handled in the switch, return 1 to signify this
+    return 2;
+
 }
 
 void State::nextFrame() {
 
-    this->newKeyPresses[0] = SDLK_UNKNOWN;
-    this->newKeyPresses[1] = SDLK_UNKNOWN;
-    this->newKeyPresses[2] = SDLK_UNKNOWN;
+    this->newKeyPresses[0] = KEY_NULL;
+    this->newKeyPresses[1] = KEY_NULL;
+    this->newKeyPresses[2] = KEY_NULL;
     this->newKeyPressesIndex = 0;
 
     if (this->lastFrame == nullptr) return;
@@ -482,6 +352,7 @@ void State::nextFrame() {
     this->lastFrame->setState(this);
 
     this->time->update();
+    this->updateMousePos();
 
     return;
 
@@ -521,6 +392,18 @@ bool State::wasRightJustReleased() {
     return (!this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
+void State::updateMousePos() {
+
+    POINT point;
+
+    GetCursorPos(&point);
+    ScreenToClient(this->hwnd, &point);
+
+    this->mouse->posX = point.x;
+    this->mouse->posY = point.y;
+
+}
+
 int State::deltaMousePosX() {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posX) - (this->lastFrame->mouse->posX);
@@ -532,13 +415,13 @@ int State::deltaMousePosY() {
 }
 
 bool State::keyIsDown(KeyCode keyCode) {
-    return this->keys->keyDown(keyCode);
+    return this->keys->keyIsDown(keyCode);
 }
 
 bool State::keyJustDown(KeyCode keyCode) {
 
-    bool isDown = this->keys->keyDown(keyCode);
-    bool wasDown = this->lastFrame->keys->keyDown(keyCode);
+    bool isDown = this->keys->keyIsDown(keyCode);
+    bool wasDown = this->lastFrame->keys->keyIsDown(keyCode);
 
     return (isDown && !wasDown);
 

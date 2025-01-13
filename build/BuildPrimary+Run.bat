@@ -3,83 +3,72 @@
 :: Paths
 set srcdir=../src/src/
 set objdir=../src/obj/
-set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 
 
 :: Not mine
 
-:: lodepng
-@REM g++ -c ../src/lodepng/lodepng.cpp ^
+@REM :: lodepng
+@REM g++ -Ofast -c ../src/lodepng/lodepng.cpp ^
 @REM     -o %objdir%lodepng.o
 
 
 
 :: Mine
 
-:: Utility
-@REM g++ -c %srcdir%Utility.cpp ^
+@REM :: Utility
+@REM g++ -Ofast -c %srcdir%Utility.cpp ^
 @REM     -o %objdir%Utility.o
 
-:: Math
-@REM g++ -c %srcdir%Math.cpp ^
+@REM :: Math
+@REM g++ -Ofast -c %srcdir%Math.cpp ^
 @REM     -o %objdir%Math.o
 
-:: Log
-@REM g++ -c %srcdir%Log.cpp ^
+@REM :: Log
+@REM g++ -Ofast -c %srcdir%Log.cpp ^
 @REM     -o %objdir%Log.o
 
-:: Vec
-@REM g++ -c %srcdir%Vec.cpp ^
+@REM :: Vec
+@REM g++ -Ofast -c %srcdir%Vec.cpp ^
 @REM     -o %objdir%Vec.o
 
-:: Tri
-@REM g++ -c %srcdir%Tri.cpp ^
+@REM :: Tri
+@REM g++ -Ofast -c %srcdir%Tri.cpp ^
 @REM     -o %objdir%Tri.o
 
-:: Mesh
-@REM g++ -c %srcdir%Mesh.cpp ^
+@REM :: Mesh
+@REM g++ -Ofast -c %srcdir%Mesh.cpp ^
 @REM     -o %objdir%Mesh.o
 
-
-:: The rest of the libraries require SDL2 includes
-
-:: Camera
-@REM g++ -c %srcdir%Camera.cpp ^
-@REM     -o %objdir%Camera.o ^
-@REM     %SDLinclude%
+@REM :: Camera
+@REM g++ -Ofast -c %srcdir%Camera.cpp ^
+@REM     -o %objdir%Camera.o
 
 :: Gui
-@REM g++ -c %srcdir%Gui.cpp ^
-@REM     -o %objdir%Gui.o ^
-@REM     %SDLinclude%
+g++ -Ofast -c %srcdir%Gui.cpp ^
+    -o %objdir%Gui.o
 
-:: Drawer
-@REM g++ -c %srcdir%Drawer.cpp ^
-@REM     -o %objdir%Drawer.o ^
-@REM     %SDLinclude%
+@REM :: Drawer
+@REM g++ -Ofast -c %srcdir%Drawer.cpp ^
+@REM     -o %objdir%Drawer.o
 
 :: State
-@REM g++ -c %srcdir%State.cpp ^
-@REM     -o %objdir%State.o ^
-@REM     %SDLinclude%
+g++ -Ofast -c %srcdir%State.cpp ^
+    -o %objdir%State.o
 
-:: ObjectSet
-g++ -c %srcdir%ObjectSet.cpp ^
-    -o %objdir%ObjectSet.o ^
-    %SDLinclude%
+@REM :: ObjectSet
+@REM g++ -Ofast -c %srcdir%ObjectSet.cpp ^
+@REM     -o %objdir%ObjectSet.o
 
-
-:: UI
-g++ -c %srcdir%UI.cpp ^
-    -o %objdir%UI.o ^
-    %SDLinclude%
+@REM :: UI
+@REM g++ -Ofast -c %srcdir%UI.cpp ^
+@REM     -o %objdir%UI.o
 
 
 :: Build main.exe
 
 :: Compile main.exe
-g++ ../main.cpp ^
+g++ -Ofast ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -94,8 +83,7 @@ g++ ../main.cpp ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
     -o main.exe ^
-    -mwindows ^
-    %SDLinclude%
+    -mwindows
 
 main.exe
 

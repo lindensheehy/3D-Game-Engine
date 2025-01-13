@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include <SDL2/SDL.h>
+#include "Utility.h"
+
 #include "../lodepng/lodepng.h"
 
 #include "Vec.h"
@@ -10,10 +11,6 @@
 #include "State.h"
 #include "LinkedList.h"
 
-#include "Utility.h"
-#include "Math.h"
-#include "Log.h"
-
 
 class Color {
 
@@ -21,43 +18,43 @@ class Color {
 
         // Constant color codes
         // Bytes are [opacity][red][green][blue]
-        static const Uint32 RED         = 0xFFFF0000;
-        static const Uint32 GREEN       = 0xFF00FF00;
-        static const Uint32 BLUE        = 0xFF0000FF;
-        static const Uint32 BLACK       = 0xFF000000;
-        static const Uint32 WHITE       = 0xFFFFFFFF;
-        static const Uint32 GREY        = 0xFF888888;
-        static const Uint32 DARKGREY    = 0xFF333333;
+        static const uint32 RED         = 0xFFFF0000;
+        static const uint32 GREEN       = 0xFF00FF00;
+        static const uint32 BLUE        = 0xFF0000FF;
+        static const uint32 BLACK       = 0xFF000000;
+        static const uint32 WHITE       = 0xFFFFFFFF;
+        static const uint32 GREY        = 0xFF888888;
+        static const uint32 DARKGREY    = 0xFF333333;
 
         // For UI drawing
-        static const Uint32 BACKGROUND  = 0xFF303030;
-        static const Uint32 LIGHTER     = 0xFF505050;
-        static const Uint32 DARKER      = 0xFF181818;
-        static const Uint32 ACCENT      = 0xFFA78BFA;
+        static const uint32 BACKGROUND  = 0xFF303030;
+        static const uint32 LIGHTER     = 0xFF505050;
+        static const uint32 DARKER      = 0xFF181818;
+        static const uint32 ACCENT      = 0xFFA78BFA;
 
 
         /*   Instance variables   */
 
         // Raw value which was given
-        Uint32 rawValue;
+        uint32 rawValue;
 
         // Individual color channels
-        Uint8 redValue, greenValue, blueValue, opacityValue;
+        uint8 redValue, greenValue, blueValue, opacityValue;
 
 
         // Contructors
-        Color(Uint32 color);
-        Color(Uint8 o, Uint8 r, Uint8 g, Uint8 b);
+        Color(uint32 color);
+        Color(uint8 o, uint8 r, uint8 g, uint8 b);
 
 
         /*   Class functions   */
 
-        // Sets the brightness of a given color (Uint32) to a double between 0-1.
+        // Sets the brightness of a given color (uint32) to a double between 0-1.
         // Values higher than 1 CAN be used, but could cause overflow issues.
-        static Uint32 setBrightness(Uint32 color, double newBrightness);
+        static uint32 setBrightness(uint32 color, double newBrightness);
 
         // Merges the rgb values of two colors based on opacity values. The sum of opacity1 and opacity2 should be 1
-        static Uint32 merge(Uint32 color1, double opacity1, Uint32 color2, double opacity2);
+        static uint32 merge(uint32 color1, double opacity1, uint32 color2, double opacity2);
 
 };
 
@@ -89,7 +86,7 @@ class PNG {
         unsigned int width, height;
 
         // Raw data returned from lodepng. This is an array of length (width * height * 4 color channels)
-        Uint8* rawData;
+        uint8* rawData;
 
         // This holds the same data as rawData, but parsed by my constructor to be more usable.
         Color** pixels;
@@ -116,8 +113,8 @@ class PNG {
         bool setPixel(int x, int y, Color* pixel);
 
         // Same as above, but for single color channels
-        Uint8 getChannel(int x, int y, char channel);
-        bool setChannel(int x, int y, char channel, Uint8 value);
+        uint8 getChannel(int x, int y, char channel);
+        bool setChannel(int x, int y, char channel, uint8 value);
 
 };
 
@@ -139,7 +136,7 @@ class Drawer {
         
         /*   Instance variables   */
         
-        Uint32* buffer;
+        uint32* buffer;
         unsigned int bufferHeight, bufferWidth;
         unsigned int bufferSize;
 
@@ -149,7 +146,7 @@ class Drawer {
 
         // Constructors
         Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput);
-        Drawer(Uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput);
+        Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput);
 
         // Destructor
         ~Drawer();
@@ -170,58 +167,58 @@ class Drawer {
         void clipCoordinates(int* x, int* y);
 
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
-        void writePixel(Uint32 pixel, int x, int y);
-        void writePixel(Uint32 pixel, int x, int y, double depth);
-        void writePixel(Uint32 pixel, int x, int y, double depth, double opacity);
+        void writePixel(uint32 pixel, int x, int y);
+        void writePixel(uint32 pixel, int x, int y, double depth);
+        void writePixel(uint32 pixel, int x, int y, double depth, double opacity);
 
         // Draws a straight line from (x1, y1) to (x2, y2) in the given color
-        void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2);
-        void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2);
-        void drawLine(Uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity);
+        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2);
+        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity);
 
         // Same as above, but uses Vec2 objects. These objects are NOT deleted by this function call and must be handled properly
-        void drawLine(Uint32 pixel, Vec2* from, Vec2* to);
-        void drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2);
-        void drawLine(Uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity);
+        void drawLine(uint32 pixel, Vec2* from, Vec2* to);
+        void drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2);
+        void drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity);
 
         // Draws a straight line along a given axis
-        void drawVerticalLine(Uint32 pixel, int startY, int endY, int x);
-        void drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2);
-        void drawVerticalLine(Uint32 pixel, int startY, int endY, int x, double depth1, double depth2, double opacity);
-        void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y);
-        void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
-        void drawHorizontalLine(Uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity);
+        void drawVerticalLine(uint32 pixel, int startY, int endY, int x);
+        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, double depth1, double depth2);
+        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, double depth1, double depth2, double opacity);
+        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y);
+        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
+        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity);
 
         // Draws a HOLLOW rectangle
-        void drawRect(Uint32 pixel, int x1, int y1, int x2, int y2);
-        void drawRect(Uint32 pixel, Vec2* pos1, Vec2* pos2);
+        void drawRect(uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawRect(uint32 pixel, Vec2* pos1, Vec2* pos2);
 
         // Draws a FILLED rectangle
-        void drawRectFilled(Uint32 pixel, int x1, int y1, int x2, int y2);
-        void drawRectFilled(Uint32 pixel, Vec2* pos1, Vec2* pos2);
+        void drawRectFilled(uint32 pixel, int x1, int y1, int x2, int y2);
+        void drawRectFilled(uint32 pixel, Vec2* pos1, Vec2* pos2);
 
         // Fills whole buffer with a given color
-        void fillScreen(Uint32 pixel);
+        void fillScreen(uint32 pixel);
 
         // Draws an elipse at a given location, with a given radius along each axis.
-        void drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy);
-        void drawElipse(Uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth);
+        void drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy);
+        void drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth);
 
         // Same as above, but only one radius allowed.
-        void drawCircle(Uint32 pixel, int x, int y, int radius);
-        void drawCircle(Uint32 pixel, Vec2* pos, int radius);
-        void drawCircle(Uint32 pixel, int x, int y, int radius, double depth);
-        void drawCircle(Uint32 pixel, Vec2* pos, int radius, double depth);
+        void drawCircle(uint32 pixel, int x, int y, int radius);
+        void drawCircle(uint32 pixel, Vec2* pos, int radius);
+        void drawCircle(uint32 pixel, int x, int y, int radius, double depth);
+        void drawCircle(uint32 pixel, Vec2* pos, int radius, double depth);
 
         // Draws a FILLED triangle which uses (x1, y1), (x2, y2), and (x3, y3) as vertices
-        void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
-        void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
-        void drawTriangle(Uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity);
+        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
+        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
+        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity);
 
         // Same as above but uses a Tri object. This object is NOT deleted by this function call and must be handled properly. The Tri3 call includes depth.
-        void drawTriangle(Uint32 pixel, Tri2* tri);
-        void drawTriangle(Uint32 pixel, Tri3* tri);
-        void drawTriangle(Uint32 pixel, Tri3* tri, double opacity);
+        void drawTriangle(uint32 pixel, Tri2* tri);
+        void drawTriangle(uint32 pixel, Tri3* tri);
+        void drawTriangle(uint32 pixel, Tri3* tri, double opacity);
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
@@ -233,14 +230,14 @@ class Drawer {
         void initFont();
 
         // Draws a character to the screen, the upper left will be at (x, y)
-        void drawChar(Uint32 pixel, char ch, int x, int y);
+        void drawChar(uint32 pixel, char ch, int x, int y);
 
         // Draws a string to the screen, the top left will be at (x, y)
-        void drawString(Uint32 pixel, const char* string, int x, int y);
-        void drawString(Uint32 pixel, const char* string, Vec2* pos);
+        void drawString(uint32 pixel, const char* string, int x, int y);
+        void drawString(uint32 pixel, const char* string, Vec2* pos);
 
         // Draws an integer value to the screen, the top left will be at (x, y)
-        void drawInt(Uint32 pixel, int num, int x, int y);
+        void drawInt(uint32 pixel, int num, int x, int y);
 
         // Draws the fps box in the top left
         void drawFps(State* state, Display* display);
@@ -256,7 +253,7 @@ class Drawer {
         /*   The following functions dont need to be called outside this class   */
 
         // Draws a set of pixels to the screen. the other draw functions rely on this
-        void drawPixels(Uint32 pixel, bool* pixels, int x, int y);
+        void drawPixels(uint32 pixel, bool* pixels, int x, int y);
 
         // Returns a pointer to the pixels for a character
         bool* getCharRef(char ch);

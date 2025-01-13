@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Math.h"
-
-// For logging error cases
-#include "Log.h"
+#include "Utility.h"
 
 
 class Vec2 {

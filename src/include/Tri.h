@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Vec.h"
+#include "Utility.h"
 
-// For logging error cases
-#include "Log.h"
+#include "Vec.h"
 
 
 class Tri2 {

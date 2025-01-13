@@ -1,12 +1,13 @@
 #define SDL_MAIN_HANDLED
 
+#include "src/include/Utility.h"
+
 #include "src/include/Drawer.h"
 #include "src/include/State.h"
 #include "src/include/Camera.h"
 #include "src/include/Mesh.h"
 #include "src/include/Gui.h"
 #include "src/include/UI.h"
-#include "src/include/Log.h"
 
 // Global declarations
 Gui* gui;
@@ -24,6 +25,8 @@ bool drawNormals;
 bool gravity;
 
 UI* ui;
+
+bool doMainLoop = true;
 
 void handleInput(State* state, Camera* camera) {
 
@@ -45,19 +48,19 @@ void handleInput(State* state, Camera* camera) {
     // Find distance to move based on the delta time of the frame
     double dist = camera->movementSpeed * (state->time->dt / 1000);
 
-    if (state->keyIsDown(SDLK_LSHIFT))
+    if (state->keyIsDown(KEY_SHIFT))
         dist *= camera->sprintFactor;
 
     // Vertical Movement
-    if (state->keyIsDown(SDLK_SPACE)) camera->pos->y += dist; // Up
-    if (state->keyIsDown(SDLK_LCTRL)) camera->pos->y -= dist; // Down
+    if (state->keyIsDown(KEY_SPACE)) camera->pos->y += dist; // Up
+    if (state->keyIsDown(KEY_CONTROL)) camera->pos->y -= dist; // Down
 
     // Horizontal Movement
     Vec2* cameraMovVec = new Vec2();
-    if (state->keyIsDown(SDLK_w)) cameraMovVec->y += dist; // Forward
-    if (state->keyIsDown(SDLK_s)) cameraMovVec->y -= dist; // Backward
-    if (state->keyIsDown(SDLK_a)) cameraMovVec->x -= dist; // Left
-    if (state->keyIsDown(SDLK_d)) cameraMovVec->x += dist; // Right
+    if (state->keyIsDown(KEY_W)) cameraMovVec->y += dist; // Forward
+    if (state->keyIsDown(KEY_S)) cameraMovVec->y -= dist; // Backward
+    if (state->keyIsDown(KEY_A)) cameraMovVec->x -= dist; // Left
+    if (state->keyIsDown(KEY_D)) cameraMovVec->x += dist; // Right
 
     // Move camera based on its rotation
     cameraMovVec->rotate(-camera->yaw);
@@ -80,7 +83,7 @@ void handleInput(State* state, Camera* camera) {
     /*   Temporary stuff   */
 
     // Toggle normal vector drawing on key n
-    if (state->keyJustDown(SDLK_n)) {
+    if (state->keyJustDown(KEY_N)) {
 
         drawNormals = !drawNormals;
 
@@ -92,13 +95,13 @@ void handleInput(State* state, Camera* camera) {
     // Pick object based on id, this cycles through all the objects with ids 1-7
     bool changeObject = false;
 
-    if (state->keyJustDown(SDLK_q)) {
+    if (state->keyJustDown(KEY_Q)) {
         selectedObjectId--;
         if (selectedObjectId < 1) selectedObjectId += 8;
         changeObject = true;
     }
 
-    if (state->keyJustDown(SDLK_e)) {
+    if (state->keyJustDown(KEY_E)) {
         selectedObjectId++;
         if (selectedObjectId > 8) selectedObjectId -= 8;
         changeObject = true;
@@ -114,7 +117,7 @@ void handleInput(State* state, Camera* camera) {
 
     }
 
-    if (state->keyJustDown(SDLK_RETURN)) {
+    if (state->keyJustDown(KEY_ENTER)) {
 
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
@@ -124,38 +127,38 @@ void handleInput(State* state, Camera* camera) {
     }
 
     // This rotates the selected object when pressing keys j,k,l
-    if (state->keyIsDown(SDLK_j))
+    if (state->keyIsDown(KEY_J))
         if (selectedObject != nullptr) selectedObject->rotateSelf(1, 0, 0);
 
-    if (state->keyIsDown(SDLK_k))
+    if (state->keyIsDown(KEY_K))
         if (selectedObject != nullptr) selectedObject->rotateSelf(0, 1, 0);
 
-    if (state->keyIsDown(SDLK_l))
+    if (state->keyIsDown(KEY_L))
         if (selectedObject != nullptr) selectedObject->rotateSelf(0, 0, 1);
 
     // This moves the selected object along the y-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_o))
+    if (state->keyIsDown(KEY_O))
         if (selectedObject != nullptr) selectedObject->move(0, 0.5, 0);
 
-    if (state->keyIsDown(SDLK_p))
+    if (state->keyIsDown(KEY_P))
         if (selectedObject != nullptr) selectedObject->move(0, -0.5, 0);
 
     // This moves the selected object along the x-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_u))
+    if (state->keyIsDown(KEY_U))
         if (selectedObject != nullptr) selectedObject->move(0.5, 0, 0);
 
-    if (state->keyIsDown(SDLK_i))
+    if (state->keyIsDown(KEY_I))
         if (selectedObject != nullptr) selectedObject->move(-0.5, 0, 0);
 
     // This moves the selected object along the z-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_t))
+    if (state->keyIsDown(KEY_T))
         if (selectedObject != nullptr) selectedObject->move(0, 0, 0.5);
 
-    if (state->keyIsDown(SDLK_y))
+    if (state->keyIsDown(KEY_Y))
         if (selectedObject != nullptr) selectedObject->move(0, 0, -0.5);
 
     // Toggles gravity
-    if (state->keyJustDown(SDLK_g)) {
+    if (state->keyJustDown(KEY_G)) {
         
         if (gravity) {
             objects->setGravityAll(0.0);
@@ -170,14 +173,34 @@ void handleInput(State* state, Camera* camera) {
     }
 
     // Gives all the objects some vertical velocity
-    if (state->keyJustDown(SDLK_z))
+    if (state->keyJustDown(KEY_Z))
         objects->setVelocityAll(0, 25, 0);
 
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-    state->addEvent(uMsg, wParam, lParam);
+    // status of 0 means the message was matched and handled
+    int status = state->handleMessage(uMsg, wParam, lParam);
+
+    switch (status) {
+
+        // Message was properly handled
+        case 0:
+            return 0;
+
+        // Message was a quit message, leave main loop
+        case 1:
+            doMainLoop = false;
+            return 0;
+
+        // Message was not handled
+        case 2:
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+    }
+
+    return 0;
 
 }
 
@@ -189,10 +212,10 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Gui(WindowProc, 1200, 700, L"Game Engine");
+    gui = new Gui(WindowProc, 1200, 700, "Game Engine");
 
     // Init all the working objects
-    state = new State();
+    state = new State(gui->hwnd);
 
     display = new Display(gui->windowWidth, gui->windowHeight);
     camera = new Camera();
@@ -200,8 +223,9 @@ void init() {
 
     drawer = new Drawer(gui->windowWidth, gui->windowHeight);
     drawer->initFont();
+    drawer->buffer = gui->buffer;
 
-    // Sets up the default meshes, and creates the objects to be drawn
+    // Sets up the default meshes
     Mesh::initMeshes();
 
 
@@ -268,22 +292,8 @@ int main(int argc, char* argv[]) {
     // Starts up everything needed for the main loop
     init();
 
-    // Declarations for the main loop
-    SDL_Event event;
-    bool leave = false;
-
-
     // Main loop
-    while (!leave) {
-
-        // Update mouse position
-        SDL_GetMouseState(   &(state->mouse->posX),   &(state->mouse->posY)   );
-        
-        // Handle SDL events
-        while (SDL_PollEvent(&event) != 0) {
-            if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
-            else state->addEvent(&event);
-        }
+    while (doMainLoop) {
 
         // Does all the user input handling
         handleInput(state, camera);
@@ -292,8 +302,6 @@ int main(int argc, char* argv[]) {
         objects->doAllPhysics(state->time->dt);
 
         // Prep the pixel and depth buffers
-        gui->getBuffer();
-        drawer->buffer = gui->buffer;
         drawer->resetDepthBuffer();
         drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
@@ -306,11 +314,11 @@ int main(int argc, char* argv[]) {
         ui->draw(drawer);
         drawer->drawCrosshair(display);
 
-        // Update the GUI
-        gui->flip();
-
         // Tell State that the frame is over
         state->nextFrame();
+
+        // Update the GUI
+        gui->flip();
 
     }
 
@@ -318,9 +326,6 @@ int main(int argc, char* argv[]) {
     delete camera;
     delete display;
     delete drawer;
-
-    // Destroy the window and quit SDL
-    gui->exit();
     delete gui;
 
     return 0;

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Log.h"
+#include "Utility.h"
+
 #include "Vec.h"
 
 // Early declaration for Collision namespace

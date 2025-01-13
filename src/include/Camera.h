@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Math.h"
+#include "Utility.h"
 
 #include "Vec.h"
 #include "Mesh.h"
-
-// For logging error cases
-#include "Log.h"
 
 
 class Camera {
