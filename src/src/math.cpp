@@ -7,10 +7,6 @@
 
 
 /*   -----   Basic Functions   -----   */
-double abs(double x) {
-    return (x > 0) ? x : -x;
-}
-
 int floor(double x) {
     /*
         Type casting is used to truncate the fractional part of the value

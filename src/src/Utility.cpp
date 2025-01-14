@@ -39,7 +39,7 @@ void swap(unsigned int* var1, unsigned int* var2) {
 }
 
 /*   -----   Casting With char*   -----   */
-bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2) {
+bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS) {
 
     // Not enough space in the string for a number and '\0'
     if (MAXLENGTH < 2) return false;

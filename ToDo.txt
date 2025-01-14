@@ -5,7 +5,6 @@ new stuff:
         - bounding box for objects (probably not 1-to-1 with the mesh for easier computing)
     - collision handling
         - seperate functions for each set of two objects
-- add tests for more functions
 
 - add multiple color meshes
     - let each tri be a different color
@@ -15,9 +14,16 @@ new stuff:
     - ray cast to find an object
         - probably just check each object rather than actually stepping along a ray since theres few objects in the scene
 
-- custom HTML like system for defining windows in the UI
+- custom XML like system for defining windows in the UI
+    - text parser for the XML files
+    - custom defined elements in XML
+    - full windows also defined in XML, which can use custom elements within
 
 - give text boxes functionality.
+
+- expand UI functionality.
+    - create new objects
+    - change more traits for each object
 
 fixes:
 - fix depth interpolation, depth between two points is not always linear.
@@ -25,3 +31,5 @@ fixes:
 optimizations:
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
 - add a draw queue which will have one (or maybe more) threads to work only on drawing, while the main thread can do the math and feed the stuff that needs to be drawn to the queue
+
+- make log.h use windows api calls instead of fstream

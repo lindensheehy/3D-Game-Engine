@@ -22,9 +22,9 @@ This is a 3D graphics engine written in C++, designed as a personal project to p
 - **Custom Data Structures:** To manage 3D data and ensure the performance of the engine, I built custom data structures like vectors (`Vec2`, `Vec3`), triangles (`Tri2`, `Tri3`), and meshes (`Mesh`). These allow efficient manipulation of vertices, normals, and other properties needed for 3D rendering.
 
 ## Libraries & Dependencies:
-- **SDL2:** Used for window creation, handling input, and managing the pixel buffer to draw directly onto the screen.
-- **Standard C++ Libraries:** A minimal set of standard C++ libraries. Functionally, the only required library is  `chrono` for delta time, but I also use `iostream`/`fstream`/`iomanip` for debugging and logging.
-- **Custom Libraries:** This project heavily relies on custom-built libraries for anything I felt was feasible for me to implement. 
+- **Windows API:** Used for window creation, handling input, painting a pixel buffer to the window.
+- **Standard C++ Libraries:** A minimal set of standard C++ libraries. Functionally, the only required library is  `chrono` for delta time, but I also use `fstream` for debugging and logging.
+- **Self Written Libraries:** This project heavily relies on libraries written by me for the vast majority of the functionality.
 
 ## Controls:
 - **W, A, S, D:** Move the camera in the 3D space

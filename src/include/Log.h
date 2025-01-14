@@ -1,36 +1,38 @@
 #pragma once
 
-// Basic Includes
-#include <iostream>
-#include <fstream>
+#include "Utility.h"
 
-// Pretty much a std::cout function
-void consoleOut(std::string message);
+// Init and Close
+void logInit(const char* fileName);
+void logInit(char* fileName);
 
-// Init
-void logInit(std::string fileName);
+void logClose();
 
-// Primative Functions
+// Clears all characters from the output file
 void logClear();
-void logNewLine();
 
 // Strings and chars
-void logWrite(std::string message, bool newLine = false);
+void logWrite(const char* message, bool newLine = false);
+void logWrite(char* message, bool newLine = false);
+
 void logWrite(char message, bool newLine = false);
 void logWrite(wchar_t message, bool newLine = false);
 
-// Decimal Values
+// Decimal Values`
 void logWrite(int message, bool newLine = false);
 void logWrite(long message, bool newLine = false);
 void logWrite(long long message, bool newLine = false);
 void logWrite(double message, bool newLine = false);
 
 // Hex values
-// void logWriteHex(int8bytes message, bool newLine = false);
-// void logWriteHex(int2bytes message, bool newLine = false);
-// void logWriteHex(int4bytes message, bool newLine = false);
-// void logWriteHex(int1byte message, bool newLine = false);
+void logWriteHex(char message, bool newLine = false);
+void logWriteHex(short message, bool newLine = false);
+void logWriteHex(int message, bool newLine = false);
+void logWriteHex(long long message, bool newLine = false);
+
+// New line
+void logNewLine();
 
 // Variable Format
-void logVar(std::string message, int variable);
-void logVar(std::string message, double variable);
+void logVar(const char* message, int variable);
+void logVar(const char* message, double variable);

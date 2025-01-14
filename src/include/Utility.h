@@ -6,7 +6,6 @@
 
 #include <windows.h>
 
-#include "Log.h"
 #include "Math.h"
 
 
@@ -32,7 +31,7 @@ void swap(unsigned int* var1, unsigned int* var2);
 /*   Casting functions for char* types   */
 
 // Writes the given double value to the char* given. Will not write past MAXLENGTH
-bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS /* Default value = 2 */);
+bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2);
 
 // Returns a double value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
 double stringToDouble(char* string, int MAXLENGTH);

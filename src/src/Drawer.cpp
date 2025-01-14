@@ -118,7 +118,8 @@ PNG::PNG(const char* filename) {
     unsigned int failed = lodepng::decode(returnData, this->width, this->height, filename);
 
     if (failed) {
-        std::cerr << "Error loading PNG file: " << lodepng_error_text(failed) << std::endl;
+        logWrite("Error loading PNG file: ");
+        logWrite(lodepng_error_text(failed), true);
         return;
     }
 
@@ -175,9 +176,7 @@ PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
         uint8 o = input->getChannel( x, y, OPACITY);
 
         if (r == -1 || g == -1 || b == -1 || o == -1) {
-            std::cout << "color channel failed to get" << std::endl;
-            system("pause");
-            return;
+            logWrite("color channel failed to get", true);
         }
 
         this->rawData[i * 4] = r;

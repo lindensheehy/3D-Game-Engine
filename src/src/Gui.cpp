@@ -24,9 +24,6 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
         return;
     }
 
-    int windowPosX = 400;
-    int windowPosY = 400;
-
     // Create Window
     this->hwnd = CreateWindowEx(
         0,                              // Optional window styles.
@@ -35,7 +32,7 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
         WS_OVERLAPPEDWINDOW,            // Window style
 
         // Position
-        windowPosX, windowPosY, 
+        0, 0, 
         
         // Size
         windowWidth, windowHeight,

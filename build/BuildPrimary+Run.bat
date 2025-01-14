@@ -24,9 +24,9 @@ set objdir=../src/obj/
 @REM g++ -Ofast -c %srcdir%Math.cpp ^
 @REM     -o %objdir%Math.o
 
-@REM :: Log
-@REM g++ -Ofast -c %srcdir%Log.cpp ^
-@REM     -o %objdir%Log.o
+:: Log
+g++ -Ofast -c %srcdir%Log.cpp ^
+    -o %objdir%Log.o
 
 @REM :: Vec
 @REM g++ -Ofast -c %srcdir%Vec.cpp ^
@@ -52,9 +52,9 @@ g++ -Ofast -c %srcdir%Gui.cpp ^
 @REM g++ -Ofast -c %srcdir%Drawer.cpp ^
 @REM     -o %objdir%Drawer.o
 
-:: State
-g++ -Ofast -c %srcdir%State.cpp ^
-    -o %objdir%State.o
+@REM :: State
+@REM g++ -Ofast -c %srcdir%State.cpp ^
+@REM     -o %objdir%State.o
 
 @REM :: ObjectSet
 @REM g++ -Ofast -c %srcdir%ObjectSet.cpp ^

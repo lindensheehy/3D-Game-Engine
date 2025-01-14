@@ -19,10 +19,13 @@ bool Collision::sphereSphere(BoundingShape* sphere1, BoundingShape* sphere2) {
     BoundingSphere* castedSphere1 = (BoundingSphere*) sphere1;
     BoundingSphere* castedSphere2 = (BoundingSphere*) sphere2;
 
-    Vec3* distance = castedSphere1->pos->copy()->sub(castedSphere2->pos);
+    Vec3* distanceVec = castedSphere1->pos->copy()->sub(castedSphere2->pos);
+    double distance = distanceVec->magnitude();
     double totalRadius = castedSphere1->radius + castedSphere2->radius;
 
-    return distance->magnitude() < totalRadius;
+    delete distanceVec;
+
+    return distance < totalRadius;
 
 }
 

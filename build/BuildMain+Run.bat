@@ -1,7 +1,6 @@
 :: This only builds the main.exe, anything changed in the header files will not take effect when building this way
 
 set objdir=../src/obj/
-set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Compile main.exe
 g++ -Ofast ../main.cpp ^

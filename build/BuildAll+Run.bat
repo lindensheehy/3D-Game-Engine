@@ -3,7 +3,6 @@
 :: Paths
 set srcdir=../src/src/
 set objdir=../src/obj/
-set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 
 

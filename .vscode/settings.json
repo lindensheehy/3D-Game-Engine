@@ -57,6 +57,9 @@
         "variant": "cpp",
         "set": "cpp",
         "fstream": "cpp",
-        "scoped_allocator": "cpp"
+        "scoped_allocator": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }
