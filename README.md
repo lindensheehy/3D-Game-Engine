@@ -23,7 +23,7 @@ This is a 3D graphics engine written in C++, designed as a personal project to p
 
 ## Libraries & Dependencies:
 - **Windows API:** Used for window creation, handling input, painting a pixel buffer to the window.
-- **Standard C++ Libraries:** A minimal set of standard C++ libraries. Functionally, the only required library is  `chrono` for delta time, but I also use `fstream` for debugging and logging.
+- **Standard C++ Libraries:** The only standard libraries required for this app are `<windows.h>` and `<chrono>`
 - **Self Written Libraries:** This project heavily relies on libraries written by me for the vast majority of the functionality.
 
 ## Controls:
