@@ -133,6 +133,16 @@ void Tri2::setv3(Vec2* vec) {
     this->v3 = vec->copy();
 }
 
+void Tri2::rotate(double degrees, Vec2* around) {
+
+    this->v1->rotate(degrees, around);
+    this->v2->rotate(degrees, around);
+    this->v3->rotate(degrees, around);
+
+    return;
+
+}
+
 
 
 /* ------------ */

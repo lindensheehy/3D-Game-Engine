@@ -56,6 +56,8 @@ class Tri2 {
         void setv3(double x, double y, double z);
         void setv3(Vec2* vec);
 
+        void rotate(double degrees, Vec2* around = nullptr);
+
 };
 
 
