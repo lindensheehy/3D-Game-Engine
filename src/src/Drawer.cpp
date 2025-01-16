@@ -942,8 +942,8 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
             actualStartY += slopeLeftMid;
             actualEndY += slopeLeftRight;
 
-            startY = min(actualStartY, actualEndY);
-            endY = max(actualStartY, actualEndY);
+            startY = (int) actualStartY;
+            endY = (int) actualEndY;
 
             this->drawVerticalLine(pixel, startY, endY, i);
 
@@ -962,8 +962,8 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
             actualStartY += slopeMidRight;
             actualEndY += slopeLeftRight;
 
-            startY = min(actualStartY, actualEndY);
-            endY = max(actualStartY, actualEndY);
+            startY = (int) actualStartY;
+            endY = (int) actualEndY;
 
             this->drawVerticalLine(pixel, startY, endY, i);
 
