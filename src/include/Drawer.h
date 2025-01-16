@@ -158,13 +158,13 @@ class Drawer {
         void resetDepthBuffer();
 
         // Returns the 1d index cooresponding to a 2d set of indices
-        int bufferIndex(int x, int y);
+        int bufferIndex(int x, int y) const;
 
         // Returns true if the coordinate exists in the buffer
-        bool inBufferRange(int x, int y);
+        bool inBufferRange(int x, int y) const;
 
         // Changes the values of the given coordinates to be within the buffer range.
-        void clipCoordinates(int* x, int* y);
+        void clipCoordinates(int* x, int* y) const;
 
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(uint32 pixel, int x, int y);
@@ -256,8 +256,8 @@ class Drawer {
         void drawPixels(uint32 pixel, bool* pixels, int x, int y);
 
         // Returns a pointer to the pixels for a character
-        bool* getCharRef(char ch);
-        bool* getCharRef(int num);
+        bool* getCharRef(char ch) const;
+        bool* getCharRef(int num) const;
 
         /*
             Character Pixel Arts

@@ -72,7 +72,7 @@ Gui::~Gui() {
 }
 
 // Instance functions
-void Gui::flip() {
+void Gui::flip() const {
 
     HDC hdc = GetDC(hwnd);
     if (!hdc) return;
@@ -112,7 +112,7 @@ void Gui::flip() {
 
 }
 
-void Gui::handleMessages() {
+void Gui::handleMessages() const {
 
     MSG msg;
 

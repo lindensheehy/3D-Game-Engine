@@ -49,7 +49,7 @@ class Mesh {
                 /*   Instance Functions   */
 
                 // Creates a copy of the instance, and returns a pointer to it.
-                IndexMap* copy();
+                IndexMap* copy() const;
 
                 // Sets the values of the Set item at a given index
                 void setGroup(int index, int v1, int v2, int v3, int normal);
@@ -104,10 +104,10 @@ class Mesh {
         /*   Instance Funtions   */
 
         // Creates a copy of the instance, and returns a pointer to it.
-        Mesh* copy();
+        Mesh* copy() const;
 
         // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
-        Vec3* getCenter();
+        Vec3* getCenter(); 
 
         // Moves all the Vec3 objects within 'verticies' by the specified distance.
         Mesh* move(Vec3* dist);

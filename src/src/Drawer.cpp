@@ -177,6 +177,7 @@ PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
 
         if (r == -1 || g == -1 || b == -1 || o == -1) {
             logWrite("color channel failed to get", true);
+
         }
 
         this->rawData[i * 4] = r;
@@ -309,7 +310,7 @@ void Drawer::resetDepthBuffer() {
 
 }
 
-int Drawer::bufferIndex(int x, int y) {
+int Drawer::bufferIndex(int x, int y) const {
 
     if (!this->inBufferRange(x, y)) return -1;
 
@@ -317,7 +318,7 @@ int Drawer::bufferIndex(int x, int y) {
 
 }
 
-bool Drawer::inBufferRange(int x, int y) {
+bool Drawer::inBufferRange(int x, int y) const {
 
     return (
         x >= 0 &&
@@ -328,7 +329,7 @@ bool Drawer::inBufferRange(int x, int y) {
 
 }
 
-void Drawer::clipCoordinates(int* x, int* y) {
+void Drawer::clipCoordinates(int* x, int* y) const {
 
     if (x == nullptr) return;
     if (y == nullptr) return;
@@ -1196,7 +1197,7 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
     // These are the y values the line will go to/from for each x
     // The doubles store the actual value, and the ints are rounded
-    // The actual values may not actually be start and end as they say and might be backwards
+    // The actual values may not actually be low and high as the names imply, and might be backwards, but logically it works the same
     double startY = (double) y1;
     double endY = (double) y1;
     int startYInt, endYInt;
@@ -1663,7 +1664,7 @@ void Drawer::drawPixels(uint32 pixel, bool* pixels, int x, int y) {
 
 }
 
-bool* Drawer::getCharRef(char ch) {
+bool* Drawer::getCharRef(char ch) const {
 
     /*
         Because the chars 'a' - 'z' are in order for their cooresponding integer value, I can use this to simplify the indexing
@@ -1708,7 +1709,7 @@ bool* Drawer::getCharRef(char ch) {
 
 }
 
-bool* Drawer::getCharRef(int num) {
+bool* Drawer::getCharRef(int num) const {
 
     // Return ref to null char if the int is negative or not single digit
     if ( num < 0 || num > 9 ) {

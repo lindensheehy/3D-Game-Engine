@@ -5,7 +5,7 @@
 #include "Utility.h"
 
 // This is the list of keycodes my program tracks.
-// These values coorespond to both the given values from Windows, as well as the indexing of my keyStates
+// These values coorespond to both the given values from Windows, as well as the indexing of the keyStates array
 enum KeyCode : unsigned int {
 
     // Null

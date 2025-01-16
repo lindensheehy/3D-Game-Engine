@@ -285,32 +285,26 @@ int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
         // Handle mouse button events
         case WM_LBUTTONDOWN:
-            logWrite("Left down!", true);
             this->mouse->leftButtonDown();
             return 0;
 
         case WM_MBUTTONDOWN:
-            logWrite("Middle down!", true);
             this->mouse->middleButtonDown();
             return 0;
 
         case WM_RBUTTONDOWN:
-            logWrite("Right down!", true);
             this->mouse->rightButtonDown();
             return 0;
 
         case WM_LBUTTONUP:
-            logWrite("Left up!", true);
             this->mouse->leftButtonUp();
             return 0;
 
         case WM_MBUTTONUP:
-            logWrite("Middle up!", true);
             this->mouse->middleButtonUp();
             return 0;
 
         case WM_RBUTTONUP:
-            logWrite("Right up!", true);
             this->mouse->rightButtonUp();
             return 0;
 

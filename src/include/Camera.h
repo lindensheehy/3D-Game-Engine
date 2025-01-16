@@ -80,19 +80,17 @@ class Camera {
         // Takes a Vec3 object, and projects it into a Vec2 object.
         // The Vec2 components will be overwritten with the output of this function.
         // The values will be given in terms of fov (0 -> 1 is one fov length) so they dont mean anything for drawing until converted using a Display object
-        void project(Vec3* vec, Vec2* displayPos);
-
         // here the places distance between point and camera position into the z coordinate of displayPos
-        void project(Vec3* vec, Vec3* displayPos);
-        void project(Vec3* vec, Vec3* displayPos, Vec3* offset);
+        void project(Vec3* vec, Vec3* displayPos) const;
+        void project(Vec3* vec, Vec3* displayPos, Vec3* offset) const;
 
         // Runs the functions above for all the verticies in a mesh
-        void project(Mesh* mesh);
-        void project(Mesh* mesh, Vec3* offset);
+        void project(Mesh* mesh) const;
+        void project(Mesh* mesh, Vec3* offset) const;
 
         // Returns true if the camera can see the triangle, based on the location of the tri relative to the cam, and the normal vector of the tri
-        bool canSee(Tri3* tri);
-        bool canSee(Tri3* tri, Vec3* offset);
+        bool canSee(Tri3* tri) const;
+        bool canSee(Tri3* tri, Vec3* offset) const;
 
     private:
 

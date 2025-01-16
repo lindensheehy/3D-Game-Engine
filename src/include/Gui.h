@@ -40,10 +40,10 @@ class Gui {
         /*   Instance functions   */
         
         // Tells Windows to redraw the window
-        void flip();
+        void flip() const;
 
         // Sends all the messages from Windows to the WindowProc function. Will break on a WM_PAINT message so the main loop can execute before drawing
-        void handleMessages();
+        void handleMessages() const;
 
     private:
 

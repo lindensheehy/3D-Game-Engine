@@ -181,7 +181,7 @@ void Camera::rotate(double yaw, double pitch, double roll) {
 
 }
 
-void Camera::project(Vec3* vec, Vec3* displayPos) {
+void Camera::project(Vec3* vec, Vec3* displayPos) const {
 
     /*
         Same as above, but this one places the distance between the point and the camera pos into the z component of displayPos
@@ -210,7 +210,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos) {
     
 }
 
-void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
+void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) const {
 
     /*
         Same as above, but this one allows for the point to be treated as though its in a different location.
@@ -246,7 +246,7 @@ void Camera::project(Vec3* vec, Vec3* displayPos, Vec3* offset) {
 
 }
 
-void Camera::project(Mesh* mesh) {
+void Camera::project(Mesh* mesh) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (mesh == nullptr) {
@@ -261,7 +261,7 @@ void Camera::project(Mesh* mesh) {
 
 }
 
-void Camera::project(Mesh* mesh, Vec3* offset) {
+void Camera::project(Mesh* mesh, Vec3* offset) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (mesh == nullptr) {
@@ -281,7 +281,7 @@ void Camera::project(Mesh* mesh, Vec3* offset) {
 
 }
 
-bool Camera::canSee(Tri3* tri) {
+bool Camera::canSee(Tri3* tri) const {
 
     // Find the distance to the triangle, relative to the camera position
     Vec3* distance;
@@ -296,7 +296,7 @@ bool Camera::canSee(Tri3* tri) {
 
 }
 
-bool Camera::canSee(Tri3* tri, Vec3* offset) {
+bool Camera::canSee(Tri3* tri, Vec3* offset) const {
 
     // Find the distance to the triangle, relative to the camera position, accounting for offset
     Vec3* distance;

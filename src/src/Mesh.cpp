@@ -17,7 +17,7 @@ Mesh::IndexMap::~IndexMap() {
 }
 
 // Instance variables
-Mesh::IndexMap* Mesh::IndexMap::copy() {
+Mesh::IndexMap* Mesh::IndexMap::copy() const {
 
     IndexMap* newCopy = new IndexMap(this->size);
 
@@ -125,7 +125,7 @@ Mesh::~Mesh() {
 }
 
 // Instance Funtions
-Mesh* Mesh::copy() {
+Mesh* Mesh::copy() const {
     /*
         Makes a copy of a mesh where all the values are at new locations
         DOES NOT copy over projection data, must project again after copy
