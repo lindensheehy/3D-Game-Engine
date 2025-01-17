@@ -3,8 +3,6 @@
 
 #include "util/Utility.h"
 
-#include "lodepng/lodepng.h"
-
 #include "geometry/Vec.h"
 #include "geometry/Tri.h"
 #include "geometry/Camera.h"

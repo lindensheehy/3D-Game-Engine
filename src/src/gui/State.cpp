@@ -10,38 +10,45 @@ State::TimeState::TimeState() {
 
     // Variable initialization
     this->totalFrameCount = 0;
-    this->framesSinceLastSecond = 0;
-    this->fps = 0;
-    this->nextSecond = 0;
     this->dt = 0;
+    this->fps = 0;
+
+    this->framesSinceLastSecond = 0;
+    this->nextSecondMillis = 0;
 
 
     // Get time
-    auto timeVar = std::chrono::high_resolution_clock::now();
-    this->frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-    this->lastFrameTime = frameTime;
-
-    this->updateFps();
+    this->initTimer();
+    this->update();
 
 }
 
 // Instance functions
 void State::TimeState::updateDt() {
 
-    auto timeVar = std::chrono::high_resolution_clock::now();
     this->lastFrameTime = this->frameTime;
-    this->frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
-    this->dt = this->frameTime - this->lastFrameTime;
+
+    QueryPerformanceCounter( &(this->frameTime) );
+
+    long long frameTimeQP = this->frameTime.QuadPart;
+    long long lastFrameTimeQP = this->lastFrameTime.QuadPart;
+    long long frequencyQP = this->frequency.QuadPart;
+
+    this->dt = (double) (frameTimeQP - lastFrameTimeQP) / frequencyQP;
+    this->dt *= 1000;
 
 }
 
 void State::TimeState::updateFps() {
 
-    if (this->frameTime > this->nextSecond) {
+    double frameTimeMillis = (double) (this->frameTime.QuadPart) / this->frequency.QuadPart;
+    frameTimeMillis *= 1000;
+
+    if (frameTimeMillis > this->nextSecondMillis) {
 
         // Reset next second
-        long long temp = (long long) ((frameTime + 1000) / 1000);
-        this->nextSecond = (double) temp * 1000;
+        long long temp = (long long) ((frameTimeMillis + 1000) / 1000);
+        this->nextSecondMillis = (double) temp * 1000;
 
         // Store fps
         this->fps = this->framesSinceLastSecond;
@@ -65,8 +72,17 @@ void State::TimeState::update() {
 
 double State::TimeState::getTimeMillis() {
 
-    auto timeVar = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(timeVar.time_since_epoch()).count();
+    LARGE_INTEGER currentTime;
+    QueryPerformanceCounter(&currentTime);
+    double temp = (double) (currentTime.QuadPart) / frequency.QuadPart;
+    return temp * 1000;
+
+}
+
+void State::TimeState::initTimer() {
+
+    QueryPerformanceFrequency( &(this->frequency) );
+    QueryPerformanceCounter( &(this->frameTime) );
 
 }
 

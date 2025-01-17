@@ -1,12 +1,13 @@
 #define SDL_MAIN_HANDLED
 
-#include "../src/include/Drawer.h"
-#include "../src/include/State.h"
-#include "../src/include/Camera.h"
-#include "../src/include/Mesh.h"
-#include "../src/include/Gui.h"
-#include "../src/include/Log.h"
-#include "../src/include/ObjectSet.h"
+#include "util/Utility.h"
+
+#include "geometry/Camera.h"
+#include "geometry/Mesh.h"
+#include "gui/Drawer.h"
+#include "gui/State.h"
+#include "gui/Gui.h"
+#include "ui/UI.h"
 
 // Global declarations
 Gui* gui;
@@ -23,6 +24,10 @@ ObjectSet* objects;
 bool drawNormals;
 bool gravity;
 
+UI* ui;
+
+bool doMainLoop = true;
+
 void handleInput(State* state, Camera* camera) {
 
     /*
@@ -35,22 +40,27 @@ void handleInput(State* state, Camera* camera) {
         then rotates it based on the camera yaw and adds that to position.
     */
 
+    // Give the state to the UI to handle. 
+    // If the input is handled through the UI (based on return value), the rest of this is skipped
+    bool clickedOnUi = ui->doInput(state);
+    if (clickedOnUi) return;
+
     // Find distance to move based on the delta time of the frame
     double dist = camera->movementSpeed * (state->time->dt / 1000);
 
-    if (state->keyIsDown(SDLK_LSHIFT))
+    if (state->keyIsDown(KEY_SHIFT))
         dist *= camera->sprintFactor;
 
     // Vertical Movement
-    if (state->keyIsDown(SDLK_SPACE)) camera->pos->y += dist; // Up
-    if (state->keyIsDown(SDLK_LCTRL)) camera->pos->y -= dist; // Down
+    if (state->keyIsDown(KEY_SPACE)) camera->pos->y += dist; // Up
+    if (state->keyIsDown(KEY_CONTROL)) camera->pos->y -= dist; // Down
 
     // Horizontal Movement
     Vec2* cameraMovVec = new Vec2();
-    if (state->keyIsDown(SDLK_w)) cameraMovVec->y += dist; // Forward
-    if (state->keyIsDown(SDLK_s)) cameraMovVec->y -= dist; // Backward
-    if (state->keyIsDown(SDLK_a)) cameraMovVec->x -= dist; // Left
-    if (state->keyIsDown(SDLK_d)) cameraMovVec->x += dist; // Right
+    if (state->keyIsDown(KEY_W)) cameraMovVec->y += dist; // Forward
+    if (state->keyIsDown(KEY_S)) cameraMovVec->y -= dist; // Backward
+    if (state->keyIsDown(KEY_A)) cameraMovVec->x -= dist; // Left
+    if (state->keyIsDown(KEY_D)) cameraMovVec->x += dist; // Right
 
     // Move camera based on its rotation
     cameraMovVec->rotate(-camera->yaw);
@@ -73,81 +83,124 @@ void handleInput(State* state, Camera* camera) {
     /*   Temporary stuff   */
 
     // Toggle normal vector drawing on key n
-    if (state->keyJustDown(SDLK_n))
+    if (state->keyJustDown(KEY_N)) {
+
         drawNormals = !drawNormals;
+
+        if (drawNormals) objects->setOpacityAll(0.5);
+        else objects->setOpacityAll(1);
+
+    }
 
     // Pick object based on id, this cycles through all the objects with ids 1-7
     bool changeObject = false;
 
-    if (state->keyJustDown(SDLK_q)) {
+    if (state->keyJustDown(KEY_Q)) {
         selectedObjectId--;
-        if (selectedObjectId < 1) selectedObjectId += 7;
+        if (selectedObjectId < 1) selectedObjectId += 8;
         changeObject = true;
     }
 
-    if (state->keyJustDown(SDLK_e)) {
+    if (state->keyJustDown(KEY_E)) {
         selectedObjectId++;
-        if (selectedObjectId > 7) selectedObjectId -= 7;
+        if (selectedObjectId > 8) selectedObjectId -= 8;
         changeObject = true;
     }
 
     if (changeObject) {
-        selectedObject->opacity = 1;
+
+        if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
+
+        ui->updateWindowTransform(selectedObject);
+
+    }
+
+    if (state->keyJustDown(KEY_ENTER)) {
+
+        if (selectedObject != nullptr) selectedObject->opacity = 1;
+        selectedObject = nullptr;
+
+        ui->destroyWindowTransform();
+
     }
 
     // This rotates the selected object when pressing keys j,k,l
-    if (state->keyIsDown(SDLK_j))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(1, 0, 0);
+    if (state->keyIsDown(KEY_J))
+        if (selectedObject != nullptr) selectedObject->rotateSelf(1, 0, 0);
 
-    if (state->keyIsDown(SDLK_k))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 1, 0);
+    if (state->keyIsDown(KEY_K))
+        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 1, 0);
 
-    if (state->keyIsDown(SDLK_l))
-        if (selectedObject != nullptr) selectedObject->mesh->rotateSelf(0, 0, 1);
+    if (state->keyIsDown(KEY_L))
+        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 0, 1);
 
     // This moves the selected object along the y-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_o))
+    if (state->keyIsDown(KEY_O))
         if (selectedObject != nullptr) selectedObject->move(0, 0.5, 0);
 
-    if (state->keyIsDown(SDLK_p))
+    if (state->keyIsDown(KEY_P))
         if (selectedObject != nullptr) selectedObject->move(0, -0.5, 0);
 
     // This moves the selected object along the x-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_u))
+    if (state->keyIsDown(KEY_U))
         if (selectedObject != nullptr) selectedObject->move(0.5, 0, 0);
 
-    if (state->keyIsDown(SDLK_i))
+    if (state->keyIsDown(KEY_I))
         if (selectedObject != nullptr) selectedObject->move(-0.5, 0, 0);
 
     // This moves the selected object along the z-axis when pressing keys o,p
-    if (state->keyIsDown(SDLK_t))
+    if (state->keyIsDown(KEY_T))
         if (selectedObject != nullptr) selectedObject->move(0, 0, 0.5);
 
-    if (state->keyIsDown(SDLK_y))
+    if (state->keyIsDown(KEY_Y))
         if (selectedObject != nullptr) selectedObject->move(0, 0, -0.5);
 
     // Toggles gravity
-    if (state->keyJustDown(SDLK_g)) {
+    if (state->keyJustDown(KEY_G)) {
         
         if (gravity) {
-            std::cout << "gravity off" << std::endl;
-            objects->setAllGravity(0.0);
+            objects->setGravityAll(0.0);
             gravity = false;
         }
 
         else {
-            std::cout << "gravity on" << std::endl;
-            objects->setAllGravity(-30);
+            objects->setGravityAll(-30);
             gravity = true;
         }
 
     }
 
     // Gives all the objects some vertical velocity
-    if (state->keyJustDown(SDLK_z))
+    if (state->keyJustDown(KEY_Z))
         objects->setVelocityAll(0, 25, 0);
+
+}
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    // status of 0 means the message was matched and handled
+    int status = state->handleMessage(uMsg, wParam, lParam);
+
+    switch (status) {
+
+        // Message was properly handled
+        case 0:
+            return 0;
+
+        // Message was a quit message, leave main loop
+        case 1:
+            doMainLoop = false;
+            return 0;
+
+        // Message was not handled
+        case 2:
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+    }
+
+    return 0;
 
 }
 
@@ -159,11 +212,10 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Gui(1000, 600);
-    gui->init();
+    gui = new Gui(WindowProc, 1200, 700, "Game Engine");
 
     // Init all the working objects
-    state = new State();
+    state = new State(gui->hwnd);
 
     display = new Display(gui->windowWidth, gui->windowHeight);
     camera = new Camera();
@@ -171,8 +223,9 @@ void init() {
 
     drawer = new Drawer(gui->windowWidth, gui->windowHeight);
     drawer->initFont();
+    drawer->buffer = gui->buffer;
 
-    // Sets up the default meshes, and creates the objects to be drawn
+    // Sets up the default meshes
     Mesh::initMeshes();
 
 
@@ -180,39 +233,57 @@ void init() {
     objects = new ObjectSet();
     Object* newObject;
 
+    /*   Main Objects   */
+
     newObject = new Object();
     newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(5)->move(0, 20, 50)->setColor(Color::GREY);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
     objects->pushBack(newObject, 2);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
     objects->pushBack(newObject, 3);
 
     newObject = new Object();
-    newObject->mesh = Mesh::capsuleMesh->copy()->scale(15)->move(0, -20, 50)->setColor(Color::GREEN);
+    newObject->mesh = Mesh::capsuleMesh->copy();
+    newObject->scaleBy(15)->move(0, -20, 50)->setColor(Color::GREEN);
     objects->pushBack(newObject, 4);
 
     newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::sphereMesh->copy();
+    newObject->scaleBy(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 5);
 
     newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy()->scale(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    newObject->mesh = Mesh::sphereMesh->copy();
+    newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 6);
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
     objects->pushBack(newObject, 7);
+
+
+    /*   Floor   */
+
+    newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
+    objects->pushBack(newObject, 8);
+
 
     gravity = false;
     drawNormals = false;
 
     selectedObjectId = 1;
-    selectedObject = objects->getById(1);
+
+    ui = new UI();
 
 }
 
@@ -225,23 +296,11 @@ int main(int argc, char* argv[]) {
     double runningTotal;
 
     // Main event loop, runs for 500 frames, 10 times
-    bool leave = false;
-    SDL_Event event;
-
     for (int i = 0; i < 25; i++) {
 
         startTime = state->time->getTimeMillis();    
 
         for (int i = 0; i < 500; i++) {
-
-            // Update mouse position
-            SDL_GetMouseState(   &(state->mouse->posX),   &(state->mouse->posY)   );
-            
-            // Handle SDL events
-            while (SDL_PollEvent(&event) != 0) {
-                if (event.type == SDL_QUIT) { leave = true; std::cout<<"closed"; }
-                else state->addEvent(&event);
-            }
 
             // Does all the user input handling
             handleInput(state, camera);
@@ -250,36 +309,32 @@ int main(int argc, char* argv[]) {
             objects->doAllPhysics(state->time->dt);
 
             // Prep the pixel and depth buffers
-            gui->getBuffer();
-            drawer->buffer = gui->buffer;
             drawer->resetDepthBuffer();
             drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
 
             // Draw all the objects
-            if (drawNormals) {
-                objects->drawAllWithNormals(drawer, camera, display, 0.5);
-            }
-
-            else {
-                objects->drawAll(drawer, camera, display);
-            }
+            if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
+            else objects->drawAll(drawer, camera, display);
             
             // Draw the UI
             drawer->drawFps(state, display);
+            ui->draw(drawer);
             drawer->drawCrosshair(display);
-
-            // Update the GUI
-            gui->flip();
 
             // Tell State that the frame is over
             state->nextFrame();
+
+            // Update the GUI
+            gui->flip();
 
         }
 
         endTime = state->time->getTimeMillis();
 
         double elapsedTime = endTime - startTime;
-        std::cout << "executed in " << elapsedTime << " ms" << std::endl;
+        logWrite("executed in ");
+        logWrite(elapsedTime);
+        logWrite(" ms", true);
 
         runningTotal += elapsedTime;
 
@@ -290,10 +345,12 @@ int main(int argc, char* argv[]) {
     delete display;
 
     // Destroy the window and quit SDL
-    gui->exit();
+    delete gui;
 
     double elapsedTime = endTime - startTime;
-    std::cout << "average execution time:  " << runningTotal / 25 << " ms" << std::endl;
+    logWrite("average execution time:  ");
+    logWrite(runningTotal / 25);
+    logWrite(" ms", true);
 
     return 0;
 

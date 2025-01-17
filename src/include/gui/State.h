@@ -94,7 +94,7 @@ class State {
         class TimeState {
 
             /*
-                Stores everything time related needed for the code.
+                Stores everything time related needed for the code, in milliseconds.
                 This holds current time, delta time since last frame, and fps variables.
                 This also holds anything which counts frames.
             */
@@ -106,18 +106,8 @@ class State {
                 // Value which increments every frame
                 int totalFrameCount;
 
-                // Time stamps
-                double frameTime;
-                double lastFrameTime;
-
-                // Delta time since last frame. requires updateDt() to be called
+                // Delta time, in milliseconds, since last frame. requires updateDt() to be called
                 double dt;
-
-                // Counts the frames since the last full second
-                double framesSinceLastSecond;
-
-                // Saves the last full second + 1 (in ms, so a multiple of 1000) as a tell for when to update fps
-                double nextSecond;
 
                 // Frames per second
                 int fps;
@@ -140,6 +130,21 @@ class State {
                 // Returns the current time in milliseconds
                 double getTimeMillis();
 
+            private:
+
+                // Used for getting time with Windows
+                LARGE_INTEGER frequency;
+                LARGE_INTEGER frameTime;
+                LARGE_INTEGER lastFrameTime;
+
+                // Counts the frames since the last full second
+                double framesSinceLastSecond;
+
+                // Saves the last full second + 1 (in ms, so a multiple of 1000) as a tell for when to update fps
+                double nextSecondMillis;
+
+                // Sets up the timer
+                void initTimer();
 
         };
 

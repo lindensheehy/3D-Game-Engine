@@ -114,37 +114,7 @@ PNG::PNG(const char* filename) {
         return;
     }
 
-    std::vector<unsigned char> returnData;
-    unsigned int failed = lodepng::decode(returnData, this->width, this->height, filename);
-
-    if (failed) {
-        logWrite("Error loading PNG file: ");
-        logWrite(lodepng_error_text(failed), true);
-        return;
-    }
-
-    this->fileName = filename;
-    int size = this->width * this->height;
-    this->rawData = new uint8[size * 4];
-    this->pixels = new Color*[size];
-
-    for (int i = 0; i < size * 4; i += 4) {
-
-        uint8 r = (uint8) returnData[i];
-        uint8 g = (uint8) returnData[i + 1];
-        uint8 b = (uint8) returnData[i + 2];
-        uint8 o = (uint8) returnData[i + 3];
-
-        this->rawData[i] = r;
-        this->rawData[i + 1] = g;
-        this->rawData[i + 2] = b;
-        this->rawData[i + 3] = o;
-
-        this->pixels[i / 4] = new Color(o, r, g, b);
-
-    }
-    
-    return;
+    // Not implemented yet
 
 }
 

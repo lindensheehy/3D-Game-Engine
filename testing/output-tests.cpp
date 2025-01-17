@@ -1,8 +1,8 @@
-#include "../src/include/Log.h"
+#include "util/Log.h"
 
 // Libs for functions to test
-#include "../src/include/Math.h"
-#include "../src/include/Utility.h"
+#include "util/Math.h"
+#include "util/Utility.h"
 
 
 // Test counters
@@ -406,21 +406,6 @@ int main() {
     logWrite(
         "</body>\n"
     );
-
-    char buffer[256];
-
-    doubleToString(0.1, buffer, 256, 6);
-    std::cout << buffer << std::endl;
-    doubleToString(1.1, buffer, 256, 6);
-    std::cout << buffer << std::endl;
-    doubleToString(-1.1, buffer, 256, 6);
-    std::cout << buffer << std::endl;
-    doubleToString(12345.12345, buffer, 256, 6);
-    std::cout << buffer << std::endl;
-    doubleToString(100000.0001, buffer, 256, 6);
-    std::cout << buffer << std::endl;
-    doubleToString(-100000.0001, buffer, 256, 6);
-    std::cout << buffer << std::endl;
 
     return 0;
 }
