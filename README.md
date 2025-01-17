@@ -1,6 +1,6 @@
 # 3D Graphics Engine in C++
 
-This is a 3D graphics engine written in C++ using `windows.h` <ins>as my **only** include</ins>. This limitation was based on my goal of learning as much as possible about C++. This meant, if I wanted high level abstractions, I would have to write them myself, therefore I would be writing much more code and I would have to know how everything works. For example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself; and this applies to higher level concepts as well like my `Mesh` class.
+This is a 3D graphics engine written in C++ using `windows.h` <ins>as my **only** include</ins>. I chose this limitation to align with my goal of learning as much as possible about C++. This meant, if I wanted high level abstractions, I would have to write them myself, therefore I would be writing much more code and I would have to know how everything works. For example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself. This also applies to higher level concepts as well like my `Mesh` class.
 
 Everything in this repository was written 100% by Linden Sheehy (me).
 
