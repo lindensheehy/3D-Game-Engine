@@ -1,6 +1,7 @@
 :: Build libraries
 
 :: Paths
+set include=-I../src/include
 set srcdir=../src/src/
 set objdir=../src/obj/
 
@@ -9,7 +10,7 @@ set objdir=../src/obj/
 :: Not mine
 
 :: lodepng
-g++ -Ofast -c ../src/lodepng/lodepng.cpp ^
+g++ -Ofast %include% -c %srcdir%lodepng/lodepng.cpp ^
     -o %objdir%lodepng.o
 
 
@@ -17,58 +18,62 @@ g++ -Ofast -c ../src/lodepng/lodepng.cpp ^
 :: Mine
 
 :: Utility
-g++ -Ofast -c %srcdir%Utility.cpp ^
+g++ -Ofast %include% -c %srcdir%util/Utility.cpp ^
     -o %objdir%Utility.o
 
 :: Math
-g++ -Ofast -c %srcdir%Math.cpp ^
+g++ -Ofast %include% -c %srcdir%util/Math.cpp ^
     -o %objdir%Math.o
 
 :: Log
-g++ -Ofast -c %srcdir%Log.cpp ^
+g++ -Ofast %include% -c %srcdir%util/Log.cpp ^
     -o %objdir%Log.o
 
 :: Vec
-g++ -Ofast -c %srcdir%Vec.cpp ^
+g++ -Ofast %include% -c %srcdir%geometry/Vec.cpp ^
     -o %objdir%Vec.o
 
 :: Tri
-g++ -Ofast -c %srcdir%Tri.cpp ^
+g++ -Ofast %include% -c %srcdir%geometry/Tri.cpp ^
     -o %objdir%Tri.o
 
 :: Mesh
-g++ -Ofast -c %srcdir%Mesh.cpp ^
+g++ -Ofast %include% -c %srcdir%geometry/Mesh.cpp ^
     -o %objdir%Mesh.o
 
 :: Camera
-g++ -Ofast -c %srcdir%Camera.cpp ^
+g++ -Ofast %include% -c %srcdir%geometry/Camera.cpp ^
     -o %objdir%Camera.o
 
 :: Gui
-g++ -Ofast -c %srcdir%Gui.cpp ^
+g++ -Ofast %include% -c %srcdir%gui/Gui.cpp ^
     -o %objdir%Gui.o
 
 :: Drawer
-g++ -Ofast -c %srcdir%Drawer.cpp ^
+g++ -Ofast %include% -c %srcdir%gui/Drawer.cpp ^
     -o %objdir%Drawer.o
 
 :: State
-g++ -Ofast -c %srcdir%State.cpp ^
+g++ -Ofast %include% -c %srcdir%gui/State.cpp ^
     -o %objdir%State.o
 
 :: ObjectSet
-g++ -Ofast -c %srcdir%ObjectSet.cpp ^
+g++ -Ofast %include% -c %srcdir%physics/ObjectSet.cpp ^
     -o %objdir%ObjectSet.o
 
+:: Bounding
+g++ -Ofast %include% -c %srcdir%physics/Bounding.cpp ^
+    -o %objdir%Bounding.o
+
 :: UI
-g++ -Ofast -c %srcdir%UI.cpp ^
+g++ -Ofast %include% -c %srcdir%ui/UI.cpp ^
     -o %objdir%UI.o
 
 
 :: Build main.exe
 
 :: Compile main.exe
-g++ -Ofast ../main.cpp ^
+g++ -Ofast %include%  ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -82,6 +87,7 @@ g++ -Ofast ../main.cpp ^
     %objdir%ObjectSet.o ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
+    %objdir%Bounding.o ^
     -o main.exe ^
     -mwindows
 

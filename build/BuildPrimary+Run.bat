@@ -1,6 +1,7 @@
 :: Build libraries
 
 :: Paths
+set include=-I../src/include
 set srcdir=../src/src/
 set objdir=../src/obj/
 
@@ -8,67 +9,71 @@ set objdir=../src/obj/
 
 :: Not mine
 
-@REM :: lodepng
-@REM g++ -Ofast -c ../src/lodepng/lodepng.cpp ^
+:: lodepng
+@REM g++ -Ofast %include% -c %srcdir%lodepng/lodepng.cpp ^
 @REM     -o %objdir%lodepng.o
 
 
 
 :: Mine
 
-@REM :: Utility
-@REM g++ -Ofast -c %srcdir%Utility.cpp ^
+:: Utility
+@REM g++ -Ofast %include% -c %srcdir%util/Utility.cpp ^
 @REM     -o %objdir%Utility.o
 
-@REM :: Math
-@REM g++ -Ofast -c %srcdir%Math.cpp ^
+:: Math
+@REM g++ -Ofast %include% -c %srcdir%util/Math.cpp ^
 @REM     -o %objdir%Math.o
 
 :: Log
-g++ -Ofast -c %srcdir%Log.cpp ^
-    -o %objdir%Log.o
+@REM g++ -Ofast %include% -c %srcdir%util/Log.cpp ^
+@REM     -o %objdir%Log.o
 
-@REM :: Vec
-@REM g++ -Ofast -c %srcdir%Vec.cpp ^
+:: Vec
+@REM g++ -Ofast %include% -c %srcdir%geometry/Vec.cpp ^
 @REM     -o %objdir%Vec.o
 
-@REM :: Tri
-@REM g++ -Ofast -c %srcdir%Tri.cpp ^
+:: Tri
+@REM g++ -Ofast %include% -c %srcdir%geometry/Tri.cpp ^
 @REM     -o %objdir%Tri.o
 
-@REM :: Mesh
-@REM g++ -Ofast -c %srcdir%Mesh.cpp ^
+:: Mesh
+@REM g++ -Ofast %include% -c %srcdir%geometry/Mesh.cpp ^
 @REM     -o %objdir%Mesh.o
 
-@REM :: Camera
-@REM g++ -Ofast -c %srcdir%Camera.cpp ^
+:: Camera
+@REM g++ -Ofast %include% -c %srcdir%geometry/Camera.cpp ^
 @REM     -o %objdir%Camera.o
 
 :: Gui
-g++ -Ofast -c %srcdir%Gui.cpp ^
-    -o %objdir%Gui.o
+@REM g++ -Ofast %include% -c %srcdir%gui/Gui.cpp ^
+@REM     -o %objdir%Gui.o
 
-@REM :: Drawer
-@REM g++ -Ofast -c %srcdir%Drawer.cpp ^
+:: Drawer
+@REM g++ -Ofast %include% -c %srcdir%gui/Drawer.cpp ^
 @REM     -o %objdir%Drawer.o
 
-@REM :: State
-@REM g++ -Ofast -c %srcdir%State.cpp ^
+:: State
+@REM g++ -Ofast %include% -c %srcdir%gui/State.cpp ^
 @REM     -o %objdir%State.o
 
-@REM :: ObjectSet
-@REM g++ -Ofast -c %srcdir%ObjectSet.cpp ^
+:: ObjectSet
+@REM g++ -Ofast %include% -c %srcdir%physics/ObjectSet.cpp ^
 @REM     -o %objdir%ObjectSet.o
 
-@REM :: UI
-@REM g++ -Ofast -c %srcdir%UI.cpp ^
-@REM     -o %objdir%UI.o
+:: Bounding
+@REM g++ -Ofast %include% -c %srcdir%physics/Bounding.cpp ^
+@REM     -o %objdir%Bounding.o
+
+:: UI
+g++ -Ofast %include% -c %srcdir%ui/UI.cpp ^
+    -o %objdir%UI.o
 
 
 :: Build main.exe
 
 :: Compile main.exe
-g++ -Ofast ../main.cpp ^
+g++ -Ofast %include%  ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -82,6 +87,7 @@ g++ -Ofast ../main.cpp ^
     %objdir%ObjectSet.o ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
+    %objdir%Bounding.o ^
     -o main.exe ^
     -mwindows
 

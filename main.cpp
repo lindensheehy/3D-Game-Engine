@@ -1,13 +1,13 @@
 #define SDL_MAIN_HANDLED
 
-#include "src/include/Utility.h"
+#include "util/Utility.h"
 
-#include "src/include/Drawer.h"
-#include "src/include/State.h"
-#include "src/include/Camera.h"
-#include "src/include/Mesh.h"
-#include "src/include/Gui.h"
-#include "src/include/UI.h"
+#include "geometry/Camera.h"
+#include "geometry/Mesh.h"
+#include "gui/Drawer.h"
+#include "gui/State.h"
+#include "gui/Gui.h"
+#include "ui/UI.h"
 
 // Global declarations
 Gui* gui;

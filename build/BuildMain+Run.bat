@@ -1,9 +1,11 @@
 :: This only builds the main.exe, anything changed in the header files will not take effect when building this way
 
+:: Paths
+set include=-I../src/include
 set objdir=../src/obj/
 
 :: Compile main.exe
-g++ -Ofast ../main.cpp ^
+g++ -Ofast %include%  ../main.cpp ^
     %objdir%Utility.o ^
     %objdir%Math.o ^
     %objdir%Log.o ^
@@ -17,6 +19,7 @@ g++ -Ofast ../main.cpp ^
     %objdir%ObjectSet.o ^
     %objdir%UI.o ^
     %objdir%lodepng.o ^
+    %objdir%Bounding.o ^
     -o main.exe ^
     -mwindows
 
