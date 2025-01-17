@@ -1,7 +1,5 @@
 #pragma once
 
-#include <chrono>
-
 #include "util/Utility.h"
 
 // This is the list of keycodes my program tracks.
