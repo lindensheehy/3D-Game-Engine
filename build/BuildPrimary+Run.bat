@@ -54,8 +54,8 @@ set objdir=../src/obj/
 @REM     -o %objdir%Drawer.o
 
 :: State
-g++ -Ofast %include% -c %srcdir%gui/State.cpp ^
-    -o %objdir%State.o
+@REM g++ -Ofast %include% -c %srcdir%gui/State.cpp ^
+@REM     -o %objdir%State.o
 
 :: ObjectSet
 @REM g++ -Ofast %include% -c %srcdir%physics/ObjectSet.cpp ^

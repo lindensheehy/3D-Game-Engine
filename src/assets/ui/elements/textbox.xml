@@ -1,5 +1,11 @@
-<div>
+<parameters>
 
-    <filledrect posx="0", posy="0", width=>
+    <_width/>
 
-</div>
+</parameters>
+
+<main>
+
+    <filledrect posx="0", posy="0", width=_width>
+
+</main>
