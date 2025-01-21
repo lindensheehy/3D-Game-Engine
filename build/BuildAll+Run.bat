@@ -6,92 +6,40 @@ set srcdir=../src/src/
 set objdir=../src/obj/
 
 
+:: Build dependancies
 
-:: Not mine
+:: util
+g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
+g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
+g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
 
-:: lodepng
-g++ -Ofast %include% -c %srcdir%lodepng/lodepng.cpp ^
-    -o %objdir%lodepng.o
+:: geometry
+g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%Vec.o
+g++ -Ofast %include%        -c %srcdir%geometry/Tri.cpp         -o %objdir%Tri.o
+g++ -Ofast %include%        -c %srcdir%geometry/Mesh.cpp        -o %objdir%Mesh.o
+g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
 
+:: gui
+g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
+g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
+g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 
+:: physics
+g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%ObjectSet.o
+g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
 
-:: Mine
-
-:: Utility
-g++ -Ofast %include% -c %srcdir%util/Utility.cpp ^
-    -o %objdir%Utility.o
-
-:: Math
-g++ -Ofast %include% -c %srcdir%util/Math.cpp ^
-    -o %objdir%Math.o
-
-:: Log
-g++ -Ofast %include% -c %srcdir%util/Log.cpp ^
-    -o %objdir%Log.o
-
-:: Vec
-g++ -Ofast %include% -c %srcdir%geometry/Vec.cpp ^
-    -o %objdir%Vec.o
-
-:: Tri
-g++ -Ofast %include% -c %srcdir%geometry/Tri.cpp ^
-    -o %objdir%Tri.o
-
-:: Mesh
-g++ -Ofast %include% -c %srcdir%geometry/Mesh.cpp ^
-    -o %objdir%Mesh.o
-
-:: Camera
-g++ -Ofast %include% -c %srcdir%geometry/Camera.cpp ^
-    -o %objdir%Camera.o
-
-:: Gui
-g++ -Ofast %include% -c %srcdir%gui/Gui.cpp ^
-    -o %objdir%Gui.o
-
-:: Drawer
-g++ -Ofast %include% -c %srcdir%gui/Drawer.cpp ^
-    -o %objdir%Drawer.o
-
-:: State
-g++ -Ofast %include% -c %srcdir%gui/State.cpp ^
-    -o %objdir%State.o
-
-:: ObjectSet
-g++ -Ofast %include% -c %srcdir%physics/ObjectSet.cpp ^
-    -o %objdir%ObjectSet.o
-
-:: Bounding
-g++ -Ofast %include% -c %srcdir%physics/Bounding.cpp ^
-    -o %objdir%Bounding.o
-
-:: UI
-g++ -Ofast %include% -c %srcdir%ui/UI.cpp ^
-    -o %objdir%UI.o
+:: ui
+g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 
-:: Build main.exe
-
-:: Compile main.exe
-g++ -Ofast %include%  ../main.cpp ^
-    %objdir%Utility.o ^
-    %objdir%Math.o ^
-    %objdir%Log.o ^
-    %objdir%Vec.o ^
-    %objdir%Tri.o ^
-    %objdir%Camera.o ^
-    %objdir%Mesh.o ^
-    %objdir%Gui.o ^
-    %objdir%Drawer.o ^
-    %objdir%State.o ^
-    %objdir%ObjectSet.o ^
-    %objdir%UI.o ^
-    %objdir%lodepng.o ^
-    %objdir%Bounding.o ^
-    -o main.exe ^
+:: Build main
+g++ -Ofast %include% ^
+    ../main.cpp ^
+    %objdir%*.o ^
+    -o GameEngine.exe ^
     -mwindows
 
-main.exe
+GameEngine.exe
 
 :: pause for debugging purposes
 pause
