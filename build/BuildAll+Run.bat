@@ -5,6 +5,8 @@ set include=-I../src/include
 set srcdir=../src/src/
 set objdir=../src/obj/
 
+set compile=g++
+
 
 :: Build dependancies
 

@@ -13,6 +13,18 @@ class Window;
 class Action;
 class UI;
 
+enum ActionType {
+    CLOSE_WINDOW,
+    WRITE_TO_VALUE
+};
+
+
+class ActionHandler {
+
+
+
+};
+
 
 
 template<typename type>
