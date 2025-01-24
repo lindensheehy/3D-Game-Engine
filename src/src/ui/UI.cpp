@@ -1,75 +1,6 @@
 #include "ui/UI.h"
 
 
-/* ---------------------------- */
-/* ---------- Action ---------- */
-/* ---------------------------- */
-
-// Constructor
-Action::Action() {
-
-}
-
-// Destructor
-Action::~Action() {
-
-}
-
-
-
-/* ------------------------------------ */
-/* ---------- ActionLogWrite ---------- */
-/* ------------------------------------ */
-
-// Constructor
-ActionLogWrite::ActionLogWrite(const char* message) {
-
-    this->message = message;
-
-}
-
-// Destructor
-ActionLogWrite::~ActionLogWrite() {
-    // The Window object should be handled manually it doesnt make sense to delete it here.
-    // Keeping this in case that changes or I add other instance variables
-}
-
-// Instance Functions
-void ActionLogWrite::run() {
-
-    logWrite(message, true);
-
-}
-
-
-
-/* --------------------------------- */
-/* ---------- CloseWindow ---------- */
-/* --------------------------------- */
-
-// Constructor
-ActionCloseWindow::ActionCloseWindow(UI* ui, Window* window) {
-
-    this->ui = ui;
-    this->window = window;
-
-}
-
-// Destructor
-ActionCloseWindow::~ActionCloseWindow() {
-    // The Window object should be handled manually it doesnt make sense to delete it here.
-    // Keeping this in case that changes or I add other instance variables
-}
-
-// Instance Functions
-void ActionCloseWindow::run() {
-
-    this->ui->deleteWindow(this->window);
-
-}
-
-
-
 /* ------------------------ */
 /* ---------- UI ---------- */
 /* ------------------------ */
@@ -204,7 +135,7 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     WindowElement* newElement;
 
     // Top bar
-    newWindow->addElement( WindowElement::createTopBar(this, newWindow, "Transform") );
+    newWindow->addElement( createTopBar(this, newWindow, "Transform") );
 
     // Position
     newElement = new WindowDiv(20, 30, 250, 20);
@@ -221,9 +152,9 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     }
 
     else {
-        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->pos->x)) );
-        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->pos->y)) );
-        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->pos->z)) );
+        newElement->addChild( createTextBox(85, 4, 35, &(object->pos->x)) );
+        newElement->addChild( createTextBox(145, 4, 35, &(object->pos->y)) );
+        newElement->addChild( createTextBox(205, 4, 35, &(object->pos->z)) );
         object->pos->log();
     }
 
@@ -244,9 +175,9 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     }
 
     else {
-        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->rotation->x)) );
-        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->rotation->y)) );
-        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->rotation->z)) );
+        newElement->addChild( UI::createTextBox(85, 4, 35, &(object->rotation->x)) );
+        newElement->addChild( UI::createTextBox(145, 4, 35, &(object->rotation->y)) );
+        newElement->addChild( UI::createTextBox(205, 4, 35, &(object->rotation->z)) );
         object->rotation->log();
     }
 
@@ -267,9 +198,9 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     }
 
     else {
-        newElement->addChild( WindowElement::createTextBox(85, 4, 35, &(object->scale->x)) );
-        newElement->addChild( WindowElement::createTextBox(145, 4, 35, &(object->scale->y)) );
-        newElement->addChild( WindowElement::createTextBox(205, 4, 35, &(object->scale->z)) ); 
+        newElement->addChild( UI::createTextBox(85, 4, 35, &(object->scale->x)) );
+        newElement->addChild( UI::createTextBox(145, 4, 35, &(object->scale->y)) );
+        newElement->addChild( UI::createTextBox(205, 4, 35, &(object->scale->z)) ); 
         object->scale->log(); 
     }
     
@@ -316,5 +247,53 @@ void UI::updateNextWindowPos() {
 
     if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
     if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
+
+}
+
+
+// Some high level constructors for specific elements
+WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
+
+    // Divider for all the elements
+    WindowElement* holder = new WindowDiv(1, 1, window->size->x - 1, 18);
+
+    // Title plus dragable tab
+    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window);
+    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18, Color::LIGHTER);
+    WindowElement* titleElement = new WindowTextStatic(6, 6, title);
+    
+    dragRect->addChild(topBarColor);
+    dragRect->addChild(titleElement);
+
+    // The parent element for the close tab button
+    WindowElement* CloseButtonElement = new WindowButton(
+        window->size->x - 19, 0, 18, 18, 
+        new Action(CLOSE_WINDOW)
+    );
+    CloseButtonElement->color = Color::RED;
+
+    // Two white lines to form the X on the close tab button
+    WindowElement* line1 = new WindowLine(3, 2, 13, 13, Color::WHITE);
+    WindowElement* line2 = new WindowLine(15, 2, -13, 13, Color::WHITE);
+
+    // Add the lines to the button
+    CloseButtonElement->addChild(line1);
+    CloseButtonElement->addChild(line2);
+
+    holder->addChild(dragRect);
+    holder->addChild(CloseButtonElement);
+
+    return holder;
+
+}
+
+WindowElement* UI::createTextBox(int posx, int posy, int width, double* valueToWrite) {
+
+    WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
+
+    newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
+    newElement->addChild( new WindowTextInput(0, 0, 35, valueToWrite) );
+
+    return newElement;
 
 }

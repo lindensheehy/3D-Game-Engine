@@ -113,50 +113,6 @@ void WindowElement::drawChildren(Drawer* drawer, Vec2* offset) {
 
 }
 
-// Class Functions
-WindowElement* WindowElement::createTopBar(UI* ui, Window* window, const char* title) {
-
-    // Divider for all the elements
-    WindowElement* holder = new WindowDiv(1, 1, window->size->x - 1, 18);
-
-    // Title plus dragable tab
-    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window);
-    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18, Color::LIGHTER);
-    WindowElement* titleElement = new WindowTextStatic(6, 6, title);
-    
-    dragRect->addChild(topBarColor);
-    dragRect->addChild(titleElement);
-
-    // The parent element for the close tab button
-    WindowElement* CloseButtonElement = new WindowButton(window->size->x - 19, 0, 18, 18, new ActionCloseWindow(ui, window));
-    CloseButtonElement->color = Color::RED;
-
-    // Two white lines to form the X on the close tab button
-    WindowElement* line1 = new WindowLine(3, 2, 13, 13, Color::WHITE);
-    WindowElement* line2 = new WindowLine(15, 2, -13, 13, Color::WHITE);
-
-    // Add the lines to the button
-    CloseButtonElement->addChild(line1);
-    CloseButtonElement->addChild(line2);
-
-    holder->addChild(dragRect);
-    holder->addChild(CloseButtonElement);
-
-    return holder;
-
-}
-
-WindowElement* WindowElement::createTextBox(int posx, int posy, int width, double* valueToWrite) {
-
-    WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
-
-    newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
-    newElement->addChild( new WindowTextInput(0, 0, 35, valueToWrite) );
-
-    return newElement;
-
-}
-
 
 
 /* ------------------------------- */

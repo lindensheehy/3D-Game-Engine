@@ -7,23 +7,15 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
+#include "ui/Action.h"
+#include "ui/WindowElement.h"
+#include "ui/Window.h"
+
 
 // Early declarations becuase theres some circular dependancy here
 class Window;
 class Action;
 class UI;
-
-enum ActionType {
-    CLOSE_WINDOW,
-    WRITE_TO_VALUE
-};
-
-
-class ActionHandler {
-
-
-
-};
 
 
 
@@ -93,6 +85,15 @@ class UI {
         void updateWindowTransform(Object* object);
 
         void destroyWindowTransform();
+
+        /*   Class Functions   */
+        
+        // Returns a NEW WindowElement for the top bar of a window containing the window title, and the buttons
+        static WindowElement* createTopBar(UI* ui, Window* window, const char* title);
+
+        static WindowElement* createSlider(int width);
+
+        static WindowElement* createTextBox(int posx, int posy, int width, double* valueToWrite);
 
     private:
 
