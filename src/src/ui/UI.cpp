@@ -104,6 +104,7 @@ bool UI::doInput(State* state) {
     if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {
 
         this->lastClicked->onInput(state);
+        logWrite("dragging!", true);
 
     }
 

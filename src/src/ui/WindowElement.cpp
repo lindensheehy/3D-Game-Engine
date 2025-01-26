@@ -4,6 +4,9 @@
 /* ---------- WindowElement ---------- */
 /* ----------------------------------- */
 
+// Static declarations
+LinkedList<Action*>* WindowElement::actionQueue;
+
 // Constructor
 WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 

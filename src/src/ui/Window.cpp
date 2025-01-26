@@ -1,6 +1,9 @@
 #include "ui/Window.h"
 
 
+// Static declarations
+LinkedList<Action*>* Window::actionQueue;
+
 // Constructors
 Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
 
