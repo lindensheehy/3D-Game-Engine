@@ -14,7 +14,7 @@ Everything in this repository was written 100% by Linden Sheehy (me).
 ### UI
 - **Custom UI Elements:** Supports a range of UI components, including buttons, textboxes, dividers, etc., with the ability to dynamically handle inputs and render windows on the screen.
 - **UI Hierarchy System:** The UI elements are organized hierarchically, with a parent-child relationship, making it easy to manage complex window layouts.
-- **Custom XML Structure (Future Plan):** UI elements will be stored in XML files, which will be parsed by my code, to generate individual elements or whole windows. 
+- **Custom XML Structure (Future Plan):** UI elements will be stored in XML files, which will be parsed by my code to generate individual elements or whole windows. 
 
 
 ### Physics (Work in Progress)

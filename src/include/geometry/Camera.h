@@ -104,8 +104,8 @@ class Camera {
 class Display {
 
     /*
-        This class IS NOT the same as GuiClass.
-        The gui class is used for making an actual window and drawing to it.
+        This class IS NOT the same as Gui.
+        Gui is used for making an actual window and drawing to it.
         This class simply defines an area within an existing window where things should be drawn.
         Think of it like a way to do split screen. you can define areas of any size and position which can act as the whole window.
 
