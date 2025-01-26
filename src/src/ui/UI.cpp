@@ -60,27 +60,64 @@ void UI::deleteWindow(Window* window) {
 
 bool UI::doInput(State* state) {
 
+    // General declarations for use in loops
+    Action* currentAction;
+    Window* currentWindow;
+
+    // Handle actions in queue, if any exist
+    while (UI::actionQueue->length != 0) {
+
+        currentAction = UI::getNextAction();
+
+        if (currentAction == nullptr) break;
+
+        switch (currentAction->actionType) {
+
+            case UIEnum::ActionType::NONE:
+                break;
+
+            case UIEnum::ActionType::CLOSE_WINDOW:
+
+                ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
+
+                // Refactor later, should use an id for scalability
+                for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
+
+                    currentWindow = this->windows->iterGetObj();
+
+                    if (currentWindow->type == castedAction->target) {
+                        this->deleteWindow(currentWindow);
+                        break;
+                    }
+
+                }
+
+                break;
+
+        }
+
+    }
+
     // Click handling
     if (state->wasLeftJustPressed()) {
 
-        Window* current;        // The window checked on the given iteration
         WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
 
         for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
 
-            current = this->windows->iterGetObj();
+            currentWindow = this->windows->iterGetObj();
 
             // Skip iteration if the click lands outside the window
-            bool clickLandsOnWindow = current->hitTest(state->mouse->posX, state->mouse->posY);
+            bool clickLandsOnWindow = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
             if (!clickLandsOnWindow) continue;
 
             // Since now the click must land on the window, I bring it to the front
             // The list is drawn from front to back, so the back elements appear on top
-            this->windows->pop(current);
-            this->windows->pushBack(current);
+            this->windows->pop(currentWindow);
+            this->windows->pushBack(currentWindow);
 
             // Now check the children of the found window
-            found = current->doInput(state);
+            found = currentWindow->doInput(state);
 
             // If nothing was found, end
             if (found == nullptr) return false;
@@ -104,7 +141,6 @@ bool UI::doInput(State* state) {
     if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {
 
         this->lastClicked->onInput(state);
-        logWrite("dragging!", true);
 
     }
 
@@ -141,6 +177,8 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     Vec2* windowPos = new Vec2(posx, posy);
     Vec2* windowSize = this->TransformWindowSize->copy();
     Window* newWindow = new Window(windowPos, windowSize);
+    newWindow->type = UIEnum::WindowType::TRANSFORM;
+
     WindowElement* newElement;
 
     // Top bar
@@ -164,7 +202,6 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
         newElement->addChild( createTextBox(85, 4, 35, &(object->pos->x)) );
         newElement->addChild( createTextBox(145, 4, 35, &(object->pos->y)) );
         newElement->addChild( createTextBox(205, 4, 35, &(object->pos->z)) );
-        object->pos->log();
     }
 
     newWindow->addElement(newElement);
@@ -187,7 +224,6 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
         newElement->addChild( UI::createTextBox(85, 4, 35, &(object->rotation->x)) );
         newElement->addChild( UI::createTextBox(145, 4, 35, &(object->rotation->y)) );
         newElement->addChild( UI::createTextBox(205, 4, 35, &(object->rotation->z)) );
-        object->rotation->log();
     }
 
     newWindow->addElement(newElement);
@@ -210,11 +246,9 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
         newElement->addChild( UI::createTextBox(85, 4, 35, &(object->scale->x)) );
         newElement->addChild( UI::createTextBox(145, 4, 35, &(object->scale->y)) );
         newElement->addChild( UI::createTextBox(205, 4, 35, &(object->scale->z)) ); 
-        object->scale->log(); 
     }
     
     newWindow->addElement(newElement);
-    newWindow->type = UIEnum::WindowType::TRANSFORM;
 
     this->addWindow(newWindow);
 
@@ -285,7 +319,7 @@ WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
     // The parent element for the close tab button
     WindowElement* CloseButtonElement = new WindowButton(
         window->size->x - 19, 0, 18, 18, 
-        new ActionCloseWindow()
+        new ActionCloseWindow(window->type)
     );
     CloseButtonElement->color = Color::RED;
 

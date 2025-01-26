@@ -17,8 +17,12 @@ Action::~Action() {}
 /* ---------- ActionCloseWindow ---------- */
 /* --------------------------------------- */
 
-ActionCloseWindow::ActionCloseWindow() {
+ActionCloseWindow::ActionCloseWindow(UIEnum::WindowType targetWindow) {
+
     this->actionType = UIEnum::ActionType::CLOSE_WINDOW;
+
+    this->target = targetWindow;
+    
 }
 
 ActionCloseWindow::~ActionCloseWindow() {}

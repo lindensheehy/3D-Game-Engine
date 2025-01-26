@@ -16,6 +16,7 @@ class Action {
         /*   Instance Variables   */
 
         UIEnum::ActionType actionType;
+        
 
         // Constructor
         Action();
@@ -29,8 +30,13 @@ class ActionCloseWindow : public Action {
 
     public:
 
+        /*   Instance Variables   */
+
+        UIEnum::WindowType target;
+
+
         // Constructor
-        ActionCloseWindow();
+        ActionCloseWindow(UIEnum::WindowType targetWindow);
 
         // Destructor
         ~ActionCloseWindow();

@@ -325,6 +325,7 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, double* valueToW
     this->color = Color::WHITE;
 
     this->type = UIEnum::ElementType::TEXTINPUT;
+    this->isInteractable = true;
 
 }
 
@@ -405,6 +406,7 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = UIEnum::ElementType::BUTTON;
+    this->isInteractable = true;
 
     this->action = action;
 
@@ -440,6 +442,7 @@ void WindowButton::onInput(State* state) {
 WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = UIEnum::ElementType::DRAGABLE;
+    this->isInteractable = true;
 
     this->posToDrag = posToDrag;
     this->endPosToDrag = endPosToDrag;
