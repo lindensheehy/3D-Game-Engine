@@ -7,41 +7,12 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
+#include "ui/UIEnums.h"
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
 #include "ui/Window.h"
 
 
-// Early declarations becuase theres some circular dependancy here
-class Window;
-class Action;
-class UI;
-
-
-
-template<typename type>
-class ActionWriteToValue : public Action {
-
-    public:
-
-        // Constructor
-        ActionWriteToValue(type* pointer);
-
-        // Destructor
-        ~ActionWriteToValue();
-
-        /*   Instance Functions   */
-
-        void run() override;
-
-
-
-};
-
-
-
-
-// UI
 
 class UI {
 
@@ -87,6 +58,8 @@ class UI {
         void destroyWindowTransform();
 
         /*   Class Functions   */
+
+        static Action* getNextAction();
         
         // Returns a NEW WindowElement for the top bar of a window containing the window title, and the buttons
         static WindowElement* createTopBar(UI* ui, Window* window, const char* title);
@@ -97,16 +70,19 @@ class UI {
 
     private:
 
-        /*   Constants   */
-
-        static Vec2* TransformWindowSize;
-
         /*   Instance Variables   */
 
         LinkedList<Window*>* windows;
 
         // Stores the location the next window should go, changes on every window made to mitigate window overlap
         Vec2* nextWindowPos;
+
+        /*   Class Variables   */
+
+        static const Vec2* TransformWindowSize;
+
+        // Reference to a shared Action queue
+        static LinkedList<Action*>* actionQueue;
 
 
         /*   Instance Functions   */

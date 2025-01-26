@@ -21,11 +21,11 @@ Vec2::Vec2() {
 }
 
 // Instance functions
-Vec2* Vec2::copy() {
+Vec2* Vec2::copy() const {
     return new Vec2(this->x, this->y);
 }
 
-void Vec2::log() {
+void Vec2::log() const {
 
     logWrite("Vec2( ");
     logWrite(this->x);
@@ -58,7 +58,7 @@ Vec2* Vec2::set(double x, double y) {
 
 }
 
-bool Vec2::is(double x, double y) {
+bool Vec2::is(double x, double y) const {
 
     return (
         this->x == x &&
@@ -66,7 +66,7 @@ bool Vec2::is(double x, double y) {
     );
 }
 
-bool Vec2::is(Vec2* other) {
+bool Vec2::is(Vec2* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -138,7 +138,7 @@ Vec2* Vec2::normalise(double toMagnitude /* default value = 1.0 */) {
     return this->scale(factor);
 }
 
-double Vec2::get(int index) {
+double Vec2::get(int index) const {
     switch (index) {
         case 0:
             return this->x;
@@ -149,7 +149,7 @@ double Vec2::get(int index) {
     }
 }
 
-double* Vec2::toArray() {
+double* Vec2::toArray() const {
     double* array = new double[2];
     array[0] = this->x;
     array[1] = this->y;
@@ -164,7 +164,7 @@ double Vec2::magnitude() {
     return this->magnitudeValue;
 }
 
-double Vec2::distanceTo(Vec2* other) {
+double Vec2::distanceTo(Vec2* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -176,7 +176,7 @@ double Vec2::distanceTo(Vec2* other) {
 
 }
 
-Vec2* Vec2::midpoint(Vec2* other) {
+Vec2* Vec2::midpoint(Vec2* other) const {
     
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -191,7 +191,7 @@ Vec2* Vec2::midpoint(Vec2* other) {
 
 }
 
-double Vec2::dotProduct(Vec2* other) {
+double Vec2::dotProduct(Vec2* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -257,11 +257,11 @@ Vec3::Vec3() {
 }
 
 // Instance functions
-Vec3* Vec3::copy() {
+Vec3* Vec3::copy() const {
     return new Vec3(this->x, this->y, this->z);
 }
 
-void Vec3::log() {
+void Vec3::log() const {
 
     logWrite("Vec3( ");
     logWrite(this->x);
@@ -296,7 +296,7 @@ Vec3* Vec3::set(double x, double y, double z) {
     return this;
 }
 
-bool Vec3::is(Vec3* other) {
+bool Vec3::is(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -311,7 +311,7 @@ bool Vec3::is(Vec3* other) {
     );
 }
 
-bool Vec3::is(double x, double y, double z) {
+bool Vec3::is(double x, double y, double z) const {
 
     return (
         this->x == x &&
@@ -392,7 +392,7 @@ Vec3* Vec3::normalise(double toMagnitude /* default value = 1.0 */) {
     return this->scale(factor);
 }
 
-double Vec3::get(int index) {
+double Vec3::get(int index) const {
     switch (index) {
         case 0:
             return this->x;
@@ -405,7 +405,7 @@ double Vec3::get(int index) {
     }
 }
 
-double* Vec3::toArray() {
+double* Vec3::toArray() const {
     double* array = new double[3];
     array[0] = this->x;
     array[1] = this->y;
@@ -424,7 +424,7 @@ double Vec3::magnitude() {
 
 }
 
-double Vec3::distanceTo(Vec3* other) {
+double Vec3::distanceTo(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -436,7 +436,7 @@ double Vec3::distanceTo(Vec3* other) {
 
 }
 
-Vec3* Vec3::midpoint(Vec3* other) {
+Vec3* Vec3::midpoint(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -451,7 +451,7 @@ Vec3* Vec3::midpoint(Vec3* other) {
     );
 }
 
-double Vec3::dotProduct(Vec3* other) {
+double Vec3::dotProduct(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -462,7 +462,7 @@ double Vec3::dotProduct(Vec3* other) {
     return (this->x * other->x) + (this->y * other->y) + (this->z * other->z);
 }
 
-Vec3* Vec3::crossProduct(Vec3* other) {
+Vec3* Vec3::crossProduct(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {

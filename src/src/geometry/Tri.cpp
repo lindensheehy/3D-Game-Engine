@@ -36,7 +36,7 @@ Tri2::~Tri2() {
 }
 
 // Instance functions
-Tri2* Tri2::copy() {
+Tri2* Tri2::copy() const {
 
     Tri2* ret = new Tri2(true);
 
@@ -52,7 +52,7 @@ Tri2* Tri2::copy() {
     
 }
 
-void Tri2::log() {
+void Tri2::log() const {
 
     logWrite("Tri2(", true);
     logWrite("  ");
@@ -182,7 +182,7 @@ Tri3::~Tri3() {
 }
 
 // Instance functions
-Tri3* Tri3::copy() {
+Tri3* Tri3::copy() const {
     Tri3* newCopy = new Tri3(true);
     newCopy->v1 = this->v1->copy();
     newCopy->v2 = this->v2->copy();
@@ -191,7 +191,7 @@ Tri3* Tri3::copy() {
     return newCopy;
 }
 
-void Tri3::log() {
+void Tri3::log() const {
 
     logWrite("Tri3(", true);
     logWrite("  ");
@@ -310,7 +310,7 @@ void Tri3::updateNormal() {
 
 }
 
-bool Tri3::isFacing(Vec3* vec) {
+bool Tri3::isFacing(Vec3* vec) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (vec == nullptr) {
@@ -321,7 +321,7 @@ bool Tri3::isFacing(Vec3* vec) {
     return vec->getAngle(this->normal) >= 90;
 }
 
-Vec3* Tri3::getCenter() {
+Vec3* Tri3::getCenter() const {
 
     // Average all 3 components
     double x = this->v1->x + this->v2->x + this->v3->x;

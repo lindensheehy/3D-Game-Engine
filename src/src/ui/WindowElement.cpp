@@ -16,6 +16,17 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
 }
 
+WindowElement::WindowElement(Vec2* pos, Vec2* size) {
+
+    this->pos = pos->copy();
+    this->size = size->copy();
+
+    this->endPos = this->pos->copy()->add(this->size);
+
+    this->children = new LinkedList<WindowElement*>();
+
+}
+
 // Destrcutor
 WindowElement::~WindowElement() {
 
@@ -24,22 +35,26 @@ WindowElement::~WindowElement() {
 
     if (this->endPos != nullptr) delete this->endPos;
 
-    if (this->children->length > 0) {
-        WindowElement* child;
-        for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
-            child = this->children->iterGetObj();
-            if (child != nullptr) delete child;
+    if (this->children != nullptr) {
+
+        if (this->children->length > 0) {
+            WindowElement* child;
+            for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
+                child = this->children->iterGetObj();
+                if (child != nullptr) delete child;
+            }
         }
+        
+        delete this->children;
+
     }
-    
-    if (this->children != nullptr) delete this->children;
 
 }
 
 // Instance Functions
 void WindowElement::draw(Drawer* drawer, Vec2* offset) {
 
-    // Log becuase this shouldnt be called ever
+    // Log becuase this shouldnt ever be called
     logWrite("Called WindowElement->draw()!", true);
 
 }
@@ -75,9 +90,7 @@ WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
     this->onInput(state);
 
     // Since now the click must lie inside this element, if this is any interactable type, I return this and skip checking the children
-    if (this->type == BUTTON) return this;
-    if (this->type == DRAGABLE) return this;
-    if (this->type == TEXTINPUT) return this;
+    if (this->isInteractable) return this;
 
     // Otherwise, I will check the children
 
@@ -113,6 +126,14 @@ void WindowElement::drawChildren(Drawer* drawer, Vec2* offset) {
 
 }
 
+void WindowElement::setActionQueue(LinkedList<Action*>* queue) {
+    WindowElement::actionQueue = queue;
+}
+
+void WindowElement::queueAction(Action* action) {
+    WindowElement::actionQueue->pushBack(action);
+}
+
 
 
 /* ------------------------------- */
@@ -142,7 +163,7 @@ void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 // Constructor
 WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
     this->color = color;
 
@@ -171,7 +192,7 @@ void WindowLine::draw(Drawer* drawer, Vec2* offset) {
 // Constructor
 WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
     this->color = color;
 
@@ -200,7 +221,7 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 // Constructor
 WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
     this->color = color;
 
@@ -232,7 +253,7 @@ WindowCircle::WindowCircle(int posx, int posy, int size) : WindowElement(posx, p
     this->middle = this->size->copy()->scale(0.5)->add(this->pos);
     this->radius = size;
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
 }
 
@@ -269,7 +290,7 @@ WindowTextStatic::WindowTextStatic(int posx, int posy, const char* text) : Windo
     this->text = text;
     this->color = Color::WHITE;
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
 }
 
@@ -299,6 +320,8 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, double* valueToW
     this->valueToWrite = valueToWrite;
 
     this->color = Color::WHITE;
+
+    this->type = UIEnum::ElementType::TEXTINPUT;
 
 }
 
@@ -353,7 +376,7 @@ WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, PNG* text
     
     this->texture = texture;
 
-    this->type = VISUAL;
+    this->type = UIEnum::ElementType::VISUAL;
 
 }
 
@@ -378,7 +401,7 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 // Constructor
 WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = BUTTON;
+    this->type = UIEnum::ElementType::BUTTON;
 
     this->action = action;
 
@@ -400,8 +423,7 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 void WindowButton::onInput(State* state) {
 
-    if (state->wasLeftJustPressed())
-        this->action->run();
+    WindowElement::queueAction(this->action);
 
 }
 
@@ -412,11 +434,12 @@ void WindowButton::onInput(State* state) {
 /* ------------------------------------ */
 
 // Constructor
-WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Window* windowToDrag) : WindowElement(posx, posy, sizex, sizey) {
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = DRAGABLE;
+    this->type = UIEnum::ElementType::DRAGABLE;
 
-    this->windowToDrag = windowToDrag;
+    this->posToDrag = posToDrag;
+    this->endPosToDrag = endPosToDrag;
 
 }
 
@@ -436,7 +459,7 @@ void WindowDragable::onInput(State* state) {
     int dx = state->deltaMousePosX();
     int dy = state->deltaMousePosY();
 
-    this->windowToDrag->pos->add(dx, dy);
-    this->windowToDrag->endPos->add(dx, dy);
+    this->posToDrag->add(dx, dy);
+    this->endPosToDrag->add(dx, dy);
 
 }

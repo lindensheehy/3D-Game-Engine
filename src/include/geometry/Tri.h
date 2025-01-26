@@ -40,9 +40,9 @@ class Tri2 {
         /*   Instance functions   */
 
         // Creates a copy of the instance, and returns a pointer to it.
-        Tri2* copy();
+        Tri2* copy() const;
 
-        void log();
+        void log() const;
 
         // Setters for each vertex. Allowing double or Vec2 inputs
         // The ones which take a Vec2 object will delete the current instance variable, then point to the one given.
@@ -92,9 +92,9 @@ class Tri3 {
         /*   Instance functions   */
 
         // Creates a copy of the instance, and returns a pointer to it.
-        Tri3* copy();
+        Tri3* copy() const;
 
-        void log();
+        void log() const;
 
         // Setters for each vertex, and the normal. Allowing double or Vec3 inputs
         // The ones which take a Vec3 object will delete the current instance variable, then point to the one given.
@@ -117,9 +117,9 @@ class Tri3 {
 
         // Returns true if the triangle should be visible assuming its only opaque on the side the normal sticks out from.
         // This just returns true when the angle between the Vec3 and the normal is >= 90
-        bool isFacing(Vec3* vec);
+        bool isFacing(Vec3* vec) const;
 
         // Returns a Vec3 object defining the center of the triangle. takes the average of each component. This returns a NEW object
-        Vec3* getCenter();
+        Vec3* getCenter() const;
         
 };

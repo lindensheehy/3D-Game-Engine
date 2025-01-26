@@ -56,7 +56,7 @@ class Mesh {
                 //void setValue(int index, int subIndex, int value);
 
                 // Gets the values of the Set item at a given index. These values will be placed into the pointers given to the function.
-                void getGroup(int index, int* v1, int* v2, int* v3, int* normal);
+                void getGroup(int index, int* v1, int* v2, int* v3, int* normal) const;
                 //int getValue(int index, int subIndex);
 
         };

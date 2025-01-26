@@ -5,8 +5,6 @@ set include=-I../src/include
 set srcdir=../src/src/
 set objdir=../src/obj/
 
-set compile=g++
-
 
 :: Build dependancies
 
@@ -31,6 +29,9 @@ g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%Objec
 g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
 
 :: ui
+g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
+g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
+g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 

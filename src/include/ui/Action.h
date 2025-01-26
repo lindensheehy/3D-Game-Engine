@@ -1,13 +1,21 @@
+#pragma once
 
+#include "ui/UIEnums.h"
 
-enum ActionType {
-    CLOSE_WINDOW,
-    WRITE_TO_VALUE
-};
+/*
+    These are basically just glorified variables.
+    The idea of this is that they can be added to a queue which is global across everything in the UI
+    Window or WindowElement objects can add these to the queue, 
+    then they will later be handled by the UI object when doInput() is called
+*/
 
 class Action {
 
     public:
+
+        /*   Instance Variables   */
+
+        UIEnum::ActionType actionType;
 
         // Constructor
         Action();
@@ -25,5 +33,6 @@ class ActionCloseWindow : public Action {
         ActionCloseWindow();
 
         // Destructor
+        ~ActionCloseWindow();
 
 };

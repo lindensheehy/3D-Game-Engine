@@ -1,3 +1,5 @@
+#pragma once
+
 #include "util/Utility.h"
 
 #include "geometry/Vec.h"
@@ -5,21 +7,9 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
+#include "ui/UIEnums.h"
+#include "ui/Action.h"
 
-
-// Declarations because of circular dependancy (should probably be refactored)
-class Window;
-class Action;
-class UI;
-
-
-enum ElementType {
-    INVISIBLE,
-    VISUAL,
-    BUTTON,
-    DRAGABLE,
-    TEXTINPUT
-};
 
 
 class WindowElement {
@@ -43,11 +33,13 @@ class WindowElement {
 
         LinkedList<WindowElement*>* children;
 
-        ElementType type = INVISIBLE;
+        UIEnum::ElementType type = UIEnum::ElementType::INVISIBLE;
 
 
-        // Constructor
+        // Constructors
         WindowElement(int posx, int posy, int sizex, int sizey);
+
+        // Does NOT delete or directly use these vectors. they need to be handled correctly after this call
         WindowElement(Vec2* pos, Vec2* size);
 
         // Destructor
@@ -71,12 +63,25 @@ class WindowElement {
         virtual void onInput(State* state) {}
 
 
+        /*   Class Functions   */
+
+        static void setActionQueue(LinkedList<Action*>* queue);
+
+        static void queueAction(Action* action);
+
+
     protected:
 
         /*   Instance Variables   */
         
         // Used for detecting clicks, and drawing for some subclasses
         Vec2* endPos;
+
+        // Determines if doInput should stop after finding this element
+        bool isInteractable = false;
+
+        // Reference to a shared Action queue
+        static LinkedList<Action*>* actionQueue;
 
 
         /*   Instance functions   */
@@ -288,7 +293,7 @@ class WindowDragable : public WindowElement {
     public:
 
         // Constructor
-        WindowDragable(int posx, int posy, int sizex, int sizey, Window* window);
+        WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag);
 
         /*   Instance Functions   */
 
@@ -298,6 +303,7 @@ class WindowDragable : public WindowElement {
 
     private:
 
-        Window* windowToDrag;
+        Vec2* posToDrag;
+        Vec2* endPosToDrag;
 
 };

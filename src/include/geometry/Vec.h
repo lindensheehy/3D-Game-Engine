@@ -29,18 +29,18 @@ class Vec2 {
         /*   Instance functions   */
 
         // Creates a copy of the instance, and returns a pointer to it.
-        Vec2* copy();
+        Vec2* copy() const;
 
         // Logs the vector in the format "Vec2( x, y )"
-        void log();
+        void log() const;
 
         // Sets the values of the components
         Vec2* set(Vec2* other);
         Vec2* set(double x, double y);
 
         // Acts similar to '=='. Returns true if all components are equal to each other
-        bool is(double x, double y);
-        bool is(Vec2* other);
+        bool is(double x, double y) const;
+        bool is(Vec2* other) const;
 
         // The following are self transformation functions. they all return 'this' so they can be chained ( ex. this->add(vec)->sub(vec2) )
 
@@ -55,7 +55,7 @@ class Vec2 {
         // Scalar multiplication by a given factor
         Vec2* scale(double factor);
 
-        // Same as above, but uses 1/factor
+        // Same as scale, but uses 1/factor
         Vec2* inverseScale(double factor);
 
         // Sets the magnitude of the vector to a given value, while keeping the ratios between components the same.
@@ -63,22 +63,22 @@ class Vec2 {
 
 
         // Allows these objects to be indexed like an array.
-        double get(int index);
+        double get(int index) const;
 
         // Converts the Vec2 to an array. [Vec2->x, Vec2->y]
-        double* toArray();
+        double* toArray() const;
 
         // Returns the magnitude of the vector
         double magnitude();
 
         // Returns the distance between this vector and other
-        double distanceTo(Vec2* other);
+        double distanceTo(Vec2* other) const;
 
         // Returns the midpoint between this and other as a new Vec2 object.
-        Vec2* midpoint(Vec2* other);
+        Vec2* midpoint(Vec2* other) const;
 
         // Returns the dot product of this and other.
-        double dotProduct(Vec2* other);
+        double dotProduct(Vec2* other) const;
 
         // Rotates the vector around a given point (by default (0, 0)) by a given angle.
         // Vector will be rotated COUNTER CLOCKWISE
@@ -127,18 +127,18 @@ class Vec3 {
         /*   Instance functions   */
 
         // Creates a copy of the instance, and returns a pointer to it.
-        Vec3* copy();
+        Vec3* copy() const;
 
         // Logs the vector in the format "Vec3( x, y, z )"
-        void log();
+        void log() const;
 
         // Sets the values of the components
         Vec3* set(Vec3* other);
         Vec3* set(double x, double y, double z);
 
         // Acts similar to '=='. Returns true if all components are equal to each other
-        bool is(Vec3* other);
-        bool is(double x, double y, double z);
+        bool is(Vec3* other) const;
+        bool is(double x, double y, double z) const;
 
         // The following are self transformation functions. they all return 'this' so they can be chained ( ex. this->add(vec)->sub(vec2) )
 
@@ -162,25 +162,25 @@ class Vec3 {
 
 
         // Allows these objects to be indexed like an array.
-        double get(int index);
+        double get(int index) const;
 
         // Converts the Vec3 to an array. [Vec3->x, Vec3->y, Vec3->z]
-        double* toArray();
+        double* toArray() const;
 
         // Returns the magnitude of the vector
         double magnitude();
 
         // Returns the distance between this vector and other
-        double distanceTo(Vec3* other);
+        double distanceTo(Vec3* other) const;
 
         // Returns the midpoint between this and other as a new Vec3 object.
-        Vec3* midpoint(Vec3* other);
+        Vec3* midpoint(Vec3* other) const;
 
         // Returns the dot product of this and other.
-        double dotProduct(Vec3* other);
+        double dotProduct(Vec3* other) const;
 
         // Returns the cross product of this and other as a new Vec3 object. This vector is perpendicular to both other and this.
-        Vec3* crossProduct(Vec3* other);
+        Vec3* crossProduct(Vec3* other) const;
 
         // Find the angle in degrees between this and other. This angle will always be between 0-180.
         double getAngle(Vec3* other);

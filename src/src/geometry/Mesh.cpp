@@ -48,7 +48,7 @@ void Mesh::IndexMap::setGroup(int index, int v1, int v2, int v3, int normal) {
     this->map[index].normal = normal;
 }
 
-void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal) {
+void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal) const {
 
     if (index >= this->size) {
         logWrite("Called Mesh::IndexMap->getGroup() for index ");

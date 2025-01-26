@@ -1,3 +1,5 @@
+#pragma once
+
 #include "util/Utility.h"
 
 #include "geometry/Vec.h"
@@ -5,18 +7,15 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
-#include "WindowElement.h"
+#include "ui/UIEnums.h"
+#include "ui/Action.h"
+#include "ui/WindowElement.h"
 
 
 // Declarations because of circular dependancy (should probably be refactored)
 class Window;
 class Action;
 class UI;
-
-
-enum WindowType {
-    TRANSFORM
-};
 
 
 class Window {
@@ -41,7 +40,7 @@ class Window {
         Vec2* size;
         int layer; // Front to back - 0 is at the front, 1 behind, and so on
 
-        WindowType type;
+        UIEnum::WindowType type;
 
         LinkedList<WindowElement*>* elements;
 
@@ -65,5 +64,19 @@ class Window {
 
         // Checks all the children elements against the inputs for the frame. Also brings window to front is its clicked. Returns the element clicked on, or nullptr if none
         WindowElement* doInput(State* state);
+
+
+        /*   Class Functions   */
+
+        static void setActionQueue(LinkedList<Action*>* queue);
+
+        static void queueAction(Action* action);
+
+    protected:
+
+        /*   Instance Variables   */
+
+        // Reference to a shared Action queue
+        static LinkedList<Action*>* actionQueue;
 
 };

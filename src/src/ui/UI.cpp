@@ -5,8 +5,10 @@
 /* ---------- UI ---------- */
 /* ------------------------ */
 
-// static Declarations
-Vec2* UI::TransformWindowSize = new Vec2(300, 105);
+// Static declarations
+const Vec2* UI::TransformWindowSize = new Vec2(300, 105);
+LinkedList<Action*>* UI::actionQueue;
+
 
 // Constructor
 UI::UI() {
@@ -14,6 +16,12 @@ UI::UI() {
     this->windows = new LinkedList<Window*>();
 
     this->nextWindowPos = new Vec2(100, 100);
+
+    LinkedList<Action*>* queue = new LinkedList<Action*>();
+
+    UI::actionQueue = queue;
+    Window::setActionQueue(queue);
+    WindowElement::setActionQueue(queue);
 
 }
 
@@ -45,7 +53,7 @@ void UI::deleteWindow(Window* window) {
     Window* removed = this->windows->pop(window);
     if (removed == nullptr) return;
     
-    if (removed->type == TRANSFORM) this->transformWindow = nullptr;
+    if (removed->type == UIEnum::WindowType::TRANSFORM) this->transformWindow = nullptr;
     delete removed;
 
 }
@@ -93,14 +101,14 @@ bool UI::doInput(State* state) {
     if (this->lastClicked == nullptr) return false;
 
     // Drag handling
-    if (this->lastClicked->type == DRAGABLE && state->wasLeftHeld()) {
+    if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {
 
         this->lastClicked->onInput(state);
 
     }
 
     // Text box handling
-    if (this->lastClicked->type == TEXTINPUT) {
+    if (this->lastClicked->type == UIEnum::ElementType::TEXTINPUT) {
 
         this->lastClicked->onInput(state);
 
@@ -205,7 +213,7 @@ Window* UI::createWindowTransform(Object* object, int posx, int posy) {
     }
     
     newWindow->addElement(newElement);
-    newWindow->type = TRANSFORM;
+    newWindow->type = UIEnum::WindowType::TRANSFORM;
 
     this->addWindow(newWindow);
 
@@ -251,6 +259,14 @@ void UI::updateNextWindowPos() {
 }
 
 
+Action* UI::getNextAction() {
+
+    if (UI::actionQueue->length == 0) return nullptr;
+
+    return UI::actionQueue->popFront();
+
+}
+
 // Some high level constructors for specific elements
 WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
 
@@ -258,7 +274,7 @@ WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
     WindowElement* holder = new WindowDiv(1, 1, window->size->x - 1, 18);
 
     // Title plus dragable tab
-    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window);
+    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window->pos, window->endPos);
     WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18, Color::LIGHTER);
     WindowElement* titleElement = new WindowTextStatic(6, 6, title);
     
@@ -268,7 +284,7 @@ WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
     // The parent element for the close tab button
     WindowElement* CloseButtonElement = new WindowButton(
         window->size->x - 19, 0, 18, 18, 
-        new Action(CLOSE_WINDOW)
+        new ActionCloseWindow()
     );
     CloseButtonElement->color = Color::RED;
 

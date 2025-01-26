@@ -96,3 +96,11 @@ WindowElement* Window::doInput(State* state) {
     return nullptr;
 
 }
+
+void Window::setActionQueue(LinkedList<Action*>* queue) {
+    Window::actionQueue = queue;
+}
+
+void Window::queueAction(Action* action) {
+    Window::actionQueue->pushBack(action);
+}
