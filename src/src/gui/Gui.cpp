@@ -51,6 +51,11 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
     // Show the window
     ShowWindow(this->hwnd, SW_SHOW);
 
+    this->hdc = GetDC(this->hwnd);
+    this->memDC = CreateCompatibleDC(this->hdc);
+    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
+    SelectObject(this->memDC, this->hBitmap);
+
     // Set up the BITMAPINFO structure
     this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
@@ -74,19 +79,11 @@ Gui::~Gui() {
 // Instance functions
 void Gui::flip() const {
 
-    HDC hdc = GetDC(hwnd);
-    if (!hdc) return;
-
-    // Create a compatible device context
-    HDC memDC = CreateCompatibleDC(hdc);
-    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, this->windowWidth, this->windowHeight);
-
-    // Select the bitmap into the memory DC
-    SelectObject(memDC, hBitmap);
+    if (!this->hdc) return;
 
     // Transfer the buffer to the bitmap
     SetDIBitsToDevice(
-        memDC, 
+        this->memDC, 
         0, 0, 
         this->windowWidth, this->windowHeight, 
         0, 0, 
@@ -97,14 +94,7 @@ void Gui::flip() const {
     );
 
     // Blit the bitmap to the window's device context
-    BitBlt(hdc, 0, 0, this->windowWidth, this->windowHeight, memDC, 0, 0, SRCCOPY);
-
-    // Clean up
-    DeleteObject(hBitmap);
-    DeleteDC(memDC);
-    ReleaseDC(hwnd, hdc);
-
-    ShowWindow(hwnd, SW_SHOW);
+    BitBlt(this->hdc, 0, 0, this->windowWidth, this->windowHeight, this->memDC, 0, 0, SRCCOPY);
 
     this->handleMessages();
 

@@ -20,7 +20,7 @@ set objdir=../src/obj/
 @REM g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
 
 :: gui
-@REM g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
+g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
 @REM g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
 @REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 
@@ -29,10 +29,10 @@ set objdir=../src/obj/
 @REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
 
 :: ui
-g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
-g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
-g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
-g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 
 :: Build main

@@ -49,6 +49,10 @@ class Gui {
 
         /*   Instance Variables   */
 
+        HDC hdc;
+        HDC memDC;
+        HBITMAP hBitmap;
+
         BITMAPINFO bitmapInfo;          // Stores info to help windows translate the pixel buffer into Uint32 format
         
 };
