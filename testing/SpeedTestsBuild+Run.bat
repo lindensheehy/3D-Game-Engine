@@ -1,22 +1,14 @@
 :: Directories
+set include=-I../src/include
+set srcdir=../src/src/
 set objdir=../src/obj/
-set SDLinclude=-I ../SDL2/include -L ../SDL2/lib -l SDL2 -l SDL2main
 
 :: Build test.exe
-g++ speed-tests.cpp ^
-    %objdir%Math.o ^
-    %objdir%Log.o ^
-    %objdir%Vec.o ^
-    %objdir%Tri.o ^
-    %objdir%Camera.o ^
-    %objdir%Mesh.o ^
-    %objdir%Gui.o ^
-    %objdir%Drawer.o ^
-    %objdir%State.o ^
-    %objdir%ObjectSet.o ^
-    %objdir%lodepng.o ^
+g++ -Ofast %include% ^
+    speed-tests.cpp ^
+    %objdir%*.o ^
     -o results/speed-tests.exe ^
-    %SDLinclude%
+    -mwindows
 
 :: Run the tests
 cd results
