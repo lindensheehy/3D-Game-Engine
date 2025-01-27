@@ -1,3 +1,4 @@
 src/obj/
 src/testing/*.exe
 *.exe
+build/log.txt
