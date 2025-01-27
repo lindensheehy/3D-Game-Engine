@@ -1,4 +1,5 @@
 src/obj/
-src/testing/*.exe
 *.exe
+
 build/log.txt
+testing/results/testreport.html
