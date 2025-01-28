@@ -7,7 +7,9 @@ char* stringBuffer = nullptr;
 // Init and Close
 void logInit(const char* fileName) {
 
-    if (hOutputFile != nullptr) return;
+    if (hOutputFile != nullptr) {
+        logClose();
+    }
     
     // Get handle to file
     hOutputFile = CreateFile(
