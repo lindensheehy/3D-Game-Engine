@@ -12,6 +12,7 @@ set objdir=../src/obj/
 @REM g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
+g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%FileReader.o
 
 :: geometry
 @REM g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%Vec.o
@@ -20,7 +21,7 @@ set objdir=../src/obj/
 @REM g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
 
 :: gui
-g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
+@REM g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
 @REM g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
 @REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 

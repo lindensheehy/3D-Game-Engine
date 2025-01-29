@@ -9,6 +9,8 @@
 #include "gui/Gui.h"
 #include "ui/UI.h"
 
+#include "util/FileReader.h"
+
 // Global declarations
 Gui* gui;
 State* state;

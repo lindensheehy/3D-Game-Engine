@@ -12,6 +12,7 @@ set objdir=../src/obj/
 g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
 g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
 g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
+g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%FileReader.o
 
 :: geometry
 g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%Vec.o

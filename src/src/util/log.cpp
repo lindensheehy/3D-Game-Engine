@@ -74,7 +74,7 @@ void logWrite(char* message, bool newLine /* default value = false */) {
 }
 
 void logWrite(char message, bool newLine /* default value = false */) {
-    char messageString[] = {message, '\n'};
+    char messageString[] = {message, '\0'};
     logWrite((const char*) messageString, newLine);
 }
 
