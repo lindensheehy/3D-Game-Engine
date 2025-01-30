@@ -34,7 +34,7 @@ Camera::~Camera() {
 }
 
 // Instance functions
-void Camera::setPos(double x, double y, double z) {
+void Camera::setPos(float x, float y, float z) {
     this->pos->x = x;
     this->pos->y = y;
     this->pos->z = z;
@@ -53,7 +53,7 @@ void Camera::setPos(Vec3* position) {
     this->pos = position->copy();
 }
 
-void Camera::setVelocity(double x, double y, double z) {
+void Camera::setVelocity(float x, float y, float z) {
     this->velocity->x = x;
     this->velocity->y = y;
     this->velocity->z = z;
@@ -72,7 +72,7 @@ void Camera::setVelocity(Vec3* velocity) {
     this->velocity = velocity->copy();
 }
 
-void Camera::setAcceleration(double x, double y, double z) {
+void Camera::setAcceleration(float x, float y, float z) {
     this->acceleration->x = x;
     this->acceleration->y = y;
     this->acceleration->z = z;
@@ -91,7 +91,7 @@ void Camera::setAcceleration(Vec3* acceleration) {
     this->acceleration = acceleration->copy();
 }
 
-void Camera::setFacingDirection(double x, double y, double z) {
+void Camera::setFacingDirection(float x, float y, float z) {
     this->facingDirection->x = x;
     this->facingDirection->y = y;
     this->facingDirection->z = z;
@@ -111,7 +111,7 @@ void Camera::setFacingDirection(Vec3* facingDirection) {
     return;
 }
 
-void Camera::setFov(double x, double y) {
+void Camera::setFov(float x, float y) {
     this->fov->x = x;
     this->fov->y = y;
     return;
@@ -130,7 +130,7 @@ void Camera::setFov(Vec2* fov) {
     return;
 }
 
-void Camera::setLightingVec(double x, double y, double z) {
+void Camera::setLightingVec(float x, float y, float z) {
     this->lightingVec->x = x;
     this->lightingVec->y = y;
     this->lightingVec->z = z;
@@ -165,7 +165,7 @@ void Camera::setPreset(int preset) {
 
 }
 
-void Camera::rotate(double yaw, double pitch, double roll) {
+void Camera::rotate(float yaw, float pitch, float roll) {
 
     // Update angles
     this->yaw += yaw;
@@ -313,22 +313,22 @@ bool Camera::canSee(Tri3* tri, Vec3* offset) const {
 }
 
 void Camera::rolloverAngles() {
-    while (this->yaw > (double) 360) {
+    while (this->yaw > (float) 360) {
         this->yaw -= 360;
     }
-    while (this->yaw < (double) 0) {
+    while (this->yaw < (float) 0) {
         this->yaw += 360;
     }
-    while (this->pitch > (double) 360) {
+    while (this->pitch > (float) 360) {
         this->pitch -= 360;
     }
-    while (this->pitch < (double) 0) {
+    while (this->pitch < (float) 0) {
         this->pitch += 360;
     }
-    while (this->roll > (double) 360) {
+    while (this->roll > (float) 360) {
         this->roll -= 360;
     }
-    while (this->roll < (double) 0) {
+    while (this->roll < (float) 0) {
         this->roll += 360;
     }
 }
@@ -375,10 +375,10 @@ void Display::toDisplayPos(Vec2* vec) {
         return;
     }
 
-    int drawPosx = (int) (vec->x * (double) this->width);
+    int drawPosx = (int) (vec->x * (float) this->width);
     drawPosx += this->widthOffset;
 
-    int drawPosy = this->height - (int) (vec->y * (double) this->height); // minus because y=0 is at the top
+    int drawPosy = this->height - (int) (vec->y * (float) this->height); // minus because y=0 is at the top
     drawPosy += this->heightOffset;
 
     vec->x = drawPosx;
@@ -400,10 +400,10 @@ void Display::toDisplayPos(Vec3* vec) {
         return;
     }
 
-    double drawPosx = vec->x * (double) this->width;
+    float drawPosx = vec->x * (float) this->width;
     drawPosx += this->widthOffset;
 
-    double drawPosy = this->height - (vec->y * (double) this->height); // minus because y=0 is at the top
+    float drawPosy = this->height - (vec->y * (float) this->height); // minus because y=0 is at the top
     drawPosy += this->heightOffset;
 
     vec->x = drawPosx;

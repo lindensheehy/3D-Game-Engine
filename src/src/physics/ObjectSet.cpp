@@ -105,21 +105,21 @@ Object* Object::move(Vec3* dist) {
 
 }
 
-Object* Object::move(double dx, double dy, double dz) {
+Object* Object::move(float dx, float dy, float dz) {
 
     this->pos->add(dx, dy, dz);
     return this;
     
 }
 
-Object* Object::scaleBy(double factor) {
+Object* Object::scaleBy(float factor) {
 
     this->scale->scale(factor);
     return this;
 
 }
 
-Object* Object::scaleBy(double fx, double fy, double fz) {
+Object* Object::scaleBy(float fx, float fy, float fz) {
 
     this->scale->scale(fx, fy ,fz);
     return this;
@@ -139,11 +139,11 @@ Object* Object::rotate(Vec3* angle, Vec3* around) {
 
 }
 
-Object* Object::rotate(double yaw, double pitch, double roll, Vec3* around = nullptr) {
+Object* Object::rotate(float yaw, float pitch, float roll, Vec3* around = nullptr) {
 
     // Log the error case
     if (this->mesh == nullptr) {
-        logWrite("Called Object->rotate(double, double, double, Vec3*) while Object->mesh was nullptr!", true);
+        logWrite("Called Object->rotate(float, float, float, Vec3*) while Object->mesh was nullptr!", true);
         return nullptr;
     }
 
@@ -165,11 +165,11 @@ Object* Object::rotateSelf(Vec3* angle) {
 
 }
 
-Object* Object::rotateSelf(double yaw, double pitch, double roll) {
+Object* Object::rotateSelf(float yaw, float pitch, float roll) {
 
     // Log the error case
     if (this->mesh == nullptr) {
-        logWrite("Called Object->rotateSelf(double, double, double) while Object->mesh was nullptr!", true);
+        logWrite("Called Object->rotateSelf(float, float, float) while Object->mesh was nullptr!", true);
         return nullptr;
     }
 
@@ -191,9 +191,9 @@ Object* Object::setColor(uint32 color) {
 
 }
 
-void Object::doPhysics(double dt) {
+void Object::doPhysics(float dt) {
 
-    double dtSeconds = dt / 1000;
+    float dtSeconds = dt / 1000;
 
     Vec3* delta = new Vec3();
 
@@ -207,7 +207,7 @@ void Object::doPhysics(double dt) {
 
 }
 
-void Object::doFloorCollision(double y) {
+void Object::doFloorCollision(float y) {
 
     return;
 
@@ -218,9 +218,9 @@ void Object::update() {
     // Update rotation if nessecary
     if ( !(this->rotation->is(this->lastRotation)) ) {
 
-        double dx = this->rotation->x - this->lastRotation->x;
-        double dy = this->rotation->y - this->lastRotation->y;
-        double dz = this->rotation->z - this->lastRotation->z;
+        float dx = this->rotation->x - this->lastRotation->x;
+        float dy = this->rotation->y - this->lastRotation->y;
+        float dz = this->rotation->z - this->lastRotation->z;
 
         this->mesh->rotateSelf(dx, dy, dz);
 
@@ -231,9 +231,9 @@ void Object::update() {
     // Update scale if nessecary
     if ( !(this->scale->is(this->lastScale)) ) {
 
-        double fx = this->scale->x / this->lastScale->x;
-        double fy = this->scale->y / this->lastScale->y;
-        double fz = this->scale->z / this->lastScale->z;
+        float fx = this->scale->x / this->lastScale->x;
+        float fy = this->scale->y / this->lastScale->y;
+        float fz = this->scale->z / this->lastScale->z;
 
         this->mesh->scale(fx, fy, fz);
 
@@ -341,7 +341,7 @@ void ObjectSet::moveAll(Vec3* dist) {
 
 }
 
-void ObjectSet::moveAll(double dx, double dy, double dz) {
+void ObjectSet::moveAll(float dx, float dy, float dz) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) 
         this->iterGetObj()->move(dx, dy, dz);
@@ -361,7 +361,7 @@ void ObjectSet::setPosAll(Vec3* pos) {
 
 }
 
-void ObjectSet::setPosAll(double x, double y, double z) {
+void ObjectSet::setPosAll(float x, float y, float z) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->pos->set(x, y, z); 
@@ -381,7 +381,7 @@ void ObjectSet::addVelocityAll(Vec3* v) {
 
 }
 
-void ObjectSet::addVelocityAll(double vx, double vy, double vz) {
+void ObjectSet::addVelocityAll(float vx, float vy, float vz) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->velocity->add(vx, vy, vz); 
@@ -401,7 +401,7 @@ void ObjectSet::setVelocityAll(Vec3* v) {
 
 }
 
-void ObjectSet::setVelocityAll(double vx, double vy, double vz) {
+void ObjectSet::setVelocityAll(float vx, float vy, float vz) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->velocity->set(vx, vy, vz);
@@ -421,28 +421,28 @@ void ObjectSet::setGravityAll(Vec3* gravity) {
 
 }
 
-void ObjectSet::setGravityAll(double gx, double gy, double gz) {
+void ObjectSet::setGravityAll(float gx, float gy, float gz) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->gravity->set(gx, gy, gz);
 
 }
 
-void ObjectSet::setGravityAll(double gy) {
+void ObjectSet::setGravityAll(float gy) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->gravity->set(0, gy, 0);
 
 }
 
-void ObjectSet::setOpacityAll(double opacity) {
+void ObjectSet::setOpacityAll(float opacity) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->opacity = opacity;
 
 }
 
-void ObjectSet::doAllPhysics(double dt) {
+void ObjectSet::doAllPhysics(float dt) {
 
     for (this->iterStart(0); !this->iterIsDone(); this->iterNext())
         this->iterGetObj()->doPhysics(dt);
@@ -526,8 +526,8 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             // Find a shade based on the lighting vec
-            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
-            double lightFactor = lightAngle / 180;
+            float lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            float lightFactor = lightAngle / 180;
 
             uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
@@ -559,8 +559,8 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             // Find a shade based on the lighting vec
-            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
-            double lightFactor = lightAngle / 180;
+            float lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            float lightFactor = lightAngle / 180;
 
             uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
@@ -574,7 +574,7 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
 }
 
-void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, double opacity) {
+void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, float opacity) {
 
     
 
@@ -624,8 +624,8 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             // Find a shade based on the lighting vector
-            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
-            double lightFactor = lightAngle / 180;
+            float lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            float lightFactor = lightAngle / 180;
 
             uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
@@ -679,8 +679,8 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
             if (!camera->canSee(currentObj->mesh->tris[i], currentObj->pos)) continue;
 
             // Find a shade based on the lighting vector
-            double lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
-            double lightFactor = lightAngle / 180;
+            float lightAngle = currentObj->mesh->tris[i]->normal->getAngle(camera->lightingVec);
+            float lightFactor = lightAngle / 180;
 
             uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
@@ -718,7 +718,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
 }
 
-void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, double opacity) {
+void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, float opacity) {
 
     
 

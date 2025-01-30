@@ -21,9 +21,9 @@ class Tri2 {
         Vec2* v2;
         Vec2* v3;
 
-        double depth1;
-        double depth2;
-        double depth3;
+        float depth1;
+        float depth2;
+        float depth3;
 
 
         /*   Constructor   */
@@ -44,19 +44,19 @@ class Tri2 {
 
         void log() const;
 
-        // Setters for each vertex. Allowing double or Vec2 inputs
+        // Setters for each vertex. Allowing float or Vec2 inputs
         // The ones which take a Vec2 object will delete the current instance variable, then point to the one given.
         // That means the Vec2 given, should NOT be changed after running this, unless changing the triangle is intended.
-        void setv1(double x, double y, double z);
+        void setv1(float x, float y, float z);
         void setv1(Vec2* vec);
 
-        void setv2(double x, double y, double z);
+        void setv2(float x, float y, float z);
         void setv2(Vec2* vec);
 
-        void setv3(double x, double y, double z);
+        void setv3(float x, float y, float z);
         void setv3(Vec2* vec);
 
-        void rotate(double degrees, Vec2* around = nullptr);
+        void rotate(float degrees, Vec2* around = nullptr);
 
 };
 
@@ -96,19 +96,19 @@ class Tri3 {
 
         void log() const;
 
-        // Setters for each vertex, and the normal. Allowing double or Vec3 inputs
+        // Setters for each vertex, and the normal. Allowing float or Vec3 inputs
         // The ones which take a Vec3 object will delete the current instance variable, then point to the one given.
         // That means the Vec3 given, should NOT be changed after running this, unless also changing the triangle is intended.
-        void setv1(double x, double y, double z);
+        void setv1(float x, float y, float z);
         void setv1(Vec3* vec);
 
-        void setv2(double x, double y, double z);
+        void setv2(float x, float y, float z);
         void setv2(Vec3* vec);
 
-        void setv3(double x, double y, double z);
+        void setv3(float x, float y, float z);
         void setv3(Vec3* vec);
 
-        void setNormal(double x, double y, double z);
+        void setNormal(float x, float y, float z);
         void setNormal(Vec3* normal);
 
         // Uses cross product to find a normal vector for the existing verticies in the triangle.

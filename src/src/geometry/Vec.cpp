@@ -6,7 +6,7 @@
 /* ------------ */
 
 // Constructor
-Vec2::Vec2(double inputX, double inputY) {
+Vec2::Vec2(float inputX, float inputY) {
     this->x = inputX;
     this->y = inputY;
     this->magnitudeValue = 0;
@@ -50,7 +50,7 @@ Vec2* Vec2::set(Vec2* other) {
 
 }
 
-Vec2* Vec2::set(double x, double y) {
+Vec2* Vec2::set(float x, float y) {
 
     this->x = x;
     this->y = y;
@@ -58,7 +58,7 @@ Vec2* Vec2::set(double x, double y) {
 
 }
 
-bool Vec2::is(double x, double y) const {
+bool Vec2::is(float x, float y) const {
 
     return (
         this->x == x &&
@@ -80,7 +80,7 @@ bool Vec2::is(Vec2* other) const {
     );
 }
 
-Vec2* Vec2::add(double x, double y) {
+Vec2* Vec2::add(float x, float y) {
     this->x += x;
     this->y += y;
     this->magnitudeUpdated = false;
@@ -101,7 +101,7 @@ Vec2* Vec2::add(Vec2* other) {
     return this;
 }
 
-Vec2* Vec2::sub(double x, double y) {
+Vec2* Vec2::sub(float x, float y) {
     this->x -= x;
     this->y -= y;
     this->magnitudeUpdated = false;
@@ -122,23 +122,23 @@ Vec2* Vec2::sub(Vec2* other) {
     return this;
 }
 
-Vec2* Vec2::scale(double factor) {
+Vec2* Vec2::scale(float factor) {
     this->x *= factor;
     this->y *= factor;
     if (this->magnitudeUpdated) this->magnitudeValue *= factor;
     return this;
 }
 
-Vec2* Vec2::inverseScale(double factor) {
+Vec2* Vec2::inverseScale(float factor) {
     return this->scale(1 / factor);
 }
 
-Vec2* Vec2::normalise(double toMagnitude /* default value = 1.0 */) {
-    double factor = toMagnitude / this->magnitude();
+Vec2* Vec2::normalise(float toMagnitude /* default value = 1.0 */) {
+    float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
 
-double Vec2::get(int index) const {
+float Vec2::get(int index) const {
     switch (index) {
         case 0:
             return this->x;
@@ -149,14 +149,14 @@ double Vec2::get(int index) const {
     }
 }
 
-double* Vec2::toArray() const {
-    double* array = new double[2];
+float* Vec2::toArray() const {
+    float* array = new float[2];
     array[0] = this->x;
     array[1] = this->y;
     return array;
 }
 
-double Vec2::magnitude() {
+float Vec2::magnitude() {
     if (!this->magnitudeUpdated) {
         this->magnitudeValue = distance2(this->x, this->y);
         this->magnitudeUpdated = true;
@@ -164,7 +164,7 @@ double Vec2::magnitude() {
     return this->magnitudeValue;
 }
 
-double Vec2::distanceTo(Vec2* other) const {
+float Vec2::distanceTo(Vec2* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -191,7 +191,7 @@ Vec2* Vec2::midpoint(Vec2* other) const {
 
 }
 
-double Vec2::dotProduct(Vec2* other) const {
+float Vec2::dotProduct(Vec2* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -203,16 +203,16 @@ double Vec2::dotProduct(Vec2* other) const {
 
 }
 
-void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
+void Vec2::rotate(float degrees, Vec2* around /* default value = nullptr */) {
     
     // around = nullptr already addressed here, no need for error case
 
     if (degrees == 0) return;
 
-    double aroundX = 0;
-    double aroundY = 0;
-    double relativeX = this->x;
-    double relativeY = this->y;
+    float aroundX = 0;
+    float aroundY = 0;
+    float relativeX = this->x;
+    float relativeY = this->y;
 
     if (around != nullptr) {
         aroundX = around->x;
@@ -221,10 +221,10 @@ void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
         relativeY -= aroundY;
     }
 
-    double radians = toRadians(degrees);
+    float radians = toRadians(degrees);
 
-    double sinValue = sin(radians);
-    double cosValue = cos(radians);
+    float sinValue = sin(radians);
+    float cosValue = cos(radians);
 
     this->x = (cosValue * relativeX) - (sinValue * relativeY) + aroundX;
     this->y = (cosValue * relativeY) + (sinValue * relativeX) + aroundY;
@@ -240,7 +240,7 @@ void Vec2::rotate(double degrees, Vec2* around /* default value = nullptr */) {
 /* ------------ */
 
 // Constructors
-Vec3::Vec3(double inputX, double inputY, double inputZ) {
+Vec3::Vec3(float inputX, float inputY, float inputZ) {
     this->x = inputX;
     this->y = inputY;
     this->z = inputZ;
@@ -289,7 +289,7 @@ Vec3* Vec3::set(Vec3* other) {
 
 }
 
-Vec3* Vec3::set(double x, double y, double z) {
+Vec3* Vec3::set(float x, float y, float z) {
     this->x = x;
     this->y = y;
     this->z = z;
@@ -311,7 +311,7 @@ bool Vec3::is(Vec3* other) const {
     );
 }
 
-bool Vec3::is(double x, double y, double z) const {
+bool Vec3::is(float x, float y, float z) const {
 
     return (
         this->x == x &&
@@ -336,7 +336,7 @@ Vec3* Vec3::add(Vec3* other) {
     return this;
 }
 
-Vec3* Vec3::add(double dx, double dy, double dz) {
+Vec3* Vec3::add(float dx, float dy, float dz) {
     this->x += dx;
     this->y += dy;
     this->z += dz;
@@ -359,7 +359,7 @@ Vec3* Vec3::sub(Vec3* other) {
     return this;
 }
 
-Vec3* Vec3::sub(double dx, double dy, double dz) {
+Vec3* Vec3::sub(float dx, float dy, float dz) {
     this->x -= dx;
     this->y -= dy;
     this->z -= dz;
@@ -367,7 +367,7 @@ Vec3* Vec3::sub(double dx, double dy, double dz) {
     return this;
 }
 
-Vec3* Vec3::scale(double factor) {
+Vec3* Vec3::scale(float factor) {
     this->x *= factor;
     this->y *= factor;
     this->z *= factor;
@@ -375,7 +375,7 @@ Vec3* Vec3::scale(double factor) {
     return this;
 }
 
-Vec3* Vec3::scale(double fx, double fy, double fz) {
+Vec3* Vec3::scale(float fx, float fy, float fz) {
     this->x *= fx;
     this->y *= fy;
     this->z *= fz;
@@ -383,16 +383,16 @@ Vec3* Vec3::scale(double fx, double fy, double fz) {
     return this;
 }
 
-Vec3* Vec3::inverseScale(double factor) {
+Vec3* Vec3::inverseScale(float factor) {
     return this->scale(1 / factor);
 }
 
-Vec3* Vec3::normalise(double toMagnitude /* default value = 1.0 */) {
-    double factor = toMagnitude / this->magnitude();
+Vec3* Vec3::normalise(float toMagnitude /* default value = 1.0 */) {
+    float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
 
-double Vec3::get(int index) const {
+float Vec3::get(int index) const {
     switch (index) {
         case 0:
             return this->x;
@@ -405,15 +405,15 @@ double Vec3::get(int index) const {
     }
 }
 
-double* Vec3::toArray() const {
-    double* array = new double[3];
+float* Vec3::toArray() const {
+    float* array = new float[3];
     array[0] = this->x;
     array[1] = this->y;
     array[2] = this->z;
     return array;
 }
 
-double Vec3::magnitude() {
+float Vec3::magnitude() {
 
     if (!this->magnitudeUpdated) {
         this->magnitudeValue = distance3(this->x, this->y, this->z);
@@ -424,7 +424,7 @@ double Vec3::magnitude() {
 
 }
 
-double Vec3::distanceTo(Vec3* other) const {
+float Vec3::distanceTo(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -451,7 +451,7 @@ Vec3* Vec3::midpoint(Vec3* other) const {
     );
 }
 
-double Vec3::dotProduct(Vec3* other) const {
+float Vec3::dotProduct(Vec3* other) const {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -470,13 +470,13 @@ Vec3* Vec3::crossProduct(Vec3* other) const {
         return nullptr;
     }
 
-    double x = (this->y * other->z) - (this->z * other->y);
-    double y = (this->z * other->x) - (this->x * other->z);
-    double z = (this->x * other->y) - (this->y * other->x);
+    float x = (this->y * other->z) - (this->z * other->y);
+    float y = (this->z * other->x) - (this->x * other->z);
+    float z = (this->x * other->y) - (this->y * other->x);
     return new Vec3(x, y, z);
 }
 
-double Vec3::getAngle(Vec3* other) {
+float Vec3::getAngle(Vec3* other) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (other == nullptr) {
@@ -484,31 +484,31 @@ double Vec3::getAngle(Vec3* other) {
         return 0;
     }
 
-    double dotProduct = this->dotProduct(other);
-    double magnitudeFactor = this->magnitude() * other->magnitude();
-    double ratio = dotProduct / magnitudeFactor;
+    float dotProduct = this->dotProduct(other);
+    float magnitudeFactor = this->magnitude() * other->magnitude();
+    float ratio = dotProduct / magnitudeFactor;
 
     // These cases shouldnt happen but floating point errors can cause them
     if (ratio < -1) return 180;
     if (ratio > 1)  return 0;
 
-    double radians = arccos(ratio);
+    float radians = arccos(ratio);
     
     return toDegrees(radians);
 }
 
-void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
+void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
 
     // around = nullptr already addressed here, no need for error case
 
     if (yaw == 0 && pitch == 0 && roll == 0) return;
 
-    double aroundX = 0;
-    double aroundY = 0;
-    double aroundZ = 0;
-    double relativeX = this->x;
-    double relativeY = this->y;
-    double relativeZ = this->z;
+    float aroundX = 0;
+    float aroundY = 0;
+    float aroundZ = 0;
+    float relativeX = this->x;
+    float relativeY = this->y;
+    float relativeZ = this->z;
 
     if (around != nullptr) {
         aroundX = around->x;
@@ -519,14 +519,14 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
         relativeZ -= aroundZ;
     }
 
-    double radians;
+    float radians;
 
     if (yaw != 0) {
         
         radians = toRadians(yaw);
 
-        double sinValue = sin(radians);
-        double cosValue = cos(radians);
+        float sinValue = sin(radians);
+        float cosValue = cos(radians);
 
         this->x = (cosValue * relativeX) - (sinValue * relativeZ) + aroundX;
         this->z = (cosValue * relativeZ) + (sinValue * relativeX) + aroundZ;
@@ -541,8 +541,8 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
 
         radians = toRadians(pitch);
 
-        double sinValue = sin(radians);
-        double cosValue = cos(radians);
+        float sinValue = sin(radians);
+        float cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeZ) + aroundY;
         this->z = (cosValue * relativeZ) + (sinValue * relativeY) + aroundZ;
@@ -557,8 +557,8 @@ void Vec3::rotate(double yaw, double pitch, double roll, Vec3* around /* default
 
         radians = toRadians(roll);
 
-        double sinValue = sin(radians);
-        double cosValue = cos(radians);
+        float sinValue = sin(radians);
+        float cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeX) + aroundY;
         this->x = (cosValue * relativeX) + (sinValue * relativeY) + aroundX;
@@ -576,8 +576,8 @@ void Vec3::project() {
     */
 
     // Constant. Is currently proportional to display size
-    double focalLengthX = 0.6;
-    double focalLengthY = 1;
+    float focalLengthX = 0.6;
+    float focalLengthY = 1;
 
     // If the point is behind the camera
     if (this->z < 0) {
@@ -587,7 +587,7 @@ void Vec3::project() {
         return;
     }
 
-    double depth = this->magnitude();
+    float depth = this->magnitude();
 
     this->x = (this->x * focalLengthX) / this->z;
     this->y = (this->y * focalLengthY) / this->z;

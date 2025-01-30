@@ -101,6 +101,15 @@ void logWrite(long long message, bool newLine /* default value = false */) {
     logWrite((int) message, newLine);
 }
 
+void logWrite(float message, bool newLine /* default value = false */) {
+
+    floatToString(message, stringBuffer, 64);
+    logWrite(stringBuffer, newLine);
+
+    return;
+
+}
+
 void logWrite(double message, bool newLine /* default value = false */) {
 
     doubleToString(message, stringBuffer, 64);

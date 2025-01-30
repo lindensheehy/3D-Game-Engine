@@ -47,12 +47,12 @@ class Color {
 
         /*   Class functions   */
 
-        // Sets the brightness of a given color (uint32) to a double between 0-1.
+        // Sets the brightness of a given color (uint32) to a float between 0-1.
         // Values higher than 1 CAN be used, but could cause overflow issues.
-        static uint32 setBrightness(uint32 color, double newBrightness);
+        static uint32 setBrightness(uint32 color, float newBrightness);
 
         // Merges the rgb values of two colors based on opacity values. The sum of opacity1 and opacity2 should be 1
-        static uint32 merge(uint32 color1, double opacity1, uint32 color2, double opacity2);
+        static uint32 merge(uint32 color1, float opacity1, uint32 color2, float opacity2);
 
 };
 
@@ -139,7 +139,7 @@ class Drawer {
         unsigned int bufferSize;
 
         // The depth buffer stores the distance between each pixel and the camera. this allows meshes to be drawn in any order while appearing accurately.
-        double* depthBuffer;
+        float* depthBuffer;
 
 
         // Constructors
@@ -166,26 +166,26 @@ class Drawer {
 
         // Writes a color to a coordinate within the buffer. Foundation for all further drawing functions.
         void writePixel(uint32 pixel, int x, int y);
-        void writePixel(uint32 pixel, int x, int y, double depth);
-        void writePixel(uint32 pixel, int x, int y, double depth, double opacity);
+        void writePixel(uint32 pixel, int x, int y, float depth);
+        void writePixel(uint32 pixel, int x, int y, float depth, float opacity);
 
         // Draws a straight line from (x1, y1) to (x2, y2) in the given color
         void drawLine(uint32 pixel, int x1, int y1, int x2, int y2);
-        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2);
-        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, double depth1, double depth2, double opacity);
+        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2);
+        void drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2, float opacity);
 
         // Same as above, but uses Vec2 objects. These objects are NOT deleted by this function call and must be handled properly
         void drawLine(uint32 pixel, Vec2* from, Vec2* to);
-        void drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2);
-        void drawLine(uint32 pixel, Vec2* from, Vec2* to, double depth1, double depth2, double opacity);
+        void drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2);
+        void drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2, float opacity);
 
         // Draws a straight line along a given axis
         void drawVerticalLine(uint32 pixel, int startY, int endY, int x);
-        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, double depth1, double depth2);
-        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, double depth1, double depth2, double opacity);
+        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, float depth1, float depth2);
+        void drawVerticalLine(uint32 pixel, int startY, int endY, int x, float depth1, float depth2, float opacity);
         void drawHorizontalLine(uint32 pixel, int startX, int endX, int y);
-        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, double depth1, double depth2);
-        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, double depth1, double depth2, double opacity);
+        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, float depth1, float depth2);
+        void drawHorizontalLine(uint32 pixel, int startX, int endX, int y, float depth1, float depth2, float opacity);
 
         // Draws a HOLLOW rectangle
         void drawRect(uint32 pixel, int x1, int y1, int x2, int y2);
@@ -200,29 +200,29 @@ class Drawer {
 
         // Draws an elipse at a given location, with a given radius along each axis.
         void drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy);
-        void drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, double depth);
+        void drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, float depth);
 
         // Same as above, but only one radius allowed.
         void drawCircle(uint32 pixel, int x, int y, int radius);
         void drawCircle(uint32 pixel, Vec2* pos, int radius);
-        void drawCircle(uint32 pixel, int x, int y, int radius, double depth);
-        void drawCircle(uint32 pixel, Vec2* pos, int radius, double depth);
+        void drawCircle(uint32 pixel, int x, int y, int radius, float depth);
+        void drawCircle(uint32 pixel, Vec2* pos, int radius, float depth);
 
         // Draws a FILLED triangle which uses (x1, y1), (x2, y2), and (x3, y3) as vertices
         void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3);
-        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3);
-        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, double depth1, double depth2, double depth3, double opacity);
+        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3);
+        void drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3, float opacity);
 
         // Same as above but uses a Tri object. This object is NOT deleted by this function call and must be handled properly. The Tri3 call includes depth.
         void drawTriangle(uint32 pixel, Tri2* tri);
         void drawTriangle(uint32 pixel, Tri3* tri);
-        void drawTriangle(uint32 pixel, Tri3* tri, double opacity);
+        void drawTriangle(uint32 pixel, Tri3* tri, float opacity);
 
         // Draws a PNG file using a PNG object. the top left corner of the PNG will lie at (x, y)
         void drawpng(PNG* file, int x, int y);
         void drawpng(PNG* file, Vec2* pos);
-        void drawpng(PNG* file, int x, int y, double depth);
-        void drawpng(PNG* file, Vec2* pos, double depth);
+        void drawpng(PNG* file, int x, int y, float depth);
+        void drawpng(PNG* file, Vec2* pos, float depth);
 
         // Loads the character pixel arts into memory
         void initFont();

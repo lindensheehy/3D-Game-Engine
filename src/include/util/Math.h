@@ -3,24 +3,27 @@
 // For logging error cases
 #include "util/Log.h"
 
-const double pi = 3.14159265358979323846;
-const double inf = 1e100;
-const double degToRadFactor = pi / 180;
+const float pi = 3.14159265358979323846;
+const float inf = 1e100;
+const float degToRadFactor = pi / 180;
 
 
 /*   -----   Basic Functions   -----   */
 
 // Returns the floor value of x as an int
+int floor(float x);
 int floor(double x);
 
 // Returns the rounded value of x as an integer. That means this rounds to ZERO decimal points
+int round(float x);
 int round(double x);
 
 
 /*   -----   sqrt   -----   */
 
 // Returns a value within the given tolerance from the actual square root of x
-double sqrt(double x, double tolerance = 0.000001);
+float sqrt (float x, float tolerance = 0.00001);
+double sqrt(double x, double tolerance = 0.00001);
 
 
 /*   --------------------------   */
@@ -28,21 +31,27 @@ double sqrt(double x, double tolerance = 0.000001);
 /*   --------------------------   */
 
 // Sine function. Uses radians
+float sin(float x);
 double sin(double x);
 
 // Cosine function. Uses radians
+float cos(float x);
 double cos(double x);
 
 // Tangent function. Uses radians
+float tan(float x);
 double tan(double x);
 
 // Reverse sine function. Uses radians
+float arcsin(float x);
 double arcsin(double x);
 
 // Reverse cosine function. Uses radians
+float arccos(float x);
 double arccos(double x);
 
 // Reverse tangent function. Uses radians
+float arctan(float x);
 double arctan(double x);
 
 
@@ -51,22 +60,22 @@ double arctan(double x);
 /*   ---------------------------   */
 
 // Returns the distance between 2 sets of 2 dimensional coordinates
-double distance2(double x1, double y1, double x2 = 0, double y2 = 0);
+float distance2(float x1, float y1, float x2 = 0, float y2 = 0);
 
 // Returns the distance between 2 sets of 3 dimensional coordinates
-double distance3(double x1, double y1, double z1, double x2 = 0, double y2 = 0, double z2 = 0);
+float distance3(float x1, float y1, float z1, float x2 = 0, float y2 = 0, float z2 = 0);
 
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
-double range(double num, double from, double to);
+float range(float num, float from, float to);
 
 // Same as above, but allows values outside the range, in which case it would return values outside 0-1
-double inRange(double num, double from, double to);
+float inRange(float num, float from, float to);
 
 // Returns the angle between two points in DEGREES.
 // This angle is from a vertical line on (x1, y1) to (x2, y2)
 // For example if (x2, y2) is directly right of (x1, y1) this returns 90. 
 // The second position is set to (0, 0) by default.
-double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
+float getAngle(float x1, float y1, float x2 = 0, float y2 = 0);
 
 
 /*   ----------------------------   */
@@ -74,11 +83,11 @@ double getAngle(double x1, double y1, double x2 = 0, double y2 = 0);
 /*   ----------------------------   */
 
 // Angle conversion. Degrees -> Radians
-inline double toRadians(double degrees) {
+inline float toRadians(float degrees) {
     return degrees * degToRadFactor;
 }
 
 // Angle conversion. Radians -> Degrees
-inline double toDegrees(double radians) {
+inline float toDegrees(float radians) {
     return radians / degToRadFactor;
 }

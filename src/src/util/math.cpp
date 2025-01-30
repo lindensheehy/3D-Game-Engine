@@ -7,6 +7,22 @@
 
 
 /*   -----   Basic Functions   -----   */
+int floor(float x) {
+    /*
+        Type casting is used to truncate the fractional part of the value
+
+        For negative number this returns floor(x) + 1
+        So those cases are handled
+    */
+
+    int returnValue = (int) x;
+
+    if (x < 0 && x != returnValue) returnValue--;   
+    
+    return returnValue;
+
+}
+
 int floor(double x) {
     /*
         Type casting is used to truncate the fractional part of the value
@@ -23,6 +39,18 @@ int floor(double x) {
 
 }
 
+int round(float x) {
+    /*
+        This just calls floor(x + 0.5)
+        This does the same thing as rounding to 0 decimal points
+        Rounding to more decimal points is not supported
+    */
+
+    float y = x + 0.5;
+    return floor(y);
+
+}
+
 int round(double x) {
     /*
         This just calls floor(x + 0.5)
@@ -35,7 +63,11 @@ int round(double x) {
 
 }
 
-double sqrt(double x, double tolerance) {
+float sqrt(float x, float tolerance /* default value = 0.00001 */) {
+    return (float) sqrt( (double) x, (double) tolerance );
+}
+
+double sqrt(double x, double tolerance /* default value = 0.00001 */) {
     /*
     
         This function makes use of the Newton Raphson method to find the sqrt of x as follows:
@@ -109,6 +141,10 @@ double sqrt(double x, double tolerance) {
 /*   ---   Trig Functions   ---   */
 /*   --------------------------   */
 
+float sin(float x) {
+    return (float) sin( (double) x );
+}
+
 double sin(double x) {
     /*
         Uses radians
@@ -151,6 +187,10 @@ double sin(double x) {
     returnValue += (exp9) / fac9;
 
     return returnValue;
+}
+
+float cos(float x) {
+    return (float) cos( (double) x );
 }
 
 double cos(double x) {
@@ -203,6 +243,10 @@ double cos(double x) {
     return returnValue;
 }
 
+float tan(float x) {
+    return (float) tan( (double) x );
+}
+
 double tan(double x) {
     /*
         Uses radians
@@ -227,6 +271,10 @@ double tan(double x) {
         
     return sinValue / cosValue;
 
+}
+
+float arctan(float x) {
+    return (float) arctan( (double) x );
 }
 
 double arctan(double x) {
@@ -319,6 +367,10 @@ double arctan(double x) {
 
 }
 
+float arcsin(float x) {
+    return (float) arcsin( (double) x );
+}
+
 double arcsin(double x) {
     /*
         This function makes use of the arctan function defined above, along side the following identity:
@@ -357,6 +409,10 @@ double arcsin(double x) {
 
     return arctan(y);
 
+}
+
+float arccos(float x) {
+    return (float) arccos( (double) x );
 }
 
 double arccos(double x) {
@@ -409,26 +465,26 @@ double arccos(double x) {
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
 
-double distance2(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
+float distance2(float x1, float y1, float x2 /* default value = 0 */, float y2 /* default value = 0 */) {
 
-    double dx = x1 - x2;
-    double dy = y1 - y2;
+    float dx = x1 - x2;
+    float dy = y1 - y2;
 
     return sqrt((dx * dx) + (dy * dy));
 
 }
 
-double distance3(double x1, double y1, double z1, double x2 /* default value = 0 */, double y2 /* default value = 0 */, double z2 /* default value = 0 */) {
+float distance3(float x1, float y1, float z1, float x2 /* default value = 0 */, float y2 /* default value = 0 */, float z2 /* default value = 0 */) {
 
-    double dx = x1 - x2;
-    double dy = y1 - y2;
-    double dz = z1 - z2;
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+    float dz = z1 - z2;
 
     return sqrt((dx * dx) + (dy * dy) + (dz * dz));
 
 }
 
-double range(double num, double from, double to) {
+float range(float num, float from, float to) {
     /*
         This function basically normalizes a value with respect to some given range
         Returns a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
@@ -438,7 +494,7 @@ double range(double num, double from, double to) {
 
 }
 
-double inRange(double num, double from, double to) {
+float inRange(float num, float from, float to) {
     /*
         Function is similar to range, but returns -1 for values outside the range
     */
@@ -448,7 +504,7 @@ double inRange(double num, double from, double to) {
     return -1;
 }
 
-double getAngle(double x1, double y1, double x2 /* default value = 0 */, double y2 /* default value = 0 */) {
+float getAngle(float x1, float y1, float x2 /* default value = 0 */, float y2 /* default value = 0 */) {
     /*
         Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)
         so this means that the 'y-axis' will be shifted to one side depending on where x2 lies
@@ -465,11 +521,11 @@ double getAngle(double x1, double y1, double x2 /* default value = 0 */, double 
         return 270;
     }
 
-    double radians;
+    float radians;
 
     if (x1 != x2) {
 
-        double m = abs( (x1 - x2) / (y1 - y2) );
+        float m = abs( (x1 - x2) / (y1 - y2) );
         radians = arctan(m);
 
     } 

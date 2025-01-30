@@ -172,9 +172,9 @@ Vec3* Mesh::getCenter() {
 
     if (this->centerValid) return this->center;
 
-    double x = 0;
-    double y = 0;
-    double z = 0;
+    float x = 0;
+    float y = 0;
+    float z = 0;
 
     for (int i = 0; i < this->vertexCount; i++) {
         x += this->verticies[i]->x;
@@ -205,7 +205,7 @@ Mesh* Mesh::move(Vec3* dist) {
 
 }
 
-Mesh* Mesh::move(double dx, double dy, double dz) {
+Mesh* Mesh::move(float dx, float dy, float dz) {
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->add(dx, dy, dz);
@@ -217,7 +217,7 @@ Mesh* Mesh::move(double dx, double dy, double dz) {
 
 }
 
-Mesh* Mesh::scale(double factor) {
+Mesh* Mesh::scale(float factor) {
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->scale(factor, factor, factor);
@@ -229,7 +229,7 @@ Mesh* Mesh::scale(double factor) {
 
 }
 
-Mesh* Mesh::scale(double fx, double fy, double fz) {
+Mesh* Mesh::scale(float fx, float fy, float fz) {
 
     for (int i = 0; i < this->vertexCount; i++) {
         this->verticies[i]->scale(fx, fy, fz);
@@ -257,7 +257,7 @@ Mesh* Mesh::rotate(Vec3* angle, Vec3* around /* default value = nullptr */) {
 
 }
 
-Mesh* Mesh::rotate(double yaw, double pitch, double roll, Vec3* around /* default value = nullptr */) {
+Mesh* Mesh::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
 
     // around = nullptr is allowed, no need to error check
 
@@ -290,7 +290,7 @@ Mesh* Mesh::rotateSelf(Vec3* angle) {
 
 }
 
-Mesh* Mesh::rotateSelf(double yaw, double pitch, double roll) {
+Mesh* Mesh::rotateSelf(float yaw, float pitch, float roll) {
 
     // This doesnt create any new object
     Vec3* center = this->getCenter();
@@ -335,9 +335,9 @@ void Mesh::updateNormals() {
         Vec3* normalOffset = newNormal->copy()->scale(0.05);    // New object
 
         triCenter->add(normalOffset);
-        double dist1 = triCenter->distanceTo(meshCenter);
+        float dist1 = triCenter->distanceTo(meshCenter);
         triCenter->sub(normalOffset)->sub(normalOffset);
-        double dist2 = triCenter->distanceTo(meshCenter);
+        float dist2 = triCenter->distanceTo(meshCenter);
 
         delete triCenter, normalOffset;
 
@@ -510,7 +510,7 @@ void Mesh::initMeshes() {
     vertexList[101] = new Vec3(0, 0.5, 0);
 
     // Rotate a vector around at a certain length to make new vertices
-    double theta = 360 / 20;
+    float theta = 360 / 20;
     Vec3* newVec = new Vec3();
 
     // Along the circumference (index 0-19 inclusive)

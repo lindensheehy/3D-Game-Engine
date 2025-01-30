@@ -48,7 +48,7 @@ void handleInput(State* state, Camera* camera) {
     if (clickedOnUi) return;
 
     // Find distance to move based on the delta time of the frame
-    double dist = camera->movementSpeed * (state->time->dt / 1000);
+    float dist = camera->movementSpeed * (state->time->dt / 1000);
 
     if (state->keyIsDown(KEY_SHIFT))
         dist *= camera->sprintFactor;
@@ -74,9 +74,9 @@ void handleInput(State* state, Camera* camera) {
     if (state->mouse->leftButtonIsDown) {
 
         // 0.2 is just a random number I chose becuase it felt good in the app
-        double mouseSensitivity = 0.2;
-        double camDeltaYaw = (double) state->deltaMousePosX();
-        double camDeltaPitch = (double) state->deltaMousePosY();
+        float mouseSensitivity = 0.2;
+        float camDeltaYaw = (float) state->deltaMousePosX();
+        float camDeltaPitch = (float) state->deltaMousePosY();
         camera->rotate( camDeltaYaw * mouseSensitivity, -camDeltaPitch * mouseSensitivity, 0 );
 
     }

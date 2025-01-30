@@ -316,7 +316,7 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 /* ------------------------------------- */
 
 // Constructor
-WindowTextInput::WindowTextInput(int posx, int posy, int width, double* valueToWrite) : WindowElement(posx, posy, width, 12) {
+WindowTextInput::WindowTextInput(int posx, int posy, int width, float* valueToWrite) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
     this->length = 0;
@@ -337,7 +337,7 @@ WindowTextInput::~WindowTextInput() {
 // Instance Functions
 void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
-    doubleToString(*(this->valueToWrite), this->text, 128, 1);
+    floatToString(*(this->valueToWrite), this->text, 128, 1);
     
     Vec2* newOffset = this->pos->copy()->add(offset);
 

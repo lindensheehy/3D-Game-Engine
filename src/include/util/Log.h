@@ -22,6 +22,7 @@ void logWrite(wchar_t message, bool newLine = false);
 void logWrite(int message, bool newLine = false);
 void logWrite(long message, bool newLine = false);
 void logWrite(long long message, bool newLine = false);
+void logWrite(float message, bool newLine = false);
 void logWrite(double message, bool newLine = false);
 
 // Hex values

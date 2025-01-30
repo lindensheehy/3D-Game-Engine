@@ -17,7 +17,7 @@ class Camera {
         Vec3* acceleration;
 
         // Facing vectors. yaw -> about Y-axis, pitch -> about X-axis, roll -> about Z-axis
-        double yaw, pitch, roll;
+        float yaw, pitch, roll;
 
         // Vector which points in the same direction the camera is facing
         Vec3* facingDirection;
@@ -26,8 +26,8 @@ class Camera {
         Vec2* fov;
 
         // Movement speed in units per second
-        double movementSpeed;
-        double sprintFactor;
+        float movementSpeed;
+        float sprintFactor;
 
         // This is the vector representing the direction of the global light source for this camera
         Vec3* lightingVec;
@@ -46,27 +46,27 @@ class Camera {
         // The functions which take a Vec object as input DO NOT delete the object, it must be done manually.
 
         // Position 
-        void setPos(double x, double y, double z);
+        void setPos(float x, float y, float z);
         void setPos(Vec3* position);
 
         // Velocity
-        void setVelocity(double x, double y, double z);
+        void setVelocity(float x, float y, float z);
         void setVelocity(Vec3* velocity);
 
         // Acceleration
-        void setAcceleration(double x, double y, double z);
+        void setAcceleration(float x, float y, float z);
         void setAcceleration(Vec3* acceleration);
 
         // Facing direction
-        void setFacingDirection(double x, double y, double z);
+        void setFacingDirection(float x, float y, float z);
         void setFacingDirection(Vec3* facingDirection);
 
         // Fov
-        void setFov(double x, double y);
+        void setFov(float x, float y);
         void setFov(Vec2* fov);
 
         // Lighting Vector
-        void setLightingVec(double x, double y, double z);
+        void setLightingVec(float x, float y, float z);
         void setLightingVec(Vec3* lightingVec);
 
         // Sets all the instance variables to one of the presets
@@ -75,7 +75,7 @@ class Camera {
 
         // This rotates the camera based on the input angles in DEGREES
         // Also updates the facing direction vector
-        void rotate(double yaw, double pitch, double roll);
+        void rotate(float yaw, float pitch, float roll);
 
         // Takes a Vec3 object, and projects it into a Vec2 object.
         // The Vec2 components will be overwritten with the output of this function.

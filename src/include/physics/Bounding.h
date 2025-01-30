@@ -59,7 +59,7 @@ class BoundingRect : public BoundingShape {
 
         // Constructor
         BoundingRect(Vec3* start, Vec3* end);
-        BoundingRect(double x1, double y1, double z1, double x2, double y2, double z2);
+        BoundingRect(float x1, float y1, float z1, float x2, float y2, float z2);
 
         // Destructor
         ~BoundingRect() override;
@@ -77,12 +77,12 @@ class BoundingSphere : public BoundingShape {
         /*   Instance Variables   */
 
         Vec3* pos;
-        double radius;
+        float radius;
 
 
         // Constructor
-        BoundingSphere(Vec3* pos, double radius);
-        BoundingSphere(double x, double y, double z, double radius);
+        BoundingSphere(Vec3* pos, float radius);
+        BoundingSphere(float x, float y, float z, float radius);
 
         // Destructor
         ~BoundingSphere() override;

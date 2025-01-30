@@ -82,7 +82,7 @@ void Tri2::log() const {
 
 }
 
-void Tri2::setv1(double x, double y, double z) {
+void Tri2::setv1(float x, float y, float z) {
     this->v1->x = x;
     this->v1->y = y;
 }
@@ -99,7 +99,7 @@ void Tri2::setv1(Vec2* vec) {
     this->v1 = vec->copy();
 }
 
-void Tri2::setv2(double x, double y, double z) {
+void Tri2::setv2(float x, float y, float z) {
     this->v2->x = x;
     this->v2->y = y;
 }
@@ -116,7 +116,7 @@ void Tri2::setv2(Vec2* vec) {
     this->v2 = vec->copy();
 }
 
-void Tri2::setv3(double x, double y, double z) {
+void Tri2::setv3(float x, float y, float z) {
     this->v3->x = x;
     this->v3->y = y;
 }
@@ -133,7 +133,7 @@ void Tri2::setv3(Vec2* vec) {
     this->v3 = vec->copy();
 }
 
-void Tri2::rotate(double degrees, Vec2* around) {
+void Tri2::rotate(float degrees, Vec2* around) {
 
     this->v1->rotate(degrees, around);
     this->v2->rotate(degrees, around);
@@ -221,7 +221,7 @@ void Tri3::log() const {
 
 }
 
-void Tri3::setv1(double x, double y, double z) {
+void Tri3::setv1(float x, float y, float z) {
     this->v1->x = x;
     this->v1->y = y;
     this->v1->z = z;
@@ -239,7 +239,7 @@ void Tri3::setv1(Vec3* vec) {
     this->v1 = vec->copy();
 }
 
-void Tri3::setv2(double x, double y, double z) {
+void Tri3::setv2(float x, float y, float z) {
     this->v2->x = x;
     this->v2->y = y;
     this->v2->z = z;
@@ -257,7 +257,7 @@ void Tri3::setv2(Vec3* vec) {
     this->v2 = vec->copy();
 }
 
-void Tri3::setv3(double x, double y, double z) {
+void Tri3::setv3(float x, float y, float z) {
     this->v3->x = x;
     this->v3->y = y;
     this->v3->z = z;
@@ -275,7 +275,7 @@ void Tri3::setv3(Vec3* vec) {
     this->v3 = vec->copy();
 }
 
-void Tri3::setNormal(double x, double y, double z) {
+void Tri3::setNormal(float x, float y, float z) {
     this->normal->x = x;
     this->normal->y = y;
     this->normal->z = z;
@@ -324,9 +324,9 @@ bool Tri3::isFacing(Vec3* vec) const {
 Vec3* Tri3::getCenter() const {
 
     // Average all 3 components
-    double x = this->v1->x + this->v2->x + this->v3->x;
-    double y = this->v1->y + this->v2->y + this->v3->y;
-    double z = this->v1->z + this->v2->z + this->v3->z;
+    float x = this->v1->x + this->v2->x + this->v3->x;
+    float y = this->v1->y + this->v2->y + this->v3->y;
+    float z = this->v1->z + this->v2->z + this->v3->z;
     x /= 3; y /= 3; z /= 3;
 
     return new Vec3(x, y, z);

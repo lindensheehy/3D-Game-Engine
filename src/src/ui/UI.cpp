@@ -338,7 +338,7 @@ WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
 
 }
 
-WindowElement* UI::createTextBox(int posx, int posy, int width, double* valueToWrite) {
+WindowElement* UI::createTextBox(int posx, int posy, int width, float* valueToWrite) {
 
     WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
 

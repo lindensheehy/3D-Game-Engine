@@ -20,8 +20,8 @@ bool Collision::sphereSphere(BoundingShape* sphere1, BoundingShape* sphere2) {
     BoundingSphere* castedSphere2 = (BoundingSphere*) sphere2;
 
     Vec3* distanceVec = castedSphere1->pos->copy()->sub(castedSphere2->pos);
-    double distance = distanceVec->magnitude();
-    double totalRadius = castedSphere1->radius + castedSphere2->radius;
+    float distance = distanceVec->magnitude();
+    float totalRadius = castedSphere1->radius + castedSphere2->radius;
 
     delete distanceVec;
 
@@ -80,7 +80,7 @@ BoundingRect::BoundingRect(Vec3* start, Vec3* end) {
 
 }
 
-BoundingRect::BoundingRect(double x1, double y1, double z1, double x2, double y2, double z2) {
+BoundingRect::BoundingRect(float x1, float y1, float z1, float x2, float y2, float z2) {
 
     this->type = BoundType::RECTPRISM;
 
@@ -134,7 +134,7 @@ bool BoundingRect::collidesWith(BoundingShape* other) {
 /* --- BoundingSphere --- */
 /* ---------------------- */
 
-BoundingSphere::BoundingSphere(Vec3* pos, double radius) {
+BoundingSphere::BoundingSphere(Vec3* pos, float radius) {
     
     this->type = BoundType::SPHERE;
 
@@ -145,7 +145,7 @@ BoundingSphere::BoundingSphere(Vec3* pos, double radius) {
 
 }
 
-BoundingSphere::BoundingSphere(double x, double y, double z, double radius) {
+BoundingSphere::BoundingSphere(float x, float y, float z, float radius) {
     
     this->type = BoundType::SPHERE;
 

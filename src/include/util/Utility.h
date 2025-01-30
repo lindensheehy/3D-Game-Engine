@@ -23,14 +23,21 @@ typedef unsigned long long uint64;
 
 // Swaps the values in two memory locations.
 void swap(int* var1, int* var2);
-void swap(double* var1, double* var2);
 void swap(unsigned int* var1, unsigned int* var2);
+void swap(float* var1, float* var2);
+void swap(double* var1, double* var2);
 
 
 
 /*   Casting functions for char* types   */
 
-// Writes the given double value to the char* given. Will not write past MAXLENGTH
+// Writes the given float value to the char* given. Will not write past MAXLENGTH. Returns true if the whole int was parsed
+bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2);
+
+// Returns a float value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
+float stringToFloat(char* string, int MAXLENGTH);
+
+// Writes the given double value to the char* given. Will not write past MAXLENGTH. Returns true if the whole int was parsed
 bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2);
 
 // Returns a double value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0

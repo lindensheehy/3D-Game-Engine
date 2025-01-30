@@ -111,19 +111,19 @@ class Mesh {
 
         // Moves all the Vec3 objects within 'verticies' by the specified distance.
         Mesh* move(Vec3* dist);
-        Mesh* move(double dx, double dy, double dz);
+        Mesh* move(float dx, float dy, float dz);
 
         // Scales the mesh by a given factor on each axis. Simply applies these factors to each component of every Vec3 object.
-        Mesh* scale(double factor);
-        Mesh* scale(double fx, double fy, double fz);
+        Mesh* scale(float factor);
+        Mesh* scale(float fx, float fy, float fz);
 
         // Rotates all the Vec3 objects by the specified angles. just calls Vec3->rotate() for each vertex.
         Mesh* rotate(Vec3* angle, Vec3* around);
-        Mesh* rotate(double yaw, double pitch, double roll, Vec3* around = nullptr);
+        Mesh* rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
 
         // Rotates the mesh around its center
         Mesh* rotateSelf(Vec3* angle);
-        Mesh* rotateSelf(double yaw, double pitch, double roll);
+        Mesh* rotateSelf(float yaw, float pitch, float roll);
 
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);

@@ -66,7 +66,7 @@ class UI {
 
         static WindowElement* createSlider(int width);
 
-        static WindowElement* createTextBox(int posx, int posy, int width, double* valueToWrite);
+        static WindowElement* createTextBox(int posx, int posy, int width, float* valueToWrite);
 
     private:
 

@@ -205,7 +205,7 @@ class WindowTextInput : public WindowElement {
     public:
 
         // Constructor
-        WindowTextInput(int posx, int posy, int width, double* valueToWrite);
+        WindowTextInput(int posx, int posy, int width, float* valueToWrite);
 
         // Destructor
         ~WindowTextInput() override;
@@ -227,7 +227,7 @@ class WindowTextInput : public WindowElement {
 
         int cursorPos;      // Stores the placement of the text cursor. 0 is before the first char
 
-        double* valueToWrite; // Stores the setter which will be called when the internal string is updated
+        float* valueToWrite; // Stores the setter which will be called when the internal string is updated
         
         // Instance Functions
         void writeToValue();
