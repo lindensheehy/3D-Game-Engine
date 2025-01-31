@@ -139,7 +139,21 @@ class LinkedList {
 
 
         /*   Instance Functions   */
+
+        // Returns true if the list contains the specified item
+        bool contains(type item) {
+
+            for (this->iterStart; this->iterHasNext(); this->iterNext()) {
+                
+                if (this->iterCurrent->item == item) return true;
+
+            }
+
+            return false;
+
+        }
         
+        // Pushes the item to the back of the list
         void pushBack(type item) {
 
             this->pushBack(item, this->nextFreeId);
@@ -148,6 +162,7 @@ class LinkedList {
 
         }
 
+        // Pushes the item to the back of the list
         void pushBack(type item, int id) {
 
             Node* newNode = new Node(item, id);
@@ -178,6 +193,7 @@ class LinkedList {
 
         }
 
+        // Pushes the item to the front of the list
         void pushFront(type item) {
 
             this->pushFront(item, this->nextFreeId);
@@ -186,6 +202,7 @@ class LinkedList {
 
         }
 
+        // Pushes the item to the front of the list
         void pushFront(type item, int id) {
 
             Node* newNode = new Node(item, id);
@@ -216,6 +233,7 @@ class LinkedList {
 
         }
 
+        // Pops the item at the back of the list and returns it
         type popBack() {
 
             Node* ret;
@@ -254,6 +272,7 @@ class LinkedList {
 
         }
 
+        // Pops the item at the front of the list and returns it
         type popFront() {
 
             Node* ret;
@@ -315,7 +334,7 @@ class LinkedList {
 
             type current;
 
-            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+            for (this->iterStart(0); this->iterHasNext(); this->iterNext()) {
 
                 current = this->iterGetObj();
 
@@ -372,7 +391,7 @@ class LinkedList {
 
             }
 
-            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+            for (this->iterStart(0); this->iterHasNext(); this->iterNext()) {
 
                 if (this->iterGetId() == id) {
                     
@@ -422,7 +441,7 @@ class LinkedList {
 
             int current;
 
-            for (this->iterStart(0); !this->iterIsDone(); this->iterNext()) {
+            for (this->iterStart(0); this->iterHasNext(); this->iterNext()) {
                 current = this->iterGetId();
                 if (current == id) return this->iterGetObj();
             }
@@ -491,10 +510,15 @@ class LinkedList {
         }
 
         // Returns true if iterCurrent equals nullptr
-        bool iterIsDone() {
+        inline bool iterIsDone() {
 
             return (this->iterCurrent == nullptr);
 
+        }
+
+        // Equivalent to !iterIsDone(). Just easier to use in for loops
+        inline bool iterHasNext() {
+            return !(this->iterIsDone());
         }
 
         // Logs all of the nodes in the order they stand in the list
