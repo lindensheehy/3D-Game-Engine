@@ -1,0 +1,26 @@
+<parameters>
+
+    <int>_posx</int>
+    <int>_posy</int>
+    <int>_width</int>
+    <string>_tag</string>
+
+</parameters>
+
+<labels>
+
+    <background=0xFF181818/>
+    <border=0xFFA78BFA/>
+
+</labels>
+
+<main>
+
+    <filledRect posx=_posx, posy=_posy, width=_width, height=12, color=background>
+
+        <outlinedRect posx=0, posy=0, width=_width, height=12, color=border/>
+        <textInput posx=0, posy=0, width=_width/, tag=_tag/>
+
+    </filledRect>
+
+</main>

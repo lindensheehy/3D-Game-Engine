@@ -25,7 +25,7 @@ Most of the stuff here is straightforward, and those that arent are well documen
 **Contains classes** - LinkedList
 
 This is a general doubly linked list class which has a template allowing it to use any type inside.
-At the moment this simply has all the source code in this header file, but now that im using it in more than one place I really should give it a designated source file
+This file exists exclusively as a header file (no cooresponding .cpp source file) becuase source files are not super compatible with templates
 
 ## Gui.h
 
