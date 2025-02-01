@@ -49,6 +49,16 @@ enum KeyCode : unsigned int {
     KEY_8 = 0x38,
     KEY_9 = 0x39,
 
+    // Misc Keys
+    KEY_SPACE = 0x20,
+    KEY_TAB = 0x09,
+    KEY_ENTER = 0x0D,
+    KEY_ESCAPE = 0x1B,
+    KEY_BACKSPACE = 0x08,
+    KEY_CAPSLOCK = 0x14,
+    KEY_PERIOD = 0xBE,
+    KEY_MINUS = 0xBD,
+
     // Function Keys
     KEY_F1 = 0x70,
     KEY_F2 = 0x71,
@@ -63,16 +73,12 @@ enum KeyCode : unsigned int {
     KEY_F11 = 0x7A,
     KEY_F12 = 0x7B,
 
-    // Misc Keys
-    KEY_SPACE = 0x20,
+    // Modifier Keys
     KEY_CONTROL = 0x11,
     KEY_SHIFT = 0x10,
     KEY_ALT = 0xA4,
-    KEY_CAPSLOCK = 0x14,
-    KEY_TAB = 0x09,
-    KEY_ENTER = 0x0D,
-    KEY_ESCAPE = 0x1B,
-    KEY_BACKSPACE = 0x08,
+
+    // Arrow Keys
     KEY_ARROWUP = 0x26,
     KEY_ARROWDOWN = 0x28,
     KEY_ARROWLEFT = 0x25,
@@ -300,6 +306,12 @@ class State {
 
         // Returns true only if the key was pressed this frame, but not last frame
         bool keyJustDown(KeyCode keyCode);
+
+        /*   Static helper functions   */
+
+        static bool hasValidChar(KeyCode key);
+
+        static char keyCodeToChar(KeyCode key);
         
     private:
 

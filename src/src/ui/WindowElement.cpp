@@ -379,10 +379,31 @@ void WindowTextInput::onInput(State* state) {
     if (state->wasLeftJustPressed()) this->cursorPos = this->length;
 
     KeyCode key;
+    char keyChar;
 
     for (int i = 0; i < state->newKeyPressesIndex; i++) {
         
         key = state->newKeyPresses[i];
+
+        keyChar = State::keyCodeToChar(key);
+
+        // If the keyChar is valid, write it to the internal string
+        if (keyChar != '\0') {
+            
+            // Ensure space in the string
+            if (this->length < this->BUFFERSIZE) {
+
+                // Make space for the new char
+                for (int i = this->length; i >= this->cursorPos; i--)
+                    this->text[i+1] = this->text[i];
+
+                this->text[cursorPos] = keyChar;
+                this->length++;
+                this->cursorPos++;
+
+            }
+
+        }
 
         switch (key) {
 
@@ -401,6 +422,22 @@ void WindowTextInput::onInput(State* state) {
             case KEY_ARROWRIGHT:
                 if (this->cursorPos < this->length) this->cursorPos++;
                 break;
+
+            case KEY_BACKSPACE:
+
+                if (this->cursorPos < 1) break;
+
+                // Move everything past the cursor left one space
+                // This also overwrites the char at the cursor, so this is the 'backspace'
+                for (int i = (this->cursorPos - 1); i < this->length; i++)
+                    this->text[i] = this->text[i+1];
+
+                this->text[this->length] = '\0';
+                this->length--;
+                this->cursorPos--;
+
+                break;
+
 
         }
 

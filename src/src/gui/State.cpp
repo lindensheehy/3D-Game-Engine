@@ -434,6 +434,32 @@ bool State::keyJustDown(KeyCode keyCode) {
 
 }
 
+bool State::hasValidChar(KeyCode key) {
+
+    // Letter Keys
+    if (key >= KEY_0 && key <= KEY_9) return true;
+
+    // Number Keys
+    if (key >= KEY_A && key <= KEY_Z) return true;
+
+    if (key == KEY_PERIOD) return true;
+    if (key == KEY_MINUS) return true;
+
+    return false;
+
+}
+
+char State::keyCodeToChar(KeyCode key) {
+
+    if ( !(State::hasValidChar(key)) ) return '\0';
+
+    if (key == KEY_PERIOD) return '.';
+    if (key == KEY_MINUS) return '-';
+
+    // Conveinently, the Windows keycodes are the same as the char codes, so direct casting works
+    return (char) (key);
+}
+
 void State::setState(State* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
