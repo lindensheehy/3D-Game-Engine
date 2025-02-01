@@ -378,10 +378,43 @@ void WindowTextInput::onInput(State* state) {
 
     if (state->wasLeftJustPressed()) this->cursorPos = this->length;
 
+    KeyCode key;
+
+    for (int i = 0; i < state->newKeyPressesIndex; i++) {
+        
+        key = state->newKeyPresses[i];
+
+        switch (key) {
+
+            case KEY_ARROWUP:
+                this->cursorPos = 0;
+                break;
+
+            case KEY_ARROWDOWN:
+                this->cursorPos = this->length;
+                break;
+
+            case KEY_ARROWLEFT:
+                if (this->cursorPos > 0) this->cursorPos--;
+                break;
+
+            case KEY_ARROWRIGHT:
+                if (this->cursorPos < this->length) this->cursorPos++;
+                break;
+
+        }
+
+    }
+
 }
 
 void WindowTextInput::onDeselect() {
+
+    // Hides the cursor
     this->cursorPos = -1;
+
+    return;
+
 }
 
 void WindowTextInput::bind(int* variable) {
@@ -424,14 +457,6 @@ void WindowTextInput::unbind() {
     }
 
     this->bindType = BindType::NONE;
-    return;
-
-}
-
-void WindowTextInput::hideCursor() {
-
-    this->cursorPos = -1;
-
     return;
 
 }

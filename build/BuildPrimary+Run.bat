@@ -23,7 +23,7 @@ set objdir=../src/obj/
 :: gui
 @REM g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
 @REM g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
-@REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
+g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 
 :: physics
 @REM g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%ObjectSet.o

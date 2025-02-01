@@ -327,11 +327,8 @@ int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
         // Handle keyboard events
         case WM_KEYDOWN:
 
-            // If it wasnt down last frame, add it to newKeyPresses
-            if (
-                this->lastFrame->keys->keyIsDown(keyCode) && 
-                this->newKeyPressesIndex < 3
-            ) {
+            // If this is one of the first three keys pressed this frame, store it
+            if (this->newKeyPressesIndex < 3) {
                 this->newKeyPresses[this->newKeyPressesIndex] = keyCode;
                 this->newKeyPressesIndex++;
             }
