@@ -30,6 +30,9 @@ class UI {
         // Windows currently open. will be nullptr if theyre not open
         Window* transformWindow;
 
+        // Will be true if the last click landed within the UI
+        bool hasFocus;
+
 
         // Constructor
         UI();
@@ -63,8 +66,6 @@ class UI {
         
         // Returns a NEW WindowElement for the top bar of a window containing the window title, and the buttons
         static WindowElement* createTopBar(UI* ui, Window* window, const char* title);
-
-        static WindowElement* createSlider(int width);
 
         static WindowElement* createTextBox(int posx, int posy, int width, float* valueToWrite);
 

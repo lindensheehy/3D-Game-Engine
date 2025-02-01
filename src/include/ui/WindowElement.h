@@ -30,10 +30,17 @@ class WindowElement {
 
         Vec2* pos; // Relative to parent
         Vec2* size;
+        const char* tag;
 
         LinkedList<WindowElement*>* children;
+        
+        // Holds any tags that exist within this elements children. 
+        // This includes children furher down the hierarchy (ie. will inherit any tag values AS WELL as any values in childTags)
+        LinkedList<const char*> childTags;
 
         UIEnum::ElementType type = UIEnum::ElementType::INVISIBLE;
+        
+        bool selected = false;
 
 
         // Constructors
@@ -200,12 +207,19 @@ class WindowTextInput : public WindowElement {
     /*
         Class for a text input box which should be attached to some value
         This is attached via a class setter, which allows class specific behaviour to be handled class-side
+        Since this is an interactive element, there is a lot more logic required
     */
 
     public:
 
+        enum class BindType {
+            NONE,
+            INT,
+            FLOAT
+        };
+
         // Constructor
-        WindowTextInput(int posx, int posy, int width, float* valueToWrite);
+        WindowTextInput(int posx, int posy, int width);
 
         // Destructor
         ~WindowTextInput() override;
@@ -215,10 +229,18 @@ class WindowTextInput : public WindowElement {
 
         void onInput(State* state) override;
 
+        // Binds the textInput to a variable
+        void bind(int* variable);
+        void bind(float* variable);
+
+        // Removes the binding to the variable
+        void unbind();
+
         void hideCursor();
 
     private:
 
+        // Max length of string this will handle
         const int BUFFERSIZE = 128;
 
         // Instance Variables
@@ -227,9 +249,14 @@ class WindowTextInput : public WindowElement {
 
         int cursorPos;      // Stores the placement of the text cursor. 0 is before the first char
 
-        float* valueToWrite; // Stores the setter which will be called when the internal string is updated
+        // These are the variables the text input can be bound to. only one will be valid at once
+        BindType bindType;
+        float* boundFloat;
+        int* boundInt;
         
         // Instance Functions
+        void updateString();
+
         void writeToValue();
 
 };

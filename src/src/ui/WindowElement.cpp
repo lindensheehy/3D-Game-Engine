@@ -110,8 +110,8 @@ WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
 
     }
 
-    // If the loop completes, just return this
-    return this;
+    // If the loop completes, return nullptr
+    return nullptr;
 
 }
 
@@ -149,6 +149,9 @@ WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(p
 // Instance Functions
 void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
+
     Vec2* newOffset = this->pos->copy()->add(offset);
 
     this->drawChildren(drawer, newOffset);
@@ -174,6 +177,9 @@ WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) :
 
 // Instance Functions
 void WindowLine::draw(Drawer* drawer, Vec2* offset) {
+
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -204,6 +210,9 @@ WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uin
 // Instance Functions
 void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
+
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
 
@@ -232,6 +241,9 @@ WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey,
 
 // Instance Functions
 void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
+
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -270,6 +282,9 @@ WindowCircle::~WindowCircle() {
 // Instance Functions
 void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
+
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newMiddle = this->middle->copy()->add(offset);
 
@@ -300,6 +315,9 @@ WindowTextStatic::WindowTextStatic(int posx, int posy, const char* text) : Windo
 // Instance Functions
 void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
+
     Vec2* newOffset = this->pos->copy()->add(offset);
 
     drawer->drawString(this->color, this->text, newOffset);
@@ -316,11 +334,15 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 /* ------------------------------------- */
 
 // Constructor
-WindowTextInput::WindowTextInput(int posx, int posy, int width, float* valueToWrite) : WindowElement(posx, posy, width, 12) {
+WindowTextInput::WindowTextInput(int posx, int posy, int width) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
+    memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
     this->length = 0;
-    this->valueToWrite = valueToWrite;
+
+    this->bindType = BindType::NONE;
+    this->boundFloat = nullptr;
+    this->boundInt = nullptr;
 
     this->color = Color::WHITE;
 
@@ -337,7 +359,11 @@ WindowTextInput::~WindowTextInput() {
 // Instance Functions
 void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
-    floatToString(*(this->valueToWrite), this->text, 128, 1);
+    if (this->selected)
+        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
+
+    // Update the internal string
+    this->updateString();
     
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -351,6 +377,8 @@ void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
     delete newOffset;
 
+    return;
+
 }
 
 void WindowTextInput::onInput(State* state) {
@@ -359,9 +387,78 @@ void WindowTextInput::onInput(State* state) {
 
 }
 
+void WindowTextInput::bind(int* variable) {
+    
+    this->unbind();
+
+    this->bindType = BindType::INT;
+    this->boundInt = variable;
+
+    return;
+
+}
+
+void WindowTextInput::bind(float* variable) {
+    
+    this->unbind();
+
+    this->bindType = BindType::FLOAT;
+    this->boundFloat = variable;
+
+    return;
+
+}
+
+void WindowTextInput::unbind() {
+
+    switch (this->bindType) {
+
+        case BindType::NONE:
+            return;
+
+        case BindType::INT:
+            this->boundInt = nullptr;
+            break;
+
+        case BindType::FLOAT:
+            this->boundFloat = nullptr;
+            break;
+
+    }
+
+    this->bindType = BindType::NONE;
+    return;
+
+}
+
 void WindowTextInput::hideCursor() {
 
     this->cursorPos = -1;
+
+    return;
+
+}
+
+void WindowTextInput::updateString() {
+
+    if (this->selected) return;
+
+    switch (this->bindType) {
+
+        case BindType::NONE:
+            break;
+
+        case BindType::INT:
+            intToString(*(this->boundInt), this->text, 128);
+            break;
+
+        case BindType::FLOAT:
+            floatToString(*(this->boundFloat), this->text, 128, 1);
+            break;
+
+    }
+
+    return;
 
 }
 

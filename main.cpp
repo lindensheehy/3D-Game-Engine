@@ -318,7 +318,6 @@ int main(int argc, char* argv[]) {
 
         // Tell State that the frame is over
         state->nextFrame();
-        logWrite(state->time->fps, true);
 
         // Update the GUI
         gui->flip();

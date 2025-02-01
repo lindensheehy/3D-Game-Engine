@@ -101,15 +101,16 @@ bool UI::doInput(State* state) {
     // Click handling
     if (state->wasLeftJustPressed()) {
 
-        WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
+        WindowElement* foundElement;   // Stores the clicked element found from the window, or nullptr if none
+        bool clickLanded = false;
 
         for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
 
             currentWindow = this->windows->iterGetObj();
 
             // Skip iteration if the click lands outside the window
-            bool clickLandsOnWindow = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
-            if (!clickLandsOnWindow) continue;
+            clickLanded = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
+            if (!clickLanded) continue;
 
             // Since now the click must land on the window, I bring it to the front
             // The list is drawn from front to back, so the back elements appear on top
@@ -117,25 +118,31 @@ bool UI::doInput(State* state) {
             this->windows->pushBack(currentWindow);
 
             // Now check the children of the found window
-            found = currentWindow->doInput(state);
+            foundElement = currentWindow->doInput(state);
 
-            // If nothing was found, end
-            if (found == nullptr) return false;
-            
-            // Otherwise, store the clicked element for later use
-            this->lastClicked = found;
+            // If nothing was found, nothing interactable was clicked, so reset lastClicked and leave
+            if (foundElement == nullptr) break;
 
-            return true;
+            // Otherwise, mark the found element as selected and save it for future reference
+            if (this->lastClicked != nullptr) this->lastClicked->selected = false;
+            foundElement->selected = true;
+            this->lastClicked = foundElement;
 
         }
 
-        // If the loop doesnt find anything, then a click landed outside all windows so remove lastClicked
-        this->lastClicked = nullptr;
+        this->hasFocus = clickLanded;
+
+        // If the click didnt land, remove lastClicked
+        if (!clickLanded) {
+            if (this->lastClicked != nullptr) this->lastClicked->selected = false;
+            this->lastClicked = nullptr;
+        }
 
     }
 
-    // The rest of this function doesnt need to run if theres no lastClicked
-    if (this->lastClicked == nullptr) return false;
+    // Cases where the rest of the code shouldnt or cant execute
+    if (!this->hasFocus) return false;
+    if (this->lastClicked == nullptr) return true;
 
     // Drag handling
     if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {
@@ -343,7 +350,10 @@ WindowElement* UI::createTextBox(int posx, int posy, int width, float* valueToWr
     WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
 
     newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
-    newElement->addChild( new WindowTextInput(0, 0, 35, valueToWrite) );
+
+    WindowTextInput* textInput = new WindowTextInput(0, 0, 35);
+    textInput->bind(valueToWrite);
+    newElement->addChild( textInput );
 
     return newElement;
 
