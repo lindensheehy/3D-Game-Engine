@@ -66,8 +66,11 @@ class WindowElement {
         // Adds a child element to this element
         void addChild(WindowElement* child);
 
-        // Handles various input actions. No implementations here as the super class doesnt need input events
+        // Handles various input actions, only used in a few subclasses
         virtual void onInput(State* state) {}
+
+        // Runs when the element is no longer selected, only used in a few subclasses
+        virtual void onDeselect() {}
 
 
         /*   Class Functions   */
@@ -228,6 +231,8 @@ class WindowTextInput : public WindowElement {
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
+
+        void onDeselect() override;
 
         // Binds the textInput to a variable
         void bind(int* variable);

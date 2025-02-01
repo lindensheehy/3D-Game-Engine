@@ -124,7 +124,10 @@ bool UI::doInput(State* state) {
             if (foundElement == nullptr) break;
 
             // Otherwise, mark the found element as selected and save it for future reference
-            if (this->lastClicked != nullptr) this->lastClicked->selected = false;
+            if (this->lastClicked != nullptr) {
+                this->lastClicked->onDeselect();
+                this->lastClicked->selected = false;
+            }
             foundElement->selected = true;
             this->lastClicked = foundElement;
 
@@ -134,7 +137,10 @@ bool UI::doInput(State* state) {
 
         // If the click didnt land, remove lastClicked
         if (!clickLanded) {
-            if (this->lastClicked != nullptr) this->lastClicked->selected = false;
+            if (this->lastClicked != nullptr) {
+                this->lastClicked->onDeselect();
+                this->lastClicked->selected = false;
+            }
             this->lastClicked = nullptr;
         }
 

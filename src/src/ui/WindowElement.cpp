@@ -321,6 +321,7 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width) : WindowElement(
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
     this->length = 0;
+    this->cursorPos = -1;
 
     this->bindType = BindType::NONE;
     this->boundFloat = nullptr;
@@ -350,6 +351,19 @@ void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
     newOffset->add(3, 3);
     drawer->drawString(this->color, this->text, newOffset);
 
+    // Draw cursor if needed
+    if (this->cursorPos != -1) {
+
+        Vec2* cursorDrawPos = newOffset->copy()->add( (this->cursorPos * 6), 0 );
+        Vec2* cursorDrawEndPos = cursorDrawPos->copy()->add(1, 7);
+
+        drawer->drawRectFilled(this->color, cursorDrawPos, cursorDrawEndPos);
+
+        delete cursorDrawPos;
+        delete cursorDrawEndPos;
+
+    }
+
     // Remove the padding before drawing children
     newOffset->sub(3, 3);
     this->drawChildren(drawer, newOffset);
@@ -364,6 +378,10 @@ void WindowTextInput::onInput(State* state) {
 
     if (state->wasLeftJustPressed()) this->cursorPos = this->length;
 
+}
+
+void WindowTextInput::onDeselect() {
+    this->cursorPos = -1;
 }
 
 void WindowTextInput::bind(int* variable) {
@@ -436,6 +454,11 @@ void WindowTextInput::updateString() {
             break;
 
     }
+
+    int newLength = 0;
+    for (; this->text[newLength] != '\0'; newLength++);
+
+    this->length = newLength;
 
     return;
 
