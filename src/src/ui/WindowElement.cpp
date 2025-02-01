@@ -381,6 +381,8 @@ void WindowTextInput::onInput(State* state) {
     KeyCode key;
     char keyChar;
 
+    bool textChanged = false;
+
     for (int i = 0; i < state->newKeyPressesIndex; i++) {
         
         key = state->newKeyPresses[i];
@@ -400,6 +402,8 @@ void WindowTextInput::onInput(State* state) {
                 this->text[cursorPos] = keyChar;
                 this->length++;
                 this->cursorPos++;
+
+                textChanged = true;
 
             }
 
@@ -436,12 +440,17 @@ void WindowTextInput::onInput(State* state) {
                 this->length--;
                 this->cursorPos--;
 
+                textChanged = true;
+
                 break;
 
 
         }
 
     }
+
+    if (textChanged)
+        this->writeToValue();
 
 }
 
@@ -527,6 +536,27 @@ void WindowTextInput::updateString() {
 }
 
 void WindowTextInput::writeToValue() {
+
+    int intValue;
+    float floatValue;
+
+    bool passed;
+
+    switch (this->bindType) {
+
+        case BindType::NONE:
+            break;
+
+        case BindType::INT:
+            passed = stringToInt(this->text, &intValue, this->BUFFERSIZE);
+            if (passed) *(this->boundInt) = intValue;
+
+        case BindType::FLOAT:
+            passed = stringToFloat(this->text, &floatValue, this->BUFFERSIZE);
+            if (passed) *(this->boundFloat) = floatValue;
+
+
+    }
 
 }
 

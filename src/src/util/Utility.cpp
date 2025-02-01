@@ -55,8 +55,16 @@ bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGIT
     return doubleToString((double) value, string, MAXLENGTH, MAXDECIMALDIGITS);
 }
 
-float stringToFloat(char* string, int MAXLENGTH) {
-    return (float) stringToDouble(string, MAXLENGTH);
+bool stringToFloat(char* string, float* result, int MAXLENGTH) {
+
+    double doubleResult;
+
+    bool passed = stringToDouble(string, &doubleResult, MAXLENGTH);
+
+    *result = (float) doubleResult;
+
+    return passed; 
+
 }
 
 bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS) {
@@ -110,9 +118,9 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
 
 }
 
-double stringToDouble(char* string, int MAXLENGTH) {
+bool stringToDouble(char* string, double* result, int MAXLENGTH) {
 
-    if (string == nullptr) return 0;
+    if (string == nullptr) return false;
 
     double returnValue = 0.0;
     int i = 0;
@@ -140,7 +148,7 @@ double stringToDouble(char* string, int MAXLENGTH) {
         if (c == '.') break;
 
         // Invalid char
-        if (c < '0' || c > '9') return 0;
+        if (c < '0' || c > '9') return false;
 
         holder = c - '0';
         returnValue = (returnValue * 10) + holder;
@@ -161,7 +169,7 @@ double stringToDouble(char* string, int MAXLENGTH) {
         if (c == '\0') goto end;
 
         // Invalid char
-        if (c < '0' || c > '9') return 0;
+        if (c < '0' || c > '9') return false;
 
         holder = c - '0';
         returnValue += decimalPlace * holder;
@@ -172,7 +180,9 @@ double stringToDouble(char* string, int MAXLENGTH) {
     }
 
     end:
-        return (negative) ? -returnValue : returnValue;
+        *result = (negative) ? -returnValue : returnValue;
+
+        return true;
 
 }
 
@@ -223,9 +233,9 @@ bool intToString(int value, char* string, int MAXLENGTH) {
 
 }
 
-int stringToInt(char* string, int MAXLENGTH) {
+bool stringToInt(char* string, int* result, int MAXLENGTH) {
 
-    if (string == nullptr) return 0;
+    if (string == nullptr) return false;
 
     int returnValue = 0;
     int i = 0;
@@ -246,10 +256,10 @@ int stringToInt(char* string, int MAXLENGTH) {
         // Break cases
 
         // Done
-        if (c == '\0') goto end;
+        if (c == '\0') break;
 
         // Invalid char
-        if (c < '0' || c > '9') return 0;
+        if (c < '0' || c > '9') return false;
 
         holder = c - '0';
         returnValue = (returnValue * 10) + holder;
@@ -258,7 +268,8 @@ int stringToInt(char* string, int MAXLENGTH) {
 
     }
 
-    end:
-        return (negative) ? -returnValue : returnValue;
+    *result = (negative) ? -returnValue : returnValue;
+        
+    return true;
 
 }

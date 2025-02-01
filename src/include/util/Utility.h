@@ -35,19 +35,19 @@ void swap(double* var1, double* var2);
 bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2);
 
 // Returns a float value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
-float stringToFloat(char* string, int MAXLENGTH);
+bool stringToFloat(char* string, float* result, int MAXLENGTH);
 
 // Writes the given double value to the char* given. Will not write past MAXLENGTH. Returns true if the whole int was parsed
 bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS = 2);
 
 // Returns a double value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
-double stringToDouble(char* string, int MAXLENGTH);
+bool stringToDouble(char* string, double* result, int MAXLENGTH);
 
 // Writes the given int value to the char* given. Will not write past MAXLENGTH. Returns true if the whole int was parsed
 bool intToString(int value, char* string, int MAXLENGTH);
 
 // Returns a int value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
-int stringToInt(char* string, int MAXLENGTH);
+bool stringToInt(char* string, int* result, int MAXLENGTH);
 
 
 
