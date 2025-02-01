@@ -149,9 +149,6 @@ WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(p
 // Instance Functions
 void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
-
     Vec2* newOffset = this->pos->copy()->add(offset);
 
     this->drawChildren(drawer, newOffset);
@@ -177,9 +174,6 @@ WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) :
 
 // Instance Functions
 void WindowLine::draw(Drawer* drawer, Vec2* offset) {
-
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -210,9 +204,6 @@ WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uin
 // Instance Functions
 void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
-
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
 
@@ -241,9 +232,6 @@ WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey,
 
 // Instance Functions
 void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
-
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -282,9 +270,6 @@ WindowCircle::~WindowCircle() {
 // Instance Functions
 void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
-
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newMiddle = this->middle->copy()->add(offset);
 
@@ -314,9 +299,6 @@ WindowTextStatic::WindowTextStatic(int posx, int posy, const char* text) : Windo
 
 // Instance Functions
 void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
-
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -358,9 +340,6 @@ WindowTextInput::~WindowTextInput() {
 
 // Instance Functions
 void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
-
-    if (this->selected)
-        drawer->drawRect(0xFF00FFFF, this->pos, this->endPos);
 
     // Update the internal string
     this->updateString();
