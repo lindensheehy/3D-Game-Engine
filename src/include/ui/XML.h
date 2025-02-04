@@ -45,19 +45,7 @@ class XML {
 
         };
 
-        const int MAX_TAG_LENGTH = 32;
-
         /*   Instance Variables   */
-
-        const char* fileName;
-
-        // Raw file data
-        char* file;
-
-        // Holds a modified version of the file contents
-        // Its pre-processed so its esaier to work with
-        char* tagSequence;
-        int tagSequenceLength;
 
         // Constructor
         XML(const char* fileName);
@@ -80,6 +68,20 @@ class XML {
         Window* buildWindow();
 
     private:
+
+        /*   Instance Variables   */
+
+        const int MAX_TAG_LENGTH = 32;
+
+        const char* fileName;
+
+        // Raw file data
+        char* file;
+
+        // Holds a modified version of the file contents
+        // Its pre-processed so its esaier to work with
+        char* tagSequence;
+        int tagSequenceLength;
 
         // Helper functions for contruction
 
