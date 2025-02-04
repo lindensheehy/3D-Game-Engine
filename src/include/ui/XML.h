@@ -27,39 +27,37 @@ class XML {
         enum TagType : uint8 {
 
             /*
-                Its worth noting that some of these do not need to be here, as they are implcitly done by another tag
+                Its worth noting that some of these do not need to be here, as they are implicitly done by another tag
                 I chose to put them anyway to make the parsing a little easier
             */
-
-            // Parameters section
-            PARAMETERS_START = 0x01,
-            PARAMETERS_END = 0x02,
-
-            // Labels section
-            LABELS_START = 0x03,
-            LABELS_END = 0x04,
             
             // Full tags
-            TAG_START = 0x05,
-            TAG_END = 0x06,
+            TAG_START = 0x01,
+            TAG_END = 0x02,
 
-            // Children section
-            CHILDREN_START = 0x07,
-            CHILDREN_END = 0x08,
+            // Tag Traits (This counts any extra information given within a tag)
+            TRAITS_START = 0x03,
+            TRAITS_END = 0x04,
 
-            // Tag Traits
-            TRAIT_START = 0x09,
-            TRAIT_END = 0x0A
+            // Children section (This counts anything between an open and close tag)
+            CHILDREN_START = 0x05,
+            CHILDREN_END = 0x06
 
         };
+
+        const int MAX_TAG_LENGTH = 32;
 
         /*   Instance Variables   */
 
         const char* fileName;
 
+        // Raw file data
+        char* file;
+
         // Holds a modified version of the file contents
         // Its pre-processed so its esaier to work with
-        char* file;
+        char* tagSequence;
+        int tagSequenceLength;
 
         // Constructor
         XML(const char* fileName);
@@ -77,5 +75,35 @@ class XML {
         // Builds the current XML file to a WindowElement instance
         // Will fail and return null if an unrecognized token exists, like a unset parameter
         WindowElement* buildElement();
+
+        // Same thing as buildElement, but returns a Window instead
+        Window* buildWindow();
+
+    private:
+
+        // Helper functions for contruction
+
+        // Finds and stores the index of all reserved tags start and end locations (eg. <main>)
+        void locateReservedTags();
+
+        // Returns the size needed to fit the tag sequence
+        int getSequenceLength(char* file);
+
+        // Populates the tag sequence
+        void populateTagSequence(char* file);
+
+        // Just returns true if the character should be considered.
+        // This helps to filter out any chars that do not contribute to the data
+        bool validChar(char c);
+
+        // Indexes of all the reserved tag locations
+        int tagParametersStart;
+        int tagParametersEnd;
+        
+        int tagLabelsStart;
+        int tagLabelsEnd;
+
+        int tagMainStart;
+        int tagMainEnd;
 
 };
