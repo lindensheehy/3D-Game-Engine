@@ -61,6 +61,11 @@ XML::XML(const char* fileName) {
         }
     }
 
+    logWrite("\n\n\n");
+
+    logWrite("Buffer length needed: ");
+    logWrite(this->getSequenceLength(), true);
+
 
     return;
 
@@ -150,7 +155,7 @@ void XML::formatFile() {
     while ( (this->file[secondPointer]) != '\0' ) {
 
         currentChar = this->file[secondPointer];
-        isValid = this->validChar(currentChar);
+        isValid = XML::isValidChar(currentChar);
 
         // If the character is invalid, move the second pointer over, but keep the first pointer static
         if ( !isValid ) {
@@ -205,10 +210,7 @@ void XML::formatFile() {
 void XML::locateSections() {
 
     /*
-        All the following variables are responsible for finding the substring in the file
-        const char* -> string to find
-        const int   -> length of substring (also tells when its been found) - Not counting the null terminator
-        int         -> index of the current char being matched
+        This should be called after formatFile, as formatFile will overwrite the contents of this->file
     */
 
 
@@ -334,19 +336,18 @@ void XML::locateSections() {
 
     // Parameters
     if ( (!parametersStart.found) ^ (!parametersEnd.found) ) {
+
+        // General error output
+        logWrite("Error when validating XML file: \'");
+        logWrite(this->fileName);
+        logWrite("\'", true);
         
         // Specific error outputs
         if ( !parametersStart.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find an opening <parameters> tag to match the closing </parameters> tag", true);
         }
 
         else if ( !parametersEnd.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find a closing </parameters> tag to match the opening <parameters> tag", true);
         }
 
@@ -358,18 +359,17 @@ void XML::locateSections() {
     // Labels
     if ( (!labelsStart.found) ^ (!labelsEnd.found) ) {
         
+        // General error output
+        logWrite("Error when validating XML file: \'");
+        logWrite(this->fileName);
+        logWrite("\'", true);
+        
         // Specific error outputs
         if ( !labelsStart.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find an opening <labels> tag to match the closing </labels> tag", true);
         }
 
         else if ( !labelsEnd.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find a closing </labels> tag to match the opening <labels> tag", true);
         }
 
@@ -380,26 +380,22 @@ void XML::locateSections() {
 
     // There must be a main block, so if either doesnt exist, throw an error
     if ( (!mainStart.found) || (!mainEnd.found) ) {
+
+        // General error output
+        logWrite("Error when validating XML file: \'");
+        logWrite(this->fileName);
+        logWrite("\'", true);
         
         // Specific error outputs
         if ( (!mainStart.found) && (!mainEnd.found) ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find an opening <main> tag and a closing </main> tag", true);
         }
 
         else if ( !mainStart.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find an opening <main> tag", true);
         }
 
         else if ( !mainEnd.found ) {
-            logWrite("Error when validating XML file: \'");
-            logWrite(this->fileName);
-            logWrite("\'", true);
             logWrite(" -> Failed to find a closing </main> tag", true);
         }
 
@@ -407,6 +403,48 @@ void XML::locateSections() {
         return;
         
     }
+
+    /*   Order checking   */
+
+    // If any of these tags are backwards (End before Start), loops in other functions will break
+
+    // Parameters
+    if ( (parametersStart.found) && (parametersEnd.found) ) {   // Verify that the parameters section exists, as its not mandatory
+        if ( parametersStart.foundAt > parametersEnd.foundAt ) {
+
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+
+            logWrite(" -> </parameters> tag should not appear before <parameters> tag");
+
+        }
+    }
+
+    // Labels
+    if ( (labelsStart.found) && (labelsEnd.found) ) {   // Verify that the labels section exists, as its not mandatory
+        if ( labelsStart.foundAt > labelsEnd.foundAt ) {
+
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+
+            logWrite(" -> </labels> tag should not appear before <labels> tag");
+
+        }
+    }
+
+    // Main
+    if ( mainStart.foundAt > mainEnd.foundAt ) {
+
+        logWrite("Error when validating XML file: \'");
+        logWrite(this->fileName);
+        logWrite("\'", true);
+
+        logWrite(" -> </main> tag should not appear before <main> tag");
+
+    }
+
 
     // Store the found values
     this->parametersStart = parametersStart.foundAt;
@@ -420,127 +458,73 @@ void XML::locateSections() {
 
 }
 
-int XML::getSequenceLength(char* file) {
-
-    enum CurrentState {
-
-        // No state active, between blocks
-        IDLE,
-
-        // Currently reading a tag
-        READING_TAG
-
-    };
-
-    char currentChar;
-    CurrentState currentState = IDLE;
-
-    int length = 0;             // Return value
-    int fullTagCount = 0;       // Counts the complex tags (XML::MAX_TAG_LENGTH bytes)
-    int primitiveCount = 0;     // Counts the primitive tag buffers needed (3 bytes each)
-
-    int index = 0;
-
-    /* 
-        Find "<main>". This is where the actual tokenization starts
-    */
-
-    const char* mainTag = "<main>";
-    int mainTagIndex = 0;
-    const int mainTagEndIndex = 7;
-
-    while (file[index] != '\0') {
-
-        currentChar = file[index];
-
-        // If it matches, move to the next char
-        if (currentChar == mainTag[mainTagIndex]) {
-
-            mainTagIndex++;
-
-            // If the index matches the last index, the whole string has been found
-            if (mainTagIndex == mainTagEndIndex) {
-                index++;
-                break;
-            }
-
-        }
-
-        // If not, reset the index
-        else mainTagIndex = 0;
-
-        index++;
-
-    }
-
-    // If this is true, the loop never found "<main>", so I log an error and return
-    if (file[index] == '\0') {
-        // Error
-    }
+int XML::getSequenceLength() {
 
     /*
-        
+        This returns the length of string needed to hold all of the XML data inside the <main> tag
+        This will just count the amount of complex tags inside main, then add space for the primitive tags as well
+        The total count will be:
+        (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3)
     */
 
-    // Start counting tags
-    while (file[index] != '\0') {
 
-        currentChar = file[index];
+    // Error check
+    if ( (this->mainStart == -1) || (this->mainEnd == -1) ) {
 
-        if ( !(this->validChar(currentChar)) ) {
-            index++;
-            continue;
-        } 
+        // General error output
+        logWrite("Cannot get sequence length of invalid main tag", true);
 
-        switch (currentChar) {
+        // Specific error outputs
+        if (this->mainStart == -1)
+            logWrite(" -> Missing <main> tag!", true);
 
-            case '<': {
+        if (this->mainEnd == -1)
+            logWrite(" -> Missing </main> tag!", true);
 
-                if (currentState != IDLE) {
-                    // Error
-                }
+        // Invalid return value
+        return -1;
 
-                currentState = READING_TAG;
+    }
 
-                break;
-
-            }
-
-            case '>': {
-
-                if (currentState != READING_TAG) {
-                    // Error
-                }
-
-                currentState = IDLE;
-
-                break;
-
-            }
-
-            case '/':
+    
+    // Helper lamba function for loop
+    // Just returns true 
 
 
+    // Stuff for the loop
+    char currentChar;
+    bool isReserved;
 
-            default: {
+    // Counts the complex tags (XML::MAX_TAG_LENGTH bytes each)
+    int tagCount = 0;
 
-                if (currentState == IDLE) {
-                    // Error
-                }
+    // True when the index lies inside a tag, this lets each non reserved char side by side count as just one tag
+    bool inTag = false;
 
-                break;
 
+    // Iterate over data between <main> and </main>
+    for (int i = this->mainStart; i < this->mainEnd; i++) {
+
+        currentChar = this->file[i];
+        isReserved = XML::isReservedChar(currentChar);
+
+        if (isReserved) {
+            
+            if (inTag) {
+                inTag = false;
+                tagCount++;
             }
 
         }
 
-        index++;
+        else {
+            inTag = true;
+        }
 
     }
 
-    length = (fullTagCount * XML::MAX_TAG_LENGTH) + (primitiveCount * 3);
 
-    return length;
+    return ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3) );
 
 }
 
@@ -548,7 +532,7 @@ void XML::populateTagSequence(char* file) {
 
 }
 
-bool XML::validChar(char c) {
+bool XML::isValidChar(char c) {
 
     // Only spaces count as syntactical whitespace
     if (c == ' ') return true;
@@ -556,5 +540,18 @@ bool XML::validChar(char c) {
     // Allow only chars between a certain range, which is the range of readable ASCII chars
     // Between 0x20 and 0x7E inclusive
     return ( c >= 0x20 && c <= 0x7E );
+
+}
+
+bool XML::isReservedChar(char c) {
+
+    // These are all the reserved chars. ie. not allowed in tag names
+    if (c == '<') return true;
+    if (c == '>') return true;
+    if (c == '/') return true;
+    if (c == '=') return true;
+    if (c == ' ') return true;
+
+    return false;
 
 }

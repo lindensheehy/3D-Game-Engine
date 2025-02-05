@@ -64,7 +64,7 @@ class XML {
         char* tagSequence;
         int tagSequenceLength;
 
-        // Helper functions for contruction
+        /*   Helper functions for contruction   */
 
         // Removes all unnessecary characters from the file. For example, whitespace (in most contexts)
         void formatFile(); 
@@ -73,14 +73,20 @@ class XML {
         void locateSections();
 
         // Returns the size needed to fit the tag sequence
-        int getSequenceLength(char* file);
+        int getSequenceLength();
 
         // Populates the tag sequence
         void populateTagSequence(char* file);
 
-        // Just returns true if the character should be considered.
-        // This helps to filter out any chars that do not contribute to the data
-        bool validChar(char c);
+        /*   Static helper functions   */
+
+        // Returns true if the char should be considered valid in the XML file
+        static bool isValidChar(char c);
+
+        // Returns true if the char is reserved. ie. disallowed in tag names
+        // This counts: '<' '>' '/' '=' ' '
+        static bool isReservedChar(char c);
+
 
         // Indexes of the start and end of each reserved section
         // These count only whats in between the reserved tags, not the tags themselves
