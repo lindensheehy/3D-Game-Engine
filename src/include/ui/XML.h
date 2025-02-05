@@ -17,33 +17,14 @@ class XML {
     /*
         This class is responsible for parsing XML files that define UI elements
         This turns the text from the file into a more usable format that can be used elsewhere
+        Most of the content of this class in private, as its intended to be treated like a black box
+        Steps to use are:
+        - Construct with a file name
+        - Set parameter values if needed
+        - Build your element or window
     */
 
     public:
-
-        // These are the bytes in the string that represent tags
-        // Used to shorten the string, and make parsing easier
-        // These are not nessecarily 1-to-1 with actual characters, but are rather logical tags
-        enum TagType : uint8 {
-
-            /*
-                Its worth noting that some of these do not need to be here, as they are implicitly done by another tag
-                I chose to put them anyway to make the parsing a little easier
-            */
-            
-            // Full tags
-            TAG_START = 0x01,
-            TAG_END = 0x02,
-
-            // Tag Traits (This counts any extra information given within a tag)
-            TRAITS_START = 0x03,
-            TRAITS_END = 0x04,
-
-            // Children section (This counts anything between an open and close tag)
-            CHILDREN_START = 0x05,
-            CHILDREN_END = 0x06
-
-        };
 
         /*   Instance Variables   */
 
@@ -85,8 +66,11 @@ class XML {
 
         // Helper functions for contruction
 
-        // Finds and stores the index of all reserved tags start and end locations (eg. <main>)
-        void locateReservedTags();
+        // Removes all unnessecary characters from the file. For example, whitespace (in most contexts)
+        void formatFile(); 
+
+        // Populates the reserved section indexes
+        void locateSections();
 
         // Returns the size needed to fit the tag sequence
         int getSequenceLength(char* file);
@@ -98,14 +82,15 @@ class XML {
         // This helps to filter out any chars that do not contribute to the data
         bool validChar(char c);
 
-        // Indexes of all the reserved tag locations
-        int tagParametersStart;
-        int tagParametersEnd;
+        // Indexes of the start and end of each reserved section
+        // These count only whats in between the reserved tags, not the tags themselves
+        int parametersStart;
+        int parametersEnd;
         
-        int tagLabelsStart;
-        int tagLabelsEnd;
+        int labelsStart;
+        int labelsEnd;
 
-        int tagMainStart;
-        int tagMainEnd;
+        int mainStart;
+        int mainEnd;
 
 };

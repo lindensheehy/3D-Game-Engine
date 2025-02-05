@@ -4,12 +4,12 @@
 XML::XML(const char* fileName) {
 
     // Variable initialization
-    this->tagParametersStart = -1;
-    this->tagParametersEnd = -1;
-    this->tagLabelsStart = -1;
-    this->tagLabelsEnd = -1;
-    this->tagMainStart = -1;
-    this->tagMainEnd = -1;
+    this->parametersStart = -1;
+    this->parametersEnd = -1;
+    this->labelsStart = -1;
+    this->labelsEnd = -1;
+    this->mainStart = -1;
+    this->mainEnd = -1;
 
     this->file = readFile(fileName);
 
@@ -82,7 +82,11 @@ Window* XML::buildWindow() {
 
 }
 
-void XML::locateReservedTags() {
+void XML::formatFile() {
+
+}
+
+void XML::locateSections() {
 
     /*
         All the following variables are responsible for finding the substring in the file
@@ -98,6 +102,7 @@ void XML::locateReservedTags() {
         const int length;       // Length, also determines when its been found. Does NOT include the null terminator
         int index;              // Index of the current char being matched
         bool found;             // True if its been found already
+        int foundAt = -1;       // Stores the location in the file where the tag exists
     };
 
 
@@ -120,10 +125,20 @@ void XML::locateReservedTags() {
     SearchTag mainEnd = {"</main>", 7, 0, false};
 
     
-    // Lambda helper function for the loop
-    // This function updates the given SearchTag based on the character
-    // In the context of the loop, this will be called for each character in the file
-    auto matchChar = [](SearchTag& tag, char c) {
+    /*   
+        Lambda helper functions for the loop   
+
+        These functions update the given SearchTags based on the characters
+        In the context of the loop, these will be called for each character in the file
+
+        There is two because theres slightly different handling for start and end tags
+        Start tags will find the index of the end of the tag
+        Eng tags will find the index of the start of the tag
+        This leaves a range that represents the data between the two tags
+    */
+
+    // This will be called for each 'Start' tag
+    auto matchCharStart = [](SearchTag& tag, char c, int fileIndex) {
 
         if ( !tag.found ) {
 
@@ -133,8 +148,35 @@ void XML::locateReservedTags() {
                 tag.index++;
 
                 // If the index matches the last index, the whole string has been found
-                if (tag.index > tag.length)
+                if (tag.index > tag.length) {
                     tag.found = true;
+                    tag.foundAt = fileIndex + 1;    // This will point to the char after the tag
+                }
+
+            }
+
+            // If no match, reset the index
+            else tag.index = 0;
+
+        }
+
+    };
+
+    // This will be called for each 'End' tag
+    auto matchCharEnd = [](SearchTag& tag, char c, int fileIndex) {
+
+        if ( !tag.found ) {
+
+            // Check against current
+            if (c == tag.string[tag.index]) {
+
+                tag.index++;
+
+                // If the index matches the last index, the whole string has been found
+                if (tag.index > tag.length) {
+                    tag.found = true;
+                    tag.foundAt = fileIndex - (tag.length + 1);     // This will point to the char before the tag
+                }
 
             }
 
@@ -156,22 +198,22 @@ void XML::locateReservedTags() {
 
 
         // Parameters start
-        matchChar(parametersStart, currentChar);
+        matchCharStart(parametersStart, currentChar, index);
 
         // Parameters end
-        matchChar(parametersEnd, currentChar);
+        matchCharEnd(parametersEnd, currentChar, index);
 
         // Labels start
-        matchChar(labelsStart, currentChar);
+        matchCharStart(labelsStart, currentChar, index);
 
         // Labels end
-        matchChar(labelsEnd, currentChar);
+        matchCharEnd(labelsEnd, currentChar, index);
 
         // Main start
-        matchChar(mainStart, currentChar);
+        matchCharStart(mainStart, currentChar, index);
 
         // Main end
-        matchChar(mainEnd, currentChar);
+        matchCharEnd(mainEnd, currentChar, index);
 
 
         index++;
