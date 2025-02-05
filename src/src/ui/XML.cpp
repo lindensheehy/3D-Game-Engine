@@ -11,20 +11,56 @@ XML::XML(const char* fileName) {
     this->mainStart = -1;
     this->mainEnd = -1;
 
+    this->fileName = fileName;
     this->file = readFile(fileName);
 
-    // Loop through the data to count tags
+    // Pre-processing
+    this->formatFile();
+    this->locateSections();
 
-    // Primitive tags like '<' will get a single, translated, byte stored in TagType
-    // Other tags will be stored as their string
+    // Log file contents
+    logWrite("Full file contents:", true);
+    logWrite(this->file);
+    
+    logWrite("\n\n\n");
 
-    // Allocate a new string that has enough space for all tags of dynamic lengths
-    // count primitive tags as +1, other tags as maybe +32
+    if (this->parametersStart == -1 || this->parametersEnd == -1) {
+        logWrite("No valid <parameters> section!", true);
+    } 
 
-    // Then loop through the data again to populate this new string with values
+    else {
+        logWrite("Parameters section:", true);
+        for (int i = this->parametersStart; i < this->parametersEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
 
-    // This leaves a pre-processed string that will have quicker parsing due to the primitive tags
-    // And this will also let you swap tags to anything that would fit in a 32 byte string
+    logWrite("\n\n\n");
+
+    if (this->labelsStart == -1 || this->labelsEnd == -1) {
+        logWrite("No valid <labels> section!", true);
+    } 
+
+    else {
+        logWrite("Labels section:", true);
+        for (int i = this->labelsStart; i < this->labelsEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
+
+    logWrite("\n\n\n");
+
+    if (this->mainStart == -1 || this->mainEnd == -1) {
+        logWrite("No valid <main> section!", true);
+    } 
+
+    else {
+        logWrite("Main section:", true);
+        for (int i = this->mainStart; i < this->mainEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
+
 
     return;
 
@@ -75,14 +111,94 @@ void XML::setParameter(const char* tag, const char* value) {
 }
 
 WindowElement* XML::buildElement() {
-
+    return nullptr;
 }
 
 Window* XML::buildWindow() {
-
+    return nullptr;
 }
 
 void XML::formatFile() {
+
+    /*
+        This function removes all unnessecary whitespace and non printable characters from the file
+        This will write over this->file, but it does not change the contents in a way that affects the data within
+        The whole point of this is just to make parsing easier, it will be more predictable what will come after what
+
+        I use a two pointer approach here
+        The first pointer will refer to the location where the next valid char should go
+        The second pointer will refer to the char from the file thats being checked
+        This will effectively trim the file, removing all unwanted chars and leaving some extra space at the end
+    */
+
+    int firstPointer = 0;
+    int secondPointer = 0;
+
+    // Tells if im inside a tag right now
+    // In this case, single spaces are allowed as whitespace between traits
+    bool insideTag = false;
+
+    // Says if the last char was a space or not. This will filter out any multiple spaces in a row
+    // Only gets used when inside a tag, and it basically caps the spaces at one between traits
+    bool lastWasSpace = false;
+
+    // For the loop
+    char currentChar;
+    bool isValid;
+
+    // Second pointer will always be >= first pointer, so no need to check first
+    while ( (this->file[secondPointer]) != '\0' ) {
+
+        currentChar = this->file[secondPointer];
+        isValid = this->validChar(currentChar);
+
+        // If the character is invalid, move the second pointer over, but keep the first pointer static
+        if ( !isValid ) {
+            secondPointer++;
+            continue;
+        }
+
+        // Determine if im entering or leaving a tag
+        if (currentChar == '<') insideTag = true;
+        if (currentChar == '>') insideTag = false;
+
+        // Handle space characters
+        if (currentChar == ' ') {
+
+            // Ignore spaces outside tags
+            if (!insideTag) {
+                secondPointer++;
+                continue;
+            }
+
+            // First space inside tag (meaning, not directly after another space)
+            if (!lastWasSpace) {
+                lastWasSpace = true;
+            }
+
+            // Redundant space inside tag
+            else {
+                secondPointer++;
+                continue;
+            }
+
+        }
+
+        // Reset lastWasSpace if needed
+        else
+            lastWasSpace = false;
+
+        // Write the char and move both pointers
+        this->file[firstPointer] = currentChar;
+        firstPointer++;
+        secondPointer++;
+
+    }
+
+    // Null terminate
+    this->file[firstPointer] = '\0';
+
+    return;
 
 }
 
@@ -100,29 +216,29 @@ void XML::locateSections() {
     struct SearchTag {
         const char* string;     // String to find
         const int length;       // Length, also determines when its been found. Does NOT include the null terminator
-        int index;              // Index of the current char being matched
-        bool found;             // True if its been found already
+        int index = 0;          // Index of the current char being matched
+        bool found = false;     // True if its been found already
         int foundAt = -1;       // Stores the location in the file where the tag exists
     };
 
 
     // Parameters open
-    SearchTag parametersStart = {"<parameters>", 12, 0, false};
+    SearchTag parametersStart = {"<parameters>", 12};
 
     // Parameters close
-    SearchTag parametersEnd = {"</parameters>", 13, 0, false};
+    SearchTag parametersEnd = {"</parameters>", 13};
 
     // Labels open
-    SearchTag labelsStart = {"<labels>", 8, 0, false};
+    SearchTag labelsStart = {"<labels>", 8};
 
     // Labels close
-    SearchTag labelsEnd = {"</labels>", 9, 0, false};
+    SearchTag labelsEnd = {"</labels>", 9};
 
     // Main open
-    SearchTag mainStart = {"<main>", 6, 0, false};
+    SearchTag mainStart = {"<main>", 6};
 
     // Main close
-    SearchTag mainEnd = {"</main>", 7, 0, false};
+    SearchTag mainEnd = {"</main>", 7};
 
     
     /*   
@@ -148,7 +264,7 @@ void XML::locateSections() {
                 tag.index++;
 
                 // If the index matches the last index, the whole string has been found
-                if (tag.index > tag.length) {
+                if (tag.index == tag.length) {
                     tag.found = true;
                     tag.foundAt = fileIndex + 1;    // This will point to the char after the tag
                 }
@@ -173,9 +289,9 @@ void XML::locateSections() {
                 tag.index++;
 
                 // If the index matches the last index, the whole string has been found
-                if (tag.index > tag.length) {
+                if (tag.index == tag.length) {
                     tag.found = true;
-                    tag.foundAt = fileIndex - (tag.length + 1);     // This will point to the char before the tag
+                    tag.foundAt = fileIndex - (tag.length - 1);     // This will point to the char before the tag
                 }
 
             }
@@ -218,17 +334,78 @@ void XML::locateSections() {
 
     // Parameters
     if ( (!parametersStart.found) ^ (!parametersEnd.found) ) {
-        // Error
+        
+        // Specific error outputs
+        if ( !parametersStart.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find an opening <parameters> tag to match the closing </parameters> tag", true);
+        }
+
+        else if ( !parametersEnd.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find a closing </parameters> tag to match the opening <parameters> tag", true);
+        }
+
+        // Do not finish the code. This leaves the section pointers as -1
+        return;
+
     }
 
     // Labels
     if ( (!labelsStart.found) ^ (!labelsEnd.found) ) {
-        // Error
+        
+        // Specific error outputs
+        if ( !labelsStart.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find an opening <labels> tag to match the closing </labels> tag", true);
+        }
+
+        else if ( !labelsEnd.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find a closing </labels> tag to match the opening <labels> tag", true);
+        }
+
+        // Do not finish the code. This leaves the section pointers as -1
+        return;
+
     }
 
     // There must be a main block, so if either doesnt exist, throw an error
     if ( (!mainStart.found) || (!mainEnd.found) ) {
-        // Error
+        
+        // Specific error outputs
+        if ( (!mainStart.found) && (!mainEnd.found) ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find an opening <main> tag and a closing </main> tag", true);
+        }
+
+        else if ( !mainStart.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find an opening <main> tag", true);
+        }
+
+        else if ( !mainEnd.found ) {
+            logWrite("Error when validating XML file: \'");
+            logWrite(this->fileName);
+            logWrite("\'", true);
+            logWrite(" -> Failed to find a closing </main> tag", true);
+        }
+
+        // Do not finish the code. This leaves the section pointers as -1
+        return;
+        
     }
 
     // Store the found values
@@ -238,6 +415,8 @@ void XML::locateSections() {
     this->labelsEnd = labelsEnd.foundAt;
     this->mainStart = mainStart.foundAt;
     this->mainEnd = mainEnd.foundAt;
+
+    return;
 
 }
 
@@ -371,10 +550,8 @@ void XML::populateTagSequence(char* file) {
 
 bool XML::validChar(char c) {
 
-    // Whitespace characters to track
+    // Only spaces count as syntactical whitespace
     if (c == ' ') return true;
-    if (c == '\n') return true;
-    if (c == '\r') return true;
 
     // Allow only chars between a certain range, which is the range of readable ASCII chars
     // Between 0x20 and 0x7E inclusive
