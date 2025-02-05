@@ -132,8 +132,8 @@ void XML::locateSections() {
         In the context of the loop, these will be called for each character in the file
 
         There is two because theres slightly different handling for start and end tags
-        Start tags will find the index of the end of the tag
-        Eng tags will find the index of the start of the tag
+        Start tags will find the index after the end of the tag
+        Eng tags will find the index before the start of the tag
         This leaves a range that represents the data between the two tags
     */
 
@@ -197,23 +197,15 @@ void XML::locateSections() {
         currentChar = file[index];
 
 
-        // Parameters start
+        // Start tags
         matchCharStart(parametersStart, currentChar, index);
+        matchCharStart(labelsStart,     currentChar, index);
+        matchCharStart(mainStart,       currentChar, index);
 
-        // Parameters end
+        // End tags
         matchCharEnd(parametersEnd, currentChar, index);
-
-        // Labels start
-        matchCharStart(labelsStart, currentChar, index);
-
-        // Labels end
-        matchCharEnd(labelsEnd, currentChar, index);
-
-        // Main start
-        matchCharStart(mainStart, currentChar, index);
-
-        // Main end
-        matchCharEnd(mainEnd, currentChar, index);
+        matchCharEnd(labelsEnd,     currentChar, index);
+        matchCharEnd(mainEnd,       currentChar, index);
 
 
         index++;
@@ -238,6 +230,14 @@ void XML::locateSections() {
     if ( (!mainStart.found) || (!mainEnd.found) ) {
         // Error
     }
+
+    // Store the found values
+    this->parametersStart = parametersStart.foundAt;
+    this->parametersEnd = parametersEnd.foundAt;
+    this->labelsStart = labelsStart.foundAt;
+    this->labelsEnd = labelsEnd.foundAt;
+    this->mainStart = mainStart.foundAt;
+    this->mainEnd = mainEnd.foundAt;
 
 }
 
