@@ -11,6 +11,9 @@ XML::XML(const char* fileName) {
     this->mainStart = -1;
     this->mainEnd = -1;
 
+    this->tagSequence = nullptr;
+    this->tagSequenceLength = -1;
+
     this->fileName = fileName;
     this->file = readFile(fileName);
 
@@ -74,8 +77,8 @@ XML::XML(const char* fileName) {
 // Destructor
 XML::~XML() {
 
-    if (this->file != nullptr) delete this->file;
-    if (this->tagSequence != nullptr) delete this->tagSequence;
+    if (this->file != nullptr) delete[] this->file;
+    if (this->tagSequence != nullptr) delete[] this->tagSequence;
 
     return;
 
@@ -522,13 +525,41 @@ int XML::getSequenceLength() {
         }
 
     }
+    
+    int length = ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3) );
 
-
-    return ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3) );
+    this->tagSequenceLength = length;
+    return length;
 
 }
 
-void XML::populateTagSequence(char* file) {
+void XML::populateTagSequence() {
+
+    if (this->tagSequenceLength <= 0) {
+        logWrite("Cannot populate tag sequence before finding length needed!", true);
+        logWrite(" -> Must call XML::getSequenceLength() before XML::populateTagSequence()", true);
+        return;
+    }
+
+    // Allocate for tag sequence buffer
+    this->tagSequence = new char[this->tagSequenceLength];
+    int bufferPointer = 0;
+
+    /*   This loop populates the string tags (XML::MAX_TAG_LENGTH bytes each)   */
+
+    // Skip the first three bytes (they are primitive tag bytes)
+    bufferPointer = 3;
+
+    // This ensures i dont accidentally write past the buffer length
+    int bufferPointerLimit = this->tagSequenceLength - 36;
+
+    for (int i = this->mainStart; i < this->mainEnd; i++) {
+
+        if (bufferPointer >= )
+
+    }
+
+    return;
 
 }
 

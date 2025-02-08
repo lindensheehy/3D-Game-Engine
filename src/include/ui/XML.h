@@ -76,7 +76,7 @@ class XML {
         int getSequenceLength();
 
         // Populates the tag sequence
-        void populateTagSequence(char* file);
+        void populateTagSequence();
 
         /*   Static helper functions   */
 
