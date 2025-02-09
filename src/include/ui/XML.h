@@ -11,6 +11,77 @@
 #include "util/FileReader.h"
 
 
+// The namespace here keeps these names local to this file only, NOT across includes
+// This is an effort to abstract as far away from the low level logic as possible
+// Also just keeps the global namespace clean
+namespace {
+
+    constexpr int MAX_TAG_LENGTH = 32;
+    constexpr int PRIM_TAG_LENGTH = 3;
+
+    enum PrimitiveTag : char {
+
+        // These replace the other tags when they are assigned
+        ELEMENT_NONE = 0x01,
+        PARAMS_NONE = 0x02,
+        CHILDREN_NONE = 0x03,
+
+        // Says where elements open and close. This is roughly on each < and / respectively
+        ELEMENT_OPEN = 0x04,
+        ELEMENT_CLOSE = 0x05,
+
+        // Marks the parameter section of an element
+        PARAMS_START = 0x06,
+        PARAMS_END = 0x07,
+
+        // Marks the children section of an element
+        CHILDREN_START = 0x08,
+        CHILDREN_END = 0x09
+
+    };
+
+    /*   Some general helper functions   */
+
+    // Returns true if the char should be considered valid in the XML file
+    static bool isValidChar(char c);
+
+    // Returns true if the char is reserved. ie. disallowed in tag names
+    // This counts: '<' '>' '/' '=' ' '
+    static bool isReservedChar(char c);
+
+}
+
+class TagSequence {
+
+    public:
+
+        /*   Instance Variables   */
+
+        // Constructor
+        TagSequence(int length);
+
+        // Destructor
+        ~TagSequence();
+
+        /*   Instance Functions   */
+
+        // Gets the string tag at the given index. lengthOut will be filled with the length of the tag
+        char* getTag(int index, int* lengthOut);
+
+        // Will set the tag at the given index to the string. Will only write to length, or XML::MAX_TAG_LENGTH (whatever is smaller)
+        void setTag(int index, char* tag, int length);
+        
+        // Sets all the primitive tags at that index to NONE states
+        void resetPrimitiveTags(int index);
+
+        // Puts a primitive tag at a location. The actual position is right before the cooresponding string tag index
+        // More than one can be set at once. This is capped at XML::PRIM_TAG_LENGTH, which is the amount of types of prim tags
+        // This is just to abstract away from the byte level operations involved
+        void setPrimitiveTag(int index, PrimitiveTag tag);
+
+};
+
+
 
 class XML {
 
@@ -51,40 +122,16 @@ class XML {
     private:
 
         // Enum for primitive tags. These are individual bytes that will be placed into tagSequence
-        enum PrimitiveTag : char {
-
-            // Says where elements open and close. This is roughly on each < and / respectively
-            ELEMENT_OPEN = 0x01,
-            ELEMENT_CLOSE = 0x02,
-
-            // Marks the parameter section of an element
-            PARAMS_START = 0x03,
-            PARAMS_END = 0x04,
-
-            // Marks the children section of an element
-            CHILDREN_START = 0x05,
-            CHILDREN_END = 0x06
-
-        };
 
         /*   Instance Variables   */
-
-        static const int MAX_TAG_LENGTH = 32;
-        static const int PRIM_TAG_LENGTH = 3;
 
         const char* fileName;
 
         // Raw file data
         char* file;
 
-        // Holds a modified version of the file contents
-        // Its pre-processed so its easier to work with
-        char* tagSequence;
-        int tagSequenceLength;
-        
-        // Higher level equivalent of tagSequenceLength
-        // This stores the count of string tags. Helpful when indexing with getTag and setTag
-        int tagCount;
+        // The tag sequence. This is the preprocessed version of the file contents
+        TagSequence tagSequence;
 
         /*   Helper functions for construction   */
 
@@ -99,30 +146,6 @@ class XML {
 
         // Populates the tag sequence
         void populateTagSequence();
-
-
-        /*   Helper functions for reading and writing tags in tagSequence   */
-
-        // Gets the string tag at the given index. lengthOut will be filled with the length of the tag
-        char* getTag(int index, int* lengthOut);
-
-        // Will set the tag at the given index to the string. Will only write to length, or XML::MAX_TAG_LENGTH (whatever is smaller)
-        void setTag(int index, char* tag, int length);
-
-        // Puts a primitive tag at a location. The actual position is right before the cooresponding string tag index
-        // More than one can be set at once. This is capped at XML::PRIM_TAG_LENGTH, which is the amount of types of prim tags
-        // This is just to abstract away from the byte level operations involved
-        void setPrimitiveTag(int index, XML::PrimitiveTag tag);
-
-
-        /*   Static helper functions   */
-
-        // Returns true if the char should be considered valid in the XML file
-        static bool isValidChar(char c);
-
-        // Returns true if the char is reserved. ie. disallowed in tag names
-        // This counts: '<' '>' '/' '=' ' '
-        static bool isReservedChar(char c);
 
 
         // Indexes of the start and end of each reserved section
