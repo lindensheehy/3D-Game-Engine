@@ -57,6 +57,10 @@ namespace {
     // This counts: '<' '>' '/' '=' ' '
     static bool isReservedChar(char c);
 
+    // Returns the length of the tag. 
+    // Very similar to strlen, but this early returns after a certain length
+    int getTagLength(const char* tag);
+
 }
 
 
@@ -84,14 +88,6 @@ class TagSequence {
         // Logs the contents of the tag sequence
         void log();
 
-        // Returns non zero if the index is out of range
-        // functionName can be optionally used to more specific logging
-        int validateTagIndex(int index, const char* functionName = nullptr) const;
-
-        // Returns non zero if the index is out of range
-        // functionName can be optionally used to more specific logging
-        int validatePrimTagIndex(int index, const char* functionName = nullptr) const;
-
         // Returns non zero if the primitive tags are invalid
         // Also logs specific errors on invalid tags
         int validatePrimTags() const;
@@ -101,6 +97,9 @@ class TagSequence {
 
         // Will set the tag at the given index to the string. Will only write to length, or XML::MAX_TAG_LENGTH (whatever is smaller)
         void setTag(int index, char* tag, int length);
+
+        // Swaps each instance of oldTag with newTag in the internal buffer
+        void swapTag(const char* oldTag, const char* newTag);
         
         // Sets all the primitive tags at that index to NONE states
         void resetPrimitiveTags(int index);
@@ -125,6 +124,17 @@ class TagSequence {
         // Used for validating indexes
         int tagCount;
         int primTagCount;
+
+
+        /*   Instance Functions  */
+
+        // Returns non zero if the index is out of range
+        // functionName can be optionally used to more specific logging
+        int validateTagIndex(int index, const char* functionName = nullptr) const;
+
+        // Returns non zero if the index is out of range
+        // functionName can be optionally used to more specific logging
+        int validatePrimTagIndex(int index, const char* functionName = nullptr) const;
 
 };
 
@@ -190,6 +200,10 @@ class XML {
 
         // Populates the tag sequence
         void populateTagSequence();
+
+        // Applys all the labels defined in the XML file
+        // This effectively treats them as parameters with default values
+        void applyLabels();
 
 
         // Indexes of the start and end of each reserved section
