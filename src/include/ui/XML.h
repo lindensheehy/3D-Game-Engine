@@ -33,8 +33,18 @@ namespace {
 
         // These are the possible states for each PrimitiveTagType
         NONE = 0x00,
-        PARAMS_NONE = 0x02,
-        CHILDREN_NONE = 0x03,
+        OPEN = 0x02,
+        CLOSE = 0x03,
+
+        /*   These ones should be unique to the ELEMENT type   */
+
+        // This is used when two elements lie directly next to each other
+        // Indicated by substring "/><"
+        CLOSE_OPEN = 0x04,
+
+        // This is used when there is a self closing tag right before a closing tag
+        // Indicated by substring "/></"
+        DOUBLE_CLOSE = 0x05
 
     };
 

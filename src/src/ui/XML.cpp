@@ -109,12 +109,88 @@ void TagSequence::log() {
 
     logWrite("Tag Sequence:", true);
 
+    int offset;
+    int tagIndex;
+
+    PrimitiveTagType primType;
+    PrimitiveTagState primState;
+
     for (int i = 0; i < this->bufferLength; i++) {
 
-        if ( (i - 3) % 35 == 0 )
+        offset = i % (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
+        tagIndex = floor( (float) ( i / (MAX_TAG_LENGTH + PRIM_TAG_LENGTH) ) );
+
+        // New line handling
+        if (offset <= PRIM_TAG_LENGTH)
             logNewLine();
 
-        logWrite(this->buffer[i]);
+        // Prim tag logging
+        if (offset < PRIM_TAG_LENGTH) {
+            
+            primType = (PrimitiveTagType) offset;
+            primState = this->getPrimitiveTag(tagIndex, primType);
+
+            logWrite('[');
+
+            switch (primType) {
+                
+                case ELEMENT:
+                    logWrite("ELEMENT");
+                    break;
+                
+                case PARAMS:
+                    logWrite("PARAMS");
+                    break;
+
+                case CHILDREN:
+                    logWrite("CHILDREN");
+                    break;
+
+                default:
+                    logWrite("UNKNOWN?");
+                    break;
+
+            }
+
+            logWrite('_');
+
+            switch (primState) {
+                
+                case NONE:
+                    logWrite("NONE");
+                    break;
+                
+                case OPEN:
+                    logWrite("OPEN");
+                    break;
+
+                case CLOSE:
+                    logWrite("CLOSE");
+                    break;
+
+                case CLOSE_OPEN:
+                    logWrite("CLOSE_OPEN");
+                    break;
+
+                case DOUBLE_CLOSE:
+                    logWrite("DOUBLE_CLOSE");
+                    break;
+
+                default:
+                    logWrite("UNKNOWN?");
+                    break;
+
+            }
+
+            logWrite(']');
+
+        }
+
+        // String tag logging
+        else {
+            logWrite(this->buffer[i]);
+        }
+
     }
 
     return;
@@ -938,14 +1014,18 @@ void XML::populateTagSequence() {
 
     // Reset
     currentChar = '\0';
+    tagIndex = 0;
+    inTag = false;
 
     // Here i need to know the previous char in some contexts
     char prevChar;
 
     // Flags for if each primitive tag is open or closed in the current context
-    bool isOpenTag = false;
-    bool isOpenParams = false;
-    bool isOpenChildren = false;
+    bool inParams = false;
+    bool inChildren = false;
+
+    // Used for checking previously set state. This is needed in some contexts
+    PrimitiveTagState state;
 
     // This loop populates the primitive tags
     // I do also need to keep track of the tagIndex here, so a bunch of the logic is copied from the last loop
@@ -972,17 +1052,109 @@ void XML::populateTagSequence() {
             // Reserved char handling
             switch (currentChar) {
 
-                case '<':
+                case '<': {
+
+                    /*
+                        The < usually indicates ELEMENT OPEN
+                        The only exception is when the next char is a /,
+                        but that would be overwritten in the '/' case anyway
+
+                        There can also be a case with the substring "/><" where ELEMENT should CLOSE and OPEN
+                        In this case, i use the CLOSE_OPEN state
+                        I check for this by seeing if the state is already on CLOSE
+                    */
+
+                    state = this->tagSequence->getPrimitiveTag(tagIndex, ELEMENT);
+
+                    if (state == CLOSE) {
+                        this->tagSequence->setPrimitiveTag(tagIndex, ELEMENT, CLOSE_OPEN);
+                    }
+
+                    else {
+                        this->tagSequence->setPrimitiveTag(tagIndex, ELEMENT, OPEN);
+                    }
+
                     break;
 
-                case '>':
+                }
+
+                case '>': {
+
+                    /*
+                        The only logical use of the > character is to delimit the params and children sections
+                        This always closes the PARAMS section if it is OPEN
+                        This only opens CHILDREN if the last char was not a /
+                    */
+                    
+                    // CLOSE PARAMS if needed
+                    if (inParams) {
+                        this->tagSequence->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
+                        inParams = false;
+                    }
+                    
+                    // OPEN CHILDREN if the element was not self closing
+                    if (prevChar != '/') {
+                        this->tagSequence->setPrimitiveTag(tagIndex, CHILDREN, OPEN);
+                        inChildren = true;
+                    }
+
                     break;
 
-                case '/':
+                }
+
+                case '/': {
+
+                    /*
+                        A / character indicates the end of the element
+                        This will also reset both PARAMS and CHILDREN to CLOSE if they were OPEN
+
+                        There also needs to be some special handling in the case of the substring "/></"
+                        In this case, i use the DOUBLE_CLOSE state to indicate a self closing tag right before a closing tag
+                    */
+                    
+                    // When the substring "/></" appears, the state will be CLOSE_OPEN
+                    state = this->tagSequence->getPrimitiveTag(tagIndex, ELEMENT);
+
+                    // Overwrite CLOSE_OPEN with DOUBLE_CLOSE if applicable
+                    if (state == CLOSE_OPEN) {
+                        this->tagSequence->setPrimitiveTag(tagIndex, ELEMENT, DOUBLE_CLOSE);
+                    }
+
+                    else {
+                        this->tagSequence->setPrimitiveTag(tagIndex, ELEMENT, CLOSE);
+                    }
+
+                    // CLOSE other types if needed
+                    if (inParams) {
+                        this->tagSequence->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
+                        inParams = false;
+                    }
+
+                    if (inChildren) {
+                        this->tagSequence->setPrimitiveTag(tagIndex, CHILDREN, CLOSE);
+                        inChildren = false;
+                    }
+
                     break;
 
-                case ' ':
+                }
+
+                case ' ': {
+
+                    /*
+                        The space handling is very simple becuase i filtered out all spaces not inside tags
+                        This means that any space will indicate the beginning of the PARAMS section
+                        That is unless it is already open of course
+                    */
+
+                    if (inParams) break;
+
+                    this->tagSequence->setPrimitiveTag(tagIndex, PARAMS, OPEN);
+                    inParams = true;
+
                     break;
+
+                }
 
                 // Equals is also reserved, but i dont need to track it
                 default:
