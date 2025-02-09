@@ -52,7 +52,8 @@ class XML {
 
         /*   Instance Variables   */
 
-        const int MAX_TAG_LENGTH = 32;
+        static const int MAX_TAG_LENGTH = 32;
+        static const int PRIM_TAG_LENGTH = 3;
 
         const char* fileName;
 
@@ -60,11 +61,11 @@ class XML {
         char* file;
 
         // Holds a modified version of the file contents
-        // Its pre-processed so its esaier to work with
+        // Its pre-processed so its easier to work with
         char* tagSequence;
         int tagSequenceLength;
 
-        /*   Helper functions for contruction   */
+        /*   Helper functions for construction   */
 
         // Removes all unnessecary characters from the file. For example, whitespace (in most contexts)
         void formatFile(); 
@@ -77,6 +78,16 @@ class XML {
 
         // Populates the tag sequence
         void populateTagSequence();
+
+
+        /*   Helper functions for reading and writing tags in tagSequence   */
+
+        // Gets the string tag at the given index. lengthOut will be filled with the length of the tag
+        char* getTag(int index, int* lengthOut);
+
+        // Will set the tag at the given index to the string. Will only write to length, or XML::MAX_TAG_LENGTH (whatever is smaller)
+        void setTag(int index, char* tag, int length);
+
 
         /*   Static helper functions   */
 

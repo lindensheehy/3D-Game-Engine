@@ -94,7 +94,14 @@ void Gui::flip() const {
     );
 
     // Blit the bitmap to the window's device context
-    BitBlt(this->hdc, 0, 0, this->windowWidth, this->windowHeight, this->memDC, 0, 0, SRCCOPY);
+    BitBlt(
+        this->hdc, 
+        0, 0, 
+        this->windowWidth, this->windowHeight, 
+        this->memDC, 
+        0, 0, 
+        SRCCOPY
+    );
 
     this->handleMessages();
 

@@ -20,6 +20,8 @@ XML::XML(const char* fileName) {
     // Pre-processing
     this->formatFile();
     this->locateSections();
+    this->getSequenceLength();
+    this->populateTagSequence();
 
     // Log file contents
     logWrite("Full file contents:", true);
@@ -67,7 +69,15 @@ XML::XML(const char* fileName) {
     logWrite("\n\n\n");
 
     logWrite("Buffer length needed: ");
-    logWrite(this->getSequenceLength(), true);
+    logWrite(this->tagSequenceLength, true);
+
+    logWrite("\n\n\n");
+
+    logWrite("Tag Sequence:", true);
+
+    for (int i = 0; i < this->tagSequenceLength; i++) {
+        logWrite(this->tagSequence[i]);
+    }
 
 
     return;
@@ -87,8 +97,8 @@ XML::~XML() {
 // Instance Functions
 void XML::setParameter(const char* tag, int value) {
     
-    char* valueString = new char[32];
-    intToString(value, valueString, 32);
+    char* valueString = new char[XML::MAX_TAG_LENGTH];
+    intToString(value, valueString, XML::MAX_TAG_LENGTH);
 
     this->setParameter(tag, (const char*) valueString);
 
@@ -98,8 +108,8 @@ void XML::setParameter(const char* tag, int value) {
 
 void XML::setParameter(const char* tag, float value) {
 
-    char* valueString = new char[32];
-    floatToString(value, valueString, 32, 4);
+    char* valueString = new char[XML::MAX_TAG_LENGTH];
+    floatToString(value, valueString, XML::MAX_TAG_LENGTH, 4);
 
     this->setParameter(tag, (const char*) valueString);
 
@@ -467,7 +477,7 @@ int XML::getSequenceLength() {
         This returns the length of string needed to hold all of the XML data inside the <main> tag
         This will just count the amount of complex tags inside main, then add space for the primitive tags as well
         The total count will be:
-        (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3)
+        (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * XML::PRIM_TAG_LENGTH)
     */
 
 
@@ -488,10 +498,6 @@ int XML::getSequenceLength() {
         return -1;
 
     }
-
-    
-    // Helper lamba function for loop
-    // Just returns true 
 
 
     // Stuff for the loop
@@ -526,7 +532,7 @@ int XML::getSequenceLength() {
 
     }
     
-    int length = ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * 3) );
+    int length = ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * XML::PRIM_TAG_LENGTH) );
 
     this->tagSequenceLength = length;
     return length;
@@ -543,20 +549,207 @@ void XML::populateTagSequence() {
 
     // Allocate for tag sequence buffer
     this->tagSequence = new char[this->tagSequenceLength];
-    int bufferPointer = 0;
 
-    /*   This loop populates the string tags (XML::MAX_TAG_LENGTH bytes each)   */
+    // Initialize the tag sequence buffer to '\0'
+    memset(this->tagSequence, '\0', this->tagSequenceLength);
 
-    // Skip the first three bytes (they are primitive tag bytes)
-    bufferPointer = 3;
 
-    // This ensures i dont accidentally write past the buffer length
-    int bufferPointerLimit = this->tagSequenceLength - 36;
+    /*   Stuff for the loop   */
 
+    // This is the internal index of the tag. 
+    // This is related, but not the same as, the actual index of this->tagSequence
+    int tagIndex = 0;
+
+    // This will point to the first char of the current string tag
+    // This is used to copy the string tag from this->file to this->tagSequence
+    char* tagStart = nullptr;
+
+    // Current character being handled + flag if its a reserved char (see XML::isReserved() for details)
+    char currentChar;
+    bool isReserved;
+
+    // True when the index lies inside a string tag, this lets each non reserved char side by side count as just one tag
+    bool inTag = false;
+
+    // This is the length of the current string tag. This is passed to this->setTag()
+    int tagLength = 0;
+
+    // This loop populates the string tags only. This will also throw an error if a tag is longer than XML::MAX_TAG_LENGTH
+    // Only the main section is parsed here, as the other sections are treated differently
     for (int i = this->mainStart; i < this->mainEnd; i++) {
 
-        if (bufferPointer >= )
+        currentChar = this->file[i];
+        isReserved = XML::isReservedChar(currentChar);
 
+        if (isReserved) {
+            
+            // This means i just finished iterating over a string tag
+            if (inTag) {
+
+                // Write the tag to this->tagSequence
+                this->setTag(tagIndex, tagStart, tagLength);
+
+                // Update the tagIndex to the next slot
+                tagIndex++;
+
+                // Reset the flag
+                inTag = false;
+                tagLength = 0;
+
+            }
+
+        }
+
+        else {
+
+            // If im already in a tag, add another char to the length
+            if (inTag) {
+                tagLength++;
+            }
+
+            // If not, this is the start of a new tag
+            else {
+
+                // Store the first char of the tag
+                tagStart = &(this->file[i]);
+
+                // Set the flag
+                inTag = true;
+                tagLength = 1;
+
+            }
+
+        }
+
+    }
+
+    return;
+
+}
+
+char* XML::getTag(int index, int* lengthOut) {
+
+    if (this->tagSequence == nullptr) {
+        logWrite("Tried to call XML::getTag(int, int*) before initializing tagSequence!", true);
+        return nullptr;
+    }
+
+    if (lengthOut == nullptr) {
+        logWrite("Tried to call XML::getTag(int, int*) on a nullptr!", true);
+        return nullptr;
+    }
+
+    // This finds the effective index in tagSequence for the given index
+    // Start by skipping the first primitive tags
+    int effectiveIndex = XML::PRIM_TAG_LENGTH;
+
+    // Each index needs to be XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH bytes apart
+    effectiveIndex += (index * (XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH));
+
+    // Error if the effective index is out of bounds
+    if (effectiveIndex >= this->tagSequenceLength) {
+
+        logWrite("Tried to call XML::getTag(int, int*) with out of bounds index!", true);
+        logWrite(" -> Tried index ");
+        logWrite(index);
+        logWrite(", effective index is ");
+        logWrite(effectiveIndex);
+        logWrite(" which is beyond the maximum of ");
+        logWrite(this->tagSequenceLength, true);
+        
+        return nullptr;
+
+    }
+
+    // Find the length of the tag, either until a null terminator or XML::MAX_TAG_LENGTH
+    int tagLength = 0;
+    while (true) {
+
+        /*   Break cases   */
+
+        // If the tag is the max length. In this case there wont be a '\0' char so i must check this manually
+        if (tagLength < XML::MAX_TAG_LENGTH) break;
+
+        // If the string is less than XML::MAX_TAG_LENGTH bytes, there will be '\0' filling the rest of the space
+        if (this->tagSequence[effectiveIndex + tagLength] != '\0') break;
+
+        tagLength++;
+
+    }
+
+    // Set the lengthOut parameter
+    *lengthOut = tagLength;
+
+    // Return the pointer to the tag location in tagSequence
+    return &(this->tagSequence[effectiveIndex]);
+
+}
+
+void XML::setTag(int index, char* tag, int length) {
+
+    if (this->tagSequence == nullptr) {
+        logWrite("Tried to call XML::setTag(int, char*, int) before initializing tagSequence!", true);
+        return;
+    }
+
+    if (tag == nullptr) {
+        logWrite("Tried to call XML::setTag(int, char*, int) on a nullptr!", true);
+        return;
+    }
+
+    // This finds the effective index in tagSequence for the given index
+    // Start by skipping the first primitive tags
+    int effectiveIndex = XML::PRIM_TAG_LENGTH;
+
+    // Each index needs to be XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH bytes apart
+    effectiveIndex += (index * (XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH));
+    
+    // Error if the index would have this function write out of bounds
+    if (effectiveIndex + XML::MAX_TAG_LENGTH >= this->tagSequenceLength) {
+
+        logWrite("Tried to call XML::setTag(int, char*, int) with out of bounds index!", true);
+        logWrite(" -> Tried index ");
+        logWrite(index);
+        logWrite(", effective index is ");
+        logWrite(effectiveIndex);
+        logWrite(" which is beyond the maximum of ");
+        logWrite(this->tagSequenceLength, true);
+
+        return;
+        
+    }
+
+    int effectiveLength = length;
+
+    // Warning if the length is too big
+    // This is just so i know if i need to increase the max length
+    // This will also cap the length to XML::MAX_TAG_LENGTH
+    if (length > XML::MAX_TAG_LENGTH) {
+
+        logWrite("Warning: [XML::setTag()] Tried to write a tag longer than maximum allowed length!", true);
+        logWrite(" -> Tried to write length ");
+        logWrite(length);
+        logWrite(" while the max length is ");
+        logWrite(XML::MAX_TAG_LENGTH, true);
+
+        effectiveLength = XML::MAX_TAG_LENGTH;
+
+    }
+
+    // Copy the bytes over
+    memcpy(
+        &(this->tagSequence[effectiveIndex]),   // Location to write
+        tag,                                    // Source
+        effectiveLength                         // Byte count
+    );
+
+    // Fill the rest of the space in the tag with '\0' chars
+    if (effectiveLength < XML::MAX_TAG_LENGTH) {
+        memset(
+            &(this->tagSequence[effectiveIndex + effectiveLength]),     // Location to write
+            '\0',                                                       // Byte to write
+            XML::MAX_TAG_LENGTH - effectiveLength                       // Byte count
+        );
     }
 
     return;
