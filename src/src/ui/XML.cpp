@@ -13,6 +13,7 @@ XML::XML(const char* fileName) {
 
     this->tagSequence = nullptr;
     this->tagSequenceLength = -1;
+    this->tagCount = 0;
 
     this->fileName = fileName;
     this->file = readFile(fileName);
@@ -76,6 +77,10 @@ XML::XML(const char* fileName) {
     logWrite("Tag Sequence:", true);
 
     for (int i = 0; i < this->tagSequenceLength; i++) {
+
+        if ( (i - 3) % 35 == 0 )
+            logNewLine();
+
         logWrite(this->tagSequence[i]);
     }
 
@@ -535,6 +540,7 @@ int XML::getSequenceLength() {
     int length = ( (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * XML::PRIM_TAG_LENGTH) );
 
     this->tagSequenceLength = length;
+    this->tagCount = tagCount;
     return length;
 
 }
@@ -639,6 +645,23 @@ char* XML::getTag(int index, int* lengthOut) {
         return nullptr;
     }
 
+    if (index < 0) {
+        logWrite("Tried to call XML::getTag() with index less than 0!", true);
+        return;
+    }
+
+    if (index >= this->tagCount) {
+
+        logWrite("Tried to call XML::getTag() with index out of range!", true);
+        logWrite(" -> Tried index ");
+        logWrite(index);
+        logWrite(" with tagCount of ");
+        logWrite(this->tagCount, true);
+
+        return;
+
+    }
+
     // This finds the effective index in tagSequence for the given index
     // Start by skipping the first primitive tags
     int effectiveIndex = XML::PRIM_TAG_LENGTH;
@@ -646,8 +669,8 @@ char* XML::getTag(int index, int* lengthOut) {
     // Each index needs to be XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH bytes apart
     effectiveIndex += (index * (XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH));
 
-    // Error if the effective index is out of bounds
-    if (effectiveIndex >= this->tagSequenceLength) {
+    // This shouldnt ever happen becuase i check index against this->tagCount, but its good to be sure
+    if (effectiveIndex + XML::MAX_TAG_LENGTH >= this->tagSequenceLength) {
 
         logWrite("Tried to call XML::getTag(int, int*) with out of bounds index!", true);
         logWrite(" -> Tried index ");
@@ -697,6 +720,23 @@ void XML::setTag(int index, char* tag, int length) {
         return;
     }
 
+    if (index < 0) {
+        logWrite("Tried to call XML::getTag() with index less than 0!", true);
+        return;
+    }
+
+    if (index >= this->tagCount) {
+
+        logWrite("Tried to call XML::getTag() with index out of range!", true);
+        logWrite(" -> Tried index ");
+        logWrite(index);
+        logWrite(" with tagCount of ");
+        logWrite(this->tagCount, true);
+
+        return;
+
+    }
+
     // This finds the effective index in tagSequence for the given index
     // Start by skipping the first primitive tags
     int effectiveIndex = XML::PRIM_TAG_LENGTH;
@@ -704,7 +744,7 @@ void XML::setTag(int index, char* tag, int length) {
     // Each index needs to be XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH bytes apart
     effectiveIndex += (index * (XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH));
     
-    // Error if the index would have this function write out of bounds
+    // This shouldnt ever happen becuase i check index against this->tagCount, but its good to be sure
     if (effectiveIndex + XML::MAX_TAG_LENGTH >= this->tagSequenceLength) {
 
         logWrite("Tried to call XML::setTag(int, char*, int) with out of bounds index!", true);

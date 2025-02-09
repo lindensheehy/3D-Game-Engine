@@ -64,6 +64,10 @@ class XML {
         // Its pre-processed so its easier to work with
         char* tagSequence;
         int tagSequenceLength;
+        
+        // Higher level equivalent of tagSequenceLength
+        // This stores the count of string tags. Helpful when indexing with getTag and setTag
+        int tagCount;
 
         /*   Helper functions for construction   */
 
