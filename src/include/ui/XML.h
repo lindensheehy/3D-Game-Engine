@@ -50,6 +50,23 @@ class XML {
 
     private:
 
+        // Enum for primitive tags. These are individual bytes that will be placed into tagSequence
+        enum PrimitiveTag : char {
+
+            // Says where elements open and close. This is roughly on each < and / respectively
+            ELEMENT_OPEN = 0x01,
+            ELEMENT_CLOSE = 0x02,
+
+            // Marks the parameter section of an element
+            PARAMS_START = 0x03,
+            PARAMS_END = 0x04,
+
+            // Marks the children section of an element
+            CHILDREN_START = 0x05,
+            CHILDREN_END = 0x06
+
+        };
+
         /*   Instance Variables   */
 
         static const int MAX_TAG_LENGTH = 32;
@@ -91,6 +108,11 @@ class XML {
 
         // Will set the tag at the given index to the string. Will only write to length, or XML::MAX_TAG_LENGTH (whatever is smaller)
         void setTag(int index, char* tag, int length);
+
+        // Puts a primitive tag at a location. The actual position is right before the cooresponding string tag index
+        // More than one can be set at once. This is capped at XML::PRIM_TAG_LENGTH, which is the amount of types of prim tags
+        // This is just to abstract away from the byte level operations involved
+        void setPrimitiveTag(int index, XML::PrimitiveTag tag);
 
 
         /*   Static helper functions   */

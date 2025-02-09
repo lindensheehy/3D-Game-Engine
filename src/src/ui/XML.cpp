@@ -560,7 +560,7 @@ void XML::populateTagSequence() {
     memset(this->tagSequence, '\0', this->tagSequenceLength);
 
 
-    /*   Stuff for the loop   */
+    /*   Stuff for the first loop   */
 
     // This is the internal index of the tag. 
     // This is related, but not the same as, the actual index of this->tagSequence
@@ -580,7 +580,7 @@ void XML::populateTagSequence() {
     // This is the length of the current string tag. This is passed to this->setTag()
     int tagLength = 0;
 
-    // This loop populates the string tags only. This will also throw an error if a tag is longer than XML::MAX_TAG_LENGTH
+    // This loop populates the string tags only.
     // Only the main section is parsed here, as the other sections are treated differently
     for (int i = this->mainStart; i < this->mainEnd; i++) {
 
@@ -625,6 +625,71 @@ void XML::populateTagSequence() {
 
             }
 
+        }
+
+    }
+
+
+    /*   Stuff for the second loop   */
+
+    // Reset
+    currentChar = '\0';
+
+    // Here i need to know the previous char in some contexts
+    char prevChar;
+
+    // Flags for if each primitive tag is open or closed in the current context
+    bool isOpenTag = false;
+    bool isOpenParams = false;
+    bool isOpenChildren = false;
+
+    // This loop populates the primitive tags
+    // I do also need to keep track of the tagIndex here, so a bunch of the logic is copied from the last loop
+    // This all *could* be in the same loop as above, but i chose to seperate them for readability
+    for (int i = this->mainStart; i < this->mainEnd; i++) {
+
+        prevChar = currentChar;
+        currentChar = this->file[i];
+        isReserved = XML::isReservedChar(currentChar);
+
+        if (isReserved) {
+            
+            // This means i need to update the tagIndex
+            if (inTag) {
+
+                // Update the tagIndex to the next slot
+                tagIndex++;
+
+                // Reset the flag
+                inTag = false;
+
+            }
+
+            // Reserved char handling
+            switch (currentChar) {
+
+                case '<':
+                    break;
+
+                case '>':
+                    break;
+
+                case '/':
+                    break;
+
+                case ' ':
+                    break;
+
+                // Equals is also reserved, but i dont need to track it
+                default:
+                    break;
+
+            }
+
+        }
+
+        else {
+            inTag = true;
         }
 
     }
@@ -793,6 +858,10 @@ void XML::setTag(int index, char* tag, int length) {
     }
 
     return;
+
+}
+
+void XML::setPrimitiveTag(int index, XML::PrimitiveTag tag) {
 
 }
 
