@@ -144,7 +144,7 @@ class XML {
 
     /*
         This class is responsible for parsing XML files that define UI elements
-        This turns the text from the file into a more usable format that can be used elsewhere
+        This turns the text from the file into a more usable format to generate WindowElement or Window objects
         Most of the content of this class is private, as its intended to be treated like a black box
         Steps to use are:
         - Construct with a file name

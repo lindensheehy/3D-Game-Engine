@@ -758,10 +758,10 @@ void XML::formatFile() {
     int secondPointer = 0;
 
     // Tells if im inside a tag right now
-    // In this case, single spaces are allowed as whitespace between traits
-    bool insideTag = false;
+    // This is to allow single spaces in elements, between traits
+    bool insideElement = false;
 
-    // Says if the last char was a space or not. This will filter out any multiple spaces in a row
+    // Says if the last char was a space or not. This will filter out instances of multiple spaces in a row
     // Only gets used when inside a tag, and it basically caps the spaces at one between traits
     bool lastWasSpace = false;
 
@@ -781,15 +781,15 @@ void XML::formatFile() {
             continue;
         }
 
-        // Determine if im entering or leaving a tag
-        if (currentChar == '<') insideTag = true;
-        if (currentChar == '>') insideTag = false;
+        // Cases where im entering or leaving an element
+        if (currentChar == '<') insideElement = true;
+        if (currentChar == '>') insideElement = false;
 
         // Handle space characters
         if (currentChar == ' ') {
 
             // Ignore spaces outside tags
-            if (!insideTag) {
+            if (!insideElement) {
                 secondPointer++;
                 continue;
             }
@@ -828,6 +828,19 @@ void XML::formatFile() {
 void XML::locateSections() {
 
     /*
+        This finds the index within the file of each reserved tag
+        Actually holds the index after the first, and before the second. 
+        So the contents between the two indices is whats between the open and close tags
+
+        The reserved tags are:
+        - <parameters>  => this->parametersStart
+        - </parameters> => this->parametersEnd
+        - <labels>      => this->labelsStart
+        - </labels>     => this->labelsEnd
+        - <main>        => this->mainStart
+        - </main>       => this->mainEnd
+
+
         This should be called after formatFile, as formatFile will overwrite the contents of this->file
     */
 
@@ -924,27 +937,21 @@ void XML::locateSections() {
     };
 
 
-    // Stuff for the loop
-    int index = 0;
+    // Now the loop
     char currentChar;
+    for (int i = 0; file[i] != '\0'; i++) {
 
-    while (file[index] != '\0') {
-
-        currentChar = file[index];
-
+        currentChar = file[i];
 
         // Start tags
-        matchCharStart(parametersStart, currentChar, index);
-        matchCharStart(labelsStart,     currentChar, index);
-        matchCharStart(mainStart,       currentChar, index);
+        matchCharStart(parametersStart, currentChar, i);
+        matchCharStart(labelsStart,     currentChar, i);
+        matchCharStart(mainStart,       currentChar, i);
 
         // End tags
-        matchCharEnd(parametersEnd, currentChar, index);
-        matchCharEnd(labelsEnd,     currentChar, index);
-        matchCharEnd(mainEnd,       currentChar, index);
-
-
-        index++;
+        matchCharEnd(parametersEnd, currentChar, i);
+        matchCharEnd(labelsEnd,     currentChar, i);
+        matchCharEnd(mainEnd,       currentChar, i);
 
     }
 
