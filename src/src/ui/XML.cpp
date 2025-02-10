@@ -1325,4 +1325,65 @@ void XML::populateTagSequence() {
 
 void XML::applyLabels() {
 
+    // Skip if there is no labels section
+    if ( (this->labelsStart == -1) || (this->labelsEnd == -1) ) return;
+
+    // These variables store the new and old tag values specified by each label
+    // These are seperate buffers so they can be properly null terminated and passed to setParameter
+    // The +1 is so theres space for the null terminator
+    char* oldTag = new char[MAX_TAG_LENGTH + 1];
+    int oldTagIndex = 0;
+
+    char* newTag = new char[MAX_TAG_LENGTH + 1];
+    int newTagIndex = 0;
+
+    // Current char data
+    char currentChar;
+    bool isReserved;
+
+    // Loop through the labels section
+    for (int i = this->labelsStart; i < this->labelsEnd; i++) {
+
+        currentChar = this->file[i];
+        isReserved = isReservedChar(currentChar);
+
+        if (isReserved) {
+
+            switch (currentChar) {
+
+                // These are all equivalent in this context
+                case '<':
+                case '>':
+                case '/': {
+
+                    // Logic
+
+                    break;
+
+                }
+
+
+                // Equals seperates the new and old tags
+                case '=': {
+
+                    // Logic
+
+                    break;
+
+                }
+
+                // This shouldnt ever happen
+                default:
+                    break;
+
+            }
+
+        }
+
+    }
+
+    // Clean up
+    delete[] oldTag;
+    delete[] newTag;
+
 }
