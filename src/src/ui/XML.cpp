@@ -422,19 +422,7 @@ void TagSequence::swapTag(const char* oldTag, const char* newTag) {
         currentTag = this->getTag(i, &currentTagLength);
 
         // Early continue if lengths do not match
-        if (oldTagLength != currentTagLength) {
-
-            logWrite("Length mismatch!", true);
-
-            logWrite(" -> oldTagLength = ");
-            logWrite(oldTagLength, true);
-
-            logWrite(" -> currentTagLength = ");
-            logWrite(currentTagLength, true);
-
-            continue;
-
-        }
+        if (oldTagLength != currentTagLength) continue;
 
         // Iterate over the tag to compare
         bool matches = true;
@@ -449,13 +437,8 @@ void TagSequence::swapTag(const char* oldTag, const char* newTag) {
 
         // If the loop never reset matches, the tag should be replaced
         if (matches) {
-            logWrite("Found match!", true);
             this->setTag(i, (char*) newTag, newTagLength);
             matchCount++;
-        }
-
-        else {
-            logWrite("Mismatch!", true);
         }
 
     }
@@ -695,6 +678,12 @@ XML::XML(const char* fileName) {
     logWrite("\n\n\n");
 
     this->setParameter("_width", 12345);
+
+    this->tagSequence->log();
+
+    logWrite("\n\n\n");
+
+    this->applyLabels();
 
     this->tagSequence->log();
 
@@ -1341,6 +1330,18 @@ void XML::applyLabels() {
     char currentChar;
     bool isReserved;
 
+    // This says which buffer is currently being written to
+    // Enum is used for better readability
+    enum ActiveBuffer {
+        NONE,
+        OLD,
+        NEW
+    };
+    ActiveBuffer activeBuffer = NONE;
+
+    // This is used for debugging to specify which label has the issue
+    int labelNumber = 1;
+
     // Loop through the labels section
     for (int i = this->labelsStart; i < this->labelsEnd; i++) {
 
@@ -1352,11 +1353,50 @@ void XML::applyLabels() {
             switch (currentChar) {
 
                 // These are all equivalent in this context
+                // Any of these just mean that the last label is done and the next one will be starting
                 case '<':
                 case '>':
                 case '/': {
 
-                    // Logic
+                    // This means there is no data to use yet
+                    if (activeBuffer == NONE) break;
+
+                    // This means there was no equals in the label element
+                    if (activeBuffer == OLD) {
+
+                        logWrite("Warning: XML::applyLabels() found no equals in one of the label elements!", true);
+
+                        logWrite(" -> In file \"");
+                        logWrite(this->fileName);
+                        logWrite("\" at label ");
+                        logWrite(labelNumber, true);
+
+                        break;
+
+                    }
+
+                    // Make sure there are valid strings for each buffer before trying to set the label
+                    if ( (oldTagIndex > 0) && (newTagIndex > 0) ) {
+
+                        // Null terminate each buffer
+                        oldTag[oldTagIndex] = '\0';
+                        newTag[newTagIndex] = '\0';
+
+                        // Write the label using setParameter
+                        this->setParameter(
+                            (const char*) (oldTag),
+                            (const char*) (newTag)
+                        );
+
+                        // Update number
+                        labelNumber++;
+
+                    }
+
+                    // Reset the indexes in prep for the next label
+                    oldTagIndex = 0;
+                    newTagIndex = 0;
+                    activeBuffer = NONE;
 
                     break;
 
@@ -1366,13 +1406,57 @@ void XML::applyLabels() {
                 // Equals seperates the new and old tags
                 case '=': {
 
-                    // Logic
+                    // Set activeBuffer if needed
+                    if (activeBuffer == NONE) {
+                        activeBuffer = OLD;
+                    }
+                    
+                    // This means there was more than one equals in the element
+                    if (activeBuffer == NEW) {
 
+                        logWrite("Warning: XML::applyLabels() found more than one equals in one of the label elements!", true);
+
+                        logWrite(" -> In file \"");
+                        logWrite(this->fileName);
+                        logWrite("\" at label ");
+                        logWrite(labelNumber, true);
+
+                        break;
+
+                    }
+
+                    activeBuffer = NEW;
                     break;
 
                 }
 
                 // This shouldnt ever happen
+                default:
+                    break;
+
+            }
+
+        }
+
+        else {
+
+            if (activeBuffer == NONE) {
+                activeBuffer = OLD;
+            }
+
+            switch (activeBuffer) {
+
+                case OLD:
+                    oldTag[oldTagIndex] = currentChar;
+                    oldTagIndex++;
+                    break;
+
+                case NEW:
+                    newTag[newTagIndex] = currentChar;
+                    newTagIndex++;
+                    break;
+
+                // activeBuffer == NONE is not possible, because its set above
                 default:
                     break;
 
