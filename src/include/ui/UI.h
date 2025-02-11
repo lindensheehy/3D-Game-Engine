@@ -11,7 +11,6 @@
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
 #include "ui/Window.h"
-#include "ui/XML.h"
 
 
 

@@ -1,5 +1,6 @@
 #include "xml/TagSequence.h"
 
+
 // Constructor
 TagSequence::TagSequence(char* file, int fromIndex, int toIndex) {
 

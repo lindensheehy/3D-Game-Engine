@@ -1,68 +1,12 @@
 #pragma once
 
 #include "util/Utility.h"
-
-#include "ui/UIEnums.h"
-#include "ui/Action.h"
-#include "ui/WindowElement.h"
-#include "ui/Window.h"
-#include "ui/UI.h"
-
 #include "util/FileReader.h"
 
+#include "ui/UI.h"
 
-// The namespace here keeps these names local to this file only, NOT across includes
-// This is an effort to abstract as far away from the low level logic as possible
-// Also just keeps the global namespace clean
-namespace {
-
-    constexpr int MAX_TAG_LENGTH = 64;
-
-    // These help to group the Primitive tags. The values are the relative indexes
-    constexpr int PRIM_TAG_LENGTH = 3;
-    enum PrimitiveTagType : int {
-
-        ELEMENT = 0,
-        PARAMS = 1,
-        CHILDREN = 2
-
-    };
-
-    // These are the actual bytes that are stored in the buffer
-    enum PrimitiveTagState : char {
-
-        // These are the possible states for each PrimitiveTagType
-        NONE = 0x00,
-        OPEN = 0x02,
-        CLOSE = 0x03,
-
-        /*   These ones should be unique to the ELEMENT type   */
-
-        // This is used when two elements lie directly next to each other
-        // Indicated by substring "/><"
-        CLOSE_OPEN = 0x04,
-
-        // This is used when there is a self closing tag right before a closing tag
-        // Indicated by substring "/></"
-        DOUBLE_CLOSE = 0x05
-
-    };
-
-    /*   Some general helper functions   */
-
-    // Returns true if the char should be considered valid in the XML file
-    static bool isValidChar(char c);
-
-    // Returns true if the char is reserved. ie. disallowed in tag names
-    // This counts: '<' '>' '/' '=' ' '
-    static bool isReservedChar(char c);
-
-    // Returns the length of the tag. 
-    // Very similar to strlen, but this early returns after a certain length
-    int getTagLength(const char* tag);
-
-}
-
+#include "xml/Core.h"
+#include "xml/TagSequence.h"
 
 
 class XML {

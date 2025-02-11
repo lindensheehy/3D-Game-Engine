@@ -2,6 +2,8 @@
 
 #include "util/Utility.h"
 
+#include "xml/Core.h"
+
 
 class TagSequence {
 
