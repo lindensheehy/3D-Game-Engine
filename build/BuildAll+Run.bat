@@ -40,7 +40,11 @@ g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Actio
 g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
-g++ -Ofast %include%        -c %srcdir%ui/XML.cpp               -o %objdir%XML.o
+
+:: xml
+g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
+g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
+g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
 
 
 :: Build main

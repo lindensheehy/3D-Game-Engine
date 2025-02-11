@@ -40,7 +40,6 @@ if not exist "%objdir%" (
 @REM g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 @REM g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
 @REM g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/XML.cpp               -o %objdir%XML.o
 
 :: xml
 g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
