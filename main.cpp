@@ -293,6 +293,7 @@ int main(int argc, char* argv[]) {
     init();
 
     XML* XMLFile = new XML("../src/assets/ui/elements/textbox.xml");
+    // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
 
     // Main loop
     while (doMainLoop) {

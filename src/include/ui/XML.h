@@ -16,7 +16,7 @@
 // Also just keeps the global namespace clean
 namespace {
 
-    constexpr int MAX_TAG_LENGTH = 32;
+    constexpr int MAX_TAG_LENGTH = 64;
 
     // These help to group the Primitive tags. The values are the relative indexes
     constexpr int PRIM_TAG_LENGTH = 3;
@@ -193,6 +193,7 @@ class XML {
         /*   Helper functions for construction   */
 
         // Removes all unnessecary characters from the file. For example, whitespace (in most contexts)
+        // Also removes comments like "<!-- comment -->"
         void formatFile(); 
 
         // Populates the reserved section indexes

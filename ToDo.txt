@@ -26,7 +26,6 @@ fixes:
 - fix depth interpolation, depth between two points is not always linear.
 - fix TextInput UI elements from drawing to infinite length.
     - probably just add a parameter 'maxLength' to Drawer::drawString()
-- make XML filter out comments in the XML::formatFile() function
 
 optimizations:
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work

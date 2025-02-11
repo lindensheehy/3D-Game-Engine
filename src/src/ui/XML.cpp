@@ -110,6 +110,10 @@ TagSequence::TagSequence(char* file, int fromIndex, int toIndex) {
     for (int i = 0; i < this->primTagCount; i++)
         this->resetPrimitiveTags(i);
 
+    logWrite("Buffer length needed: ");
+    logWrite(this->bufferLength);
+    logWrite(" bytes", true);
+
     return;
 
 }
@@ -769,6 +773,14 @@ void XML::formatFile() {
     char currentChar;
     bool isValid;
 
+    // Used for matching comment block tags. Being "<!--" and "-->"
+    char commentChar1;
+    char commentChar2;
+    char commentChar3;
+
+    // Says if im in a comment or not. While in a comment, all chars are discarded
+    bool inComment = false;
+
     // Second pointer will always be >= first pointer, so no need to check first
     while ( (this->file[secondPointer]) != '\0' ) {
 
@@ -782,8 +794,67 @@ void XML::formatFile() {
         }
 
         // Cases where im entering or leaving an element
-        if (currentChar == '<') insideElement = true;
-        if (currentChar == '>') insideElement = false;
+        if (currentChar == '<') {
+            
+            insideElement = true;
+            
+            // Check for comment block start. This is represented by the substring "<!--"
+            // Note: This can read into the null terminator, but it will leave before trying to access past it
+            //       Because of the use of goto, it checks each char and only checks the next after ensuring the last was valid
+
+            commentChar1 = this->file[secondPointer + 1];
+            if (commentChar1 != '!') goto NoOpenComment;
+
+            commentChar2 = this->file[secondPointer + 2];
+            if (commentChar2 != '-') goto NoOpenComment;
+
+            commentChar3 = this->file[secondPointer + 3];
+            if (commentChar3 != '-') goto NoOpenComment;
+
+            // If the code reaches here, set the inComment flag
+            inComment = true;
+
+        }
+        
+        // Will jump here if the char is a <, but its not a comment start tag
+        NoOpenComment:
+
+        if (currentChar == '>') {
+            
+            insideElement = false;
+
+            // Check for comment block end. This is represented by the substring "-->"
+            // This is easier than the open comment, because I just check the last two characters at the same time
+            // I do have to make sure secondPointer is greater than 2 though
+            
+            if (secondPointer >= 2) {
+
+                commentChar1 = this->file[secondPointer - 1];
+                commentChar2 = this->file[secondPointer - 2];
+
+                if (
+                    commentChar1 == '-' &&
+                    commentChar2 == '-'
+                ) {
+                    
+                    // Reset inComment flag
+                    inComment = false;
+
+                    // Skip this char, as its part of the comment
+                    secondPointer++;
+                    continue;
+
+                }
+
+            }
+
+        }
+
+        // Discard all comment chars
+        if (inComment) {
+            secondPointer++;
+            continue;
+        }
 
         // Handle space characters
         if (currentChar == ' ') {
@@ -1256,9 +1327,23 @@ void XML::populateTagSequence() {
                         There also needs to be some special handling in the case of the substring "/></"
                         In this case, i use the DOUBLE_CLOSE state to indicate a self closing tag right before a closing tag
                     */
-                    
-                    // When the substring "/></" appears, the state will be CLOSE_OPEN
+            
                     state = this->tagSequence->getPrimitiveTag(tagIndex, ELEMENT);
+
+                    // If two / chars appear next to each other, this is invalid
+                    if (prevChar == '/') {
+
+                        logWrite("XML::populateTagSequence() found 2 '/' characters in a row!", true);
+
+                        logWrite(" -> In file \"");
+                        logWrite(this->fileName);
+                        logWrite("\"", true);
+
+                        logWrite(" -> This is most likely a typo in the file", true);
+
+                        return;
+
+                    }
 
                     // Overwrite CLOSE_OPEN with DOUBLE_CLOSE if applicable
                     if (state == CLOSE_OPEN) {
