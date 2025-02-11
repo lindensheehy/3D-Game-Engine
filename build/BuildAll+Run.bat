@@ -6,6 +6,12 @@ set srcdir=../src/src/
 set objdir=../src/obj/
 
 
+:: Create obj dir if it doesnt exist
+if not exist "%objdir%" (
+    mkdir "%objdir%"
+)
+
+
 :: Build dependancies
 
 :: util
