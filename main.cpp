@@ -7,7 +7,7 @@
 #include "gui/Gui.h"
 #include "ui/UI.h"
 
-#include "ui/XML.h"
+#include "xml/XML.h"
 
 // Global declarations
 Gui* gui;
