@@ -1,4 +1,4 @@
-src/obj/
+src/obj/*.o
 *.exe
 
 build/log.txt
