@@ -1,5 +1,3 @@
-#define SDL_MAIN_HANDLED
-
 #include "util/Utility.h"
 
 #include "geometry/Camera.h"
@@ -8,6 +6,8 @@
 #include "gui/State.h"
 #include "gui/Gui.h"
 #include "ui/UI.h"
+
+#include "ui/XML.h"
 
 // Global declarations
 Gui* gui;

@@ -34,6 +34,7 @@ g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Actio
 g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
+g++ -Ofast %include%        -c %srcdir%ui/XML.cpp               -o %objdir%XML.o
 
 
 :: Build main
