@@ -27,7 +27,7 @@ new stuff:
         - linked list to hold the string names of each element
         - second linked list holding wrappers to hold parameter information
             - parameter types in an array
-                - the array will contain types based on an enum, and be a sort of null terminated array
+                - the array will contain types based on an enum
             - parameter names in a sort of string array
                 - will be one long string with some char (maybe 0x01) to delimit strings, and '\0' to terminate
                 - would be used to allow out of order traits in an element
@@ -48,6 +48,10 @@ new stuff:
         - for children
             - when a children section starts, push the last created element to the stack
             - when a children section ends, i pop an element from the stack
+    - Some sort of builder class for ParameterInfo objects
+        - this way i can use a linked list to manage the elements while they are still being passed
+        - once it is requested to build the ParameterInfo, i can interpret the linked lists as regular arrays
+        - this will allow an easier way to store recognizable element names that come from xml files
 
 
         
