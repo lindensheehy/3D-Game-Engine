@@ -57,7 +57,9 @@ class XML {
         char* file;
 
         // The tag sequence. This is the preprocessed version of the file contents
-        TagSequence* tagSequence;
+        TagSequence* parameters;
+        TagSequence* labels;
+        TagSequence* main;
 
         /*   Helper functions for construction   */
 

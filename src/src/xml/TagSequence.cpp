@@ -2,53 +2,15 @@
 
 
 // Constructor
-TagSequence::TagSequence(char* file, int fromIndex, int toIndex) {
+TagSequence::TagSequence(char* file, int fromIndex, int toIndex, const char* fileName) {
 
-    /*
-        This returns the length of string needed to hold all of the XML data inside the <main> tag
-        This will just count the amount of complex tags inside main, then add space for the primitive tags as well
-        The total count will be:
-        (tagCount * XML::MAX_TAG_LENGTH) + ((tagCount + 1) * XML::PRIM_TAG_LENGTH)
-    */
+    // This effectively makes this->file a subset of the given file
+    this->file = &( file[fromIndex] );
+    this->fileLength = (toIndex - fromIndex) + 1;   // +1 because it should include fromIndex in length
 
+    this->fileName = fileName;
 
-    // Stuff for the loop
-    char currentChar;
-    bool isReserved;
-
-    // Counts the complex tags (XML::MAX_TAG_LENGTH bytes each)
-    int tagCount = 0;
-
-    // True when the index lies inside a tag, this lets each non reserved char side by side count as just one tag
-    bool inTag = false;
-
-
-    // Iterate over data between <main> and </main>
-    for (int i = fromIndex; i < toIndex; i++) {
-
-        currentChar = file[i];
-        isReserved = isReservedChar(currentChar);
-
-        if (isReserved) {
-            
-            if (inTag) {
-                inTag = false;
-                tagCount++;
-            }
-
-        }
-
-        else {
-            inTag = true;
-        }
-
-    }
-    
-    int length = ( (tagCount * MAX_TAG_LENGTH) + ((tagCount + 1) * PRIM_TAG_LENGTH) );
-
-    this->bufferLength = length;
-    this->tagCount = tagCount;
-    this->primTagCount = tagCount + 1;
+    this->findBufferLength();
 
     // Allocate the buffer
     this->buffer = new char[this->bufferLength];
@@ -58,10 +20,6 @@ TagSequence::TagSequence(char* file, int fromIndex, int toIndex) {
 
     for (int i = 0; i < this->primTagCount; i++)
         this->resetPrimitiveTags(i);
-
-    logWrite("Buffer length needed: ");
-    logWrite(this->bufferLength);
-    logWrite(" bytes", true);
 
     return;
 
@@ -75,7 +33,10 @@ TagSequence::~TagSequence() {
 // Instance Functions
 void TagSequence::log() {
 
-    logWrite("Tag Sequence:", true);
+    logWrite("Tag Sequence (");
+    logWrite("Buffer Length = ");
+    logWrite(this->bufferLength);
+    logWrite(" Bytes):", true);
 
     int offset;
     int tagIndex;
@@ -165,11 +126,54 @@ void TagSequence::log() {
 
 }
 
+void TagSequence::findBufferLength() {
+
+    char currentChar;
+    bool isReserved;
+
+    // Counts the string tags (XML::MAX_TAG_LENGTH bytes each)
+    int tagCount = 0;
+
+    // True when the index lies inside a tag, this lets each non reserved char side by side count as just one tag
+    bool inTag = false;
+
+
+    // Iterate over data between <main> and </main>
+    for (int i = 0; i < this->fileLength; i++) {
+
+        currentChar = this->file[i];
+        isReserved = isReservedChar(currentChar);
+
+        if (isReserved) {
+            
+            if (inTag) {
+                inTag = false;
+                tagCount++;
+            }
+
+        }
+
+        else {
+            inTag = true;
+        }
+
+    }
+    
+    int length = ( (tagCount * MAX_TAG_LENGTH) + ((tagCount + 1) * PRIM_TAG_LENGTH) );
+
+    this->bufferLength = length;
+    this->stringTagCount = tagCount;
+    this->primTagCount = tagCount + 1;
+
+    return;
+
+}
+
 int TagSequence::validatePrimTags() const {
     return 0;
 }
 
-char* TagSequence::getTag(int index, int* lengthOut) const {
+char* TagSequence::getStringTag(int index, int* lengthOut) const {
 
     if (lengthOut == nullptr) {
         logWrite("Tried to call XML::getTag(int, int*) on a nullptr!", true);
@@ -177,7 +181,7 @@ char* TagSequence::getTag(int index, int* lengthOut) const {
     }
 
     // Check for invalid index. Logging is handled within the call
-    if (validateTagIndex(index, "getTag")) return nullptr;
+    if (validateStringTagIndex(index, "getTag")) return nullptr;
 
 
     // This finds the effective index in tagSequence for the given index
@@ -230,7 +234,7 @@ char* TagSequence::getTag(int index, int* lengthOut) const {
 
 }
 
-void TagSequence::setTag(int index, char* tag, int length) {
+void TagSequence::setStringTag(int index, char* tag, int length) {
 
     if (this->buffer == nullptr) {
         logWrite("Tried to call XML::setTag(int, char*, int) before initializing tagSequence!", true);
@@ -243,7 +247,7 @@ void TagSequence::setTag(int index, char* tag, int length) {
     }
 
     // Check for invalid index. Logging is handled within the call
-    if (validateTagIndex(index, "setTag")) return;
+    if (validateStringTagIndex(index, "setTag")) return;
 
     // This finds the effective index in tagSequence for the given index
     // Start by skipping the first primitive tags
@@ -304,7 +308,7 @@ void TagSequence::setTag(int index, char* tag, int length) {
 
 }
 
-void TagSequence::swapTag(const char* oldTag, const char* newTag) {
+void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
 
     // Error checks
     if (oldTag == nullptr) {
@@ -369,10 +373,10 @@ void TagSequence::swapTag(const char* oldTag, const char* newTag) {
     int matchCount = 0;
 
     // Loop to find and replace the applicable tags
-    for (int i = 0; i < this->tagCount; i++) {
+    for (int i = 0; i < this->stringTagCount; i++) {
 
         // Get tag values
-        currentTag = this->getTag(i, &currentTagLength);
+        currentTag = this->getStringTag(i, &currentTagLength);
 
         // Early continue if lengths do not match
         if (oldTagLength != currentTagLength) continue;
@@ -390,7 +394,7 @@ void TagSequence::swapTag(const char* oldTag, const char* newTag) {
 
         // If the loop never reset matches, the tag should be replaced
         if (matches) {
-            this->setTag(i, (char*) newTag, newTagLength);
+            this->setStringTag(i, (char*) newTag, newTagLength);
             matchCount++;
         }
 
@@ -451,7 +455,7 @@ void TagSequence::setPrimitiveTag(int index, PrimitiveTagType type, PrimitiveTag
 
 }
 
-int TagSequence::validateTagIndex(int index, const char* functionName) const {
+int TagSequence::validateStringTagIndex(int index, const char* functionName) const {
 
     // Too low
     if (index < 0) {
@@ -473,7 +477,7 @@ int TagSequence::validateTagIndex(int index, const char* functionName) const {
     }
 
     // Too high
-    if (index >= this->tagCount) {
+    if (index >= this->stringTagCount) {
 
         // If no function name was given, output a general log
         if (functionName == nullptr) {
@@ -490,7 +494,7 @@ int TagSequence::validateTagIndex(int index, const char* functionName) const {
         logWrite(" -> Tried index ");
         logWrite(index);
         logWrite(" with tagCount of ");
-        logWrite(this->tagCount, true);
+        logWrite(this->stringTagCount, true);
 
         return 1;
 
@@ -548,5 +552,269 @@ int TagSequence::validatePrimTagIndex(int index, const char* functionName) const
 
     // Index is valid
     return 0;
+
+}
+
+void TagSequence::populateStringTags() {
+
+    // Current character being handled + flag if its a reserved char (see XML::isReserved() for details)
+    char currentChar;
+    bool isReserved;
+
+    // This is the internal index of the tag. 
+    // This is related, but not the same as, the actual index of this->tagSequence
+    int tagIndex = 0;
+
+    // True when the index lies inside a string tag, this lets each non reserved char side by side count as just one tag
+    bool inTag = false;
+
+    // This will point to the first char of the current string tag
+    // This is used to copy the string tag from this->file to this->tagSequence
+    char* tagStart = nullptr;
+
+    // This is the length of the current string tag. This is passed to this->setTag()
+    int tagLength = 0;
+
+    // This loop populates the string tags only.
+    // Only the main section is parsed here, as the other sections are treated differently
+    for (int i = 0; i < this->fileLength; i++) {
+
+        currentChar = this->file[i];
+        isReserved = isReservedChar(currentChar);
+
+        if (isReserved) {
+            
+            // This means i just finished iterating over a string tag
+            if (inTag) {
+
+                // Write the tag to this->tagSequence
+                this->setStringTag(tagIndex, tagStart, tagLength);
+
+                // Update the tagIndex to the next slot
+                tagIndex++;
+
+                // Reset the flag
+                inTag = false;
+                tagLength = 0;
+
+            }
+
+        }
+
+        else {
+
+            // If im already in a tag, add another char to the length
+            if (inTag) {
+                tagLength++;
+            }
+
+            // If not, this is the start of a new tag
+            else {
+
+                // Store the first char of the tag
+                tagStart = &(this->file[i]);
+
+                // Set the flag
+                inTag = true;
+                tagLength = 1;
+
+            }
+
+        }
+
+    }
+
+    return;
+
+}
+
+void TagSequence::populatePrimTags() {
+
+    // Current character being handled + flag if its a reserved char (see XML::isReserved() for details)
+    char currentChar = '\0';
+    bool isReserved;
+
+    // This is the internal index of the tag. 
+    // This is related, but not the same as, the actual index of this->tagSequence
+    int tagIndex = 0;
+
+    // True when the index lies inside a string tag.
+    // In this context, this just helps to track tagIndex
+    bool inTag = false;
+
+    // Here i need to know the previous char in some contexts
+    char prevChar;
+
+    // Flags for if each primitive tag is open or closed in the current context
+    bool inParams = false;
+    bool inChildren = false;
+
+    // Used for checking previously set state. This is needed in some contexts
+    PrimitiveTagState state;
+
+    // This loop populates the primitive tags
+    // I do also need to keep track of the tagIndex here, so a bunch of the logic is copied from the last loop
+    // This all *could* be in the same loop as above, but i chose to seperate them for readability
+    for (int i = 0; i < this->fileLength; i++) {
+
+        prevChar = currentChar;
+        currentChar = this->file[i];
+        isReserved = isReservedChar(currentChar);
+
+        if (isReserved) {
+            
+            // This means i need to update the tagIndex
+            if (inTag) {
+
+                // Update the tagIndex to the next slot
+                tagIndex++;
+
+                // Reset the flag
+                inTag = false;
+
+            }
+
+            // Reserved char handling
+            switch (currentChar) {
+
+                case '<': {
+
+                    /*
+                        The < usually indicates ELEMENT OPEN
+                        The only exception is when the next char is a /,
+                        but that would be overwritten in the '/' case anyway
+
+                        There can also be a case with the substring "/><" where ELEMENT should CLOSE and OPEN
+                        In this case, i use the CLOSE_OPEN state
+                        I check for this by seeing if the state is already on CLOSE
+                    */
+
+                    state = this->getPrimitiveTag(tagIndex, ELEMENT);
+
+                    if (state == CLOSE) {
+                        this->setPrimitiveTag(tagIndex, ELEMENT, CLOSE_OPEN);
+                    }
+
+                    else {
+                        this->setPrimitiveTag(tagIndex, ELEMENT, OPEN);
+                    }
+
+                    break;
+
+                }
+
+                case '>': {
+
+                    /*
+                        The only logical use of the > character is to delimit the params and children sections
+                        This always closes the PARAMS section if it is OPEN
+                        This only opens CHILDREN if the last char was not a /
+                    */
+                    
+                    // CLOSE PARAMS if needed
+                    if (inParams) {
+                        this->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
+                        inParams = false;
+                    }
+                    
+                    // OPEN CHILDREN if the element was not self closing
+                    if (prevChar != '/') {
+                        this->setPrimitiveTag(tagIndex, CHILDREN, OPEN);
+                        inChildren = true;
+                    }
+
+                    break;
+
+                }
+
+                case '/': {
+
+                    /*
+                        A / character indicates the end of the element
+                        This will also reset both PARAMS and CHILDREN to CLOSE if they were OPEN
+
+                        There also needs to be some special handling in the case of the substring "/></"
+                        In this case, i use the DOUBLE_CLOSE state to indicate a self closing tag right before a closing tag
+                    */
+            
+                    state = this->getPrimitiveTag(tagIndex, ELEMENT);
+
+                    // If two / chars appear next to each other, this is invalid
+                    if (prevChar == '/') {
+
+                        logWrite("XML::populateTagSequence() found 2 '/' characters in a row!", true);
+
+                        logWrite(" -> In file \"");
+
+                        if (this->fileName != nullptr) 
+                            logWrite(this->fileName);
+
+                        else 
+                            logWrite("Unspecified!!");
+
+                        logWrite("\"", true);
+
+                        logWrite(" -> This is most likely a typo in the file", true);
+
+                        return;
+
+                    }
+
+                    // Overwrite CLOSE_OPEN with DOUBLE_CLOSE if applicable
+                    if (state == CLOSE_OPEN) {
+                        this->setPrimitiveTag(tagIndex, ELEMENT, DOUBLE_CLOSE);
+                    }
+
+                    else {
+                        this->setPrimitiveTag(tagIndex, ELEMENT, CLOSE);
+                    }
+
+                    // CLOSE other types if needed
+                    if (inParams) {
+                        this->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
+                        inParams = false;
+                    }
+
+                    if (inChildren) {
+                        this->setPrimitiveTag(tagIndex, CHILDREN, CLOSE);
+                        inChildren = false;
+                    }
+
+                    break;
+
+                }
+
+                case ' ': {
+
+                    /*
+                        The space handling is very simple becuase i filtered out all spaces not inside tags
+                        This means that any space will indicate the beginning of the PARAMS section
+                        That is unless it is already open of course
+                    */
+
+                    if (inParams) break;
+
+                    this->setPrimitiveTag(tagIndex, PARAMS, OPEN);
+                    inParams = true;
+
+                    break;
+
+                }
+
+                // Equals is also reserved, but i dont need to track it
+                default:
+                    break;
+
+            }
+
+        }
+
+        else {
+            inTag = true;
+        }
+
+    }
+
+    return;
 
 }

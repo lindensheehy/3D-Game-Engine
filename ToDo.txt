@@ -23,14 +23,6 @@ new stuff:
     - change more traits for each object
 
 - improve XML class
-    - split populateTagSequence into popoulateStringTags and populatePrimTags
-    - move the above functions into TagSequence, where the file, start index and end index are passed
-        - maybe even let TagSequence store the file, start index and end index
-            - one step further, make it create a new file pointer from &file[startIndex] 
-            - keep endIndex - startIndex as the length, now use length instead of start/end
-    - split XML::tagSequence into XML::main, XML::labels and XML::parameters
-        - simplify XML::applylabels to make use of the new XML::labels TagSequence
-        - This provides an easier way to check that a parameter was stated before applying it
     - Make some sort of wrapper to hold valid element names, along with thier parameters
         - linked list to hold the string names of each element
         - second linked list holding wrappers to hold parameter information
@@ -39,7 +31,6 @@ new stuff:
             - parameter names in a sort of string array
                 - will be one long string with some char (maybe 0x01) to delimit strings, and '\0' to terminate
                 - would be used to allow out of order traits in an element
-                - lowkey another wrapper might be nice here
                 - make an extra array that stores the start index of each string
         - ideally, use would be very simplified, something like matchElement
             - could return the element parameter information wrapper if the string was matched, or nullptr if not

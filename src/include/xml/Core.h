@@ -32,6 +32,13 @@ enum PrimitiveTagState : char {
 
 };
 
+// This is used to determine expected trait types on XML elements
+enum TraitType {
+    INT,
+    FLOAT,
+    STRING,
+};
+
 /*   Some general helper functions   */
 
 // Returns true if the char should be considered valid in the XML file

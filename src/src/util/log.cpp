@@ -10,6 +10,8 @@ void logInit(const char* fileName) {
     if (hOutputFile != nullptr) {
         logClose();
     }
+
+    if (fileName == nullptr) return;
     
     // Get handle to file
     hOutputFile = CreateFile(
@@ -60,6 +62,8 @@ void logClear() {
 void logWrite(const char* message, bool newLine /* default value = false */) {
 
     if (hOutputFile == nullptr) return;
+
+    if (message == nullptr) return;
 
     DWORD bytesWritten;
     WriteFile(hOutputFile, message, strlen(message), &bytesWritten, NULL);
