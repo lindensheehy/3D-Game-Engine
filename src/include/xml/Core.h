@@ -40,7 +40,7 @@ enum ParameterType {
     STRING,
 
     // Used when the parameter was not found, therefore there is no type
-    NONE
+    INVALID
 
 };
 
