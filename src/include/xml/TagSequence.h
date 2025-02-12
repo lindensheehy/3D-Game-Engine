@@ -52,9 +52,21 @@ class TagSequence {
         // This is just to abstract away from the byte level operations involved
         void setPrimitiveTag(int index, PrimitiveTagType type, PrimitiveTagState state);
 
+
+        // Populates the string tags in the tag sequence
+        void populateStringTags();
+
+        // Populates the primitive tags in the tag sequence
+        void populatePrimTags();
+
+
     private:
 
         /*   Instance Variables   */
+
+        // This is the file that the TagSequence is related to
+        char* file;
+        int fileLength;
 
         // Buffer holding the tagSequence
         char* buffer;

@@ -23,7 +23,6 @@ new stuff:
     - change more traits for each object
 
 - improve XML class
-    - make a new directory 'xml' and move stuff into seperate files, youre gonna need a bunch more classes
     - split populateTagSequence into popoulateStringTags and populatePrimTags
     - move the above functions into TagSequence, where the file, start index and end index are passed
         - maybe even let TagSequence store the file, start index and end index
