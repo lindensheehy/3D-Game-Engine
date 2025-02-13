@@ -70,9 +70,6 @@ class XML {
         // Populates the reserved section indexes
         void locateSections();
 
-        // Populates the tag sequence
-        void populateTagSequence();
-
         // Applys all the labels defined in the XML file
         // This effectively treats them as parameters with default values
         void applyLabels();

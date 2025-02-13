@@ -6,6 +6,7 @@
 #include "xml/Core.h"
 #include "xml/ParameterInfo.h"
 
+
 class ElementSet {
 
     /*  
@@ -16,6 +17,16 @@ class ElementSet {
     */
 
     public:
+
+        // Helper struct
+        struct Element {
+
+            const char* name;
+            int nameLength;
+        
+            ParameterInfo* params;
+        
+        };
 
         // Constructor
         ElementSet();
@@ -30,17 +41,17 @@ class ElementSet {
         ParameterInfo* matchElement(const char* elementName);
 
         // Adds a new element to the set
+        // This will copy elementName into a new allocation. The argument must be handled externally
+        // This will not make a copy for parameterInfo, so it should not be used after passing
         void addElement(const char* elementName, ParameterInfo* parameterInfo);
+        void addElement(char* elementName, ParameterInfo* parameterInfo);
 
     private:
 
         /*   Instance Variables   */
 
         // Holds the name of each element
-        LinkedList<const char*>* elementNames;
-
-        // Holds the parameter information for each element
-        LinkedList<ParameterInfo*>* elementParams;
+        LinkedList<Element*>* set;
 
 
 };
