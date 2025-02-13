@@ -14,14 +14,14 @@ class ParameterInfo {
 
         This simplifies the process a TON, but just use matchParameter so check it
 
-        The constructor is not intended to be used directly
+        The constructor is private because it is not intended to be used directly
         ParameterInfoBuilder should do this for you because it will dynamically build the data set
     */
 
-    public:
+    // This gives ParameterInfoBuilder access to the private members
+    friend class ParameterInfoBuilder;
 
-        // Constructor
-        ParameterInfo(char* names, ParameterType* types, int length);
+    public:
 
         // Destructor
         ~ParameterInfo();
@@ -32,6 +32,9 @@ class ParameterInfo {
         ParameterType matchParameter(const char* name);
 
     private:
+
+        // Constructor
+        ParameterInfo(LinkedList<const char*>* names, LinkedList<ParameterType>* types);
 
         /*   Instance Variables   */
 
@@ -74,7 +77,7 @@ class ParameterInfoBuilder {
         
         /*   Instance Functions   */
 
-        // Builds the ParameterInfo object
+        // Builds the ParameterInfo object. Also resets the builder
         ParameterInfo* build();
 
         // Resets the object being built to empty
@@ -94,6 +97,5 @@ class ParameterInfoBuilder {
 
         // Holds the parameter types
         LinkedList<ParameterType>* types;
-
 
 };
