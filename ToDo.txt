@@ -23,14 +23,9 @@ new stuff:
     - change more traits for each object
 
 - improve XML class
-    - Make some sort of wrapper to hold valid element names, along with thier parameters
-        - linked list to hold the string names of each element
-        - second linked list ParameterInfo objects
-        - ideally, use would be very simplified, something like matchElement
-            - could return the element parameter information wrapper if the string was matched, or nullptr if not
     - createElement will just
         - for elements
-            - match the string using the above mentioned wrapper
+            - match the string using ElementSet
             - if it doesnt exist, log an error "unrecognised element name"
         - for traits
             - match the trait name (first string) against the parameter names in the element

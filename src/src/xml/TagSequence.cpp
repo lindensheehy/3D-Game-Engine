@@ -31,6 +31,27 @@ TagSequence::~TagSequence() {
 }
 
 // Instance Functions
+TagSequence* TagSequence::copy() {
+
+    TagSequence* ret = new TagSequence();
+
+    ret->stringTagCount = this->stringTagCount;
+    ret->primTagCount = this->primTagCount;
+
+    ret->file = new char[this->fileLength];
+    memcpy(ret->file, this->file, this->fileLength);
+    ret->fileLength = this->fileLength;
+
+    ret->fileName = this->fileName;
+
+    ret->buffer = new char[this->bufferLength];
+    memcpy(ret->buffer, this->buffer, this->bufferLength);
+    ret->bufferLength = this->bufferLength;
+
+    return ret;
+    
+}
+
 void TagSequence::log() {
 
     logWrite("Tag Sequence (");

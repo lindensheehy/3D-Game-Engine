@@ -33,6 +33,9 @@ class TagSequence {
 
         /*   Instance Functions   */
 
+        // Performs a deep copy
+        TagSequence* copy();
+
         // Logs the contents of the tag sequence
         void log();
 
@@ -88,6 +91,9 @@ class TagSequence {
 
 
         /*   Instance Functions  */
+
+        // Empty constructor to help with deep copy
+        TagSequence() {}
 
         // Returns non zero if the index is out of range
         // functionName can be optionally used to more specific logging

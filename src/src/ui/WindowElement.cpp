@@ -251,10 +251,12 @@ void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------- */
 
 // Constructor
-WindowCircle::WindowCircle(int posx, int posy, int size) : WindowElement(posx, posy, size, size) {
+WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowElement(posx, posy, size, size) {
 
     this->middle = this->size->copy()->scale(0.5)->add(this->pos);
     this->radius = size;
+
+    this->color = color;
 
     this->type = UIEnum::ElementType::VISUAL;
 

@@ -167,7 +167,7 @@ class WindowCircle : public WindowElement {
     public:
 
         // Constructor
-        WindowCircle(int posx, int posy, int size);
+        WindowCircle(int posx, int posy, int size, uint32 color);
 
         // Destructor
         ~WindowCircle() override;
@@ -272,7 +272,7 @@ class WindowTexture : public WindowElement {
     public:
 
         // Constructor
-        WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture);
+        WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName);
 
 
         /*   Instance Functions   */

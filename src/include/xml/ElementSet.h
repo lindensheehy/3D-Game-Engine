@@ -4,6 +4,7 @@
 #include "util/LinkedList.h"
 
 #include "xml/Core.h"
+#include "xml/XMLFile.h"
 #include "xml/ParameterInfo.h"
 
 
@@ -18,6 +19,27 @@ class ElementSet {
 
     public:
 
+        // This defines what type the element is
+        enum ElementType {
+
+            // Default types that have constructors in the code
+            DIV,
+            LINE,
+            FILLED_RECT,
+            OUTLINED_RECT,
+            CIRCLE,
+            TEXT_STATIC,
+            TEXT_INPUT,
+            TEXTURE,
+            BUTTON,
+            DRAGABLE,
+
+            // This will be used for any element defined in an xml file
+            // Theres different handling for these
+            CUSTOM
+            
+        };
+
         // Helper struct
         struct Element {
 
@@ -25,6 +47,11 @@ class ElementSet {
             int nameLength;
         
             ParameterInfo* params;
+
+            ElementType type;
+
+            // Will contain nullptr unless type == CUSTOM
+            XMLFile* xmlFile = nullptr;
         
         };
 
@@ -40,11 +67,17 @@ class ElementSet {
         // Returns the ParameterInfo object for the given element
         ParameterInfo* matchElement(const char* elementName);
 
-        // Adds a new element to the set
+        // Adds a new element to the set. This assumes the element exists in the code
         // This will copy elementName into a new allocation. The argument must be handled externally
         // This will not make a copy for parameterInfo, so it should not be used after passing
-        void addElement(const char* elementName, ParameterInfo* parameterInfo);
-        void addElement(char* elementName, ParameterInfo* parameterInfo);
+        void addDefaultElement(const char* elementName, ParameterInfo* parameterInfo, ElementType type);
+        void addDefaultElement(char* elementName, ParameterInfo* parameterInfo, ElementType type);
+
+        // Adds a new element to the set. This assumes the element exists in XML
+        // This will copy elementName into a new allocation. The argument must be handled externally
+        // This will not make a copy for parameterInfo, so it should not be used after passing
+        void addCustomElement(const char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXml);
+        void addCustomElement(char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXml);
 
     private:
 
