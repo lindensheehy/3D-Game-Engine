@@ -318,7 +318,7 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 /* ------------------------------------- */
 
 // Constructor
-WindowTextInput::WindowTextInput(int posx, int posy, int width) : WindowElement(posx, posy, width, 12) {
+WindowTextInput::WindowTextInput(int posx, int posy, int width, const char* id) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
@@ -595,13 +595,35 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 /* ---------- WindowButton ---------- */
 /* ---------------------------------- */
 
-// Constructor
+// Constructors
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, const char* id) : WindowElement(posx, posy, sizex, sizey) {
+    
+    this->type = UIEnum::ElementType::BUTTON;
+    this->isInteractable = true;
+
+    this->action = nullptr;
+
+    this->id = id;
+
+}
+
 WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = UIEnum::ElementType::BUTTON;
     this->isInteractable = true;
 
     this->action = action;
+
+    this->id = nullptr;
+
+}
+
+// Destructor
+WindowButton::~WindowButton() {
+    
+    if (this->action != nullptr) delete this->action;
+
+    return;
 
 }
 
@@ -621,7 +643,11 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 void WindowButton::onInput(State* state) {
 
-    WindowElement::queueAction(this->action);
+    if (this->action != nullptr) {
+        WindowElement::queueAction(this->action);
+    }
+
+    return;
 
 }
 
@@ -631,7 +657,21 @@ void WindowButton::onInput(State* state) {
 /* ---------- WindowDragable ---------- */
 /* ------------------------------------ */
 
-// Constructor
+// Constructors
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, const char* id) : WindowElement(posx, posy, sizex, sizey) {
+
+    this->type = UIEnum::ElementType::DRAGABLE;
+    this->isInteractable = true;
+
+    this->posToDrag = nullptr;
+    this->endPosToDrag = nullptr;
+
+    this->id = id;
+
+    return;
+
+}
+
 WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = UIEnum::ElementType::DRAGABLE;
@@ -639,6 +679,10 @@ WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* p
 
     this->posToDrag = posToDrag;
     this->endPosToDrag = endPosToDrag;
+
+    this->id = nullptr;
+
+    return;
 
 }
 

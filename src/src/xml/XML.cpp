@@ -147,46 +147,114 @@ void XML::initCustomElements() {
 
 WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
-    // This is the global state of PARAMS tag. 
-    // This tells how to treat the string tags and helps validate PARAMS OPEN and CLOSE tags
-    PrimitiveTagState paramsTagState = CLOSE;
+    /*
+        Yes this function is extremely long
+        Yes it is mostly error logging
+        Thats just the price of having specific error logging I suppose
+    */
 
-    // Holds the state of each prim tag for this index
-    PrimitiveTagState elementTag;
-    PrimitiveTagState paramsTag;
-    PrimitiveTagState childrenTag;
 
-    // Holds the string tag for this index
-    char* stringTag;
-    int stringTagLength;
+    // Helper function for error logging
+    auto logError = [](const char* message, XMLFile* xmlFile, int index) -> void {
 
-    // Holds the parameter info for the current element type
-    ParameterInfo* parameterInfo;
+        logWrite("XMLFile::buildElement() ");
+        logWrite(message, true);
 
-    // This is the hierarchy stack. opening an element pushes, closing pops
-    LinkedList<WindowElement*>* stack = new LinkedList<WindowElement*>();
+        logWrite(" -> In file \"");
+        logWrite(xmlFile->fileName);
+        logWrite("\" at index ");
+        logWrite(index, true);
 
-    // Flag says if the stack was emptied at any point
-    // This is okay if it happens once, otherwise theres an issue with the xml file
-    // Everything in the <main> section should be inside a single parent element
-    bool poppedLast = false;
+        return;
 
-    // Holds the last popped element. This is also the return value
-    WindowElement* lastPopped = nullptr;
+    };
 
-    // This holds the current element that is being built
-    // Gets built on any of CHILDREN OPEN, ELEMENT CLOSE_OPEN, ELEMENT DOUBLE_CLOSE
-    WindowElement* currentElement = nullptr;
 
-    // Loop through tags
+    // First ill make sure im not over the recursive limit
+    if (this->callCount > CALL_LIMIT) {
+        logError("hit its recursive call limit!", xmlFile, -1);
+        logWrite(" -> This is likely due to circular dependancy. If this is not the case, go update XML::CALL_LIMIT", true);
+        return nullptr;
+    }
+
+    this->callCount++;
+
+
+    /*   Set up for the loop   */
+
+    enum ParamState {
+        LABEL,
+        VALUE
+    };
+
+    struct VarContainer {
+
+        // Data for handling the PARAMS section
+        ParamState paramState = LABEL;
+        ParameterType paramType;
+        int paramPosition;
+
+        // Buffers for holding PARAMS
+        int* intBuffer;
+        float* floatBuffer;
+        char** stringBuffer;
+
+        // Global state of the PARAMS tag, will equal the last non NONE PARAMS tag
+        PrimitiveTagState paramsTagState = CLOSE;
+
+        // Holds the state of each prim tag in each iteration
+        PrimitiveTagState elementTag;
+        PrimitiveTagState paramsTag;
+        PrimitiveTagState childrenTag;
+
+        // Holds the string tag for this iteration
+        char* stringTag;
+        int stringTagLength;
+
+        // Holds info about the current element being built
+        ElementSet::Element* elementInfo;
+
+        // This is the hierarchy stack. opening an element pushes, closing pops
+        LinkedList<WindowElement*>* stack = new LinkedList<WindowElement*>();
+
+        // Flag says if the stack was emptied at any point
+        bool poppedLast = false;
+
+        // Holds the last popped element. This is also the return value
+        WindowElement* lastPopped = nullptr;
+
+        // This holds the current element that is being built
+        WindowElement* currentElement = nullptr;
+
+        // This is used to differentiate between a regular return and an error return
+        bool error = false;
+
+    };
+
+    VarContainer* vars = new VarContainer();
+
+    // Buffers for storing PARAMS values
+    vars->intBuffer = new int[PARAMS_BUFFER_SIZE];
+    vars->floatBuffer = new float[PARAMS_BUFFER_SIZE];
+    vars->stringBuffer = new char*[PARAMS_BUFFER_SIZE];
+
+    // Allocate and initialize the strings
+    for (int i = 0; i < PARAMS_BUFFER_SIZE; i++) {
+        vars->stringBuffer[i] = new char[MAX_TAG_LENGTH];
+        memset(vars->stringBuffer[i], '\0', MAX_TAG_LENGTH);
+    }
+
+
+    /*   Loop through the tags   */
+    
     for (int i = 0; i < xmlFile->main->stringTagCount; i++) {
 
         // Get all the values I need
-        elementTag = xmlFile->main->getPrimitiveTag(i, ELEMENT);
-        paramsTag = xmlFile->main->getPrimitiveTag(i, PARAMS);
-        childrenTag = xmlFile->main->getPrimitiveTag(i, CHILDREN);
+        vars->elementTag = xmlFile->main->getPrimitiveTag(i, ELEMENT);
+        vars->paramsTag = xmlFile->main->getPrimitiveTag(i, PARAMS);
+        vars->childrenTag = xmlFile->main->getPrimitiveTag(i, CHILDREN);
 
-        stringTag = xmlFile->main->getStringTag(i, &stringTagLength);
+        vars->stringTag = xmlFile->main->getStringTag(i, &(vars->stringTagLength));
 
         /*
             Order is important here. 
@@ -208,7 +276,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
         */
 
         // Step 1: PARAMS tag handling
-        switch (paramsTag) {
+        switch (vars->paramsTag) {
 
             // Default value, do nothing
             case NONE:
@@ -217,16 +285,13 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
             case OPEN: {
 
                 // This would happen if the last params section was not closed
-                if (paramsTagState == OPEN) {
-                    logWrite("XMLFile::buildElement() found a PARAMS OPEN tag while params are already open!", true);
-                    logWrite(" -> In file \"");
-                    logWrite(xmlFile->fileName);
-                    logWrite("\" at index ");
-                    logWrite(i, true);
-                    break;
+                if (vars->paramsTagState == OPEN) {
+                    logError("found a PARAMS OPEN tag while params are already open!", xmlFile, i);
+                    vars->error = true;
+                    goto end;
                 }
 
-                paramsTagState = OPEN;
+                vars->paramsTagState = OPEN;
 
                 break;
 
@@ -235,64 +300,115 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
             case CLOSE: {
 
                 // This would happen if there is no params section open
-                if (paramsTagState == CLOSE) {
-                    logWrite("XMLFile::buildElement() found a PARAMS CLOSE tag while none was open!", true);
-                    logWrite(" -> In file \"");
-                    logWrite(xmlFile->fileName);
-                    logWrite("\" at index ");
-                    logWrite(i, true);
-                    break;
+                if (vars->paramsTagState == CLOSE) {
+                    logError("found a PARAMS CLOSE tag while none was open!", xmlFile, i);
+                    vars->error = true;
+                    goto end;
                 }
 
-                paramsTagState = CLOSE;
+                vars->paramsTagState = CLOSE;
 
                 break;
 
             }
                 
-            // This could be CLOSE_OPEN, DOUBLE_CLOSE, or an unrecognized tag
-            // Regardless, its not allowed
-            default: {
-                logWrite("XMLFile::buildElement() found an unrecognized tag state!", true);
-                logWrite(" -> Type PARAMS = ");
-                logWrite( (int) paramsTag, true );
-                logWrite(" -> See PrimitiveTagState in \"xml/Core.h\" for details", true);
+            // This should never happen
+            default:
                 break;
-            }
 
         }
 
         // Step 2: Opening a new element
-        if (  elementTag == OPEN  ||  elementTag == CLOSE_OPEN  ) {
+        if (  vars->elementTag == OPEN  ||  vars->elementTag == CLOSE_OPEN  ) {
 
-            // 
+            // Cant open an element inside the PARAMS section
+            if (vars->paramsTagState == OPEN) {
+                logError("wants to open an element inside the parameters section!", xmlFile, i);
+                logWrite(" -> This is likely a typo in the file", true);
+                vars->error = true;
+                goto end;
+            }
 
-            parameterInfo = this->elementSet->matchElement(stringTag);
+            vars->elementInfo = this->elementSet->matchElement(vars->stringTag);
 
-            if (parameterInfo == nullptr) {
-                // Log error
+            if (vars->elementInfo == nullptr) {
+                logError("found an unrecognized element name!", xmlFile, i);
+                vars->error = true;
+                goto end;
             }
 
         }
 
         // Step 3: Create element if possible
-        if (  childrenTag == OPEN  ||  elementTag == CLOSE_OPEN  ||  elementTag == DOUBLE_CLOSE) {
+        if (  vars->childrenTag == OPEN  ||  vars->elementTag == CLOSE_OPEN  ||  vars->elementTag == DOUBLE_CLOSE) {
             
             // Cant create an element while the PARAMS section is open
-            if (paramsTagState == OPEN) {
-
+            if (vars->paramsTagState == OPEN) {
+                logError("is trying to create an element before closing the parameters section!", xmlFile, i);
+                vars->error = true;
+                goto end;
             }
 
-            // This is the part where i create the WindowElement object for the xml element
-            // This is done by using the data stored in the type buffers, along with the data in ParameterInfo
-            // Most elements have in-code constructors, which is all i will be handling for now
-            // In the future, custom elements will be created using this same function called on other XMLFile obejcts
-            // This can get a bit nested, because its possible for a custom element to contain a custom element, and so on
+            switch (vars->elementInfo->type) {
+
+                // Default elements defined in code
+                case ElementSet::DIV:
+                    vars->currentElement = new WindowDiv(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3]);
+                    break;
+
+                case ElementSet::LINE:
+                    vars->currentElement = new WindowLine(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], intBuffer[4]);
+                    break;
+
+                case ElementSet::FILLED_RECT:
+                    vars->currentElement = new WindowFilledRect(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], intBuffer[4]);
+                    break;
+
+                case ElementSet::OUTLINED_RECT:
+                    vars->currentElement = new WindowOutlinedRect(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], intBuffer[4]);
+                    break;
+
+                case ElementSet::CIRCLE:
+                    vars->currentElement = new WindowCircle(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3]);
+                    break;
+
+                case ElementSet::TEXT_STATIC:
+                    vars->currentElement = new WindowTextStatic(intBuffer[0], intBuffer[1], stringBuffer[2]);
+                    break;
+
+                case ElementSet::TEXT_INPUT:
+                    vars->currentElement = new WindowTextInput(intBuffer[0], intBuffer[1], intBuffer[2], stringBuffer[3]);
+                    break;
+
+                case ElementSet::TEXTURE:
+                    vars->currentElement = new WindowTexture(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], stringBuffer[4]);
+                    break;
+
+                case ElementSet::BUTTON:
+                    vars->currentElement = new WindowButton(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], stringBuffer[4]);
+                    break;
+
+                case ElementSet::DRAGABLE:
+                    vars->currentElement = new WindowDragable(intBuffer[0], intBuffer[1], intBuffer[2], intBuffer[3], stringBuffer[4]);
+                    break;
+                
+
+                // This is for elements defined in other xml files
+                case ElementSet::CUSTOM:
+                    vars->currentElement = this->buildElement(vars->elementInfo->xmlFile);
+                    break; 
+
+
+                // Should never happen
+                default:
+                    break;
+
+            }
 
         }
 
         // Step 4: CHILDREN tag handling
-        switch (childrenTag) {
+        switch (vars->childrenTag) { 
 
             // Default value, do nothing
             case NONE:
@@ -301,17 +417,15 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
             case OPEN: {
 
                 // If currentElement == nullptr, theres a problem in the xml file
-                if (currentElement == nullptr) {
-                    logWrite("XML::buildElement() is trying to open a children section before having a valid element!", true);
-                    logWrite(" -> In file \"");
-                    logWrite(xmlFile->fileName);
-                    logWrite("\"", true);
+                if (vars->currentElement == nullptr) {
+                    logError("is trying to open a children section before having a valid element!", xmlFile, i);
                     logWrite(" -> This usually happens if the opening tag for the element has a mistake", true);
-                    break;
+                    vars->error = true;
+                    goto end;
                 }
 
                 // No special handling here, this just always pushes to the stack
-                stack->pushBack(currentElement);
+                vars->stack->pushBack(vars->currentElement);
 
                 break;
 
@@ -320,67 +434,152 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
             case CLOSE: {
 
                 // Pop the last item on the stack, and store for further use
-                lastPopped = stack->popBack();
+                vars->lastPopped = vars->stack->popBack();
 
                 // Check the flag to see if the last element has already been popped
                 // In this case, the element creation will not work properly, so log an error
-                if (poppedLast) {
-                    logWrite("XML::buildElement() found more than one parent element in main!", true);
-                    logWrite(" -> In file \"");
-                    logWrite(xmlFile->fileName);
-                    logWrite("\"", true);
+                if (vars->poppedLast) {
+                    logError("found more than one parent element in main!", xmlFile, i);
                     logWrite(" -> There should be exactly one parent element holding everything in the <main> tag", true);
-                    break;
+                    vars->error = true;
+                    goto end;
                 }
 
                 // If the length is now 0, the stack has been emptied so set the flag
-                if (stack->length == 0) poppedLast = true;
+                if (vars->stack->length == 0) vars->poppedLast = true;
 
                 break;
 
             }
 
-            // This could be CLOSE_OPEN, DOUBLE_CLOSE, or an unrecognized tag
-            // Regardless, its not allowed
-            default: {
-                logWrite("XMLFile::buildElement() found an unrecognized tag state!", true);
-                logWrite(" -> Type CHILDREN = ");
-                logWrite( (int) childrenTag, true );
-                logWrite(" -> See PrimitiveTagState in \"xml/Core.h\" for details", true);
+            // This should never happen
+            default:
                 break;
-            }
 
         }
 
         // Step 5: Handle string tags in the PARAMS section
-        if (paramsTagState == OPEN) {
+        if (vars->paramsTagState == OPEN) {
 
             // This is the part where i handle traits
             // there will be a flag that flips back and forth, being 'label' or 'value'
             // Labels should be matched against ParameterInfo
             // Values should be casted into thier types based on the previous match, and stored in the type buffers
 
+            if (vars->elementInfo == nullptr) {
+                logError("is trying to parse the PARAMS section before matching an element!", xmlFile, i);
+                vars->error = true;
+                goto end;
+            }
+
+            switch (vars->paramState) {
+
+                case LABEL: {
+
+                    // Different handling for custom elements PARAMS
+                    if (vars->elementInfo->type == ElementSet::CUSTOM) {
+
+                        break;
+
+                    }
+
+                    vars->paramType = vars->elementInfo->params->matchParameter(vars->stringTag, &(vars->paramPosition));
+
+                    if (vars->paramType == TYPE_NONE) {
+                        logError("failed to match a parameter name!", xmlFile, i);
+                        vars->error = true;
+                        goto end;
+                    }
+
+                    vars->paramState = VALUE;
+
+                    break;
+
+                }
+
+                case VALUE: {
+
+                    // Different handling for custom elements PARAMS
+                    if (vars->elementInfo->type == ElementSet::CUSTOM) {
+
+                        break;
+
+                    }
+
+                    if (vars->paramPosition >= PARAMS_BUFFER_SIZE) {
+                        logError("wants to put a parameter at a position outside the buffer range!", xmlFile, i);
+                        logWrite(" -> Either update XML::initDefaultElements() or XML::PARAMS_BUFFER_SIZE", true);
+                        vars->error = true;
+                        goto end;
+                    }
+
+                    switch (vars->paramType) {
+
+                        case TYPE_INT: {
+
+                            break;
+
+                        }
+
+                        case TYPE_FLOAT: {
+
+                            break;
+
+                        }
+
+                        case TYPE_STRING: {
+
+                            break;
+
+                        }
+                        
+                        // Unrecognized type
+                        default: {
+                            logError("failed to match the parameter name to a valid type!", xmlFile, i);
+                            vars->error = true;
+                            goto end;
+                        }
+
+                    }
+
+                }
+
+                // Should never happen
+                default:
+                    break;
+
+            }
+
         }
 
     }
 
-    // If lastPopped == nullptr, there was a problem with missing closing tags in the file
-    if (lastPopped == nullptr) {
-
-    }
 
     /*   Clean up   */
 
-    // The stack should be empty by the end
-    if (stack->length > 0) {
-        // Log error
-    }
+    end:
 
-    delete stack;
+    // Free buffers
+    delete[] vars->intBuffer;
+    delete[] vars->floatBuffer;
+
+    for (int i = 0; i < PARAMS_BUFFER_SIZE; i++)
+        delete[] vars->stringBuffer[i];
+
+    delete[] vars->stringBuffer;
+
+    // Delete any items in the stack
+    for (vars->stack->iterStart(0); vars->stack->iterHasNext(); vars->stack->iterNext())
+        delete vars->stack->iterGetObj();
+
+    delete vars->stack;
+
+    // Return nullptr if there was an error
+    if (vars->error) return nullptr;
 
     // Return the last popped element
     // If everything went right, this should have everything else in the file as children elements
-    return lastPopped;
+    return vars->lastPopped;
 
 }
 

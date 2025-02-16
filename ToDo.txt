@@ -14,33 +14,14 @@ new stuff:
     - ray cast to find an object
         - probably just check each object rather than actually stepping along a ray since theres few objects in the scene
 
-- custom XML like system for defining windows in the UI
-    - custom defined elements in XML
-    - full windows also defined in XML, which can use custom elements within
-
 - expand UI functionality.
     - create new objects
     - change more traits for each object
-
-- improve XML class
-    - createElement will just
-        - for elements
-            - match the string using ElementSet
-            - if it doesnt exist, log an error "unrecognised element name"
-        - for traits
-            - match the trait name (first string) against the parameter names in the element
-                - if it doesnt exist, throw an error
-            - take the trait value (second string) and try to cast it to the type specified in the element
-                - if the cast fails, throw an error (ex. (int) "string")
-        - after these two steps i can actually make this sub element
-        - if the stack is not empty (it never should be), add this element as a child to the top of the stack
-        - for children
-            - when a children section starts, push the last created element to the stack
-            - when a children section ends, i pop an element from the stack
-
-        
+       
 
 fixes:
+- fix mouse state with windows api (mouse just stays in the last state, never gets updated)
+- let resizing the window actually change the dimensions of the buffer
 - fix depth interpolation, depth between two points is not always linear.
 - fix TextInput UI elements from drawing to infinite length.
     - probably just add a parameter 'maxLength' to Drawer::drawString()
@@ -48,6 +29,3 @@ fixes:
 optimizations:
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
 - add a draw queue which will have threads to work only on drawing, while the main thread can do the math and feed the stuff that needs to be drawn to the queue
-
-notes:
-    

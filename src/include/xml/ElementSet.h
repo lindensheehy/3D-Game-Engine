@@ -65,7 +65,7 @@ class ElementSet {
         /*   Instance Functions   */
 
         // Returns the ParameterInfo object for the given element
-        ParameterInfo* matchElement(const char* elementName);
+        Element* matchElement(const char* elementName);
 
         // Adds a new element to the set. This assumes the element exists in the code
         // This will copy elementName into a new allocation. The argument must be handled externally

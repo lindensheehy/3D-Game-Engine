@@ -222,7 +222,7 @@ class WindowTextInput : public WindowElement {
         };
 
         // Constructor
-        WindowTextInput(int posx, int posy, int width);
+        WindowTextInput(int posx, int posy, int width, const char* id);
 
         // Destructor
         ~WindowTextInput() override;
@@ -300,7 +300,11 @@ class WindowButton : public WindowElement {
     public:
 
         // Constructor
+        WindowButton(int posx, int posy, int sizex, int sizey, const char* id);
         WindowButton(int posx, int posy, int sizex, int sizey, Action* action);
+
+        // Destructor
+        ~WindowButton() override;
 
         // Instance Functions
         void draw(Drawer* drawer, Vec2* offset) override;
@@ -310,6 +314,9 @@ class WindowButton : public WindowElement {
     private:
 
         Action* action;
+
+        // Used for binding the button to an action after creation
+        const char* id;
 
 };
 
@@ -325,6 +332,7 @@ class WindowDragable : public WindowElement {
     public:
 
         // Constructor
+        WindowDragable(int posx, int posy, int sizex, int sizey, const char* id);
         WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag);
 
         /*   Instance Functions   */
@@ -337,5 +345,8 @@ class WindowDragable : public WindowElement {
 
         Vec2* posToDrag;
         Vec2* endPosToDrag;
+
+        // Used for binding the button to an action after creation
+        const char* id;
 
 };

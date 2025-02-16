@@ -32,7 +32,7 @@ ElementSet::~ElementSet() {
 }
 
 // Instance Functions
-ParameterInfo* ElementSet::matchElement(const char* elementName) {
+ElementSet::Element* ElementSet::matchElement(const char* elementName) {
 
     // Start by finding the length of the requested string
     int nameLength = 0;
@@ -79,7 +79,7 @@ ParameterInfo* ElementSet::matchElement(const char* elementName) {
 
         // If all characters match, return the cooresponding ParameterInfo object
         if (matches) {
-            return current->params;
+            return current;
         }
 
     }

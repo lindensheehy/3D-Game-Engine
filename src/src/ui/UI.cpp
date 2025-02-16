@@ -306,7 +306,6 @@ void UI::updateNextWindowPos() {
 
 }
 
-
 Action* UI::getNextAction() {
 
     if (UI::actionQueue->length == 0) return nullptr;
@@ -357,7 +356,7 @@ WindowElement* UI::createTextBox(int posx, int posy, int width, float* valueToWr
 
     newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
 
-    WindowTextInput* textInput = new WindowTextInput(0, 0, 35);
+    WindowTextInput* textInput = new WindowTextInput(0, 0, 35, "placeholder");
     textInput->bind(valueToWrite);
     newElement->addChild( textInput );
 

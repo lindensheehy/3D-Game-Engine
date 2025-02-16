@@ -52,9 +52,14 @@ class XML {
 
         // These buffers are used for creating UI elements
         // They are containers for the arguments that get passed to the in-code constructors
-        static const int BUFFER_SIZE = 5;
+        static constexpr int PARAMS_BUFFER_SIZE = 5;
         int* intBuffer;
         float* floatBuffer;
         char** stringBuffer;    // Each string is MAX_TAG_LENGTH long
+
+        // This is used to limit the recursive calls
+        // If there were to be two xml files that both referenced each other, the function would recursively call endlessly
+        static constexpr int CALL_LIMIT = 32;
+        int callCount;
 
 };
