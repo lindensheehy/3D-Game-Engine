@@ -45,6 +45,9 @@ class XMLFile {
         // Performs a deep copy
         XMLFile* copy();
 
+        // Logs the contents of the object
+        void log();
+
         // Sets any instance of the string tag to the designated value (in string form)
         void setParameter(const char* tag, int value);
         void setParameter(const char* tag, float value);

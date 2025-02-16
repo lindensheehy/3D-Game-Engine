@@ -16,10 +16,10 @@
 
 <main>
 
-    <filledRect posx=_posx posy=_posy width=_width height=12 color=background>
+    <filledRect posx=_posx posy=_posy sizex=_width sizey=12 color=background>
 
-        <outlinedRect posx=0 posy=0 width=_width height=12 color=border/>
-        <textInput posx=0 posy=0 width=_width tag=_tag/>
+        <outlinedRect posx=0 posy=0 sizex=_width sizey=12 color=border/>
+        <textInput posx=0 posy=0 width=_width id=_tag/>
 
     </filledRect>
 

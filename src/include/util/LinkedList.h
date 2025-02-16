@@ -140,6 +140,28 @@ class LinkedList {
 
         /*   Instance Functions   */
 
+        // Returns the object at the first position in the list
+        type getFirst() {
+
+            if (this->first != nullptr) {
+                return this->first->item;
+            }
+
+            return nullptr;
+
+        }
+
+        // Returns the object at the last position in the list
+        type getLast() {
+
+            if (this->last != nullptr) {
+                return this->last->item;
+            }
+
+            return nullptr;
+
+        }
+
         // Returns true if the list contains the specified item
         bool contains(type item) {
 

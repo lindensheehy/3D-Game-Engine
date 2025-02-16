@@ -8,6 +8,7 @@
 #include "ui/UI.h"
 
 #include "xml/XML.h"
+#include "xml/XMLFile.h"
 
 // Global declarations
 Gui* gui;
@@ -25,6 +26,9 @@ bool drawNormals;
 bool gravity;
 
 UI* ui;
+XML* xml;
+
+WindowElement* textbox;
 
 bool doMainLoop = true;
 
@@ -114,6 +118,7 @@ void handleInput(State* state, Camera* camera) {
         selectedObject->opacity = 0.5;
 
         ui->updateWindowTransform(selectedObject);
+        ui->transformWindow->addElement();
 
     }
 
@@ -285,6 +290,9 @@ void init() {
 
     ui = new UI();
 
+    xml = new XML(ui);
+    xml->initDefaultElements();
+
 }
 
 int main(int argc, char* argv[]) {
@@ -292,7 +300,17 @@ int main(int argc, char* argv[]) {
     // Starts up everything needed for the main loop
     init();
 
-    // XML* XMLFile = new XML("../src/assets/ui/elements/textbox.xml");
+    XMLFile* xmlFile = new XMLFile("../src/assets/ui/elements/textbox.xml");
+
+    xmlFile->log();
+
+    xmlFile->setParameter("_posx", 0);
+    xmlFile->setParameter("_posy", 0);
+    xmlFile->setParameter("_width", 60);
+    xmlFile->setParameter("_tag", "testTag");
+
+    textbox = xml->buildElement(xmlFile);
+
     // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
 
     // Main loop

@@ -35,12 +35,12 @@ enum PrimitiveTagState : char {
 // This is used to determine expected trait types on XML elements
 enum ParameterType : char {
 
-    TYPE_INT,
-    TYPE_FLOAT,
-    TYPE_STRING,
+    TYPE_INT = 'a',
+    TYPE_FLOAT = 'b',
+    TYPE_STRING = 'c',
 
     // Used when the parameter was not found, therefore there is no type
-    TYPE_NONE
+    TYPE_NONE = 'd'
 
 };
 

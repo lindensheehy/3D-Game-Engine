@@ -43,7 +43,7 @@ ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
 
 
     // This will be passed to the ParameterInfo constructor
-    ParameterType* typesArray = new ParameterType[this->length];
+    this->types = new ParameterType[this->length];
 
     // Index pointer for the next slot in the array
     int typesArrayIndex = 0;
@@ -68,7 +68,7 @@ ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
         // Store the length of the name
         this->namesLengths[i] = length;
 
-        typesArray[i] = current->type;
+        this->types[i] = current->type;
 
     }
 
@@ -90,6 +90,9 @@ ParameterInfo::~ParameterInfo() {
 
 // Instance Functions
 ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) {
+
+    if (name == nullptr) return TYPE_NONE;
+    if (positionOut == nullptr) return TYPE_NONE;
 
     // Start by finding the length of the requested string
     int nameLength = 0;

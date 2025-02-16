@@ -41,64 +41,7 @@ XMLFile::XMLFile(const char* fileName) {
     this->main->populateStringTags();
     this->main->populatePrimTags();
 
-    // Log file contents
-    logWrite("Full file contents:", true);
-    logWrite(this->file);
-    
-    logWrite("\n\n\n");
-
-    if (this->parametersStart == -1 || this->parametersEnd == -1) {
-        logWrite("No valid <parameters> section!", true);
-    } 
-
-    else {
-        logWrite("Parameters section:", true);
-        for (int i = this->parametersStart; i < this->parametersEnd; i++) {
-            logWrite(this->file[i]);
-        }
-    }
-
-    logWrite("\n\n\n");
-
-    if (this->labelsStart == -1 || this->labelsEnd == -1) {
-        logWrite("No valid <labels> section!", true);
-    } 
-
-    else {
-        logWrite("Labels section:", true);
-        for (int i = this->labelsStart; i < this->labelsEnd; i++) {
-            logWrite(this->file[i]);
-        }
-    }
-
-    logWrite("\n\n\n");
-
-    if (this->mainStart == -1 || this->mainEnd == -1) {
-        logWrite("No valid <main> section!", true);
-    } 
-
-    else {
-        logWrite("Main section:", true);
-        for (int i = this->mainStart; i < this->mainEnd; i++) {
-            logWrite(this->file[i]);
-        }
-    }
-
-    logWrite("\n\n\n");
-
-    this->main->log();
-
-    logWrite("\n\n\n");
-
-    this->setParameter("_width", 12345);
-
-    this->main->log();
-
-    logWrite("\n\n\n");
-
     this->applyLabels();
-
-    this->main->log();
 
     return;
 
@@ -141,6 +84,78 @@ XMLFile* XMLFile::copy() {
     ret->mainEnd = this->mainEnd;
 
     return ret;
+
+}
+
+void XMLFile::log() {
+
+    // Log file contents
+    logWrite("XMLFile object contents:", true);
+    logWrite("File Name: \"");
+    logWrite(this->fileName);
+    logWrite("\"", true);
+    logWrite(this->file);
+    
+    logWrite("\n\n");
+
+    if (this->parametersStart == -1 || this->parametersEnd == -1) {
+        logWrite("No valid <parameters> section!", true);
+    } 
+
+    else {
+        logWrite("Parameters section:", true);
+        for (int i = this->parametersStart; i < this->parametersEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
+
+    logWrite("\n\n\n");
+
+    if (this->labelsStart == -1 || this->labelsEnd == -1) {
+        logWrite("No valid <labels> section!", true);
+    } 
+
+    else {
+        logWrite("Labels section:", true);
+        for (int i = this->labelsStart; i < this->labelsEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
+
+    logWrite("\n\n\n");
+
+    if (this->mainStart == -1 || this->mainEnd == -1) {
+        logWrite("No valid <main> section!", true);
+    } 
+
+    else {
+        logWrite("Main section:", true);
+        for (int i = this->mainStart; i < this->mainEnd; i++) {
+            logWrite(this->file[i]);
+        }
+    }
+
+    logWrite("\n\n\n");
+
+    logWrite("Parameters Tag Sequence:", true);
+
+    this->parameters->log();
+
+
+    logWrite("\n\n\n");
+
+    logWrite("Labels Tag Sequence:", true);
+
+    this->labels->log();
+
+
+    logWrite("\n\n\n");
+
+    logWrite("Main Tag Sequence:", true);
+
+    this->main->log();
+
+    return;
 
 }
 

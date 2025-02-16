@@ -46,8 +46,12 @@ bool stringToDouble(char* string, double* result, int MAXLENGTH);
 // Writes the given int value to the char* given. Will not write past MAXLENGTH. Returns true if the whole int was parsed
 bool intToString(int value, char* string, int MAXLENGTH);
 
-// Returns a int value representing the contents of the string. Will read until '\0' or MAXLENGTH. invalid strings will return 0
+// Returns the int interpretation of the string into result. Will read until '\0' or MAXLENGTH. Invalid strings will return false
 bool stringToInt(char* string, int* result, int MAXLENGTH);
+
+// Returns the int interpretation of the string (treated as hex) into result. Will read until '\0' or MAXLENGTH. Invalid strings will return false
+// Both strings starting with "0x" and with no prefix are valid
+bool stringHexToInt(char* string, int* result, int MAXLENGTH);
 
 
 

@@ -57,6 +57,8 @@ bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGIT
 
 bool stringToFloat(char* string, float* result, int MAXLENGTH) {
 
+    if (result == nullptr) return false;
+
     double doubleResult;
 
     bool passed = stringToDouble(string, &doubleResult, MAXLENGTH);
@@ -68,6 +70,8 @@ bool stringToFloat(char* string, float* result, int MAXLENGTH) {
 }
 
 bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS) {
+
+    if (string == nullptr) return false;
 
     // Not enough space in the string for a number and '\0'
     if (MAXLENGTH < 2) return false;
@@ -121,6 +125,7 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
 bool stringToDouble(char* string, double* result, int MAXLENGTH) {
 
     if (string == nullptr) return false;
+    if (result == nullptr) return false;
 
     double returnValue = 0.0;
     int i = 0;
@@ -236,6 +241,7 @@ bool intToString(int value, char* string, int MAXLENGTH) {
 bool stringToInt(char* string, int* result, int MAXLENGTH) {
 
     if (string == nullptr) return false;
+    if (result == nullptr) return false;
 
     int returnValue = 0;
     int i = 0;
@@ -273,3 +279,48 @@ bool stringToInt(char* string, int* result, int MAXLENGTH) {
     return true;
 
 }
+
+bool stringHexToInt(char* string, int* result, int MAXLENGTH) {
+
+    if (string == nullptr) return false;
+    if (result == nullptr) return false;
+
+    int returnValue = 0;
+    int i = 0;
+    char c;
+    int holder;
+
+    // Check for optional "0x" or "0X" prefix
+    if (string[i] == '0' && (string[i + 1] == 'x' || string[i + 1] == 'X')) {
+        i += 2;
+    }
+
+    while (i < MAXLENGTH) {
+
+        c = string[i];
+
+        // Done
+        if (c == '\0') break;
+
+        // Convert hex character to integer
+        if (c >= '0' && c <= '9') {
+            holder = c - '0';
+        } else if (c >= 'A' && c <= 'F') {
+            holder = c - 'A' + 10;
+        } else if (c >= 'a' && c <= 'f') {
+            holder = c - 'a' + 10;
+        } else {
+            return false; // Invalid character for hex
+        }
+
+        returnValue = (returnValue * 16) + holder;
+        i++;
+
+    }
+
+    *result = returnValue;
+
+    return true;
+    
+}
+
