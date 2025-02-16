@@ -118,7 +118,6 @@ void handleInput(State* state, Camera* camera) {
         selectedObject->opacity = 0.5;
 
         ui->updateWindowTransform(selectedObject);
-        ui->transformWindow->addElement();
 
     }
 
