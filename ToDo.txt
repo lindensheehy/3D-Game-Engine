@@ -17,7 +17,23 @@ new stuff:
 - expand UI functionality.
     - create new objects
     - change more traits for each object
-       
+
+
+- allow xml files to include elements defined in other xml files. 
+    - this should be pretty simple since everything is there to handle these
+    - i just need to find a way to tokenize the constuctor signatures of each xml file in assets/elements (what parameter types they take).
+
+- add a feature to bind elements to actions or data based on an id
+    - should be a simple recursive call that will find the element with the requested id
+    - different functions for each element type
+        - Button
+        - TextInput
+        - Dragable
+
+- refactor UI class. There are some things that the UI class does that will not work well with XML
+    - WindowElement objects will need a copy() instance function
+        - make a 'genericCopy()' that does all the regular stuff, then a 'virtual copy()' that will have element specific handling
+    - deleting windows when binding to new data. This will be an easy fix once binding is in place
 
 fixes:
 - fix mouse state with windows api (mouse just stays in the last state, never gets updated)
