@@ -5,7 +5,7 @@
 /* ----------------------------------- */
 
 // Constructor
-ParameterInfo::ParameterInfo(LinkedList<ParameterInfoBuilder::Parameter*>* params) {
+ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
 
     this->length = params->length;
 
@@ -14,7 +14,7 @@ ParameterInfo::ParameterInfo(LinkedList<ParameterInfoBuilder::Parameter*>* param
 
     int bufferLength = 0;
 
-    ParameterInfoBuilder::Parameter* current;
+    Parameter* current;
 
     for (params->iterStart(0); params->iterHasNext(); params->iterNext()) {
 

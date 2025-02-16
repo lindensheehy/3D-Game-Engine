@@ -569,7 +569,7 @@ void WindowTextInput::writeToValue() {
 /* ----------------------------------- */
 
 // Constructor
-WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, PNG* texture) : WindowElement(posx, posy, sizex, sizey) {
+WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName) : WindowElement(posx, posy, sizex, sizey) {
     
     this->texture = texture;
 

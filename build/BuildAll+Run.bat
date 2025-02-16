@@ -43,8 +43,11 @@ g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 :: xml
 g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
+g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
+g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
 g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
 g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
+g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%XMLFile.o
 
 
 :: Build main

@@ -292,7 +292,7 @@ int main(int argc, char* argv[]) {
     // Starts up everything needed for the main loop
     init();
 
-    XML* XMLFile = new XML("../src/assets/ui/elements/textbox.xml");
+    // XML* XMLFile = new XML("../src/assets/ui/elements/textbox.xml");
     // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
 
     // Main loop

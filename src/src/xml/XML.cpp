@@ -265,6 +265,8 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
         // Step 2: Opening a new element
         if (  elementTag == OPEN  ||  elementTag == CLOSE_OPEN  ) {
 
+            // 
+
             parameterInfo = this->elementSet->matchElement(stringTag);
 
             if (parameterInfo == nullptr) {
@@ -383,5 +385,5 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 }
 
 Window* XML::buildWindow(const char* fileName) {
-
+    return nullptr;
 }

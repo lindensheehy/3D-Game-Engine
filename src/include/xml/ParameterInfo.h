@@ -6,6 +6,14 @@
 #include "xml/Core.h"
 
 
+struct Parameter {
+    const char* name;
+    ParameterType type;
+    // position is stored as id in the linked list
+};
+
+
+
 class ParameterInfo {
 
     /*
@@ -34,7 +42,7 @@ class ParameterInfo {
     private:
 
         // Constructor
-        ParameterInfo(LinkedList<ParameterInfoBuilder::Parameter*>* params);
+        ParameterInfo(LinkedList<Parameter*>* params);
 
         /*   Instance Variables   */
 
@@ -92,12 +100,6 @@ class ParameterInfoBuilder {
         void addParameter(char* name, ParameterType type, int position);
 
     private:
-
-        struct Parameter {
-            const char* name;
-            ParameterType type;
-            // position is stored as id in the linked list
-        };
 
         /*   Instance Variables   */
 
