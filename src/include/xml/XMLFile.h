@@ -5,6 +5,7 @@
 
 #include "xml/Core.h"
 #include "xml/TagSequence.h"
+#include "xml/ParameterInfo.h"
 
 #include "ui/UI.h"
 
@@ -24,6 +25,14 @@ class XMLFile {
     public:
 
         /*   Instance Variables   */
+
+        const char* fileName;
+
+        // The tag sequences. These are the preprocessed versions of the file contents
+        TagSequence* parameters;
+        TagSequence* labels;
+        TagSequence* main;
+
 
         // Constructor
         XMLFile(const char* fileName);
@@ -50,20 +59,11 @@ class XMLFile {
 
     private:
 
-        // Enum for primitive tags. These are individual bytes that will be placed into tagSequence
-
         /*   Instance Variables   */
-
-        const char* fileName;
 
         // Raw file data
         char* file;
         int fileLength;
-
-        // The tag sequence. This is the preprocessed version of the file contents
-        TagSequence* parameters;
-        TagSequence* labels;
-        TagSequence* main;
 
 
         // Empty constructor to make deep copy easier

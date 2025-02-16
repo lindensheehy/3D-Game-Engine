@@ -33,8 +33,12 @@ class XML {
         // Loads all the elements defined in "src/assets/ui/elements/"
         void initCustomElements();
 
-        // Loads the file, creates the window object, and passes it to UI
-        int loadWindow(const char* fileName);
+        // Builds an element from an XMLFile object
+        // Takes a predefined XMLFile object
+        WindowElement* buildElement(XMLFile* xmlFile);
+
+        // Builds a window from a file name
+        Window* buildWindow(const char* fileName);
         
 
     private:
@@ -45,5 +49,12 @@ class XML {
 
         // These are the currently recognized elements
         ElementSet* elementSet;
+
+        // These buffers are used for creating UI elements
+        // They are containers for the arguments that get passed to the in-code constructors
+        static const int BUFFER_SIZE = 5;
+        int* intBuffer;
+        float* floatBuffer;
+        char** stringBuffer;    // Each string is MAX_TAG_LENGTH long
 
 };

@@ -175,14 +175,6 @@ void XMLFile::setParameter(const char* tag, const char* value) {
     
 }
 
-WindowElement* XMLFile::buildElement() {
-    return nullptr;
-}
-
-Window* XMLFile::buildWindow() {
-    return nullptr;
-}
-
 void XMLFile::formatFile() {
 
     /*

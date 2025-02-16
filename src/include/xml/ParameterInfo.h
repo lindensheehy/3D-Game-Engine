@@ -29,12 +29,12 @@ class ParameterInfo {
 
         /*   Instance Functions   */
 
-        ParameterType matchParameter(const char* name);
+        ParameterType matchParameter(const char* name, int* positionOut);
 
     private:
 
         // Constructor
-        ParameterInfo(LinkedList<const char*>* names, LinkedList<ParameterType>* types);
+        ParameterInfo(LinkedList<ParameterInfoBuilder::Parameter*>* params);
 
         /*   Instance Variables   */
 
@@ -66,6 +66,9 @@ class ParameterInfoBuilder {
         Once the build() function is called, it will return a valid ParameterInfo object holding the same data
     */
 
+    // Also let ParameterInfo see into this builder
+    friend class ParameterInfo;
+
     public:
 
         // Constructor
@@ -85,17 +88,20 @@ class ParameterInfoBuilder {
 
         // Adds the parameter to the list. Takes a string and a type
         // The strings in this class are read only, so this will use the same pointer
-        void addParameter(const char* name, ParameterType type);
-        void addParameter(char* name, ParameterType type);
+        void addParameter(const char* name, ParameterType type, int position);
+        void addParameter(char* name, ParameterType type, int position);
 
     private:
 
+        struct Parameter {
+            const char* name;
+            ParameterType type;
+            // position is stored as id in the linked list
+        };
+
         /*   Instance Variables   */
 
-        // Holds the parameter names
-        LinkedList<const char*>* names;
-
-        // Holds the parameter types
-        LinkedList<ParameterType>* types;
+        // Holds the parameters
+        LinkedList<Parameter*>* params;
 
 };

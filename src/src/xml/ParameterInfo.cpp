@@ -5,38 +5,31 @@
 /* ----------------------------------- */
 
 // Constructor
-ParameterInfo::ParameterInfo(LinkedList<const char*>* names, LinkedList<ParameterType>* types) {
+ParameterInfo::ParameterInfo(LinkedList<ParameterInfoBuilder::Parameter*>* params) {
 
-    /*   Validate Length   */
-
-    int namesLength = names->length;
-    int typesLength = types->length;
-
-    if (namesLength != typesLength) return;
-
-    this->length = namesLength;
+    this->length = params->length;
 
 
     /*   Find Buffer Length   */
 
     int bufferLength = 0;
 
-    const char* currentName;
+    ParameterInfoBuilder::Parameter* current;
 
-    for (names->iterStart(0); names->iterHasNext(); names->iterNext()) {
+    for (params->iterStart(0); params->iterHasNext(); params->iterNext()) {
 
-        currentName = names->iterGetObj();
+        current = params->iterGetObj();
 
-        for (int i = 0; currentName[i] != '\0'; i++)
+        for (int i = 0; current->name[i] != '\0'; i++)
             bufferLength++;
 
     }
 
     
-    /*   Allocate And Populate Arrays For Names   */
+    /*   Allocate And Populate Arrays   */
 
     // This will be passed to the ParameterInfo constructor
-    char* buffer = new char[bufferLength];
+    this->names = new char[bufferLength];
 
     // Allocate for names info arrays
     this->namesIndexes = new int[this->length];
@@ -45,49 +38,41 @@ ParameterInfo::ParameterInfo(LinkedList<const char*>* names, LinkedList<Paramete
     // Index pointer for the next free char in the buffer
     int bufferIndex = 0;
 
-    // Stores the index of the string being handled. 
-    // Note: NOT the index in the string, but rather the index of the string in the list
-    int nameIndex = 0;
-
     // Stores the length of the current sub string
     int length;
-    
-    for (names->iterStart(0); names->iterHasNext(); names->iterNext()) {
 
-        currentName = names->iterGetObj();
+
+    // This will be passed to the ParameterInfo constructor
+    ParameterType* typesArray = new ParameterType[this->length];
+
+    // Index pointer for the next slot in the array
+    int typesArrayIndex = 0;
+    
+
+    for (int i = 0;; i++) {
+
+        current = params->getById(i);
+
+        // Break if the id (position) does not exist
+        if (current == nullptr) break;
 
         // Store starting index of the name
-        this->namesIndexes[nameIndex] = bufferIndex;
+        this->namesIndexes[i] = bufferIndex;
 
         // Copy characters over while tracking length
-        for (length = 0; currentName[length] != '\0'; length++) {
-            buffer[bufferIndex] = currentName[length];
+        for (length = 0; current->name[length] != '\0'; length++) {
+            this->names[bufferIndex] = current->name[length];
             bufferIndex++;
         }
 
         // Store the length of the name
-        this->namesLengths[nameIndex] = length;
+        this->namesLengths[i] = length;
 
-        // Move to next index
-        nameIndex++;
-
-    }
-
-
-    /*   Allocate And Populate Array For Types   */
-
-    // This will be passed to the ParameterInfo constructor
-    ParameterType* typesArray = new ParameterType[typesLength];
-
-    // Index pointer for the next slot in the array
-    int typesArrayIndex = 0;
-
-    for (types->iterStart(0); types->iterHasNext(); types->iterNext()) {
-
-        typesArray[typesArrayIndex] = types->iterGetObj();
-        typesArrayIndex++;
+        typesArray[i] = current->type;
 
     }
+
+    return;
 
 }
 
@@ -104,7 +89,7 @@ ParameterInfo::~ParameterInfo() {
 }
 
 // Instance Functions
-ParameterType ParameterInfo::matchParameter(const char* name) {
+ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) {
 
     // Start by finding the length of the requested string
     int nameLength = 0;
@@ -120,6 +105,7 @@ ParameterType ParameterInfo::matchParameter(const char* name) {
             logWrite("\" while max length is ");
             logWrite(MAX_TAG_LENGTH, true);
             
+            *positionOut = -1;
             return TYPE_NONE;
 
         }
@@ -155,12 +141,14 @@ ParameterType ParameterInfo::matchParameter(const char* name) {
 
         // If all characters match, return the corresponding type
         if (matches) {
+            *positionOut = i;
             return this->types[i];
         }
 
     }
 
     // If no match found, return TYPE_NONE
+    *positionOut = -1;
     return TYPE_NONE;
 
 }
@@ -174,8 +162,7 @@ ParameterType ParameterInfo::matchParameter(const char* name) {
 // Constructor
 ParameterInfoBuilder::ParameterInfoBuilder() {
 
-    this->names = new LinkedList<const char*>();
-    this->types = new LinkedList<ParameterType>();
+    this->params = new LinkedList<Parameter*>();
 
     return;
 
@@ -184,8 +171,10 @@ ParameterInfoBuilder::ParameterInfoBuilder() {
 // Destructor
 ParameterInfoBuilder::~ParameterInfoBuilder() {
 
-    delete this->names;
-    delete this->types;
+    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext())
+        delete this->params->iterGetObj();
+
+    delete this->params;
 
     return;
 
@@ -194,7 +183,7 @@ ParameterInfoBuilder::~ParameterInfoBuilder() {
 // Instance Functions
 ParameterInfo* ParameterInfoBuilder::build() {
 
-    ParameterInfo* ret =  new ParameterInfo(this->names, this->types);
+    ParameterInfo* ret =  new ParameterInfo(this->params);
 
     this->reset();
 
@@ -204,26 +193,32 @@ ParameterInfo* ParameterInfoBuilder::build() {
 
 void ParameterInfoBuilder::reset() {
 
-    delete this->names;
-    delete this->types;
+    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext())
+        delete this->params->iterGetObj();
 
-    this->names = new LinkedList<const char*>();
-    this->types = new LinkedList<ParameterType>();
+    delete this->params;
+
+    this->params = new LinkedList<Parameter*>();
 
 }
 
-void ParameterInfoBuilder::addParameter(const char* name, ParameterType type) {
+void ParameterInfoBuilder::addParameter(const char* name, ParameterType type, int position) {
 
     if (name == nullptr) {
         logWrite("Tried to call ParameterInfoBuilder::addParameter(const char*, int) on a nullptr!", true);
         return;
     }
 
-    this->names->pushBack(name);
-    this->types->pushBack(type);
+    Parameter* param = new Parameter();
+    param->name = name;
+    param->type = type;
+
+    this->params->pushBack(param, position);
+
+    return;
 
 }
 
-void ParameterInfoBuilder::addParameter(char* name, ParameterType type) {
-    this->addParameter( (const char*) name, type );
+void ParameterInfoBuilder::addParameter(char* name, ParameterType type, int position) {
+    this->addParameter( (const char*) name, type, position );
 }
