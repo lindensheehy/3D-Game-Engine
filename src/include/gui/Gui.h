@@ -6,6 +6,20 @@
 typedef LRESULT(CALLBACK* WindowProcFunc)(HWND, UINT, WPARAM, LPARAM);
 
 
+// Enum used to help set the mouse cursor state
+enum CursorState {
+
+    // Regular arrow cursor
+    CURSOR_ARROW,
+
+    // Clickable hand cursor
+    CURSOR_HAND,
+
+    // Edit text cursor
+    CURSOR_TEXT
+
+};
+
 class Gui {
 
     /*
@@ -45,6 +59,9 @@ class Gui {
         // Sends all the messages from Windows to the WindowProc function. Will break on a WM_PAINT message so the main loop can execute before drawing
         void handleMessages() const;
 
+        // Updates the cursor state
+        void setCursorState(CursorState cursorState);
+
     private:
 
         /*   Instance Variables   */
@@ -54,5 +71,10 @@ class Gui {
         HBITMAP hBitmap;
 
         BITMAPINFO bitmapInfo;          // Stores info to help windows translate the pixel buffer into Uint32 format
+
+        // Stores the different cursor type handles
+        HCURSOR hCursorArrow;
+        HCURSOR hCursorHand;
+        HCURSOR hCursorText;
         
 };

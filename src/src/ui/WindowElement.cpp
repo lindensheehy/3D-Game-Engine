@@ -62,22 +62,46 @@ void WindowElement::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-bool WindowElement::hitTest(int x, int y, Vec2* offset) {
+WindowElement* WindowElement::hitTest(int x, int y, Vec2* offset) {
 
-    Vec2* newPos = this->pos->copy()->add(offset);
-    Vec2* newEndPos = this->endPos->copy()->add(offset);
+    Vec2 newPos;
+    newPos.set(this->pos);
+    newPos.add(offset);
 
-    bool returnValue =  (
-        x < newEndPos->x && 
-        x > newPos->x &&
-        y < newEndPos->y && 
-        y > newPos->y 
-    );
+    Vec2 newEndPos;
+    newEndPos.set(this->endPos);
+    newEndPos.add(offset);
 
-    delete newPos;
-    delete newEndPos;
+    // Position does not lie within the element
+    if (
+        x > newEndPos.x ||
+        x < newPos.x ||
+        y > newEndPos.y ||
+        y < newPos.y 
+    ) return nullptr;
 
-    return returnValue;
+    // Return this if its interactable
+    if (
+        this->type == UIEnum::ElementType::BUTTON ||
+        this->type == UIEnum::ElementType::DRAGABLE ||
+        this->type == UIEnum::ElementType::TEXTINPUT
+    ) return this;
+
+    // Check children
+    WindowElement* current;
+    WindowElement* found = nullptr;
+    for (this->children->iterStart(0); this->children->iterHasNext(); this->children->iterNext()) {
+
+        current = this->children->iterGetObj();
+
+        found = current->hitTest(x, y, &newPos);
+
+        if (found != nullptr) break;
+
+    }
+
+    // This may be nullptr if nothing interactable was found, but thats the expected behaviour
+    return found;
 
 }
 

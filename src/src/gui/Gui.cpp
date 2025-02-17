@@ -67,6 +67,11 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
     this->handleMessages();
     this->flip();
 
+    // Load the cursor handles
+    this->hCursorArrow = LoadCursor(NULL, IDC_ARROW);
+    this->hCursorHand = LoadCursor(NULL, IDC_HAND);
+    this->hCursorText = LoadCursor(NULL, IDC_IBEAM);
+
 }
 
 // Destructor
@@ -120,6 +125,32 @@ void Gui::handleMessages() const {
 
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+
+    }
+
+    return;
+
+}
+
+void Gui::setCursorState(CursorState cursorState) {
+
+    switch (cursorState) {
+
+        case CURSOR_ARROW:
+            SetCursor(this->hCursorArrow);
+            break;
+
+        case CURSOR_HAND:
+            SetCursor(this->hCursorHand);
+            break;
+
+        case CURSOR_TEXT:
+            SetCursor(this->hCursorText);
+            break;
+
+        default:
+            logWrite("Gui::setCursorState() wants to set the cursor to an unrecognized state!", true);
+            break;
 
     }
 

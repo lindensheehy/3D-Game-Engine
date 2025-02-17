@@ -46,8 +46,11 @@ void handleInput(State* state, Camera* camera) {
 
     // Give the state to the UI to handle. 
     // If the input is handled through the UI (based on return value), the rest of this is skipped
-    bool clickedOnUi = ui->doInput(state);
-    if (clickedOnUi) return;
+    // This also updates the mouse cursor state if needed
+    CursorState cursorState;
+    bool inputHandled = ui->doInput(state, &cursorState);
+    gui->setCursorState(cursorState);
+    if (inputHandled) return;
 
     // Find distance to move based on the delta time of the frame
     float dist = camera->movementSpeed * (state->time->dt / 1000);

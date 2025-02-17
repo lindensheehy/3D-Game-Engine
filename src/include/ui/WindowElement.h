@@ -58,7 +58,9 @@ class WindowElement {
         // Offset should be the position of the parent, since all elements are stored in relative positions
         virtual void draw(Drawer* drawer, Vec2* offset);
 
-        virtual bool hitTest(int x, int y, Vec2* offset);
+        // This will return the lowest level element in the hierarchy that is interactable
+        // If the position does not hit anything interactable, this will return nullptr
+        WindowElement* hitTest(int x, int y, Vec2* offset);
 
         // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
         WindowElement* doInput(State* state, Vec2* offset);
@@ -115,9 +117,8 @@ class WindowDiv : public WindowElement {
         WindowDiv(int posx, int posy, int sizex, int sizey);
 
 
-        // Instance Function
+        /*   Instance Functions   */
 
-        // Override draw to just draw children
         void draw(Drawer* drawer, Vec2* offset) override;
 
 };
@@ -130,7 +131,9 @@ class WindowLine : public WindowElement {
         // Constructor
         WindowLine(int x1, int y1, int x2, int y2, uint32 color);
 
-        // Instance Function
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
 };
@@ -143,7 +146,9 @@ class WindowFilledRect : public WindowElement {
         // Constructor
         WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color);
 
-        // Instance Function
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
 };
@@ -156,7 +161,9 @@ class WindowOutlinedRect : public WindowElement {
         // Constructor
         WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color);
 
-        // Instance Function
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
 };
@@ -172,7 +179,9 @@ class WindowCircle : public WindowElement {
         // Destructor
         ~WindowCircle() override;
 
-        // Instance Function
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
     private:
@@ -195,7 +204,9 @@ class WindowTextStatic : public WindowElement {
         // Constructor
         WindowTextStatic(int posx, int posy, const char* text);
 
-        // Instance Function
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
     private:
@@ -227,7 +238,9 @@ class WindowTextInput : public WindowElement {
         // Destructor
         ~WindowTextInput() override;
 
-        // Instance Functions
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
@@ -306,7 +319,9 @@ class WindowButton : public WindowElement {
         // Destructor
         ~WindowButton() override;
 
-        // Instance Functions
+
+        /*   Instance Functions   */
+
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
@@ -334,6 +349,7 @@ class WindowDragable : public WindowElement {
         // Constructor
         WindowDragable(int posx, int posy, int sizex, int sizey, const char* id);
         WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag);
+
 
         /*   Instance Functions   */
 

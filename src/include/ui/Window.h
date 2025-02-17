@@ -57,7 +57,7 @@ class Window {
         void draw(Drawer* drawer);
 
         // Returns true if the click lies within the bounds of the window
-        bool hitTest(int x, int y);
+        WindowElement* hitTest(int x, int y);
 
         // Adds an element to the window
         void addElement(WindowElement* element);

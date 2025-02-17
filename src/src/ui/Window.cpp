@@ -58,14 +58,30 @@ void Window::draw(Drawer* drawer) {
 
 }
 
-bool Window::hitTest(int x, int y) {
+WindowElement* Window::hitTest(int x, int y) {
 
-    return (
-        x < this->endPos->x && 
-        x > this->pos->x &&
-        y < this->endPos->y && 
-        y > this->pos->y 
-    );
+    // Position does not lie within the window
+    if (
+        x > this->endPos->x || 
+        x < this->pos->x ||
+        y > this->endPos->y || 
+        y < this->pos->y 
+    ) return nullptr;
+
+    // Check children
+    WindowElement* current;
+    WindowElement* found = nullptr;
+    for (this->elements->iterStart(0); this->elements->iterHasNext(); this->elements->iterNext()) {
+
+        current = this->elements->iterGetObj();
+
+        found = current->hitTest(x, y, this->pos);
+
+        if (found != nullptr) break;
+
+    }
+
+    return found;
 
 }
 

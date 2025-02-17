@@ -58,7 +58,7 @@ void UI::deleteWindow(Window* window) {
 
 }
 
-bool UI::doInput(State* state) {
+bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nullptr */) {
 
     // General declarations for use in loops
     Action* currentAction;
@@ -98,50 +98,103 @@ bool UI::doInput(State* state) {
 
     }
 
+    // First I check where the mouse is relative to the UI. This is how the cursor state is updated
+    // Also store some values for the next loop
+    bool mouseIsOnUi = false;
+    Window* hoveredWindow = nullptr;
+    WindowElement* hoveredElement = nullptr;
+
+    // Loop backwards so the front windows take click priority
+    for (this->windows->iterStart(this->windows->length - 1); this->windows->iterHasNext(); this->windows->iterLast()) {
+
+        currentWindow = this->windows->iterGetObj();
+
+        // Find the element in the window that the mouse lies on (if any)
+        hoveredElement = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
+        if (hoveredElement == nullptr) continue;
+
+        // At the point, the mouse must lie on a valid element
+
+        // Store the window for the next block
+        hoveredWindow = currentWindow;
+
+        // Update cursorStateOut if needed
+        if (cursorStateOut != nullptr) {
+
+            // Cursor state depends on the type of element that is hovered
+            switch (hoveredElement->type) {
+
+                case UIEnum::ElementType::BUTTON:
+                    *cursorStateOut = CURSOR_HAND;
+                    break;
+
+                case UIEnum::ElementType::TEXTINPUT:
+                    *cursorStateOut = CURSOR_TEXT;
+                    break;
+
+                default:
+                    *cursorStateOut = CURSOR_ARROW;
+                    break;
+
+            }
+
+        }
+
+    }
+
     // Click handling
     if (state->wasLeftJustPressed()) {
 
-        WindowElement* foundElement;   // Stores the clicked element found from the window, or nullptr if none
-        bool clickLanded = false;
+        /*   Window level handling   */
 
-        for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
-
-            currentWindow = this->windows->iterGetObj();
-
-            // Skip iteration if the click lands outside the window
-            clickLanded = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
-            if (!clickLanded) continue;
+        // If a window was clicked on
+        if (hoveredWindow != nullptr) {
 
             // Since now the click must land on the window, I bring it to the front
             // The list is drawn from front to back, so the back elements appear on top
             this->windows->pop(currentWindow);
             this->windows->pushBack(currentWindow);
 
-            // Now check the children of the found window
-            foundElement = currentWindow->doInput(state);
-
-            // If nothing was found, nothing interactable was clicked, so reset lastClicked and leave
-            if (foundElement == nullptr) break;
-
-            // Otherwise, mark the found element as selected and save it for future reference
-            if (this->lastClicked != nullptr) {
-                this->lastClicked->onDeselect();
-                this->lastClicked->selected = false;
-            }
-            foundElement->selected = true;
-            this->lastClicked = foundElement;
+            // Tell the UI it has focus
+            this->hasFocus = true;
 
         }
 
-        this->hasFocus = clickLanded;
+        // If no window was clicked on
+        else {
+            this->hasFocus = false;
+        }
 
-        // If the click didnt land, remove lastClicked
-        if (!clickLanded) {
+
+        /*   Element level handling   */
+
+        // If an element was clicked on
+        if (hoveredElement != nullptr) {
+            
+            // Deselect last clicked if there is any
             if (this->lastClicked != nullptr) {
                 this->lastClicked->onDeselect();
                 this->lastClicked->selected = false;
             }
+
+            // Mark the found element as selected and save it for future reference
+            hoveredElement->selected = true;
+            this->lastClicked = hoveredElement;
+
+        }
+
+        // If no element was clicked on
+        else {
+
+            // Deselect last clicked if there is any
+            if (this->lastClicked != nullptr) {
+                this->lastClicked->onDeselect();
+                this->lastClicked->selected = false;
+            }
+
+            // Reset lastClicked
             this->lastClicked = nullptr;
+
         }
 
     }
@@ -149,6 +202,13 @@ bool UI::doInput(State* state) {
     // Cases where the rest of the code shouldnt or cant execute
     if (!this->hasFocus) return false;
     if (this->lastClicked == nullptr) return true;
+
+    // Button handling
+    if (this->lastClicked->type == UIEnum::ElementType::BUTTON) {
+
+        this->lastClicked->onInput(state);
+
+    }
 
     // Drag handling
     if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {

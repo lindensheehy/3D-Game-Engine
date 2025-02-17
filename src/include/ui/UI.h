@@ -4,6 +4,7 @@
 
 #include "geometry/Vec.h"
 #include "gui/Drawer.h"
+#include "gui/Gui.h"
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
@@ -49,8 +50,9 @@ class UI {
         // Removes a window object from the interal linked list
         void deleteWindow(Window* window);
 
-        // Checks all the ui elements against the inputs for the frame. Returns true if the click lands on a window
-        bool doInput(State* state);
+        // Updates the UI based on the input events. Returns true if the input was handled by the UI. 
+        // If a variable is passed to cursorStateOut, it will be set to the state the cursor should be in
+        bool doInput(State* state, CursorState* cursorStateOut = nullptr);
 
         // Creates a new "Transform" window linked to the given Object
         Window* createWindowTransform(Object* object);
