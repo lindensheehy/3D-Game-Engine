@@ -131,6 +131,9 @@ class Display {
 
         /*   Instance functions   */
 
+        // Updates this instance with new window dimensions
+        void updateDimensions(int width, int height);
+
         // Returns the center of the display area on the given axis relative to the whole gui window
         int middleX();
         int middleY();

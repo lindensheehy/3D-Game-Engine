@@ -187,7 +187,9 @@ void handleInput(State* state, Camera* camera) {
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-    // status of 0 means the message was matched and handled
+    // Skip manual handling if state is not instantiated yet
+    if (state == nullptr) return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
     int status = state->handleMessage(uMsg, wParam, lParam);
 
     switch (status) {
@@ -201,13 +203,48 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             doMainLoop = false;
             return 0;
 
-        // Message was not handled
-        case 2:
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+        // Message was not handled, continue the rest of the function
+        default:
+            break;
 
     }
 
-    return 0;
+    int newWidth;
+    int newHeight;
+
+    switch (uMsg) {
+
+        case WM_SIZE: {
+
+            // Skip if gui, display, or drawer are not instantiated yet
+            if (gui == nullptr) break;
+            if (display == nullptr) break;
+            if (drawer == nullptr) break;
+
+            newWidth = LOWORD(lParam);
+            newHeight = HIWORD(lParam);
+
+            // Tell display about the new dimensions
+            display->updateDimensions(newWidth, newHeight);
+
+            // Tell gui about the new dimensions
+            gui->updateDimensions(newWidth, newHeight);
+            
+            // Tell drawer about the new dimensions
+            drawer->updateDimensions(newWidth, newHeight);
+
+            // Also do default handling
+            return 0;
+
+        }
+
+        // Default handling
+        default:
+            break;
+
+    }
+
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 }
 
@@ -228,7 +265,7 @@ void init() {
     camera = new Camera();
     camera->setPreset(0);
 
-    drawer = new Drawer(gui->windowWidth, gui->windowHeight);
+    drawer = new Drawer(display);
     drawer->initFont();
     drawer->buffer = gui->buffer;
 

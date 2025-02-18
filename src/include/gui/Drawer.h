@@ -134,16 +134,19 @@ class Drawer {
         
         /*   Instance variables   */
         
+        // This is the pixel buffer
         uint32* buffer;
-        unsigned int bufferHeight, bufferWidth;
-        unsigned int bufferSize;
 
         // The depth buffer stores the distance between each pixel and the camera. this allows meshes to be drawn in any order while appearing accurately.
         float* depthBuffer;
 
+        // Buffer dimensions. the pixel and depth buffers share these
+        unsigned int bufferHeight, bufferWidth;
+        unsigned int bufferSize;
+
 
         // Constructors
-        Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput);
+        Drawer(Display* display);
         Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput);
 
         // Destructor
@@ -151,6 +154,9 @@ class Drawer {
 
 
         /*   Instance functions   */
+
+        // Takes the bounds of the display object and applies them to this drawer
+        void updateDimensions(int width, int height);
 
         // Sets all the values in the depth buffer to infinity
         void resetDepthBuffer();
@@ -246,7 +252,18 @@ class Drawer {
         // Draws a crosshair in the center of the display
         void drawCrosshair(Display* display);
 
-    private:   
+    private:
+
+        /*   Instance Variables   */
+
+        // This is the actual depth buffer that the public one points to
+        // This one is the max allowed size, so the public one just uses a portion of this
+        // It is the same pointer, but it represents a different set of data so i seperate them for clarity
+        float* fullDepthBuffer;
+        
+        // This is the maximum allowed index for the buffers
+        const unsigned int maxBufferIndex = PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT;
+
 
         /*   The following functions dont need to be called outside this class   */
 

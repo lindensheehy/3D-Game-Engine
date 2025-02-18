@@ -8,7 +8,7 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
     this->windowHeight = windowHeight;
     this->windowTitle = windowTitle;
 
-    this->buffer = new uint32[this->windowWidth * this->windowHeight] {};
+    this->buffer = new uint32[PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT] {};
 
     // Get hInstance, since I'm not using WinMain
     this->hInstance = GetModuleHandle(nullptr);
@@ -53,13 +53,13 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
 
     this->hdc = GetDC(this->hwnd);
     this->memDC = CreateCompatibleDC(this->hdc);
-    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
+    this->hBitmap = CreateCompatibleBitmap(this->hdc, PIXEL_BUFFER_WIDTH, PIXEL_BUFFER_HEIGHT);
     SelectObject(this->memDC, this->hBitmap);
 
     // Set up the BITMAPINFO structure
     this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
-    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
+    this->bitmapInfo.bmiHeader.biWidth = PIXEL_BUFFER_WIDTH;
+    this->bitmapInfo.bmiHeader.biHeight = -PIXEL_BUFFER_HEIGHT;  // Negative to indicate top-down bitmap
     this->bitmapInfo.bmiHeader.biPlanes = 1;
     this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
     this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
@@ -82,6 +82,33 @@ Gui::~Gui() {
 }
 
 // Instance functions
+void Gui::updateDimensions(int width, int height) {
+
+    if (width > PIXEL_BUFFER_WIDTH) {
+        logWrite("Drawer::updateBounds() tried to set the width beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(width);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_WIDTH, true);
+        return;
+    }
+
+    if (height > PIXEL_BUFFER_HEIGHT) {
+        logWrite("Drawer::updateBounds() tried to set the height beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(height);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_HEIGHT, true);
+        return;
+    }
+
+    this->windowWidth = width;
+    this->windowHeight = height;
+
+    return;
+
+}
+
 void Gui::flip() const {
 
     if (!this->hdc) return;
@@ -90,9 +117,9 @@ void Gui::flip() const {
     SetDIBitsToDevice(
         this->memDC, 
         0, 0, 
-        this->windowWidth, this->windowHeight, 
+        PIXEL_BUFFER_WIDTH, PIXEL_BUFFER_HEIGHT, 
         0, 0, 
-        0, this->windowHeight, 
+        0, PIXEL_BUFFER_HEIGHT, 
         this->buffer, 
         &this->bitmapInfo, 
         DIB_RGB_COLORS

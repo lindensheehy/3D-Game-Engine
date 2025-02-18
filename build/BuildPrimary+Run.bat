@@ -15,7 +15,7 @@ if not exist "%objdir%" (
 :: Build dependancies
 
 :: util
-@REM g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
+g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
 @REM g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%FileReader.o
@@ -36,16 +36,16 @@ if not exist "%objdir%" (
 @REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
 
 :: ui
-g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
-g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
-g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
-g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 :: xml
-@REM @REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
 @REM g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
 @REM g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
-@REM @REM g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
 @REM g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
 @REM g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%XMLFile.o
 

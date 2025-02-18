@@ -52,6 +52,9 @@ class Gui {
         ~Gui();
 
         /*   Instance functions   */
+
+        // Updates this instance with new window dimensions
+        void updateDimensions(int width, int height);
         
         // Tells Windows to redraw the window
         void flip() const;

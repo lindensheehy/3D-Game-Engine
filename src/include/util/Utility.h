@@ -20,6 +20,12 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 
 
+// This is the default size of any pixel mapped buffer
+// This is intended to be big enough that resizing will never require reallocations
+static constexpr int PIXEL_BUFFER_WIDTH = 1920;
+static constexpr int PIXEL_BUFFER_HEIGHT = 1080;
+
+
 
 // Swaps the values in two memory locations.
 void swap(int* var1, int* var2);

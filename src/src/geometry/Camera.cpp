@@ -355,6 +355,33 @@ Display::Display(int width, int height, int widthOffset, int heightOffset) {
 }
 
 // Instance functions
+void Display::updateDimensions(int width, int height) {
+
+    if (width > PIXEL_BUFFER_WIDTH) {
+        logWrite("Drawer::updateBounds() tried to set the width beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(width);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_WIDTH, true);
+        return;
+    }
+
+    if (height > PIXEL_BUFFER_HEIGHT) {
+        logWrite("Drawer::updateBounds() tried to set the height beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(height);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_HEIGHT, true);
+        return;
+    }
+
+    this->width = width;
+    this->height = height;
+
+    return;
+
+}
+
 int Display::middleX() {
     return ((int) (this->width / 2)) + this->widthOffset;
 }

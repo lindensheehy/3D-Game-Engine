@@ -227,17 +227,19 @@ bool PNG::setChannel(int x, int y, char channel, uint8 value) {
 /* ---------------------------- */
 
 // Constructors
-Drawer::Drawer(unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
+Drawer::Drawer(Display* display) {
 
     this->buffer = nullptr;
-    this->bufferWidth = bufferWidthInput;
-    this->bufferHeight = bufferHeightInput;
-    this->bufferSize = bufferHeightInput * bufferWidthInput;
+    this->bufferWidth = display->width;
+    this->bufferHeight = display->height;
+    this->bufferSize = display->width * display->height;
 
     // Depth buffer
-    this->depthBuffer = new float[this->bufferSize];
-    for (int i = 0; i < this->bufferSize; i++)
-        this->depthBuffer[i] = inf;
+    this->fullDepthBuffer = new float[this->maxBufferIndex];
+    for (int i = 0; i < this->maxBufferIndex; i++)
+        this->fullDepthBuffer[i] = inf;
+
+    this->depthBuffer = this->fullDepthBuffer;
 
     this->chars = nullptr;
 
@@ -251,9 +253,11 @@ Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
     this->bufferSize = bufferHeightInput * bufferWidthInput;
 
     // Depth buffer
-    this->depthBuffer = new float[this->bufferSize];
-    for (int i = 0; i < this->bufferSize; i++)
+    this->fullDepthBuffer = new float[this->maxBufferIndex];
+    for (int i = 0; i < this->maxBufferIndex; i++)
         this->depthBuffer[i] = inf;
+
+    this->depthBuffer = this->fullDepthBuffer;
 
     this->chars = nullptr;
 
@@ -262,7 +266,7 @@ Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
 // Destructor
 Drawer::~Drawer() {
 
-    delete[] this->depthBuffer;
+    delete[] this->fullDepthBuffer;
 
     for (int i = 0; i < 38; i++) {
         if (this->chars[i] != nullptr) delete[] this->chars[i];
@@ -273,10 +277,49 @@ Drawer::~Drawer() {
 }
 
 // Instance functions
+void Drawer::updateDimensions(int width, int height) {
+
+    if (width > PIXEL_BUFFER_WIDTH) {
+        logWrite("Drawer::updateBounds() tried to set the width beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(width);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_WIDTH, true);
+        return;
+    }
+
+    if (height > PIXEL_BUFFER_HEIGHT) {
+        logWrite("Drawer::updateBounds() tried to set the height beyond the max range!", true);
+        logWrite(" -> Tried to set ");
+        logWrite(height);
+        logWrite(" while the max allowed is ");
+        logWrite(PIXEL_BUFFER_HEIGHT, true);
+        return;
+    }
+
+    this->bufferWidth = width;
+    this->bufferHeight = height;
+    this->bufferSize = width * height;
+
+    return;
+
+}
+
 void Drawer::resetDepthBuffer() {
 
-    for (int i = 0; i < this->bufferSize; i++)
-        this->depthBuffer[i] = inf;
+    int index;
+
+    for (int x = 0; x < this->bufferWidth; x++) {
+        for (int y = 0; y < this->bufferHeight; y++) {
+            
+            index = this->bufferIndex(x, y);
+
+            this->depthBuffer[index] = inf;
+
+        }
+    }
+
+    return;
 
 }
 
@@ -284,7 +327,7 @@ int Drawer::bufferIndex(int x, int y) const {
 
     if (!this->inBufferRange(x, y)) return -1;
 
-    return (y * this->bufferWidth) + x;
+    return (y * PIXEL_BUFFER_WIDTH) + x;
 
 }
 
