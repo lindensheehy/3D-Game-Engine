@@ -12,7 +12,7 @@ Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default va
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
-    this->bindables = new LinkedList<Bindable>();
+    this->bindables = new LinkedList<Bindable*>();
 
     this->endPos = this->pos->copy()->add(this->size);
 
@@ -25,7 +25,7 @@ Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
-    this->bindables = new LinkedList<Bindable>();
+    this->bindables = new LinkedList<Bindable*>();
 
     this->endPos = this->pos->copy()->add(this->size);
 
@@ -38,16 +38,41 @@ Window::~Window() {
     if (this->size != nullptr) delete this->size;
     if (this->endPos != nullptr) delete this->endPos;
 
-    if (this->elements->length > 0) {
-        WindowElement* element;
-        for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
-            element = this->elements->iterGetObj();
-            if (element != nullptr) delete element;
+    // Free the child elements
+    if (this->elements != nullptr) {
+
+        if (this->elements->length > 0) {
+
+            WindowElement* element;
+
+            for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+                element = this->elements->iterGetObj();
+                if (element != nullptr) delete element;
+            }
+
         }
+
+        delete this->elements;
+
     }
 
-    if (this->elements != nullptr) delete this->elements;
-    if (this->bindables != nullptr) delete this->bindables;
+    // Free the bindables
+    if (this->bindables != nullptr) {
+
+        if (this->bindables->length > 0) {
+
+            Bindable* bindable;
+
+            for (this->bindables->iterStart(0); !this->bindables->iterIsDone(); this->bindables->iterNext()) {
+                bindable = this->bindables->iterGetObj();
+                if (bindable != nullptr) delete bindable;
+            }
+            
+        }
+
+        delete this->bindables;
+
+    }
 
     return;
 
@@ -105,8 +130,6 @@ void Window::bindButton(const char* id, Action* action) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    if (bindable == nullptr) return;
-
     // Binding logic
 
     return;
@@ -116,8 +139,6 @@ void Window::bindButton(const char* id, Action* action) {
 void Window::bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDrag) {
 
     WindowElement* bindable = this->getBindable(id);
-
-    if (bindable == nullptr) return;
 
     // Binding logic
 
@@ -129,8 +150,6 @@ void Window::bindTextInput(const char* id, int* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    if (bindable == nullptr) return;
-
     // Binding logic
 
     return;
@@ -140,8 +159,6 @@ void Window::bindTextInput(const char* id, int* boundValue) {
 void Window::bindTextInput(const char* id, float* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
-
-    if (bindable == nullptr) return;
 
     // Binding logic
 
@@ -155,7 +172,7 @@ WindowElement* Window::getBindable(const char* id) {
         this->locateBindables();
     }
 
-    Bindable current;
+    Bindable* current;
 
     for (this->bindables->iterStart(0); this->bindables->iterHasNext(); this->bindables->iterNext()) {
 
@@ -166,10 +183,10 @@ WindowElement* Window::getBindable(const char* id) {
         bool mismatch = false;
         while (true) {
 
-            if (current.id[i] == '\0') break;
+            if (current->id[i] == '\0') break;
             if (id[i] == '\0') break;
 
-            if (current.id[i] != id[i]) {
+            if (current->id[i] != id[i]) {
                 mismatch = true;
                 break;
             } 
@@ -182,8 +199,8 @@ WindowElement* Window::getBindable(const char* id) {
         if (mismatch) continue;
 
         // If both strings reached the '\0' char, they match
-        if (  current.id[i] == '\0'  &&  id[i] == '\0'  ) {
-            return current.element;
+        if (  current->id[i] == '\0'  &&  id[i] == '\0'  ) {
+            return current->element;
         }
 
     }
@@ -196,8 +213,17 @@ WindowElement* Window::getBindable(const char* id) {
 void Window::locateBindables() {
 
     if (this->bindables->length != 0) {
+
+        Bindable* bindable;
+
+        for (this->bindables->iterStart(0); !this->bindables->iterIsDone(); this->bindables->iterNext()) {
+            bindable = this->bindables->iterGetObj();
+            if (bindable != nullptr) delete bindable;
+        }
+
         delete this->bindables;
-        this->bindables = new LinkedList<Bindable>();
+        this->bindables = new LinkedList<Bindable*>();
+        
     }
 
     WindowElement* current;
@@ -223,7 +249,9 @@ void Window::locateBindables(WindowElement* root) {
     // This is the part that adds the bindable if needed
     if (root->id != nullptr) {
 
-        Bindable newBindable = {root->id, root};
+        Bindable* newBindable = new Bindable();
+        newBindable->id = root->id;
+        newBindable->element = root;
 
         this->bindables->pushBack(newBindable);
 

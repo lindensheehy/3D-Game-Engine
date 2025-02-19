@@ -89,7 +89,7 @@ class Window {
         /*   Instance Variables   */
 
         // This is an easy way to reference all the bindable elements in the window
-        LinkedList<Bindable>* bindables;
+        LinkedList<Bindable*>* bindables;
 
         // This is true when the bindables list is accurate
         // When its false, locateBindables will be called before binding anything

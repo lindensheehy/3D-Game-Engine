@@ -496,7 +496,7 @@ class LinkedList {
         // Returns the object of iterCurrent. Returns nullptr if the iterator is at null
         type iterGetObj() {
 
-            if (this->iterCurrent == nullptr) return nullptr;
+            if (this->iterCurrent == nullptr) return (type) nullptr;
 
             return this->iterCurrent->item;
 
