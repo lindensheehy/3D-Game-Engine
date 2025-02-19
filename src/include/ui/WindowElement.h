@@ -33,12 +33,14 @@ class WindowElement {
         const char* tag;
 
         LinkedList<WindowElement*>* children;
-        
-        // Holds any tags that exist within this elements children. 
-        // This includes children furher down the hierarchy (ie. will inherit any tag values AS WELL as any values in childTags)
-        LinkedList<const char*> childTags;
 
+        // This defines what type of class this is
+        // This is not 1-to-1 with the class names, but rather it defines behaviours
         UIEnum::ElementType type = UIEnum::ElementType::INVISIBLE;
+
+        // Used for binding interactable elements to other data
+        // This is nullptr for any non-interactable element
+        const char* id;
         
         bool selected = false;
 

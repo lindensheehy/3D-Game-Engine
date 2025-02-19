@@ -27,6 +27,11 @@ bool drawNormals;
 bool gravity;
 
 UI* ui;
+<<<<<<< Updated upstream
+=======
+
+WindowID windowTransform = -1;
+>>>>>>> Stashed changes
 
 bool doMainLoop = true;
 
@@ -115,7 +120,11 @@ void handleInput(State* state, Camera* camera) {
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
 
-        ui->updateWindowTransform(selectedObject);
+        if (windowTransform == -1) {
+            windowTransform = ui->createWindow("../src/assets/ui/windows/transform.xml");
+        }
+
+        ui->bindWindowTransform(windowTransform, selectedObject);
 
     }
 
@@ -124,7 +133,8 @@ void handleInput(State* state, Camera* camera) {
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
 
-        ui->destroyWindowTransform();
+        ui->destroyWindow(windowTransform);
+        windowTransform = -1;
 
     }
 
@@ -294,6 +304,11 @@ int main(int argc, char* argv[]) {
     // Starts up everything needed for the main loop
     init();
 
+<<<<<<< Updated upstream
+=======
+    // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
+
+>>>>>>> Stashed changes
     // Main loop
     while (doMainLoop) {
 

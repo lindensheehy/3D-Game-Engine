@@ -32,11 +32,11 @@ class ActionCloseWindow : public Action {
 
         /*   Instance Variables   */
 
-        UIEnum::WindowType target;
+        WindowID targetWindowId;
 
 
         // Constructor
-        ActionCloseWindow(UIEnum::WindowType targetWindow);
+        ActionCloseWindow(WindowID targetWindowId);
 
         // Destructor
         ~ActionCloseWindow();

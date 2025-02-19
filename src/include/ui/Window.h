@@ -12,10 +12,13 @@
 #include "ui/WindowElement.h"
 
 
-// Declarations because of circular dependancy (should probably be refactored)
-class Window;
-class Action;
-class UI;
+
+// Struct used in the bindables linked list
+// This maps const char* strings to WindowElement objects
+struct Bindable {
+    const char* id;
+    WindowElement* element;
+};
 
 
 class Window {
@@ -27,12 +30,6 @@ class Window {
 
     public:
 
-        /*   Pre Defined Variables   */
-
-        uint32 COLOR_BASE = Color::BACKGROUND;
-        uint32 COLOR_ACCENT = Color::ACCENT;
-        uint32 COLOR_TEXT = Color::BLACK;
-
         /*   Instance Variables   */
 
         Vec2* pos;
@@ -40,8 +37,9 @@ class Window {
         Vec2* size;
         int layer; // Front to back - 0 is at the front, 1 behind, and so on
 
-        UIEnum::WindowType type;
+        WindowID id;
 
+        // These are the elements that make up the window
         LinkedList<WindowElement*>* elements;
 
         // Constructors
@@ -62,8 +60,15 @@ class Window {
         // Adds an element to the window
         void addElement(WindowElement* element);
 
-        // Checks all the children elements against the inputs for the frame. Also brings window to front is its clicked. Returns the element clicked on, or nullptr if none
-        WindowElement* doInput(State* state);
+        // Binds the WindowButton element with the given id to the given action
+        void bindButton(const char* id, Action* action);
+
+        // Binds the WindowDragable element with the given id to the given pos and endPos
+        void bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDrag);
+
+        // Binds the WindowTextInput element with the given id to the given variable
+        void bindTextInput(const char* id, int* boundValue);
+        void bindTextInput(const char* id, float* boundValue);
 
 
         /*   Class Functions   */
@@ -78,5 +83,28 @@ class Window {
 
         // Reference to a shared Action queue
         static LinkedList<Action*>* actionQueue;
+
+    private:
+
+        /*   Instance Variables   */
+
+        // This is an easy way to reference all the bindable elements in the window
+        LinkedList<Bindable>* bindables;
+
+        // This is true when the bindables list is accurate
+        // When its false, locateBindables will be called before binding anything
+        bool bindablesUpdated;
+
+
+        /*   Instance Functions   */
+
+        // Helper function for the binding functions (bindButton, etc.)
+        WindowElement* getBindable(const char* id);
+
+        // This locates every bindable element, and stores them in this->bindables
+        void locateBindables();
+
+        // This is the recursive caller for locateBindables
+        void locateBindables(WindowElement* root);
 
 };
