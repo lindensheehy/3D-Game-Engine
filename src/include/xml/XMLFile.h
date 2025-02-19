@@ -7,7 +7,6 @@
 #include "xml/TagSequence.h"
 #include "xml/ParameterInfo.h"
 
-#include "ui/UI.h"
 
 
 class XMLFile {
@@ -53,12 +52,6 @@ class XMLFile {
         void setParameter(const char* tag, float value);
         void setParameter(const char* tag, const char* value);
 
-        // Builds the current XML file to a WindowElement instance
-        // Will fail and return null if an unrecognized token exists, like a unset parameter
-        WindowElement* buildElement();
-
-        // Same thing as buildElement, but returns a Window instead
-        Window* buildWindow();
 
     private:
 

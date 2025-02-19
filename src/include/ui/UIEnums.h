@@ -10,6 +10,10 @@
 */
 
 
+// Type def used to identify windows
+typedef unsigned int WindowID;
+
+
 namespace UIEnum {
 
     enum class ActionType {
@@ -23,11 +27,6 @@ namespace UIEnum {
         BUTTON,
         DRAGABLE,
         TEXTINPUT
-    };
-
-    enum class WindowType {
-        UNKNOWN,
-        TRANSFORM
     };
 
 }

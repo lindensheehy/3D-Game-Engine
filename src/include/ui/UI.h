@@ -13,6 +13,8 @@
 #include "ui/WindowElement.h"
 #include "ui/Window.h"
 
+#include "xml/XML.h"
+
 
 
 class UI {
@@ -27,9 +29,6 @@ class UI {
         /*   Instance Variables   */
 
         WindowElement* lastClicked; // Saves the last clicked element to be used with input
-
-        // Windows currently open. will be nullptr if theyre not open
-        Window* transformWindow;
 
         // Will be true if the last click landed within the UI
         bool hasFocus;
@@ -47,38 +46,37 @@ class UI {
         // Draws all the windows
         void draw(Drawer* drawer);
 
-        // Removes a window object from the interal linked list
-        void deleteWindow(Window* window);
-
         // Updates the UI based on the input events. Returns true if the input was handled by the UI. 
         // If a variable is passed to cursorStateOut, it will be set to the state the cursor should be in
         bool doInput(State* state, CursorState* cursorStateOut = nullptr);
 
-        // Creates a new "Transform" window linked to the given Object
-        Window* createWindowTransform(Object* object);
-        Window* createWindowTransform(Object* object, int posx, int posy);
+        // Creates a new window and returns the window identifier
+        WindowID createWindow(const char* fileName);
 
-        void updateWindowTransform(Object* object);
+        // Destroys the given window
+        void destroyWindow(WindowID windowId);
+        void destroyWindow(Window* window);
 
-        void destroyWindowTransform();
+        // Binds the window to the object. Assumes the passed id references a transform window
+        // If the passed window is not a transform window, this will log warnings and have undefined behaviour
+        void bindWindowTransform(WindowID windowId, Object* object);
 
-        /*   Class Functions   */
-
+        // Returns the next Action object from the actionQueue
         static Action* getNextAction();
+
         
-        // Returns a NEW WindowElement for the top bar of a window containing the window title, and the buttons
-        static WindowElement* createTopBar(UI* ui, Window* window, const char* title);
-
-        static WindowElement* createTextBox(int posx, int posy, int width, float* valueToWrite);
-
     private:
 
         /*   Instance Variables   */
 
+        // Contains an XML object, owned by this class
+        XML* xml;
+
         LinkedList<Window*>* windows;
 
-        // Stores the location the next window should go, changes on every window made to mitigate window overlap
+        // Stores the location the next window should go, changes on every window made to reduce window overlap
         Vec2* nextWindowPos;
+
 
         /*   Class Variables   */
 
@@ -89,9 +87,6 @@ class UI {
 
 
         /*   Instance Functions   */
-
-        // Adds a window object to the internal linked list
-        void addWindow(Window* window);
 
         // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively
         void updateNextWindowPos();

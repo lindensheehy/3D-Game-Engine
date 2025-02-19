@@ -17,6 +17,8 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
     this->children = new LinkedList<WindowElement*>();
 
+    this->id = nullptr;
+
 }
 
 WindowElement::WindowElement(Vec2* pos, Vec2* size) {
@@ -357,6 +359,8 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, const char* id) 
 
     this->type = UIEnum::ElementType::TEXTINPUT;
     this->isInteractable = true;
+
+    this->id = id;
 
 }
 

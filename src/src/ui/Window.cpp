@@ -1,7 +1,7 @@
 #include "ui/Window.h"
 
 
-// Static declarations
+// Static Declarations
 LinkedList<Action*>* Window::actionQueue;
 
 // Constructors
@@ -12,6 +12,7 @@ Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default va
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
+    this->bindables = new LinkedList<Bindable>();
 
     this->endPos = this->pos->copy()->add(this->size);
 
@@ -24,6 +25,7 @@ Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
+    this->bindables = new LinkedList<Bindable>();
 
     this->endPos = this->pos->copy()->add(this->size);
 
@@ -45,16 +47,19 @@ Window::~Window() {
     }
 
     if (this->elements != nullptr) delete this->elements;
+    if (this->bindables != nullptr) delete this->bindables;
+
+    return;
 
 }
 
+// Instance Functions
 void Window::draw(Drawer* drawer) {
-
-    drawer->drawRectFilled(this->COLOR_BASE, this->pos, this->endPos);
-    drawer->drawRect(this->COLOR_ACCENT, this->pos, this->endPos);
 
     for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext())
         this->elements->iterGetObj()->draw(drawer, this->pos);
+
+    return;
 
 }
 
@@ -88,34 +93,159 @@ WindowElement* Window::hitTest(int x, int y) {
 void Window::addElement(WindowElement* element) {
 
     this->elements->pushBack(element);
+
+    // Reset the flag. This element may be bindable
+    this->bindablesUpdated = false;
+
     return;
 
 }
 
-WindowElement* Window::doInput(State* state) {
+void Window::bindButton(const char* id, Action* action) {
 
-    bool insideWindow = this->hitTest(state->mouse->posX, state->mouse->posY);
+    WindowElement* bindable = this->getBindable(id);
 
-    // Return nullptr if the click lies outside the bounds of the window
-    if (!insideWindow) return nullptr;
+    if (bindable == nullptr) return;
 
-    WindowElement* current; // The element checked on the given iteration
-    WindowElement* found;   // Stores the element which was clicked on, or nullptr if none
+    // Binding logic
 
-    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
+    return;
 
-        current = this->elements->iterGetObj();
-        found = current->doInput(state, this->pos);
+}
 
-        if (found != nullptr) return found;
+void Window::bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDrag) {
+
+    WindowElement* bindable = this->getBindable(id);
+
+    if (bindable == nullptr) return;
+
+    // Binding logic
+
+    return;
+
+}
+
+void Window::bindTextInput(const char* id, int* boundValue) {
+
+    WindowElement* bindable = this->getBindable(id);
+
+    if (bindable == nullptr) return;
+
+    // Binding logic
+
+    return;
+
+}
+
+void Window::bindTextInput(const char* id, float* boundValue) {
+
+    WindowElement* bindable = this->getBindable(id);
+
+    if (bindable == nullptr) return;
+
+    // Binding logic
+
+    return;
+
+}
+
+WindowElement* Window::getBindable(const char* id) {
+
+    if (this->bindablesUpdated == false) {
+        this->locateBindables();
+    }
+
+    Bindable current;
+
+    for (this->bindables->iterStart(0); this->bindables->iterHasNext(); this->bindables->iterNext()) {
+
+        current = this->bindables->iterGetObj();
+
+        // Compare the id strings
+        int i = 0;
+        bool mismatch = false;
+        while (true) {
+
+            if (current.id[i] == '\0') break;
+            if (id[i] == '\0') break;
+
+            if (current.id[i] != id[i]) {
+                mismatch = true;
+                break;
+            } 
+
+            i++;
+
+        }
+
+        // If they mismatched, skip to the next bindable
+        if (mismatch) continue;
+
+        // If both strings reached the '\0' char, they match
+        if (  current.id[i] == '\0'  &&  id[i] == '\0'  ) {
+            return current.element;
+        }
 
     }
 
-    // If the loop completes, nothing inside
+    // No match found
     return nullptr;
 
 }
 
+void Window::locateBindables() {
+
+    if (this->bindables->length != 0) {
+        delete this->bindables;
+        this->bindables = new LinkedList<Bindable>();
+    }
+
+    WindowElement* current;
+
+    for (this->elements->iterStart(0); this->elements->iterHasNext(); this->elements->iterNext()) {
+
+        current = this->elements->iterGetObj();
+
+        if (current != nullptr)
+            this->locateBindables(current);
+
+    }
+
+    // Set flag
+    this->bindablesUpdated = true;
+
+    return;
+
+}
+
+void Window::locateBindables(WindowElement* root) {
+    
+    // This is the part that adds the bindable if needed
+    if (root->id != nullptr) {
+
+        Bindable newBindable = {root->id, root};
+
+        this->bindables->pushBack(newBindable);
+
+    }
+
+    // Recursive part
+    WindowElement* current;
+
+    for (root->children->iterStart(0); root->children->iterHasNext(); root->children->iterNext()) {
+
+        current = root->children->iterGetObj();
+
+        if (current != nullptr)
+            this->locateBindables(current);
+
+    }
+
+    return;
+
+}
+
+// Class Functions
 void Window::setActionQueue(LinkedList<Action*>* queue) {
     Window::actionQueue = queue;
 }

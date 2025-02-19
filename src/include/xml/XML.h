@@ -5,7 +5,8 @@
 #include "xml/XMLFile.h"
 #include "xml/ElementSet.h"
 
-#include "ui/UI.h"
+#include "ui/Window.h"
+#include "ui/WindowElement.h"
 
 
 class XML {
@@ -19,7 +20,7 @@ class XML {
     public:
 
         // Constructor
-        XML(UI* ui);
+        XML();
 
         // Destructor
         ~XML();
@@ -45,17 +46,11 @@ class XML {
 
         /*   Instance Variables   */
 
-        UI* ui;
-
         // These are the currently recognized elements
         ElementSet* elementSet;
 
-        // These buffers are used for creating UI elements
-        // They are containers for the arguments that get passed to the in-code constructors
+        // This is the length that will be used for the parameter buffers when calling buildElement()
         static constexpr int PARAMS_BUFFER_SIZE = 5;
-        int* intBuffer;
-        float* floatBuffer;
-        char** stringBuffer;    // Each string is MAX_TAG_LENGTH long
 
         // This is used to limit the recursive calls
         // If there were to be two xml files that both referenced each other, the function would recursively call endlessly

@@ -1,38 +1,71 @@
+<labels>
+
+    <background=0xFF303030/>
+
+</labels>
+
 <main>
 
-    <filledRect posx=_posx posy=_posy width=_width height=20 color=background opacity=0.8>
+    <filledRect posx=0 posy=0 sizex=300 sizey=105 color=background>
 
-        <outlinedRect posx=5 posy=5 width=_width-10 height=15 color=border thickness=2>
-            <gradient colorStart=0xFF0000 colorEnd=0x00FF00 direction=horizontal/>
-            <shadow offsetX=2 offsetY=2 blur=4 color=0x000000 opacity=0.5/>
-        </outlinedRect>
+        <topbar/>
 
-        <textInput posx=0 posy=0 width=_width tag=_tag fontSize=14 fontFamily="Arial" color=0xFFFFFF/>
+        <!-- Position Section -->
+        <div posx=20 posy=30 sizex=250 sizey=20>
 
-        <button posx=_posx+50 posy=_posy+30 width=100 height=40 label="Click Me" color=buttonColor action="submitForm">
-            <hoverEffect color=0xFF00FF scale=1.1/>
-            <pressEffect color=0x0000FF scale=0.95/>
-            <tooltip text="Click this button to submit the form" />
-        </button>
+            <textStatic posx=0 posy=7 text=Position>
 
-        <image posx=_posx+200 posy=_posy+100 src="image.jpg" width=300 height=150 opacity=0.6>
-            <frame width=10 height=10 color=0xFFAAAA opacity=0.9 />
-            <shadow offsetX=5 offsetY=5 blur=8 color=0x000000 opacity=0.4 />
-        </image>
+            <!-- X Component -->
+            <textStatic posx=75 posy=7 text=X/>
+            <textbox posx=85 posy=4 width=35 id=positionx>
 
-        <panel posx=_posx+400 posy=_posy+200 width=250 height=150 color=panelBackground>
-            <header text="Important Section" fontSize=18 fontFamily="Tahoma" color=0xFFFFFF/>
-            <scrollableArea>
-                <textBlock fontSize=12 fontFamily="Verdana" color=0x000000 text="This is some scrollable content."/>
-                <textBlock fontSize=12 fontFamily="Verdana" color=0x000000 text="More scrollable text."/>
-                <textBlock fontSize=12 fontFamily="Verdana" color=0x000000 text="Even more scrollable content."/>
-            </scrollableArea>
-        </panel>
+            <!-- Y Component -->
+            <textStatic posx=135 posy=7 text=Y/>
+            <textbox posx=145 posy=4 width=35 id=positiony>
 
-        <dropdown posx=_posx+500 posy=_posy+300 width=180 height=30 options="Option1,Option2,Option3,Option4" selected=0 color=dropdownBackground>
-            <hoverEffect color=0x00FFFF/>
-            <selectionEffect color=0xFFFF00/>
-        </dropdown>
+            <!-- Z Component -->
+            <textStatic posx=195 posy=7 text=Z/>
+            <textbox posx=205 posy=4 width=35 id=positionz>
+
+        </div>
+
+        <!-- Rotation Section -->
+        <div posx=20 posy=50 sizex=250 sizey=20>
+
+            <textStatic posx=0 posy=7 text=Rotation>
+
+            <!-- X Component -->
+            <textStatic posx=75 posy=7 text=X/>
+            <textbox posx=85 posy=4 width=35 id=rotationx>
+
+            <!-- Y Component -->
+            <textStatic posx=135 posy=7 text=Y/>
+            <textbox posx=145 posy=4 width=35 id=rotationy>
+
+            <!-- Z Component -->
+            <textStatic posx=195 posy=7 text=Z/>
+            <textbox posx=205 posy=4 width=35 id=rotationz>
+
+        </div>
+
+        <!-- Scale Section -->
+        <div posx=20 posy=70 sizex=250 sizey=20>
+
+            <textStatic posx=0 posy=7 text=Scale>
+
+            <!-- X Component -->
+            <textStatic posx=75 posy=7 text=X/>
+            <textbox posx=85 posy=4 width=35 id=scalex>
+
+            <!-- Y Component -->
+            <textStatic posx=135 posy=7 text=Y/>
+            <textbox posx=145 posy=4 width=35 id=scaley>
+
+            <!-- Z Component -->
+            <textStatic posx=195 posy=7 text=Z/>
+            <textbox posx=205 posy=4 width=35 id=scalez>
+
+        </div>
 
     </filledRect>
 

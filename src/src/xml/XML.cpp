@@ -1,9 +1,8 @@
 #include "xml/XML.h"
 
 // Constructor
-XML::XML(UI* ui) {
-
-    this->ui = ui;
+XML::XML() {
+    
     this->elementSet = new ElementSet();
 
     return;
@@ -719,5 +718,17 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 }
 
 Window* XML::buildWindow(const char* fileName) {
-    return nullptr;
+    
+    Window* ret = new Window(0, 0, 0, 0);
+
+    // Build an element from the file
+    XMLFile* file = new XMLFile(fileName);
+    WindowElement* contents = this->buildElement(file);
+    delete file;
+
+    // Add the element to the window
+    ret->addElement(contents);
+
+    return ret;
+
 }

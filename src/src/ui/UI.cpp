@@ -23,6 +23,12 @@ UI::UI() {
     Window::setActionQueue(queue);
     WindowElement::setActionQueue(queue);
 
+    this->xml = new XML();
+    this->xml->initDefaultElements();
+    this->xml->initCustomElements();
+    
+    return;
+
 }
 
 // Destructor
@@ -48,16 +54,6 @@ void UI::draw(Drawer* drawer) {
 
 }
 
-void UI::deleteWindow(Window* window) {
-
-    Window* removed = this->windows->pop(window);
-    if (removed == nullptr) return;
-    
-    if (removed->type == UIEnum::WindowType::TRANSFORM) this->transformWindow = nullptr;
-    delete removed;
-
-}
-
 bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nullptr */) {
 
     // General declarations for use in loops
@@ -80,17 +76,7 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
                 ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
 
-                // Refactor later, should use an id for scalability
-                for (this->windows->iterStart(this->windows->length - 1); !this->windows->iterIsDone(); this->windows->iterLast()) {
-
-                    currentWindow = this->windows->iterGetObj();
-
-                    if (currentWindow->type == castedAction->target) {
-                        this->deleteWindow(currentWindow);
-                        break;
-                    }
-
-                }
+                this->destroyWindow(castedAction->targetWindowId);
 
                 break;
 
@@ -99,12 +85,12 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
     }
 
     // First I check where the mouse is relative to the UI. This is how the cursor state is updated
-    // Also store some values for the next loop
+    // Also store some values to make the logic afterwards more simple
     bool mouseIsOnUi = false;
     Window* hoveredWindow = nullptr;
     WindowElement* hoveredElement = nullptr;
 
-    // Loop backwards so the front windows take click priority
+    // Loop backwards so the front windows take priority
     for (this->windows->iterStart(this->windows->length - 1); this->windows->iterHasNext(); this->windows->iterLast()) {
 
         currentWindow = this->windows->iterGetObj();
@@ -112,8 +98,6 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
         // Find the element in the window that the mouse lies on (if any)
         hoveredElement = currentWindow->hitTest(state->mouse->posX, state->mouse->posY);
         if (hoveredElement == nullptr) continue;
-
-        // At the point, the mouse must lie on a valid element
 
         // Store the window for the next block
         hoveredWindow = currentWindow;
@@ -229,140 +213,79 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
 }
 
-Window* UI::createWindowTransform(Object* object) {
+WindowID UI::createWindow(const char* fileName) {
 
-    if (this->transformWindow != nullptr) return nullptr;
+    // Build the Window object from the xml file
+    Window* newWindow = this->xml->buildWindow(fileName);
 
-    Window* ret = this->createWindowTransform(object, this->nextWindowPos->x, this->nextWindowPos->y);
-    this->updateNextWindowPos();
+    // The created window will have exaclty one parent element, and this element will be the size of the window
+    WindowElement* parentElement = newWindow->elements->getFirst();
 
-    this->transformWindow = ret;
-    return ret;
+    // Tell the window how big it is
+    newWindow->size->set(parentElement->size);
+    newWindow->endPos->set(parentElement->size);
+
+    // Place the window at the nextWindowPos
+    newWindow->pos->set(this->nextWindowPos);
+    newWindow->endPos->add(this->nextWindowPos);
+
+    return newWindow->id;
 
 }
 
-Window* UI::createWindowTransform(Object* object, int posx, int posy) {
+void UI::destroyWindow(WindowID windowId) {
 
-    if (this->transformWindow != nullptr) return nullptr;
-
-    bool nullObj = object == nullptr;
-
-    Vec2* windowPos = new Vec2(posx, posy);
-    Vec2* windowSize = this->TransformWindowSize->copy();
-    Window* newWindow = new Window(windowPos, windowSize);
-    newWindow->type = UIEnum::WindowType::TRANSFORM;
-
-    WindowElement* newElement;
-
-    // Top bar
-    newWindow->addElement( createTopBar(this, newWindow, "Transform") );
-
-    // Position
-    newElement = new WindowDiv(20, 30, 250, 20);
-    newElement->addChild( new WindowTextStatic(0, 7, "Position") );
-
-    newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
-
-    if (nullObj) {
-        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
+    if (windowId == -1) {
+        logWrite("UI::destroyWindow(WindowID) Tried to destroy an invalid window!", true);
+        return;
     }
 
-    else {
-        newElement->addChild( createTextBox(85, 4, 35, &(object->pos->x)) );
-        newElement->addChild( createTextBox(145, 4, 35, &(object->pos->y)) );
-        newElement->addChild( createTextBox(205, 4, 35, &(object->pos->z)) );
+    Window* current;
+
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
+
+        current = this->windows->iterGetObj();
+
+        if (current->id == windowId) {
+            this->destroyWindow(current);
+            break;
+        }
+
     }
 
-    newWindow->addElement(newElement);
+    return;
 
-    // Rotation
-    newElement = new WindowDiv(20, 50, 250, 20);
-    newElement->addChild( new WindowTextStatic(0, 7, "Rotation") );
+}
 
-    newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
+void UI::destroyWindow(Window* window) {
 
-    if (nullObj) {
-        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
+    if (window == nullptr) {
+        logWrite("UI::destroyWindow(Window*) was called on a nullptr!", true);
+        return;
     }
 
-    else {
-        newElement->addChild( UI::createTextBox(85, 4, 35, &(object->rotation->x)) );
-        newElement->addChild( UI::createTextBox(145, 4, 35, &(object->rotation->y)) );
-        newElement->addChild( UI::createTextBox(205, 4, 35, &(object->rotation->z)) );
-    }
-
-    newWindow->addElement(newElement);
-
-    // Scale
-    newElement = new WindowDiv(20, 70, 250, 20);
-    newElement->addChild( new WindowTextStatic(0, 7, "Scale") );
-
-    newElement->addChild( new WindowTextStatic(75, 7, "X") );
-    newElement->addChild( new WindowTextStatic(135, 7, "Y") );
-    newElement->addChild( new WindowTextStatic(195, 7, "Z") );
-
-    if (nullObj) {
-        newElement->addChild( new WindowOutlinedRect(85, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(145, 4, 35, 12, Color::ACCENT) );
-        newElement->addChild( new WindowOutlinedRect(205, 4, 35, 12, Color::ACCENT) );
-    }
-
-    else {
-        newElement->addChild( UI::createTextBox(85, 4, 35, &(object->scale->x)) );
-        newElement->addChild( UI::createTextBox(145, 4, 35, &(object->scale->y)) );
-        newElement->addChild( UI::createTextBox(205, 4, 35, &(object->scale->z)) ); 
-    }
+    Window* removed = this->windows->pop(window);
+    if (removed == nullptr) return;
     
-    newWindow->addElement(newElement);
-
-    this->addWindow(newWindow);
-
-    this->transformWindow = newWindow;
-    return newWindow;
+    delete removed;
 
 }
 
-void UI::updateWindowTransform(Object* object) {
+void UI::bindWindowTransform(WindowID windowId, Object* object) {
 
-    if (this->transformWindow == nullptr) {
-        this->createWindowTransform(object, 100, 100);
+    if (windowId == -1) {
+        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on an invalid WindowID!", true);
+        return;
     }
 
-    int posx = this->transformWindow->pos->x;
-    int posy = this->transformWindow->pos->y;
+    if (object == nullptr) {
+        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on a nullptr!", true);
+        return;
+    }
 
-    this->destroyWindowTransform();
-    this->createWindowTransform(object, posx, posy);
+    // Binding logic
 
-}
-
-void UI::destroyWindowTransform() {
-
-    if (this->transformWindow != nullptr) this->deleteWindow(this->transformWindow);
-    this->transformWindow = nullptr;
-
-}
-
-void UI::addWindow(Window* window) {
-
-    this->windows->pushBack(window);
-
-}
-
-void UI::updateNextWindowPos() {
-    
-    this->nextWindowPos->add(50, 50);
-
-    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
-    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
+    return;
 
 }
 
@@ -374,52 +297,11 @@ Action* UI::getNextAction() {
 
 }
 
-// Some high level constructors for specific elements
-WindowElement* UI::createTopBar(UI* ui, Window* window, const char* title) {
-
-    // Divider for all the elements
-    WindowElement* holder = new WindowDiv(1, 1, window->size->x - 1, 18);
-
-    // Title plus dragable tab
-    WindowElement* dragRect = new WindowDragable(0, 0, window->size->x - 19, 18, window->pos, window->endPos);
-    WindowElement* topBarColor = new WindowFilledRect(0, 0, window->size->x - 19, 18, Color::LIGHTER);
-    WindowElement* titleElement = new WindowTextStatic(6, 6, title);
+void UI::updateNextWindowPos() {
     
-    dragRect->addChild(topBarColor);
-    dragRect->addChild(titleElement);
+    this->nextWindowPos->add(50, 50);
 
-    // The parent element for the close tab button
-    WindowElement* CloseButtonElement = new WindowButton(
-        window->size->x - 19, 0, 18, 18, 
-        new ActionCloseWindow(window->type)
-    );
-    CloseButtonElement->color = Color::RED;
-
-    // Two white lines to form the X on the close tab button
-    WindowElement* line1 = new WindowLine(3, 2, 13, 13, Color::WHITE);
-    WindowElement* line2 = new WindowLine(15, 2, -13, 13, Color::WHITE);
-
-    // Add the lines to the button
-    CloseButtonElement->addChild(line1);
-    CloseButtonElement->addChild(line2);
-
-    holder->addChild(dragRect);
-    holder->addChild(CloseButtonElement);
-
-    return holder;
-
-}
-
-WindowElement* UI::createTextBox(int posx, int posy, int width, float* valueToWrite) {
-
-    WindowElement* newElement = new WindowFilledRect(posx, posy, width, 12, Color::DARKER);
-
-    newElement->addChild( new WindowOutlinedRect(0, 0, width, 12, Color::ACCENT) );
-
-    WindowTextInput* textInput = new WindowTextInput(0, 0, 35, "placeholder");
-    textInput->bind(valueToWrite);
-    newElement->addChild( textInput );
-
-    return newElement;
+    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
+    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
 
 }

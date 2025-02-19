@@ -26,9 +26,8 @@ bool drawNormals;
 bool gravity;
 
 UI* ui;
-XML* xml;
 
-WindowElement* textbox;
+WindowID windowTransform = -1;
 
 bool doMainLoop = true;
 
@@ -120,7 +119,11 @@ void handleInput(State* state, Camera* camera) {
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
 
-        ui->updateWindowTransform(selectedObject);
+        if (windowTransform == -1) {
+            windowTransform = ui->createWindow("../src/assets/ui/windows/transform.xml");
+        }
+
+        ui->bindWindowTransform(windowTransform, selectedObject);
 
     }
 
@@ -129,7 +132,8 @@ void handleInput(State* state, Camera* camera) {
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
 
-        ui->destroyWindowTransform();
+        ui->destroyWindow(windowTransform);
+        windowTransform = -1;
 
     }
 
@@ -329,26 +333,12 @@ void init() {
 
     ui = new UI();
 
-    xml = new XML(ui);
-    xml->initDefaultElements();
-
 }
 
 int main(int argc, char* argv[]) {
 
     // Starts up everything needed for the main loop
     init();
-
-    XMLFile* xmlFile = new XMLFile("../src/assets/ui/elements/textbox.xml");
-
-    xmlFile->log();
-
-    xmlFile->setParameter("_posx", 0);
-    xmlFile->setParameter("_posy", 0);
-    xmlFile->setParameter("_width", 60);
-    xmlFile->setParameter("_tag", "testTag");
-
-    textbox = xml->buildElement(xmlFile);
 
     // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
 
