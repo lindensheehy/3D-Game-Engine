@@ -237,23 +237,14 @@ WindowID UI::createWindow(const char* fileName) {
 
 void UI::destroyWindow(WindowID windowId) {
 
-    if (windowId == -1) {
+    Window* window = this->getWindowById(windowId);
+
+    if (window == nullptr) {
         logWrite("UI::destroyWindow(WindowID) Tried to destroy an invalid window!", true);
         return;
     }
 
-    Window* current;
-
-    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
-
-        current = this->windows->iterGetObj();
-
-        if (current->id == windowId) {
-            this->destroyWindow(current);
-            break;
-        }
-
-    }
+    this->destroyWindow(window);
 
     return;
 
@@ -273,19 +264,66 @@ void UI::destroyWindow(Window* window) {
 
 }
 
-void UI::bindWindowTransform(WindowID windowId, Object* object) {
+Window* UI::getWindowById(WindowID windowId) {
 
-    if (windowId == -1) {
-        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on an invalid WindowID!", true);
-        return;
+    if (windowId == -1) return nullptr;
+
+    Window* current;
+
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
+
+        current = this->windows->iterGetObj();
+
+        if (current->id == windowId) return current;
+
     }
+
+    // Not found
+    return nullptr;
+
+}
+
+void UI::validateWindowId(WindowID* windowId) {
+
+    Window* window = this->getWindowById(*windowId);
+
+    // Set the arg to -1 if it was not found
+    if (window == nullptr) (*windowId) = -1;
+
+}
+
+void UI::bindWindowTransform(WindowID windowId, Object* object) {
 
     if (object == nullptr) {
         logWrite("UI::bindWindowTransform(WindowID, Object*) was called on a nullptr!", true);
         return;
     }
 
-    // Binding logic
+    Window* window = this->getWindowById(windowId);
+
+    if (window == nullptr) {
+        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on an invalid WindowID!", true);
+        return;
+    }
+
+    /*   Binding logic   */
+    window->bindButton("WindowCloseButton", new ActionCloseWindow(windowId));
+    window->bindDragable("WindowDragBar", window->pos, window->endPos);
+
+    // Position
+    window->bindTextInput("positionx", &(object->pos->x));
+    window->bindTextInput("positiony", &(object->pos->y));
+    window->bindTextInput("positionz", &(object->pos->z));
+
+    // Rotation
+    window->bindTextInput("rotationx", &(object->rotation->x));
+    window->bindTextInput("rotationy", &(object->rotation->y));
+    window->bindTextInput("rotationz", &(object->rotation->z));
+
+    // Scale
+    window->bindTextInput("scalex", &(object->scale->x));
+    window->bindTextInput("scaley", &(object->scale->y));
+    window->bindTextInput("scalez", &(object->scale->z));
 
     return;
 

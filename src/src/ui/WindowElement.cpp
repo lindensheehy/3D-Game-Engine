@@ -54,6 +54,10 @@ WindowElement::~WindowElement() {
 
     }
 
+    // All ids should be heap allocated. This will crash otherwise
+    // Then again, WindowElement objects should never be created directly without the help of XML
+    if (this->id != nullptr) delete id;
+
 }
 
 // Instance Functions
@@ -316,12 +320,21 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------------- */
 
 // Constructor
-WindowTextStatic::WindowTextStatic(int posx, int posy, const char* text) : WindowElement(posx, posy, 0, 0) {
+WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
     this->color = Color::WHITE;
 
     this->type = UIEnum::ElementType::VISUAL;
+
+}
+
+// Destructor
+WindowTextStatic::~WindowTextStatic() {
+
+    // this->text should be heap allocated. This will crash otherwise
+    // Then again, WindowElement objects should never be created directly without the help of XML
+    if (this->text != nullptr) delete this->text;
 
 }
 
@@ -344,7 +357,7 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 /* ------------------------------------- */
 
 // Constructor
-WindowTextInput::WindowTextInput(int posx, int posy, int width, const char* id) : WindowElement(posx, posy, width, 12) {
+WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
@@ -597,11 +610,26 @@ void WindowTextInput::writeToValue() {
 /* ----------------------------------- */
 
 // Constructor
-WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName) : WindowElement(posx, posy, sizex, sizey) {
+WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, char* fileName) : WindowElement(posx, posy, sizex, sizey) {
     
     this->texture = texture;
 
     this->type = UIEnum::ElementType::VISUAL;
+
+    /*   Insert PNG handling here   */
+    this->texture = nullptr;
+    /*   Insert PNG handling here   */
+
+    // fileName should be heap allocated. This will crash otherwise
+    // Then again, WindowElement objects should never be created directly without the help of XML
+    delete fileName;
+
+}
+
+// Destructor
+WindowTexture::~WindowTexture() {
+
+    if (this->texture != nullptr) delete this->texture;
 
 }
 
@@ -624,7 +652,7 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------- */
 
 // Constructors
-WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, const char* id) : WindowElement(posx, posy, sizex, sizey) {
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
     
     this->type = UIEnum::ElementType::BUTTON;
     this->isInteractable = true;
@@ -678,6 +706,15 @@ void WindowButton::onInput(State* state) {
 
 }
 
+void WindowButton::bind(Action* action) {
+
+    // Free old action if there was one
+    if (this->action != nullptr) delete this->action;
+
+    this->action = action;
+
+}
+
 
 
 /* ------------------------------------ */
@@ -685,7 +722,7 @@ void WindowButton::onInput(State* state) {
 /* ------------------------------------ */
 
 // Constructors
-WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, const char* id) : WindowElement(posx, posy, sizex, sizey) {
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = UIEnum::ElementType::DRAGABLE;
     this->isInteractable = true;
@@ -733,5 +770,12 @@ void WindowDragable::onInput(State* state) {
 
     this->posToDrag->add(dx, dy);
     this->endPosToDrag->add(dx, dy);
+
+}
+
+void WindowDragable::bind(Vec2* posToDrag, Vec2* endPosToDrag) {
+
+    this->posToDrag = posToDrag;
+    this->endPosToDrag = endPosToDrag;
 
 }

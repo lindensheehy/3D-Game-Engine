@@ -32,8 +32,12 @@
         <!-- Close Window Button -->
         <button posx=_buttonPos posy=0 sizex=18 sizey=18 id=WindowCloseButton>
 
-            <line x1=3 y1=2 x2=13 y2=13 color=white/>
-            <line x1=15 y1=2 x2=-13 y2=13 color=white/>
+            <filledRect posx=0 posy=0 sizex=18 sizey=18 color=red>
+
+                <line x1=3 y1=2 x2=13 y2=13 color=white/>
+                <line x1=15 y1=2 x2=-13 y2=13 color=white/>
+
+            </filledRect>
 
         </button>
 

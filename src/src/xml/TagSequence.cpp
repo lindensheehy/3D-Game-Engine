@@ -38,8 +38,7 @@ TagSequence* TagSequence::copy() {
     ret->stringTagCount = this->stringTagCount;
     ret->primTagCount = this->primTagCount;
 
-    ret->file = new char[this->fileLength];
-    memcpy(ret->file, this->file, this->fileLength);
+    ret->file = this->file;
     ret->fileLength = this->fileLength;
 
     ret->fileName = this->fileName;

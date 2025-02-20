@@ -40,7 +40,7 @@ class WindowElement {
 
         // Used for binding interactable elements to other data
         // This is nullptr for any non-interactable element
-        const char* id;
+        char* id;
         
         bool selected = false;
 
@@ -204,7 +204,10 @@ class WindowTextStatic : public WindowElement {
     public:
 
         // Constructor
-        WindowTextStatic(int posx, int posy, const char* text);
+        WindowTextStatic(int posx, int posy, char* text);
+
+        // Destructor
+        ~WindowTextStatic() override;
 
 
         /*   Instance Functions   */
@@ -213,7 +216,7 @@ class WindowTextStatic : public WindowElement {
 
     private:
 
-        const char* text;
+        char* text;
 
 };
 
@@ -235,7 +238,7 @@ class WindowTextInput : public WindowElement {
         };
 
         // Constructor
-        WindowTextInput(int posx, int posy, int width, const char* id);
+        WindowTextInput(int posx, int posy, int width, char* id);
 
         // Destructor
         ~WindowTextInput() override;
@@ -255,8 +258,6 @@ class WindowTextInput : public WindowElement {
 
         // Removes the binding to the variable
         void unbind();
-
-        void hideCursor();
 
     private:
 
@@ -287,7 +288,10 @@ class WindowTexture : public WindowElement {
     public:
 
         // Constructor
-        WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName);
+        WindowTexture(int posx, int posy, int sizex, int sizey, char* fileName);
+
+        // Destructor
+        ~WindowTexture() override;
 
 
         /*   Instance Functions   */
@@ -315,7 +319,7 @@ class WindowButton : public WindowElement {
     public:
 
         // Constructor
-        WindowButton(int posx, int posy, int sizex, int sizey, const char* id);
+        WindowButton(int posx, int posy, int sizex, int sizey, char* id);
         WindowButton(int posx, int posy, int sizex, int sizey, Action* action);
 
         // Destructor
@@ -327,6 +331,8 @@ class WindowButton : public WindowElement {
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
+
+        void bind(Action* action);
 
     private:
 
@@ -346,7 +352,7 @@ class WindowDragable : public WindowElement {
     public:
 
         // Constructor
-        WindowDragable(int posx, int posy, int sizex, int sizey, const char* id);
+        WindowDragable(int posx, int posy, int sizex, int sizey, char* id);
         WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag);
 
 
@@ -355,6 +361,8 @@ class WindowDragable : public WindowElement {
         void draw(Drawer* drawer, Vec2* offset) override;
 
         void onInput(State* state) override;
+
+        void bind(Vec2* posToDrag, Vec2* endPosToDrag);
 
     private:
 

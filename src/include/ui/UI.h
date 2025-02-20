@@ -57,6 +57,13 @@ class UI {
         void destroyWindow(WindowID windowId);
         void destroyWindow(Window* window);
 
+        // Returns the Window object with the given id
+        Window* getWindowById(WindowID windowId);
+
+        // This ensures that a Window object with the given id exists
+        // Will set the value to -1 if not
+        void validateWindowId(WindowID* windowId);
+
         // Binds the window to the object. Assumes the passed id references a transform window
         // If the passed window is not a transform window, this will log warnings and have undefined behaviour
         void bindWindowTransform(WindowID windowId, Object* object);

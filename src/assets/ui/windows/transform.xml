@@ -11,7 +11,7 @@
 
         <outlinedRect posx=0 posy=0 sizex=300 sizey=105 color=border/>
 
-        <topbar width=300 buttonPos=280 title=Transform/>
+        <topbar width=300 buttonPos=281 title=Transform/>
 
         <!-- Position Section -->
         <div posx=20 posy=30 sizex=250 sizey=20>

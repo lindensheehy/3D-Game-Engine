@@ -130,7 +130,12 @@ void Window::bindButton(const char* id, Action* action) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    // Binding logic
+    // First make sure its actually a WindowButton
+    if (bindable->type != UIEnum::ElementType::BUTTON) return;
+
+    WindowButton* casted = (WindowButton*) bindable;
+
+    casted->bind(action);
 
     return;
 
@@ -140,7 +145,12 @@ void Window::bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDrag) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    // Binding logic
+    // First make sure its actually a WindowDragable
+    if (bindable->type != UIEnum::ElementType::DRAGABLE) return;
+
+    WindowDragable* casted = (WindowDragable*) bindable;
+
+    casted->bind(posToDrag, endPosToDrag);
 
     return;
 
@@ -150,7 +160,12 @@ void Window::bindTextInput(const char* id, int* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    // Binding logic
+    // First make sure its actually a WindowDragable
+    if (bindable->type != UIEnum::ElementType::TEXTINPUT) return;
+
+    WindowTextInput* casted = (WindowTextInput*) bindable;
+
+    casted->bind(boundValue);
 
     return;
 
@@ -160,7 +175,12 @@ void Window::bindTextInput(const char* id, float* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
 
-    // Binding logic
+    // First make sure its actually a WindowDragable
+    if (bindable->type != UIEnum::ElementType::TEXTINPUT) return;
+
+    WindowTextInput* casted = (WindowTextInput*) bindable;
+
+    casted->bind(boundValue);
 
     return;
 

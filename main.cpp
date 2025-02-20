@@ -119,6 +119,8 @@ void handleInput(State* state, Camera* camera) {
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
 
+        ui->validateWindowId(&windowTransform);
+
         if (windowTransform == -1) {
             windowTransform = ui->createWindow("../src/assets/ui/windows/transform.xml");
         }
