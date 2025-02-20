@@ -663,12 +663,11 @@ void TagSequence::populatePrimTags() {
     // In this context, this just helps to track tagIndex
     bool inTag = false;
 
-    // Here i need to know the previous char in some contexts
-    char prevChar;
+    // Here i need to know the last two chars in some cases
+    char prevChar = '\0';
 
     // Flags for if each primitive tag is open or closed in the current context
     bool inParams = false;
-    bool inChildren = false;
 
     // Used for checking previously set state. This is needed in some contexts
     PrimitiveTagState state;
@@ -737,11 +736,25 @@ void TagSequence::populatePrimTags() {
                         this->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
                         inParams = false;
                     }
+
+                    // Check the last ELEMENT tag if possible
+                    if (tagIndex > 0) {
+                        
+                        state = this->getPrimitiveTag(tagIndex - 1, ELEMENT);
+
+                        // Skip the rest of the block if the last ELEMENT tag was a closing tag
+                        if (  state == CLOSE  ||  state == DOUBLE_CLOSE  ) break;
+
+                    }
                     
                     // OPEN CHILDREN if the element was not self closing
                     if (prevChar != '/') {
                         this->setPrimitiveTag(tagIndex, CHILDREN, OPEN);
-                        inChildren = true;
+                    }
+
+                    // Otherwise, set CHILDREN to NONE (it may have been set previously)
+                    else {
+                        this->setPrimitiveTag(tagIndex, CHILDREN, NONE);
                     }
 
                     break;
@@ -790,15 +803,15 @@ void TagSequence::populatePrimTags() {
                         this->setPrimitiveTag(tagIndex, ELEMENT, CLOSE);
                     }
 
-                    // CLOSE other types if needed
+                    // CLOSE PARAMS if needed
                     if (inParams) {
                         this->setPrimitiveTag(tagIndex, PARAMS, CLOSE);
                         inParams = false;
                     }
 
-                    if (inChildren) {
+                    // CLOSE CHILDREN if this is an actual closing tag (substring "</")
+                    if (prevChar == '<') {
                         this->setPrimitiveTag(tagIndex, CHILDREN, CLOSE);
-                        inChildren = false;
                     }
 
                     break;

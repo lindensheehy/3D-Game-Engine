@@ -3,7 +3,7 @@
     <int>_posx</int>
     <int>_posy</int>
     <int>_width</int>
-    <string>_tag</string>
+    <string>_id</string>
 
 </parameters>
 
@@ -19,7 +19,7 @@
     <filledRect posx=_posx posy=_posy sizex=_width sizey=12 color=background>
 
         <outlinedRect posx=0 posy=0 sizex=_width sizey=12 color=border/>
-        <textInput posx=0 posy=0 width=_width id=_tag/>
+        <textInput posx=0 posy=0 width=_width id=_id/>
 
     </filledRect>
 

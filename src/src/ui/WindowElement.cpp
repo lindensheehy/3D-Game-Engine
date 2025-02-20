@@ -660,8 +660,7 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
-
-    drawer->drawRectFilled(this->color, newOffset, newEndPos);
+    
     this->drawChildren(drawer, newOffset);
 
     delete newOffset;
@@ -726,6 +725,8 @@ void WindowDragable::draw(Drawer* drawer, Vec2* offset) {
 }
 
 void WindowDragable::onInput(State* state) {
+
+    if (this->posToDrag == nullptr || this->endPosToDrag == nullptr) return;
 
     int dx = state->deltaMousePosX();
     int dy = state->deltaMousePosY();

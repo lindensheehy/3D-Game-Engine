@@ -52,6 +52,9 @@ class XMLFile {
         void setParameter(const char* tag, float value);
         void setParameter(const char* tag, const char* value);
 
+        // Similar to setParameter, but it doesnt add the underscore prefix
+        void setLabel(const char* tag, const char* value);
+
 
     private:
 

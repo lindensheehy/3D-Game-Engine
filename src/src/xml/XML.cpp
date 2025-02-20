@@ -95,6 +95,7 @@ void XML::initDefaultElements() {
     builder->addParameter("posx", TYPE_INT, 0);
     builder->addParameter("posy", TYPE_INT, 1);
     builder->addParameter("width", TYPE_INT, 2);
+    builder->addParameter("id", TYPE_STRING, 3);
 
     parameterInfo = builder->build();
     this->elementSet->addDefaultElement("textInput", parameterInfo, ElementSet::TEXT_INPUT);
@@ -105,7 +106,7 @@ void XML::initDefaultElements() {
     builder->addParameter("posy", TYPE_INT, 1);
     builder->addParameter("sizex", TYPE_INT, 2);
     builder->addParameter("sizey", TYPE_INT, 3);
-    builder->addParameter("color", TYPE_INT, 4);
+    builder->addParameter("fileName", TYPE_INT, 4);
 
     parameterInfo = builder->build();
     this->elementSet->addDefaultElement("texture", parameterInfo, ElementSet::TEXTURE);
@@ -119,7 +120,7 @@ void XML::initDefaultElements() {
     builder->addParameter("id", TYPE_STRING, 4);
 
     parameterInfo = builder->build();
-    this->elementSet->addDefaultElement("texture", parameterInfo, ElementSet::TEXTURE);
+    this->elementSet->addDefaultElement("button", parameterInfo, ElementSet::BUTTON);
 
 
     /*   WindowDragable   */
@@ -127,10 +128,10 @@ void XML::initDefaultElements() {
     builder->addParameter("posy", TYPE_INT, 1);
     builder->addParameter("sizex", TYPE_INT, 2);
     builder->addParameter("sizey", TYPE_INT, 3);
-    builder->addParameter("color", TYPE_INT, 4);
+    builder->addParameter("id", TYPE_STRING, 4);
 
     parameterInfo = builder->build();
-    this->elementSet->addDefaultElement("texture", parameterInfo, ElementSet::TEXTURE);
+    this->elementSet->addDefaultElement("dragable", parameterInfo, ElementSet::DRAGABLE);
 
 
     // Clean up
@@ -141,6 +142,41 @@ void XML::initDefaultElements() {
 }
 
 void XML::initCustomElements() {
+
+    ParameterInfoBuilder* builder = new ParameterInfoBuilder();
+    ParameterInfo* parameterInfo;
+    XMLFile* xmlFile;
+    
+    /*                      --- REPLACE THIS LATER ---                          */
+    /*   THIS SHOULD DYNAMICALLY USE EVERY XML FILE IN src/assets/ui/elements   */
+
+    // textbox
+    builder->addParameter("posx", TYPE_INT, 0);
+    builder->addParameter("posy", TYPE_INT, 1);
+    builder->addParameter("width", TYPE_INT, 2);
+    builder->addParameter("id", TYPE_STRING, 3);
+
+    parameterInfo = builder->build();
+
+    xmlFile = new XMLFile("../src/assets/ui/elements/textbox.xml");
+
+    this->elementSet->addCustomElement("textbox", parameterInfo, xmlFile);
+
+    // topbar
+    builder->addParameter("width", TYPE_INT, 0);
+    builder->addParameter("buttonPos", TYPE_INT, 1);
+    builder->addParameter("title", TYPE_STRING, 2);
+
+    parameterInfo = builder->build();
+
+    xmlFile = new XMLFile("../src/assets/ui/elements/topbar.xml");
+
+    this->elementSet->addCustomElement("topbar", parameterInfo, xmlFile);
+
+    // Clean up
+    delete builder;
+
+    return;
 
 }
 
@@ -343,49 +379,39 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                 goto end;
             }
 
+            bool handled = false;
+
             switch (vars.elementInfo->type) {
+
+                /*
+                    These elements are easier, they dont require any more logic to handle
+                */
 
                 // Default elements defined in code
                 case ElementSet::DIV:
                     vars.currentElement = new WindowDiv(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
+                    handled = true;
                     break;
 
                 case ElementSet::LINE:
                     vars.currentElement = new WindowLine(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    handled = true;
                     break;
 
                 case ElementSet::FILLED_RECT:
                     vars.currentElement = new WindowFilledRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    handled = true;
                     break;
 
                 case ElementSet::OUTLINED_RECT:
                     vars.currentElement = new WindowOutlinedRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    handled = true;
                     break;
 
                 case ElementSet::CIRCLE:
                     vars.currentElement = new WindowCircle(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
+                    handled = true;
                     break;
-
-                case ElementSet::TEXT_STATIC:
-                    vars.currentElement = new WindowTextStatic(vars.intBuffer[0], vars.intBuffer[1], vars.stringBuffer[2]);
-                    break;
-
-                case ElementSet::TEXT_INPUT:
-                    vars.currentElement = new WindowTextInput(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.stringBuffer[3]);
-                    break;
-
-                case ElementSet::TEXTURE:
-                    vars.currentElement = new WindowTexture(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.stringBuffer[4]);
-                    break;
-
-                case ElementSet::BUTTON:
-                    vars.currentElement = new WindowButton(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.stringBuffer[4]);
-                    break;
-
-                case ElementSet::DRAGABLE:
-                    vars.currentElement = new WindowDragable(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.stringBuffer[4]);
-                    break;
-                
 
                 // This is for elements defined in other xml files
                 case ElementSet::CUSTOM: {
@@ -396,21 +422,150 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                     // Free the XMLFile that was used to create this element
                     delete vars.elementXMLFile;
 
+                    handled = true;
                     break; 
 
                 }
 
-
-                // Should never happen
-                default:
+                // Any other elements are handled in the next block
+                default:    
                     break;
 
+            }
+
+            if (!handled) {
+
+                /*
+                    The next elements need a new copy of the string argument
+                    Otherwise it will be free'd after being passed, causing undefined behaviour
+                    it would also reuse the same string pointers between constructor calls, which would just not work without copying
+                */
+
+                char* copy = nullptr;
+                int length = 0;
+
+                switch (vars.elementInfo->type) {
+
+                    case ElementSet::TEXT_STATIC: {
+                        
+                        // Find the length of the string argument
+                        for (; vars.stringBuffer[2][length] != '\0'; length++) {}
+
+                        // Copy it into a new buffer (including a null terminator)
+                        copy = new char[length + 1];
+                        memcpy(copy, vars.stringBuffer[2], length);
+                        copy[length] = '\0';
+
+                        // Create the element with the copied string
+                        vars.currentElement = new WindowTextStatic(vars.intBuffer[0], vars.intBuffer[1], copy);
+                        
+                        handled = true;
+                        break;
+                    
+                    }
+
+                    case ElementSet::TEXT_INPUT: {
+                        
+                        // Find the length of the string argument
+                        for (; vars.stringBuffer[3][length] != '\0'; length++) {}
+
+                        // Copy it into a new buffer (including a null terminator)
+                        copy = new char[length + 1];
+                        memcpy(copy, vars.stringBuffer[3], length);
+                        copy[length] = '\0';
+
+                        // Create the element with the copied string
+                        vars.currentElement = new WindowTextInput(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], copy);
+                        
+                        handled = true;
+                        break;
+                    
+                    }
+
+                    case ElementSet::TEXTURE: {
+                        
+                        // Find the length of the string argument
+                        for (; vars.stringBuffer[4][length] != '\0'; length++) {}
+
+                        // Copy it into a new buffer (including a null terminator)
+                        copy = new char[length + 1];
+                        memcpy(copy, vars.stringBuffer[4], length);
+                        copy[length] = '\0';
+
+                        // Create the element with the copied string
+                        vars.currentElement = new WindowTexture(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        
+                        handled = true;
+                        break;
+                    
+                    }
+
+                    case ElementSet::BUTTON: {
+                        
+                        // Find the length of the string argument
+                        for (; vars.stringBuffer[4][length] != '\0'; length++) {}
+
+                        // Copy it into a new buffer (including a null terminator)
+                        copy = new char[length + 1];
+                        memcpy(copy, vars.stringBuffer[4], length);
+                        copy[length] = '\0';
+
+                        // Create the element with the copied string
+                        vars.currentElement = new WindowButton(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        
+                        handled = true;
+                        break;
+                    
+                    }
+
+                    case ElementSet::DRAGABLE: {
+                        
+                        // Find the length of the string argument
+                        for (; vars.stringBuffer[4][length] != '\0'; length++) {}
+
+                        // Copy it into a new buffer (including a null terminator)
+                        copy = new char[length + 1];
+                        memcpy(copy, vars.stringBuffer[4], length);
+                        copy[length] = '\0';
+
+                        // Create the element with the copied string
+                        vars.currentElement = new WindowDragable(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        
+                        handled = true;
+                        break;
+                    
+                    }
+
+
+                    // Should never happen
+                    default:
+                        break;
+
+                }
+
+            }
+
+            // This means the element was never created
+            if (!handled) {
+                logError("Failed to create an element!", xmlFile, i);
+                logWrite(" -> ElementInfo->type did not match any expected (value was ");
+                logWrite( (int) vars.elementInfo->type );
+                logWrite(")", true);
+                vars.error = true;
+                goto end;
             }
 
             // Add this element as a child to the element at the top of the stack
             // If length == 0, this element is the parent, so do nothing for now
             if (vars.stack->length > 0) {
                 vars.stack->getLast()->addChild(vars.currentElement);
+            }
+
+            // Wipe the buffers so theres no garbage data
+            for (int i = 0; i < PARAMS_BUFFER_SIZE; i++) {
+                vars.intBuffer[i] = 0;
+                vars.floatBuffer[i] = 0;
+                memset(vars.stringBuffer[i], '\0', MAX_TAG_LENGTH);
             }
 
         }
@@ -516,22 +671,25 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                 case LABEL: {
 
-                    // Different handling for custom elements PARAMS
+                    // Handling for CUSTOM elements
                     if (vars.elementInfo->type == ElementSet::CUSTOM) {
 
                         // Store the param name
                         vars.customParamName = vars.stringTag;
 
-                        break;
-
                     }
 
-                    vars.paramType = vars.elementInfo->params->matchParameter(vars.stringTag, &(vars.paramPosition));
+                    // Handling for default elements
+                    else {
 
-                    if (vars.paramType == TYPE_NONE) {
-                        logError("failed to match a parameter name!", xmlFile, i);
-                        vars.error = true;
-                        goto end;
+                        vars.paramType = vars.elementInfo->params->matchParameter(vars.stringTag, &(vars.paramPosition));
+
+                        if (vars.paramType == TYPE_NONE) {
+                            logError("failed to match a parameter name!", xmlFile, i);
+                            vars.error = true;
+                            goto end;
+                        }
+
                     }
 
                     vars.paramState = VALUE;
@@ -542,8 +700,20 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                 case VALUE: {
 
+                    // Different handling for custom elements PARAMS
+                    if (vars.elementInfo->type == ElementSet::CUSTOM) {
+                        
+                        // Call XMLFile::setParameter
+                        vars.elementXMLFile->setParameter(vars.customParamName, vars.stringTag);
+
+                        // Leave early because this block is long
+                        vars.paramState = LABEL;
+                        break;
+
+                    }
+
                     // Early return if it will try to put a value in a buffer index out of range
-                    if (  vars.elementInfo->type != ElementSet::CUSTOM  &&  vars.paramPosition >= PARAMS_BUFFER_SIZE  ) {
+                    if (vars.paramPosition >= PARAMS_BUFFER_SIZE) {
                         logError("wants to put a parameter at a position outside the buffer range!", xmlFile, i);
                         logWrite(" -> Either update XML::initDefaultElements() or XML::PARAMS_BUFFER_SIZE", true);
                         vars.error = true;
@@ -575,22 +745,8 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                             }
 
-
-                            // Handling for CUSTOM elements
-                            if (vars.elementInfo->type == ElementSet::CUSTOM) {
-
-                                // Call XMLFile::setParameter
-                                vars.elementXMLFile->setParameter(vars.customParamName, vars.intTemp);
-
-                            }
-
-                            // Handling for default elements
-                            else {
-
-                                // Store the casted value into the buffer for later use
-                                vars.intBuffer[vars.paramPosition] = vars.intTemp;
-
-                            }
+                            // Store the casted value into the buffer for later use
+                            vars.intBuffer[vars.paramPosition] = vars.intTemp;
 
                             break;
 
@@ -613,22 +769,8 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                             }
 
-
-                            // Handling for CUSTOM elements
-                            if (vars.elementInfo->type == ElementSet::CUSTOM) {
-
-                                // Call XMLFile::setParameter
-                                vars.elementXMLFile->setParameter(vars.customParamName, vars.floatTemp);
-
-                            }
-
-                            // Handling for default elements
-                            else {
-
-                                // Store the casted value into the buffer for later use
-                                vars.floatBuffer[vars.paramPosition] = vars.floatTemp;
-
-                            }
+                            // Store the casted value into the buffer for later use
+                            vars.floatBuffer[vars.paramPosition] = vars.floatTemp;
 
                             break;
 
@@ -638,25 +780,12 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                             /*   Strings are easy because thats the format the data is already in   */
 
-                            // Handling for CUSTOM elements
-                            if (vars.elementInfo->type == ElementSet::CUSTOM) {
-
-                                // Call XMLFile::setParameter
-                                vars.elementXMLFile->setParameter(vars.customParamName, vars.stringTag);
-
-                            }
-
-                            // Handling for default elements
-                            else {
-
-                                // Copy the string tag into the buffer for later use
-                                memcpy(vars.stringBuffer[vars.paramPosition], vars.stringTag, vars.stringTagLength);
-                                
-                                // Null terminate if theres space
-                                if (vars.stringTagLength < MAX_TAG_LENGTH) {
-                                    vars.stringBuffer[vars.paramPosition][vars.stringTagLength + 1] = '\0';
-                                }
-
+                            // Copy the string tag into the buffer for later use
+                            memcpy(vars.stringBuffer[vars.paramPosition], vars.stringTag, vars.stringTagLength);
+                            
+                            // Null terminate if theres space
+                            if (vars.stringTagLength < MAX_TAG_LENGTH) {
+                                vars.stringBuffer[vars.paramPosition][vars.stringTagLength + 1] = '\0';
                             }
 
                             break;
@@ -707,6 +836,9 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
         delete vars.stack->iterGetObj();
 
     delete vars.stack;
+
+    // Decrement the call count now that this function call is done
+    this->callCount--;
 
     // Return nullptr if there was an error
     if (vars.error) return nullptr;

@@ -185,9 +185,54 @@ void XMLFile::setParameter(const char* tag, float value) {
 
 void XMLFile::setParameter(const char* tag, const char* value) {
 
+    /*
+        I need to add an underscore prefix to the parameter tag
+        These underscores are used to differentiate between parameter names for the elements, and the parameters of the file
+        Because it is added here, it does not need to be included when calling this function
+    */
+
+    // Find length
+    int length = 0;
+    for (; tag[length] != '\0'; length++) {}
+
+    if (length == 0) {
+        logWrite("XMLFile::setParameter() was called on a param name that has 0 length!", true);
+        return;
+    }
+
+    if (length > MAX_TAG_LENGTH) {
+        logWrite("XMLFile::setParameter() was called on a param name longer than MAX_TAG_LENGTH!", true);
+        logWrite(" -> param name \"");
+        logWrite(tag);
+        logWrite("\" is longer than MAX_TAG_LENGTH, which is ");
+        logWrite(MAX_TAG_LENGTH, true);  
+        return;
+    }
+
+    char* prefixedTag = new char[length + 2];
+
+    prefixedTag[0] = '_';
+
+    // Copy over the string (with null terminator)
+    memcpy(&(prefixedTag[1]), tag, length + 1);
+
     // Forward to tagSequence
-    this->main->swapStringTag(tag, value);
+    this->main->swapStringTag(prefixedTag, value);
+
+    // Free the created tag
+    delete[] prefixedTag;
+
+    return;
     
+}
+
+void XMLFile::setLabel(const char* tag, const char* value) {
+
+    // Just forward to tag sequence
+    this->main->swapStringTag(tag, value);
+
+    return; 
+
 }
 
 void XMLFile::formatFile() {
@@ -628,7 +673,7 @@ void XMLFile::applyLabels() {
         newTag = this->labels->getStringTag(i + 1, &placeHolder);
 
         // Treat the label as a parameter (its functionally the same)
-        this->setParameter(oldTag, newTag);
+        this->setLabel(oldTag, newTag);
 
     }
 

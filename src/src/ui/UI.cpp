@@ -229,6 +229,8 @@ WindowID UI::createWindow(const char* fileName) {
     newWindow->pos->set(this->nextWindowPos);
     newWindow->endPos->add(this->nextWindowPos);
 
+    this->windows->pushBack(newWindow);
+
     return newWindow->id;
 
 }

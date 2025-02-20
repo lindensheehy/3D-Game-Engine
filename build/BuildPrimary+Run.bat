@@ -15,7 +15,7 @@ if not exist "%objdir%" (
 :: Build dependancies
 
 :: util
-g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
+@REM g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
 @REM g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
 @REM g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%FileReader.o

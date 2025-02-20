@@ -19,18 +19,18 @@
     <div posx=1 posy=1 sizex=_width sizey=18>
 
         <!-- Dragable Bar -->
-        <dragable posx=0 posy=0 sizex=_buttonPos sizey=18>
+        <dragable posx=0 posy=0 sizex=_buttonPos sizey=18 id=WindowDragBar>
 
             <filledRect posx=0 posy=0 sizex=_buttonPos sizey=18 color=dragbar>
 
-                <textStatic posx=0 posy=0 text=_title/>
+                <textStatic posx=4 posy=6 text=_title/>
 
             </filledRect>
 
         </dragable>
 
         <!-- Close Window Button -->
-        <button posx=_buttonPos posy=0 sizex=18 sizey=18 id=CloseWindowButton>
+        <button posx=_buttonPos posy=0 sizex=18 sizey=18 id=WindowCloseButton>
 
             <line x1=3 y1=2 x2=13 y2=13 color=white/>
             <line x1=15 y1=2 x2=-13 y2=13 color=white/>
