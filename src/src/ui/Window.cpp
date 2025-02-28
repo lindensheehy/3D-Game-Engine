@@ -186,6 +186,32 @@ void Window::bindTextInput(const char* id, float* boundValue) {
 
 }
 
+void Window::setPos(int x, int y) {
+
+    Vec2* temp = this->pos->copy()->sub(x, y);
+
+    this->pos->sub(temp);
+    this->endPos->sub(temp);
+
+    delete temp;
+
+    return;
+
+}
+
+void Window::setPos(Vec2* newPos) {
+
+    Vec2* temp = this->pos->copy()->sub(newPos);
+
+    this->pos->sub(temp);
+    this->endPos->sub(temp);
+
+    delete temp;
+
+    return;
+
+}
+
 WindowElement* Window::getBindable(const char* id) {
 
     if (this->bindablesUpdated == false) {

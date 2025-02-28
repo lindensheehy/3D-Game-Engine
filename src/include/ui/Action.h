@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/UIEnums.h"
+#include "ui/Core.h"
 
 /*
     These are basically just glorified variables.
@@ -38,7 +38,40 @@ class ActionCloseWindow : public Action {
         // Constructor
         ActionCloseWindow(WindowID targetWindowId);
 
-        // Destructor
-        ~ActionCloseWindow();
+};
+
+class ActionOpenWindow : public Action {
+
+    public:
+
+        /*   Instance Variables   */
+
+        const char* fileName;
+
+
+        // Constructor
+        ActionOpenWindow(const char* fileName);
+
+};
+
+class ActionCallFunc : public Action {
+
+    public:
+
+        // Constructor
+        ActionCallFunc(void (*func)());
+
+
+        /*   Instance Functions   */
+
+        // Calls the stored function
+        void callFunc();
+
+    private:
+
+        /*   Instance Variables   */
+
+        // Function pointer to call
+        void (*func)();
 
 };

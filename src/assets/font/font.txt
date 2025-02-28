@@ -1,0 +1,85 @@
+
+This is a comment! Not used in the actual font
+
+This file stores the character textures used for my font renderer
+Each character is stored in order in this file. This file is then parsed into a more usable format.
+Youll notice these textures are huge, this is because my renderer downsizes the textures to produce textures
+
+Each character has its label at the top, denoted by [character], for example [a]
+Then following each character label is a 32x32 grid of pixel states
+
+The characters used are:
+'█' -> this represents a true value. These pixels will be 'on'
+' ' -> this represents a false value. These pixels will be 'off'
+
+There are also '|' delimiters to help keep track of the characters
+
+My code starts interpreting this file after the "[start]" substring 
+
+[start]
+
+[a]
+
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+|                                |
+
+[b]
+
+[c]
+
+...
+
+[A]
+
+[B]
+
+[C]
+
+...
+
+[1]
+
+[2]
+
+[3]
+
+...
+
+[.]
+
+[,]
+
+[-]
+
+...
+

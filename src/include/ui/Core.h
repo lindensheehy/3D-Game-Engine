@@ -10,6 +10,16 @@
 */
 
 
+// String literals for commonly used file paths
+namespace File {
+
+    constexpr const char* TRANSFORM   = "../src/assets/ui/windows/transform.xml";
+    constexpr const char* NAVBAR      = "../src/assets/ui/windows/navbar.xml";
+    constexpr const char* OBJECT      = "../src/assets/ui/windows/object.xml";
+
+};
+
+
 // Type def used to identify windows
 typedef unsigned int WindowID;
 
@@ -18,7 +28,9 @@ namespace UIEnum {
 
     enum class ActionType {
         NONE,               // Given to Action objects (not subclasses) as these shouldnt be used directly
-        CLOSE_WINDOW
+        CLOSE_WINDOW,
+        OPEN_WINDOW,
+        CALL_FUNC
     };
 
     enum class ElementType {

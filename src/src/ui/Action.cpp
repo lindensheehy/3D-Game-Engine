@@ -25,4 +25,36 @@ ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
     
 }
 
-ActionCloseWindow::~ActionCloseWindow() {}
+
+
+/* -------------------------------------- */
+/* ---------- ActionOpenWindow ---------- */
+/* -------------------------------------- */
+
+ActionOpenWindow::ActionOpenWindow(const char* fileName) {
+
+    this->actionType = UIEnum::ActionType::OPEN_WINDOW;
+
+    this->fileName = fileName;
+
+}
+
+
+
+/* ----------------------------------- */
+/* ---------- ActionRunFunc ---------- */
+/* ----------------------------------- */
+
+ActionCallFunc::ActionCallFunc(void (*func)()) {
+
+    this->actionType = UIEnum::ActionType::CALL_FUNC;
+
+    this->func = func;
+
+}
+
+void ActionCallFunc::callFunc() {
+
+    this->func();
+
+}

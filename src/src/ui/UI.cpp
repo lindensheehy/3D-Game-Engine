@@ -26,6 +26,8 @@ UI::UI() {
     this->xml = new XML();
     this->xml->initDefaultElements();
     this->xml->initCustomElements();
+
+    this->binding = new Binding();
     
     return;
 
@@ -43,6 +45,8 @@ UI::~UI() {
     }
 
     if (this->windows != nullptr) delete this->windows;
+
+    if (this->binding != nullptr) delete this->binding;
 
 }
 
@@ -72,13 +76,35 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
             case UIEnum::ActionType::NONE:
                 break;
 
-            case UIEnum::ActionType::CLOSE_WINDOW:
+            case UIEnum::ActionType::CLOSE_WINDOW: {
 
                 ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
 
                 this->destroyWindow(castedAction->targetWindowId);
 
                 break;
+
+            }
+
+            case UIEnum::ActionType::OPEN_WINDOW: {
+
+                ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
+
+                this->createWindow(castedAction->fileName);
+
+                break;
+
+            }
+
+            case UIEnum::ActionType::CALL_FUNC: {
+
+                ActionCallFunc* castedAction = (ActionCallFunc*) currentAction;
+
+                castedAction->callFunc();
+
+                break;
+
+            }
 
         }
 
@@ -124,6 +150,9 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
         }
 
+        // Break out of the loop reaches this
+        break;
+
     }
 
     // Click handling
@@ -154,7 +183,7 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
         // If an element was clicked on
         if (hoveredElement != nullptr) {
-            
+
             // Deselect last clicked if there is any
             if (this->lastClicked != nullptr) {
                 this->lastClicked->onDeselect();
@@ -213,7 +242,7 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
 }
 
-WindowID UI::createWindow(const char* fileName) {
+WindowHandle UI::createWindow(const char* fileName) {
 
     // Build the Window object from the xml file
     Window* newWindow = this->xml->buildWindow(fileName);
@@ -231,20 +260,90 @@ WindowID UI::createWindow(const char* fileName) {
 
     this->windows->pushBack(newWindow);
 
-    return newWindow->id;
+    newWindow->id = this->nextFreeWindowId;
+    this->nextFreeWindowId++;
+
+    WindowHandle ret(newWindow->id, newWindow);
+
+    return ret;
+
+}
+
+void UI::destroyWindow(WindowHandle* pWindowHandle) {
+
+    if (pWindowHandle == nullptr) {
+        logWrite("UI::destroyWindow(WindowHandle*) Was called on a nullptr!", true);
+        return;
+    }
+
+    Window* window = (*pWindowHandle).ptr;
+
+    if (window == nullptr) {
+        logWrite("UI::destroyWindow(WindowHandle*) Tried to destroy an invalid window!", true);
+        return;
+    }
+
+    this->destroyWindow(window);
+
+    return;
+
+}
+
+void UI::validateWindowHandle(WindowHandle* pWindowHandle) {
+
+    if (pWindowHandle == nullptr) {
+        logWrite("UI::validateWindowHandle(WindowHandle*) Was called on a nullptr!", true);
+        return;
+    }
+
+    Window* window = (*pWindowHandle).ptr;
+
+    // Set the arg to -1 if it was not found
+    if (window == nullptr) {
+        (*pWindowHandle).id = -1;
+        (*pWindowHandle).ptr = nullptr;
+    }
+
+}
+
+void UI::setWindowPos(WindowHandle windowHandle, int posx, int posy) {
+
+    Window* window = windowHandle.ptr;
+
+    if (window == nullptr) {
+        logWrite("UI::setWindowPos() Wants to set the position of an invalid window!", true);
+        return;
+    }
+
+    window->setPos(posx, posy);
+
+    return;
+
+}
+
+void UI::updateNextWindowPos() {
+    
+    this->nextWindowPos->add(50, 50);
+
+    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
+    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
 
 }
 
 void UI::destroyWindow(WindowID windowId) {
 
-    Window* window = this->getWindowById(windowId);
+    Window* current;
 
-    if (window == nullptr) {
-        logWrite("UI::destroyWindow(WindowID) Tried to destroy an invalid window!", true);
-        return;
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
+
+        current = this->windows->iterGetObj();
+
+        if (current->id == windowId) {
+            this->destroyWindow(current);
+            return;
+        }
+
     }
-
-    this->destroyWindow(window);
 
     return;
 
@@ -264,71 +363,6 @@ void UI::destroyWindow(Window* window) {
 
 }
 
-Window* UI::getWindowById(WindowID windowId) {
-
-    if (windowId == -1) return nullptr;
-
-    Window* current;
-
-    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
-
-        current = this->windows->iterGetObj();
-
-        if (current->id == windowId) return current;
-
-    }
-
-    // Not found
-    return nullptr;
-
-}
-
-void UI::validateWindowId(WindowID* windowId) {
-
-    Window* window = this->getWindowById(*windowId);
-
-    // Set the arg to -1 if it was not found
-    if (window == nullptr) (*windowId) = -1;
-
-}
-
-void UI::bindWindowTransform(WindowID windowId, Object* object) {
-
-    if (object == nullptr) {
-        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on a nullptr!", true);
-        return;
-    }
-
-    Window* window = this->getWindowById(windowId);
-
-    if (window == nullptr) {
-        logWrite("UI::bindWindowTransform(WindowID, Object*) was called on an invalid WindowID!", true);
-        return;
-    }
-
-    /*   Binding logic   */
-    window->bindButton("WindowCloseButton", new ActionCloseWindow(windowId));
-    window->bindDragable("WindowDragBar", window->pos, window->endPos);
-
-    // Position
-    window->bindTextInput("positionx", &(object->pos->x));
-    window->bindTextInput("positiony", &(object->pos->y));
-    window->bindTextInput("positionz", &(object->pos->z));
-
-    // Rotation
-    window->bindTextInput("rotationx", &(object->rotation->x));
-    window->bindTextInput("rotationy", &(object->rotation->y));
-    window->bindTextInput("rotationz", &(object->rotation->z));
-
-    // Scale
-    window->bindTextInput("scalex", &(object->scale->x));
-    window->bindTextInput("scaley", &(object->scale->y));
-    window->bindTextInput("scalez", &(object->scale->z));
-
-    return;
-
-}
-
 Action* UI::getNextAction() {
 
     if (UI::actionQueue->length == 0) return nullptr;
@@ -337,11 +371,3 @@ Action* UI::getNextAction() {
 
 }
 
-void UI::updateNextWindowPos() {
-    
-    this->nextWindowPos->add(50, 50);
-
-    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
-    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
-
-}

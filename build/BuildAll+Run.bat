@@ -39,6 +39,7 @@ g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bound
 g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
 g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
+g++ -Ofast %include%        -c %srcdir%ui/Binding.cpp           -o %objdir%Binding.o
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
 
 :: xml

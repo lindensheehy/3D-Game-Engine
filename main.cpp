@@ -27,7 +27,8 @@ bool gravity;
 
 UI* ui;
 
-WindowID windowTransform = -1;
+WindowHandle windowTransform;
+WindowHandle windowNavBar;
 
 bool doMainLoop = true;
 
@@ -119,13 +120,13 @@ void handleInput(State* state, Camera* camera) {
         selectedObject = objects->getById(selectedObjectId);
         selectedObject->opacity = 0.5;
 
-        ui->validateWindowId(&windowTransform);
+        ui->validateWindowHandle(&windowTransform);
 
-        if (windowTransform == -1) {
-            windowTransform = ui->createWindow("../src/assets/ui/windows/transform.xml");
+        if (windowTransform.id == -1) {
+            windowTransform = ui->createWindow(File::TRANSFORM);
         }
 
-        ui->bindWindowTransform(windowTransform, selectedObject);
+        ui->binding->bindTransform(windowTransform, selectedObject);
 
     }
 
@@ -134,8 +135,7 @@ void handleInput(State* state, Camera* camera) {
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
 
-        ui->destroyWindow(windowTransform);
-        windowTransform = -1;
+        ui->destroyWindow(&windowTransform);
 
     }
 
@@ -335,14 +335,18 @@ void init() {
 
     ui = new UI();
 
+    // Create the navbar
+    windowNavBar = ui->createWindow(File::NAVBAR);
+
+    // Move the navbar to the top left
+    ui->setWindowPos(windowNavBar, 0, 0);
+
 }
 
 int main(int argc, char* argv[]) {
 
     // Starts up everything needed for the main loop
     init();
-
-    // XML* XMLFile = new XML("../src/assets/ui/windows/transform.xml");
 
     // Main loop
     while (doMainLoop) {

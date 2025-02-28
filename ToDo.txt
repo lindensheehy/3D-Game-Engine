@@ -18,6 +18,10 @@ new stuff:
     - create new objects
     - change more traits for each object
 
+- create an improved font renderer
+    - use a 32x32 bitmap, then downscale to specified size
+    - probably in a textfile, since thats easiest to parse, but some image format would be easiest to create
+
 
 fixes:
 - fix depth interpolation, depth between two points is not always linear.

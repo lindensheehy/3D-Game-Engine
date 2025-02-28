@@ -7,7 +7,7 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
-#include "ui/UIEnums.h"
+#include "ui/Core.h"
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
 
@@ -18,6 +18,34 @@
 struct Bindable {
     const char* id;
     WindowElement* element;
+};
+
+
+// Forward declare Window for WindowHandle
+class Window;
+
+
+// Handle class for Window objects
+// This gives a reference to a Window object without being able to access it
+class WindowHandle {
+
+    // Binding and UI are allowed to access the ptr instance variable
+    friend class Binding;
+    friend class UI;
+
+    public:
+        
+        WindowID id;
+
+        WindowHandle() : id(-1), ptr(nullptr) {}
+        WindowHandle(WindowID id, Window* ptr) : id(id), ptr(ptr) {}
+
+        // No destructor because this class does not own the Window pointer
+
+    private:
+
+        Window* ptr;
+    
 };
 
 
@@ -70,19 +98,16 @@ class Window {
         void bindTextInput(const char* id, int* boundValue);
         void bindTextInput(const char* id, float* boundValue);
 
+        // Moves the window to the given position
+        void setPos(int x, int y);
+        void setPos(Vec2* newPos);
+
 
         /*   Class Functions   */
 
         static void setActionQueue(LinkedList<Action*>* queue);
 
         static void queueAction(Action* action);
-
-    protected:
-
-        /*   Instance Variables   */
-
-        // Reference to a shared Action queue
-        static LinkedList<Action*>* actionQueue;
 
     private:
 
@@ -94,6 +119,9 @@ class Window {
         // This is true when the bindables list is accurate
         // When its false, locateBindables will be called before binding anything
         bool bindablesUpdated;
+
+        // Reference to a shared Action queue
+        static LinkedList<Action*>* actionQueue;
 
 
         /*   Instance Functions   */

@@ -1,6 +1,6 @@
-# 3D Graphics Engine in C++
+# 3D Game Engine in C++
 
-This is a 3D graphics engine written in C++ using `windows.h` <ins>as my **only** external include</ins>. I chose this limitation to align with my goal of learning as much as possible about C++. This meant, if I wanted high-level abstractions, I would have to write them myself; therefore, I would be writing much more code, and I would have to know how everything works. For example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself. This also applies to higher-level concepts like my `Mesh` class.
+This is a 3D game engine written in C++ using `windows.h` <ins>as my **only** external include</ins>. I chose this limitation to align with my goal of learning as much as possible about C++. This meant, if I wanted high-level abstractions, I would have to write them myself; therefore, I would be writing much more code, and I would have to know how everything works. For example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself. This also applies to higher-level concepts like my `Mesh` class.
 
 Everything in this repository was written 100% by Linden Sheehy (me).
 
@@ -22,7 +22,7 @@ Everything in this repository was written 100% by Linden Sheehy (me).
 - **Collision System (Future Plan):** The groundwork for a collision system has been set up, but the logic to handle collisions is still in the works.
 
 ### Custom Test Suite
-- **Output Tests:** A modular, reusable system built to easily test outputs of functions for various input parameters.
+- **Output Tests:** A modular, reusable system built to easily test outputs of functions for various input parameters. These tests output to a .HTML file for ease of use.
 - **Speed Tests:** Pretty basic system to test the performance of my app.
 
 ## Libraries & Dependencies:

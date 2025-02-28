@@ -6,12 +6,12 @@
 #include "gui/Drawer.h"
 #include "gui/Gui.h"
 #include "util/LinkedList.h"
-#include "physics/ObjectSet.h"
 
-#include "ui/UIEnums.h"
+#include "ui/Core.h"
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
 #include "ui/Window.h"
+#include "ui/Binding.h"
 
 #include "xml/XML.h"
 
@@ -28,10 +28,12 @@ class UI {
 
         /*   Instance Variables   */
 
-        WindowElement* lastClicked; // Saves the last clicked element to be used with input
-
         // Will be true if the last click landed within the UI
         bool hasFocus;
+
+        // Contains a Binding object, owned by this class
+        // This instance serves no real purpose besides being an easy way to access the Binding object
+        Binding* binding;
 
 
         // Constructor
@@ -51,25 +53,18 @@ class UI {
         bool doInput(State* state, CursorState* cursorStateOut = nullptr);
 
         // Creates a new window and returns the window identifier
-        WindowID createWindow(const char* fileName);
+        WindowHandle createWindow(const char* fileName);
 
         // Destroys the given window
-        void destroyWindow(WindowID windowId);
-        void destroyWindow(Window* window);
+        // Also sets the values in the struct to invalid states
+        void destroyWindow(WindowHandle* windowHandle);
 
-        // Returns the Window object with the given id
-        Window* getWindowById(WindowID windowId);
+        // This ensures that a Window object that the handle refers to exists
+        // If it doesnt, this will set the id to -1, and the pointer to nullptr
+        void validateWindowHandle(WindowHandle* windowHandle);
 
-        // This ensures that a Window object with the given id exists
-        // Will set the value to -1 if not
-        void validateWindowId(WindowID* windowId);
-
-        // Binds the window to the object. Assumes the passed id references a transform window
-        // If the passed window is not a transform window, this will log warnings and have undefined behaviour
-        void bindWindowTransform(WindowID windowId, Object* object);
-
-        // Returns the next Action object from the actionQueue
-        static Action* getNextAction();
+        // Sets the window to the specified position ( (0, 0) is the top left )
+        void setWindowPos(WindowHandle windowHandle, int posx, int posy);
 
         
     private:
@@ -77,12 +72,20 @@ class UI {
         /*   Instance Variables   */
 
         // Contains an XML object, owned by this class
+        // Used for parsing .xml files into UI elements/windows
         XML* xml;
 
         LinkedList<Window*>* windows;
 
+        // Saves the last clicked element to be used with input
+        WindowElement* lastClicked;
+
         // Stores the location the next window should go, changes on every window made to reduce window overlap
         Vec2* nextWindowPos;
+
+        // This is the next free id that will be assigned to a window on creation
+        // This is also incremented on each window creation
+        int nextFreeWindowId;
 
 
         /*   Class Variables   */
@@ -97,5 +100,15 @@ class UI {
 
         // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively
         void updateNextWindowPos();
+
+        // Private overloads of destroyWindow
+        void destroyWindow(WindowID windowId);
+        void destroyWindow(Window* window);
+
+        // Returns the Window object with the given id
+        Window* getWindowByHandle(WindowHandle windowHandle);
+
+        // Returns the next Action object from the actionQueue
+        static Action* getNextAction();
         
 };

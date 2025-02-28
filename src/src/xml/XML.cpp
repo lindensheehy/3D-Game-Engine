@@ -184,8 +184,9 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
     /*
         Yes this function is extremely long
-        Yes a lot of that length comes from error logging
-        Thats just the price of having specific error logging I suppose
+        The main loop here needs to handle A LOT of different things
+        This really couldnt be simplified apart from having some single use functions
+        Everything is extensively commented, so it should be fairly clear
     */
 
 

@@ -7,7 +7,7 @@
 #include "util/LinkedList.h"
 #include "physics/ObjectSet.h"
 
-#include "ui/UIEnums.h"
+#include "ui/Core.h"
 #include "ui/Action.h"
 
 
