@@ -22,6 +22,27 @@ new stuff:
     - use a 32x32 bitmap, then downscale to specified size
     - probably in a textfile, since thats easiest to parse, but some image format would be easiest to create
 
+- UI Action Handling
+    - ActionOpenWindow Updates
+        - Modify ActionOpenWindow handling to store the WindowHandle returned by this->createWindow().
+        - After opening the window, queue a new ActionBindWindow with the stored WindowHandle.
+    - ActionBindWindow Implementation
+        - Create a new ActionBindWindow class that takes a WindowHandle and a void func.
+        - Ensure ActionBindWindow gets processed by the UI class after the window has been created (on the next frame is fine).
+        - Modify UI logic to call the appropriate binding function when handling ActionBindWindow.
+    - Global Context for Binding Data
+        - Implement a static ObjectHandling::objectOfInterest variable to store the currently selected object.
+        - Ensure that bindWindow() functions retrieve data dynamically from ObjectHandling::objectOfInterest.
+        - Ensure updating objectOfInterest allows for rebinding without requiring direct calls to bindWindow(newObject).
+    - Rebinding Logic
+        - Implement a mechanism to trigger rebinds when objectOfInterest changes (either manual call or event-driven).
+        - Ensure UI windows that depend on objectOfInterest update correctly when a new object is selected.
+    - Code Organization
+        - Place ObjectHandling and related logic in a structured namespace or class.
+        - Ensure bindWindow() functions remain modular and follow the void (*)() function signature for compatibility with ActionCallFunc.
+
+    - Extra note:
+        - might be worth having Window instances store their binding functions, could simplify some things
 
 fixes:
 - fix depth interpolation, depth between two points is not always linear.

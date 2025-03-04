@@ -59,56 +59,8 @@ void UI::draw(Drawer* drawer) {
 }
 
 bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nullptr */) {
-
-    // General declarations for use in loops
-    Action* currentAction;
+    
     Window* currentWindow;
-
-    // Handle actions in queue, if any exist
-    while (UI::actionQueue->length != 0) {
-
-        currentAction = UI::getNextAction();
-
-        if (currentAction == nullptr) break;
-
-        switch (currentAction->actionType) {
-
-            case UIEnum::ActionType::NONE:
-                break;
-
-            case UIEnum::ActionType::CLOSE_WINDOW: {
-
-                ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
-
-                this->destroyWindow(castedAction->targetWindowId);
-
-                break;
-
-            }
-
-            case UIEnum::ActionType::OPEN_WINDOW: {
-
-                ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
-
-                this->createWindow(castedAction->fileName);
-
-                break;
-
-            }
-
-            case UIEnum::ActionType::CALL_FUNC: {
-
-                ActionCallFunc* castedAction = (ActionCallFunc*) currentAction;
-
-                castedAction->callFunc();
-
-                break;
-
-            }
-
-        }
-
-    }
 
     // First I check where the mouse is relative to the UI. This is how the cursor state is updated
     // Also store some values to make the logic afterwards more simple
@@ -316,6 +268,61 @@ void UI::setWindowPos(WindowHandle windowHandle, int posx, int posy) {
     }
 
     window->setPos(posx, posy);
+
+    return;
+
+}
+
+void UI::handleActions() {
+
+    // General declarations for use in loops
+    Action* currentAction;
+
+    // Handle actions in queue, if any exist
+    while (UI::actionQueue->length != 0) {
+
+        currentAction = UI::getNextAction();
+
+        if (currentAction == nullptr) break;
+
+        switch (currentAction->actionType) {
+
+            case UIEnum::ActionType::NONE:
+                break;
+
+            case UIEnum::ActionType::CLOSE_WINDOW: {
+
+                ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
+
+                this->destroyWindow(castedAction->targetWindowId);
+
+                break;
+
+            }
+
+            case UIEnum::ActionType::OPEN_WINDOW: {
+
+                ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
+
+                this->createWindow(castedAction->fileName);
+
+                break;
+
+            }
+
+            case UIEnum::ActionType::CALL_FUNC: {
+
+                ActionCallFunc* castedAction = (ActionCallFunc*) currentAction;
+
+                castedAction->callFunc();
+
+                break;
+
+            }
+
+        }
+
+    }
 
     return;
 

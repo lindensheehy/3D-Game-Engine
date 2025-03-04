@@ -98,6 +98,8 @@ class UI {
 
         /*   Instance Functions   */
 
+        void handleActions();
+
         // Updates the private vector by +(50, 50). Also rolls over x and y if they pass 500 and 300 respectively
         void updateNextWindowPos();
 
