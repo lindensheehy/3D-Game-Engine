@@ -19,6 +19,9 @@ class Binding {
 
         Each function takes a WindowHandle object for the window it should act upon
         Some have extra args, used to bind the UI elements to various data
+
+        There are some subclasses to hold functions and variables that are used on button pressed (via ActionCallFunc)
+        Everything in these is private, as they are not intended to be reached from outside
     */
 
     public:
@@ -28,5 +31,21 @@ class Binding {
 
         // navbar.xml
         static void bindNavBar(WindowHandle windowHandle);
+
+        // objects.xml
+        static void bindObjects(WindowHandle windowHandle, ObjectSet objectSet);
+        class Objects {
+
+            friend class Binding;
+
+            private:
+
+                // The ObjectSet that this window works with
+                static ObjectSet objectSet;
+                
+                static void createCube();
+                static void createSphere();
+
+        };
 
 };
