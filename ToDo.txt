@@ -24,22 +24,16 @@ new stuff:
 
 - UI Action Handling
     - ActionOpenWindow Updates
-        - Modify ActionOpenWindow handling to store the WindowHandle returned by this->createWindow().
-        - After opening the window, queue a new ActionBindWindow with the stored WindowHandle.
-    - ActionBindWindow Implementation
-        - Create a new ActionBindWindow class that takes a WindowHandle and a void func.
-        - Ensure ActionBindWindow gets processed by the UI class after the window has been created (on the next frame is fine).
-        - Modify UI logic to call the appropriate binding function when handling ActionBindWindow.
-    - Global Context for Binding Data
-        - Implement a static ObjectHandling::objectOfInterest variable to store the currently selected object.
-        - Ensure that bindWindow() functions retrieve data dynamically from ObjectHandling::objectOfInterest.
-        - Ensure updating objectOfInterest allows for rebinding without requiring direct calls to bindWindow(newObject).
+        - Modify ActionOpenWindow to also take an optional function pointer with the signature void func(WindowHandle). This would be the binding function
+        - This way, theres a general way to handle all window bindings, and the code around the function can be changed for more context (extra variables in scope)
+        - This function will be called on window creation, using the resulting WindowHandle from the this->createWindow() call
     - Rebinding Logic
         - Implement a mechanism to trigger rebinds when objectOfInterest changes (either manual call or event-driven).
         - Ensure UI windows that depend on objectOfInterest update correctly when a new object is selected.
     - Code Organization
         - Place ObjectHandling and related logic in a structured namespace or class.
         - Ensure bindWindow() functions remain modular and follow the void (*)() function signature for compatibility with ActionCallFunc.
+    - See "not used/temp.cpp" for an example structure
 
     - Extra note:
         - might be worth having Window instances store their binding functions, could simplify some things
