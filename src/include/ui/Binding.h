@@ -1,13 +1,79 @@
 #pragma once
 
-#include "Window.h"
+#include "util/Utility.h"
+
+#include "ui/Window.h"
+#include "ui/BindContext.h"
 
 #include "physics/ObjectSet.h"
 
-/*
-    This file contains functions to bind UI windows to various actions and data
-    Each window has its own bind function, so if you create a new window in XML, you need to add a bind function to make it interactable
-*/
+
+typedef void (*BindFunc)(WindowHandle*, BindContext*);
+
+
+class BindManager {
+
+    public:
+
+        BindManager();
+
+        ~BindManager();
+
+        void addBind(WindowHandle* windowHandle, BindContext* context, BindFunc bindFunc);
+
+        void removeBind(WindowHandle* windowHandle);
+
+        void rebindAll();
+
+    private:
+
+        struct BindInfo {
+            
+            // All WindowHandles are stack allocated
+            // This is just a pointer because it needs to hold the same data as the passed WindowHandle
+            WindowHandle* windowHandle;
+
+            // This holds all the variables that the binding function needs
+            // This essentially holds global variables for all the binding logic for the given window
+            BindContext* bindContext;
+
+            // Pointer to the main binding function for this bind
+            BindFunc bindFunc;
+
+        };
+
+        // This holds all the bindings that are being tracked
+        LinkedList<BindInfo>* binds;
+
+};
+
+
+namespace UIBinding {
+        
+        // transform.xml
+        namespace Transform {
+            void bind(WindowHandle windowHandle, BindContext* bindContextTransform);
+        }
+
+        // navbar.xml
+        namespace NavBar {
+            void bind(WindowHandle windowHandle, BindContext* UNUSED);
+        }
+
+        // objects.xml
+        namespace Objects {
+
+            void bind(WindowHandle windowHandle, BindContext* bindContextObjects);    
+            
+            // Button functions
+            void createCube(BindContext* bindContextObjects);
+            void createSphere(BindContext* bindContextObjects);
+
+        }
+
+        // More bindings
+
+}
 
 
 class Binding {
