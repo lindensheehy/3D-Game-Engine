@@ -22,22 +22,6 @@ new stuff:
     - use a 32x32 bitmap, then downscale to specified size
     - probably in a textfile, since thats easiest to parse, but some image format would be easiest to create
 
-- UI Action Handling
-    - ActionOpenWindow Updates
-        - Modify ActionOpenWindow to also take an optional function pointer with the signature void func(WindowHandle). This would be the binding function
-        - This way, theres a general way to handle all window bindings, and the code around the function can be changed for more context (extra variables in scope)
-        - This function will be called on window creation, using the resulting WindowHandle from the this->createWindow() call
-    - Rebinding Logic
-        - Implement a mechanism to trigger rebinds when objectOfInterest changes (either manual call or event-driven).
-        - Ensure UI windows that depend on objectOfInterest update correctly when a new object is selected.
-    - Code Organization
-        - Place ObjectHandling and related logic in a structured namespace or class.
-        - Ensure bindWindow() functions remain modular and follow the void (*)() function signature for compatibility with ActionCallFunc.
-    - See "not used/temp.cpp" for an example structure
-
-    - Extra note:
-        - might be worth having Window instances store their binding functions, could simplify some things
-
 fixes:
 - fix depth interpolation, depth between two points is not always linear.
 - fix TextInput UI elements from drawing to infinite length.

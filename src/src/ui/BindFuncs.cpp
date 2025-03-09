@@ -2,8 +2,6 @@
 
 void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
-    logWrite("Binding Nav Bar!", true);
-
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a nullptr!", true);
         return;
@@ -50,7 +48,7 @@ void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
 
-    /*   First do the binds that to not depend on the Context object   */
+    /*   First do the binds that do not depend on the Context object   */
 
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a nullptr!", true);
