@@ -327,7 +327,7 @@ int Drawer::bufferIndex(int x, int y) const {
 
     if (!this->inBufferRange(x, y)) return -1;
 
-    return (y * PIXEL_BUFFER_WIDTH) + x;
+    return (y * this->bufferWidth) + x;
 
 }
 

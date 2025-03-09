@@ -53,13 +53,13 @@ Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCST
 
     this->hdc = GetDC(this->hwnd);
     this->memDC = CreateCompatibleDC(this->hdc);
-    this->hBitmap = CreateCompatibleBitmap(this->hdc, PIXEL_BUFFER_WIDTH, PIXEL_BUFFER_HEIGHT);
+    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
     SelectObject(this->memDC, this->hBitmap);
 
     // Set up the BITMAPINFO structure
     this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    this->bitmapInfo.bmiHeader.biWidth = PIXEL_BUFFER_WIDTH;
-    this->bitmapInfo.bmiHeader.biHeight = -PIXEL_BUFFER_HEIGHT;  // Negative to indicate top-down bitmap
+    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
+    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
     this->bitmapInfo.bmiHeader.biPlanes = 1;
     this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
     this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
@@ -105,6 +105,18 @@ void Gui::updateDimensions(int width, int height) {
     this->windowWidth = width;
     this->windowHeight = height;
 
+    // Get a new bitmap + pause execution
+    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
+    SelectObject(this->memDC, this->hBitmap);
+
+    // Set up the BITMAPINFO structure
+    this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
+    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
+    this->bitmapInfo.bmiHeader.biPlanes = 1;
+    this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
+    this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
     return;
 
 }
@@ -117,9 +129,9 @@ void Gui::flip() const {
     SetDIBitsToDevice(
         this->memDC, 
         0, 0, 
-        PIXEL_BUFFER_WIDTH, PIXEL_BUFFER_HEIGHT, 
+        this->windowWidth, this->windowHeight, 
         0, 0, 
-        0, PIXEL_BUFFER_HEIGHT, 
+        0, this->windowHeight, 
         this->buffer, 
         &this->bitmapInfo, 
         DIB_RGB_COLORS
