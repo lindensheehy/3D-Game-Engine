@@ -31,7 +31,7 @@ ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
 /* ---------- ActionOpenWindow ---------- */
 /* -------------------------------------- */
 
-ActionOpenWindow::ActionOpenWindow(const char* fileName) {
+ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle* windowHandle) {
 
     this->actionType = UIEnum::ActionType::OPEN_WINDOW;
 
@@ -45,16 +45,17 @@ ActionOpenWindow::ActionOpenWindow(const char* fileName) {
 /* ---------- ActionRunFunc ---------- */
 /* ----------------------------------- */
 
-ActionCallFunc::ActionCallFunc(void (*func)()) {
+ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context* context) {
 
     this->actionType = UIEnum::ActionType::CALL_FUNC;
 
     this->func = func;
+    this->context = context;
 
 }
 
 void ActionCallFunc::callFunc() {
 
-    this->func();
+    this->func(this->context);
 
 }

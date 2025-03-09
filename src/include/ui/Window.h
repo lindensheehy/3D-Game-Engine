@@ -10,10 +10,11 @@
 #include "ui/Core.h"
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
+#include "ui/Context.h"
 
 
 
-// Struct used in the bindables linked list
+// Struct used in the Window::bindables linked list
 // This maps const char* strings to WindowElement objects
 struct Bindable {
     const char* id;
@@ -27,24 +28,45 @@ class Window;
 
 // Handle class for Window objects
 // This gives a reference to a Window object without being able to access it
+// Also stores a Context object, which holds any data the window needs to reference
 class WindowHandle {
 
-    // Binding and UI are allowed to access the ptr instance variable
-    friend class Binding;
+    // BindFuncs and UI are allowed to access the ptr instance variable
+    friend class BindFuncs;
     friend class UI;
 
     public:
+
+        /*   Instance Variables   */
         
         WindowID id;
 
-        WindowHandle() : id(-1), ptr(nullptr) {}
-        WindowHandle(WindowID id, Window* ptr) : id(id), ptr(ptr) {}
+        // Constructors
+        WindowHandle() : id(-1), ptr(nullptr), context(nullptr) {}
+        WindowHandle(WindowID id, Window* ptr) : id(id), ptr(ptr), context(nullptr) {}
 
-        // No destructor because this class does not own the Window pointer
+        // Destructor
+        ~WindowHandle() {
+            if (this->context != nullptr) delete this->context;
+            // this->ptr is not owned by this class, so does not need to be deleted
+        }
+
+
+        /*   Instance Functions   */
+        
+        // Sets the context, while accounting for old context if it exists
+        void setContext(Context* context) {
+            if (this->context != nullptr) delete this->context;
+            this->context = context;
+        }
 
     private:
 
         Window* ptr;
+
+        // This will contain one of the Context subclasses
+        // May also be nullptr if the window does not require context
+        Context* context;
     
 };
 

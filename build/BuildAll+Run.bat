@@ -37,13 +37,15 @@ g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bound
 
 :: ui
 g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
-g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
-g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
-g++ -Ofast %include%        -c %srcdir%ui/Binding.cpp           -o %objdir%Binding.o
+g++ -Ofast %include%        -c %srcdir%ui/BindFuncs.cpp         -o %objdir%BindFuncs.o
+g++ -Ofast %include%        -c %srcdir%ui/BindManager.cpp       -o %objdir%BindManager.o
+g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%uiCore.o
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
+g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
+g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 
 :: xml
-g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%Core.o
+g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xmlCore.o
 g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
 g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
 g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o

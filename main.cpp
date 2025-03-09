@@ -27,8 +27,9 @@ bool gravity;
 
 UI* ui;
 
-WindowHandle windowTransform;
-WindowHandle windowNavBar;
+WindowHandle* navBar;
+WindowHandle* windowTransform;
+WindowHandle* windowObjects;
 
 bool doMainLoop = true;
 
@@ -122,21 +123,16 @@ void handleInput(State* state, Camera* camera) {
 
         ui->validateWindowHandle(&windowTransform);
 
-        if (windowTransform.id == -1) {
-            windowTransform = ui->createWindow(File::TRANSFORM);
+        if (windowTransform != nullptr) {
+            windowTransform->setContext( new ContextTransform(selectedObject) );
+            ui->bindManager->rebind(windowTransform);
         }
-
-        ui->binding->bindTransform(windowTransform, selectedObject);
 
     }
 
     if (state->keyJustDown(KEY_ENTER)) {
-
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
-
-        ui->destroyWindow(&windowTransform);
-
     }
 
     // This rotates the selected object when pressing keys j,k,l
@@ -336,10 +332,10 @@ void init() {
     ui = new UI();
 
     // Create the navbar
-    windowNavBar = ui->createWindow(File::NAVBAR);
+    navBar = ui->createWindow(File::NAVBAR);
 
     // Move the navbar to the top left
-    ui->setWindowPos(windowNavBar, 0, 0);
+    ui->setWindowPos(navBar, 0, 0);
 
 }
 

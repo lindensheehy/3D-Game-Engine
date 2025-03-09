@@ -27,7 +27,7 @@ UI::UI() {
     this->xml->initDefaultElements();
     this->xml->initCustomElements();
 
-    this->binding = new Binding();
+    this->bindManager = new BindManager();
     
     return;
 
@@ -46,7 +46,7 @@ UI::~UI() {
 
     if (this->windows != nullptr) delete this->windows;
 
-    if (this->binding != nullptr) delete this->binding;
+    if (this->bindManager != nullptr) delete this->bindManager;
 
 }
 
@@ -194,7 +194,7 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
 }
 
-WindowHandle UI::createWindow(const char* fileName) {
+WindowHandle* UI::createWindow(const char* fileName) {
 
     // Build the Window object from the xml file
     Window* newWindow = this->xml->buildWindow(fileName);
@@ -215,7 +215,7 @@ WindowHandle UI::createWindow(const char* fileName) {
     newWindow->id = this->nextFreeWindowId;
     this->nextFreeWindowId++;
 
-    WindowHandle ret(newWindow->id, newWindow);
+    WindowHandle* ret = new WindowHandle(newWindow->id, newWindow);
 
     return ret;
 
@@ -241,26 +241,46 @@ void UI::destroyWindow(WindowHandle* pWindowHandle) {
 
 }
 
-void UI::validateWindowHandle(WindowHandle* pWindowHandle) {
+void UI::validateWindowHandle(WindowHandle** pWindowHandle) {
 
     if (pWindowHandle == nullptr) {
-        logWrite("UI::validateWindowHandle(WindowHandle*) Was called on a nullptr!", true);
+        logWrite("UI::validateWindowHandle(WindowHandle**) Was called on a nullptr!", true);
         return;
     }
 
-    Window* window = (*pWindowHandle).ptr;
+    // This is actually fine, just the rest of the code cant execute in this case
+    if ((*pWindowHandle) == nullptr) return;
 
-    // Set the arg to -1 if it was not found
-    if (window == nullptr) {
-        (*pWindowHandle).id = -1;
-        (*pWindowHandle).ptr = nullptr;
+    Window* window = (*pWindowHandle)->ptr;
+
+    // Check the Window list to see if it actually exists
+    Window* current;
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
+
+        current = this->windows->iterGetObj();
+
+        // If it is found, theres nothing left to do
+        if (window == current) return;
+
     }
+
+    // Invalidate the WindowHandle if it was not found
+    // NOTE: Theres no need to free the Window ptr as this would have been handled when the window was destroyed
+    delete (*pWindowHandle);
+    (*pWindowHandle) = nullptr;
+    
+    return;
 
 }
 
-void UI::setWindowPos(WindowHandle windowHandle, int posx, int posy) {
+void UI::setWindowPos(WindowHandle* windowHandle, int posx, int posy) {
 
-    Window* window = windowHandle.ptr;
+    if (windowHandle == nullptr) {
+        logWrite("UI::setWindowPos(WindowHandle*, int, int) was called on a nullptr!", true);
+        return;
+    }
+
+    Window* window = windowHandle->ptr;
 
     if (window == nullptr) {
         logWrite("UI::setWindowPos() Wants to set the position of an invalid window!", true);

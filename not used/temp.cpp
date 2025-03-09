@@ -6,8 +6,6 @@ class WindowHandle;
 
 class DataClass;
 
-// I am just using namespace here, but keep in mind what i said above
-
 class BindManager {
 
     public:

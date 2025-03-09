@@ -11,7 +11,7 @@
 #include "ui/Action.h"
 #include "ui/WindowElement.h"
 #include "ui/Window.h"
-#include "ui/Binding.h"
+#include "ui/BindManager.h"
 
 #include "xml/XML.h"
 
@@ -31,9 +31,9 @@ class UI {
         // Will be true if the last click landed within the UI
         bool hasFocus;
 
-        // Contains a Binding object, owned by this class
-        // This instance serves no real purpose besides being an easy way to access the Binding object
-        Binding* binding;
+        // Contains a BindManager object, owned by this class
+        // This handles all the binding logic for the windows
+        BindManager* bindManager;
 
 
         // Constructor
@@ -53,18 +53,18 @@ class UI {
         bool doInput(State* state, CursorState* cursorStateOut = nullptr);
 
         // Creates a new window and returns the window identifier
-        WindowHandle createWindow(const char* fileName);
+        WindowHandle* createWindow(const char* fileName);
 
         // Destroys the given window
         // Also sets the values in the struct to invalid states
         void destroyWindow(WindowHandle* windowHandle);
 
         // This ensures that a Window object that the handle refers to exists
-        // If it doesnt, this will set the id to -1, and the pointer to nullptr
-        void validateWindowHandle(WindowHandle* windowHandle);
+        // If it doesnt, it will free the handle and set the pointer to nullptr
+        void validateWindowHandle(WindowHandle** windowHandle);
 
         // Sets the window to the specified position ( (0, 0) is the top left )
-        void setWindowPos(WindowHandle windowHandle, int posx, int posy);
+        void setWindowPos(WindowHandle* windowHandle, int posx, int posy);
 
         
     private:
