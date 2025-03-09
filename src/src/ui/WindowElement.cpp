@@ -698,10 +698,14 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 void WindowButton::onInput(State* state) {
 
-    if (this->action != nullptr) {
-        WindowElement::queueAction(this->action);
-    }
+    if (state->wasLeftJustPressed()) {
 
+        if (this->action != nullptr) {
+            WindowElement::queueAction(this->action);
+        }
+
+    }
+    
     return;
 
 }

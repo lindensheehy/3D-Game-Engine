@@ -29,10 +29,10 @@ class ContextNavBar : public Context {
     public:
 
         // Handles to the windows owned by the NavBar
-        WindowHandle* windowTransform;
-        WindowHandle* windowObjects;
+        WindowHandle* transform;
+        WindowHandle* objects;
 
-        ContextNavBar() {
+        ContextNavBar(WindowHandle* transform, WindowHandle* objects) : transform(transform), objects(objects) {
             this->type = UIEnum::ContextType::NAVBAR;
         }
 

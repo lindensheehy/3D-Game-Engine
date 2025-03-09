@@ -45,12 +45,12 @@ g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Windo
 g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 
 :: xml
-g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xmlCore.o
-g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
-g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
-g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
-g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
-g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%XMLFile.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xmlCore.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%XMLFile.o
 
 
 :: Build main

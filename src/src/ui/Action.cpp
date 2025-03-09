@@ -36,6 +36,7 @@ ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle* windowHan
     this->actionType = UIEnum::ActionType::OPEN_WINDOW;
 
     this->fileName = fileName;
+    this->windowHandle = windowHandle;
 
 }
 

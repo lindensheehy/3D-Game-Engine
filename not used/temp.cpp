@@ -67,3 +67,16 @@ class BindManager {
     
 };
 
+int* p;
+
+void func() {
+    int scoped = 1;
+    p = &scoped;
+    return;
+}
+
+int main() {
+    p = nullptr;
+    func();
+    return (*p)
+}

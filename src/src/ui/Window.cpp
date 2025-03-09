@@ -130,6 +130,14 @@ void Window::bindButton(const char* id, Action* action) {
 
     WindowElement* bindable = this->getBindable(id);
 
+    if (bindable == nullptr) {
+        logWrite("Window::bindButton() was called on a non existant id!", true);
+        logWrite(" -> Tried to find id \"");
+        logWrite(id);
+        logWrite("\" but failed", true);
+        return;  
+    }
+
     // First make sure its actually a WindowButton
     if (bindable->type != UIEnum::ElementType::BUTTON) return;
 

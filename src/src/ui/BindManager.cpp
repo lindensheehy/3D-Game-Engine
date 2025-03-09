@@ -47,6 +47,9 @@ void BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
 
     this->binds->pushBack(newBind);
 
+    // Call the bind func
+    bindFunc(windowHandle);
+
 }
 
 void BindManager::removeBind(WindowHandle* windowHandle) {

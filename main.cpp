@@ -334,6 +334,10 @@ void init() {
     // Create the navbar
     navBar = ui->createWindow(File::NAVBAR);
 
+    // Bind the nav bar
+    navBar->setContext( new ContextNavBar(windowTransform, windowObjects) );
+    ui->bindManager->addBind(navBar, BindFuncs::NavBar::bind);
+
     // Move the navbar to the top left
     ui->setWindowPos(navBar, 0, 0);
 

@@ -60,6 +60,9 @@ void UI::draw(Drawer* drawer) {
 
 bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nullptr */) {
     
+    // Handle actions before starting
+    this->handleActions();
+
     Window* currentWindow;
 
     // First I check where the mouse is relative to the UI. This is how the cursor state is updated
@@ -324,7 +327,13 @@ void UI::handleActions() {
 
                 ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
 
-                this->createWindow(castedAction->fileName);
+                // First I make sure the window isnt already open
+                this->validateWindowHandle( &(castedAction->windowHandle) );
+
+                // If the window is open, I dont execute the rest of the block
+                if (castedAction->windowHandle != nullptr) break;
+
+                castedAction->windowHandle = this->createWindow(castedAction->fileName);
 
                 break;
 
@@ -335,6 +344,18 @@ void UI::handleActions() {
                 ActionCallFunc* castedAction = (ActionCallFunc*) currentAction;
 
                 castedAction->callFunc();
+
+                break;
+
+            }
+
+            default: {
+
+                logWrite("UI is trying to handle an unrecognized Action!", true);
+
+                logWrite(" -> Action type ");
+                logWrite(UIEnum::actionTypeToString(currentAction->actionType));
+                logWrite(" cannot be matched", true);
 
                 break;
 
@@ -397,4 +418,3 @@ Action* UI::getNextAction() {
     return UI::actionQueue->popFront();
 
 }
-

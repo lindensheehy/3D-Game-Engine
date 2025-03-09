@@ -2,6 +2,8 @@
 
 void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
+    logWrite("Binding Nav Bar!", true);
+
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a nullptr!", true);
         return;
@@ -14,10 +16,32 @@ void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
         return;
     }
 
+    Context* context = windowHandle->context;
+
+    if (context == nullptr) {
+        logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a handle containing null Context!", true);
+        logWrite(" -> This bind function requires a Context of type NAVBAR (ContextNavBar)", true);
+        return;
+    }
+
+    if (context->type != UIEnum::ContextType::NAVBAR) {
+        logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
+        logWrite(" -> Expected type ");
+        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::NAVBAR));
+        logWrite(" but found type ");
+        logWrite(UIEnum::contextTypeToString(context->type), true);
+        return;
+    }
+
+    ContextNavBar* castedContext = (ContextNavBar*) context;
+    WindowHandle* transform = castedContext->transform;
+    WindowHandle* objects = castedContext->objects;
+
     /*   Binding logic   */
 
     // Transform button
-    window->bindButton("ButtonTransform", new ActionOpenWindow(File::TRANSFORM, nullptr));
+    window->bindButton("ButtonTransform", new ActionOpenWindow(File::TRANSFORM, transform));
+    window->bindButton("ButtonObjects", new ActionOpenWindow(File::OBJECTS, objects));
 
     return;
 

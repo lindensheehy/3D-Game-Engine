@@ -9,7 +9,7 @@
 
     <filledRect posx=0 posy=0 sizex=160 sizey=23 color=background>
 
-        <!-- Note because these buttons dont actually work yet -->
+        <!-- Temporary note because these buttons dont actually work yet -->
         <textStatic posx=5 posy=25 text=TheseButtonsDontWorkYet.../>
 
         <!-- Transform Button -->
@@ -21,7 +21,7 @@
         </button>
 
         <!-- Object Button -->
-        <button posx=80 posy=0 sizex=80 sizey=23 id=ButtonObject>
+        <button posx=80 posy=0 sizex=80 sizey=23 id=ButtonObjects>
 
             <outlinedRect posx=0 posy=0 sizex=80 sizey=23 color=border/>
             <textStatic posx=22 posy=8 text=Object/>

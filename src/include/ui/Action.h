@@ -54,6 +54,7 @@ class ActionOpenWindow : public Action {
         /*   Instance Variables   */
 
         const char* fileName;
+        WindowHandle* windowHandle;
 
 
         // Constructor
