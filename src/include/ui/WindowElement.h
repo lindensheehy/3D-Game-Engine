@@ -67,6 +67,9 @@ class WindowElement {
         // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
         WindowElement* doInput(State* state, Vec2* offset);
 
+        void setPos(int x, int y);
+        void setPos(Vec2* newPos);
+
         // Adds a child element to this element
         void addChild(WindowElement* child);
 

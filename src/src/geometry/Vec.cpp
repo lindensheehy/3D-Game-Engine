@@ -31,7 +31,7 @@ void Vec2::log() const {
     logWrite(this->x);
     logWrite(", ");
     logWrite(this->y);
-    logWrite(" )", true);
+    logWrite(" )");
 
     return;
     
@@ -269,7 +269,7 @@ void Vec3::log() const {
     logWrite(this->y);
     logWrite(", ");
     logWrite(this->z);
-    logWrite(" )", true);
+    logWrite(" )");
 
     return;
     

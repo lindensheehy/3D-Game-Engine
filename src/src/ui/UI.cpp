@@ -202,16 +202,33 @@ WindowHandle* UI::createWindow(const char* fileName) {
     // Build the Window object from the xml file
     Window* newWindow = this->xml->buildWindow(fileName);
 
-    // The created window will have exaclty one parent element, and this element will be the size of the window
+    // The created window will have exaclty one parent element, and this element will be the actual visible window
     WindowElement* parentElement = newWindow->elements->getFirst();
 
     // Tell the window how big it is
     newWindow->size->set(parentElement->size);
     newWindow->endPos->set(parentElement->size);
 
-    // Place the window at the nextWindowPos
-    newWindow->pos->set(this->nextWindowPos);
-    newWindow->endPos->add(this->nextWindowPos);
+    // Place the window at the nextWindowPos if position was not specified (flag is -1)
+    if (parentElement->pos->is(-1, -1)) {
+
+        newWindow->pos->set(this->nextWindowPos);
+        newWindow->endPos->add(this->nextWindowPos);
+
+        this->updateNextWindowPos();
+
+    }
+
+    // If it was specified, use the values from parentElement
+    else {
+
+        newWindow->pos->set(parentElement->pos);
+        newWindow->endPos->add(parentElement->pos);
+
+        // Reset parentElement->pos as this is a relative position
+        parentElement->setPos(0, 0);
+
+    }
 
     this->windows->pushBack(newWindow);
 

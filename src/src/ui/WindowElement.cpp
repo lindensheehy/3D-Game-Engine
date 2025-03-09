@@ -145,6 +145,19 @@ WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
 
 }
 
+void WindowElement::setPos(int x, int y) {
+
+    this->pos->set(x, y);
+
+    this->endPos->set(this->size);
+    this->endPos->add(x, y);
+
+}
+
+void WindowElement::setPos(Vec2* newPos) {
+    this->setPos( (int) newPos->x, (int) newPos->y );
+}
+
 void WindowElement::addChild(WindowElement* child) {
 
     this->children->pushBack(child);
