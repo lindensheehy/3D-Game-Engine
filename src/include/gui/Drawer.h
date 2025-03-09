@@ -6,6 +6,7 @@
 #include "geometry/Vec.h"
 #include "geometry/Tri.h"
 #include "geometry/Camera.h"
+#include "gui/Display.h"
 #include "gui/State.h"
 #include "util/LinkedList.h"
 

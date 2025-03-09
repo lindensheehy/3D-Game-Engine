@@ -27,22 +27,23 @@ if not exist "%objdir%" (
 @REM g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
 
 :: gui
-@REM g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
-@REM g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
-@REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
+g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%Display.o
+g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
+g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
+g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 
 :: physics
 @REM g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%ObjectSet.o
 @REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
 
 :: ui
-g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
-g++ -Ofast %include%        -c %srcdir%ui/BindFuncs.cpp         -o %objdir%BindFuncs.o
-g++ -Ofast %include%        -c %srcdir%ui/BindManager.cpp       -o %objdir%BindManager.o
-g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%uiCore.o
-g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
-g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
-g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/BindFuncs.cpp         -o %objdir%BindFuncs.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/BindManager.cpp       -o %objdir%BindManager.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%uiCore.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
+@REM g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
 
 :: xml
 @REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xmlCore.o

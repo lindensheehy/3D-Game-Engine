@@ -27,8 +27,9 @@ g++ -Ofast %include%        -c %srcdir%geometry/Mesh.cpp        -o %objdir%Mesh.
 g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
 
 :: gui
-g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
+g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%Display.o
 g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
+g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
 g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
 
 :: physics
