@@ -54,11 +54,12 @@ class ActionOpenWindow : public Action {
         /*   Instance Variables   */
 
         const char* fileName;
-        WindowHandle* windowHandle;
+        WindowHandle** windowHandle;
+        void (*bindFunc)(WindowHandle*);
 
 
         // Constructor
-        ActionOpenWindow(const char* fileName, WindowHandle* windowHandle);
+        ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*));
 
 };
 

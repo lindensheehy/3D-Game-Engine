@@ -15,43 +15,43 @@ if not exist "%objdir%" (
 :: Build dependancies
 
 :: util
-@REM g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%Utility.o
-@REM g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%Math.o
-@REM g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%Log.o
-@REM g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%FileReader.o
+@REM g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%util-Utility.o
+@REM g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%util-Math.o
+@REM g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%util-Log.o
+@REM g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%util-FileReader.o
 
-:: geometry
-@REM g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%Vec.o
-@REM g++ -Ofast %include%        -c %srcdir%geometry/Tri.cpp         -o %objdir%Tri.o
-@REM g++ -Ofast %include%        -c %srcdir%geometry/Mesh.cpp        -o %objdir%Mesh.o
-@REM g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%Camera.o
+@REM :: geometry
+@REM g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%geometry-Vec.o
+@REM g++ -Ofast %include%        -c %srcdir%geometry/Tri.cpp         -o %objdir%geometry-Tri.o
+@REM g++ -Ofast %include%        -c %srcdir%geometry/Mesh.cpp        -o %objdir%geometry-Mesh.o
+@REM g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%geometry-Camera.o
 
 :: gui
-g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%Display.o
-g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%Drawer.o
-g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%Gui.o
-g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%State.o
+@REM g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%gui-Display.o
+@REM g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%gui-Drawer.o
+@REM g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%gui-Gui.o
+@REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%gui-State.o
 
 :: physics
-@REM g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%ObjectSet.o
-@REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%Bounding.o
+@REM g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%physics-ObjectSet.o
+@REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%physics-Bounding.o
 
 :: ui
-@REM g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%Action.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/BindFuncs.cpp         -o %objdir%BindFuncs.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/BindManager.cpp       -o %objdir%BindManager.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%uiCore.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%UI.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%Window.o
-@REM g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%WindowElement.o
+g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%ui-Action.o
+g++ -Ofast %include%        -c %srcdir%ui/BindFuncs.cpp         -o %objdir%ui-BindFuncs.o
+g++ -Ofast %include%        -c %srcdir%ui/BindManager.cpp       -o %objdir%ui-BindManager.o
+g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%ui-Core.o
+g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%ui-UI.o
+g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%ui-Window.o
+g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%ui-WindowElement.o
 
 :: xml
-@REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xmlCore.o
-@REM g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%ElementSet.o
-@REM g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%ParameterInfo.o
-@REM g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%TagSequence.o
-@REM g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%XML.o
-@REM g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%XMLFile.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xml-Core.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/ElementSet.cpp       -o %objdir%xml-ElementSet.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/ParameterInfo.cpp    -o %objdir%xml-ParameterInfo.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/TagSequence.cpp      -o %objdir%xml-TagSequence.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/XML.cpp              -o %objdir%xml-XML.o
+@REM g++ -Ofast %include%        -c %srcdir%xml/XMLFile.cpp          -o %objdir%xml-XMLFile.o
 
 
 :: Build main

@@ -31,12 +31,13 @@ ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
 /* ---------- ActionOpenWindow ---------- */
 /* -------------------------------------- */
 
-ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle* windowHandle) {
+ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*)) {
 
     this->actionType = UIEnum::ActionType::OPEN_WINDOW;
 
     this->fileName = fileName;
     this->windowHandle = windowHandle;
+    this->bindFunc = bindFunc;
 
 }
 

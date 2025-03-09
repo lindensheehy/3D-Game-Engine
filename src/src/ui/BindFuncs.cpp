@@ -34,20 +34,23 @@ void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
     }
 
     ContextNavBar* castedContext = (ContextNavBar*) context;
-    WindowHandle* transform = castedContext->transform;
-    WindowHandle* objects = castedContext->objects;
+    WindowHandle** transform = castedContext->transform;
+    WindowHandle** objects = castedContext->objects;
 
     /*   Binding logic   */
 
     // Transform button
-    window->bindButton("ButtonTransform", new ActionOpenWindow(File::TRANSFORM, transform));
-    window->bindButton("ButtonObjects", new ActionOpenWindow(File::OBJECTS, objects));
+    window->bindButton("ButtonTransform", new ActionOpenWindow(File::TRANSFORM, transform, BindFuncs::Transform::bind));
+    window->bindButton("ButtonObjects", new ActionOpenWindow(File::OBJECTS, objects, BindFuncs::Objects::bind));
 
     return;
 
 }
 
 void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
+
+
+    /*   First do the binds that to not depend on the Context object   */
 
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a nullptr!", true);
@@ -60,6 +63,13 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing an invalid Window ptr!", true);
         return;
     }
+
+    // Top bar elements
+    window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
+    window->bindDragable("WindowDragBar", window->pos, window->endPos);
+
+
+    /*   Then try to grab the Context object, and bind the rest if it exists   */
 
     Context* context = windowHandle->context;
 
@@ -87,12 +97,6 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
         return;
     }
 
-    /*   Binding logic   */
-
-    // Top bar elements
-    window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
-    window->bindDragable("WindowDragBar", window->pos, window->endPos);
-
     // Position
     window->bindTextInput("positionx", &(object->pos->x));
     window->bindTextInput("positiony", &(object->pos->y));
@@ -108,11 +112,34 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
     window->bindTextInput("scaley", &(object->scale->y));
     window->bindTextInput("scalez", &(object->scale->z));
 
+
     return;
 
 }
 
 void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
+
+
+    /*   First do the binds that to not depend on the Context object   */
+
+    if (windowHandle == nullptr) {
+        logWrite("BindFuncs::Objects::bind(WindowHandle*) was called on a nullptr!", true);
+        return;
+    }
+
+    Window* window = windowHandle->ptr;
+
+    if (window == nullptr) {
+        logWrite("BindFuncs::Objects::bind(WindowHandle*) was called on a handle containing an invalid Window ptr!", true);
+        return;
+    }
+
+    // Top bar elements
+    window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
+    window->bindDragable("WindowDragBar", window->pos, window->endPos);
+
+
+    return;
 
 }
 

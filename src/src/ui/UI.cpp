@@ -328,12 +328,14 @@ void UI::handleActions() {
                 ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
 
                 // First I make sure the window isnt already open
-                this->validateWindowHandle( &(castedAction->windowHandle) );
+                this->validateWindowHandle( (castedAction->windowHandle) );
 
                 // If the window is open, I dont execute the rest of the block
-                if (castedAction->windowHandle != nullptr) break;
+                if ( *(castedAction->windowHandle) != nullptr ) break;
 
-                castedAction->windowHandle = this->createWindow(castedAction->fileName);
+                *(castedAction->windowHandle) = this->createWindow(castedAction->fileName);
+
+                castedAction->bindFunc( *(castedAction->windowHandle) );
 
                 break;
 
