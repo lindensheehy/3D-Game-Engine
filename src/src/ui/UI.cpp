@@ -335,7 +335,7 @@ void UI::handleActions() {
 
                 *(castedAction->windowHandle) = this->createWindow(castedAction->fileName);
 
-                castedAction->bindFunc( *(castedAction->windowHandle) );
+                this->bindManager->addBind( *(castedAction->windowHandle), castedAction->bindFunc );
 
                 break;
 
