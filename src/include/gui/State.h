@@ -204,8 +204,8 @@ class State {
 
             /*
                 Keeps track of keyboard events.
-                Not every key is tracked, but all the common ones are. The list of keys is under private in the enums
-                each 'type' of key has its own array, and these arrays are indexed via instance functions which take inputs from the SDL2 keycode system.
+                Not every key is tracked, but all the common ones are. You can see the list in the KeyCode enum above
+                There is one master list, of size 256 (keyStatesLength), and this is simply indexed by the hex equivalent of the KeyCode
             */
 
             public:
@@ -221,7 +221,7 @@ class State {
                 // Basically a 'set-all' function. It sets every instance variable of this instance, to that of another instance.
                 void setState(KeyboardState* state);
 
-                // Returns a pointer to a keystate within one of the instance arrays, based on a given keycode from SDL2
+                // Returns a pointer to a keystate within one of the instance arrays, this is based on my KeyCode enum defined above
                 bool* getKeyRef(KeyCode keyCode);
 
                 // Setters for keys
@@ -241,7 +241,7 @@ class State {
 
         /*   Instance variables   */
 
-        // Stores a set of at most 3 keys which were just pressed this frame. will store the first 3 given by SDL
+        // Stores a set of at most 3 keys which were just pressed this frame. will store the first 3 given by Windows
         KeyCode* newKeyPresses;
         int newKeyPressesIndex;
 
