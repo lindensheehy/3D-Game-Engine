@@ -10,17 +10,31 @@ new stuff:
     - let each tri be a different color
     - let tris be drawn as a png
 
-- add functionailty to pick an object by looking at it and tranform that specific object
-    - ray cast to find an object
-        - probably just check each object rather than actually stepping along a ray since theres few objects in the scene
-
-- expand UI functionality.
-    - create new objects
-    - change more traits for each object
+- add functionailty to pick an object by looking at interpolation
+    - ray cast may work, but it might be hard to properly translate screen coordinates to an angle in 3d space.
+    - probably easiest, and most efficient, way would be to just have Drawer track a certain pixel to see which object drew there with the least depth
+        - This would probably be done easiest by having some instance variables in Drawer, say "currentObject" and "foundObject"
+          then when a pixel is drawn to the tracked position, update foundObject to currentObject.
+        - This will add a little overhead, but it should hopefully be pretty negligable
 
 - create an improved font renderer
     - use a 32x32 bitmap, then downscale to specified size
     - probably in a textfile, since thats easiest to parse, but some image format would be easiest to create
+
+- Overhaul gui module
+    - Make a wrapper class "GUI"
+        - This will hold classes:
+            - Gui -> rename to GuiWindow or similar
+            - Drawer
+            - State
+            - Display
+    - Refactor Drawer as a whole
+        - Split up the pieces:
+            - depth buffer (probably?)
+            - Pixel drawing
+            - High level drawing
+            - Font rendering
+        - Also move Color and PNG to their own files
 
 fixes:
 - fix depth interpolation, depth between two points is not always linear.

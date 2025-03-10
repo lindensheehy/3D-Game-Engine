@@ -86,5 +86,3 @@ namespace UIEnum {
     constexpr const char* UNKNOWN_TYPE = "UNKNOWN??";
 
 }
-
-

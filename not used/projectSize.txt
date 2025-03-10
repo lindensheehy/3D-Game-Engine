@@ -2,11 +2,92 @@ Line counts:
 
 Testing -> 770
 
-Dependancies:
-.h      -> 4,143
-.cpp    -> 11,516
+Deps:
+- Headers =============================== TOTAL => 4,507
 
-main    -> 386
+    - geometry ====================== TOTAL => 586
+        - Camera.h ------------> 101
+        - Mesh.h --------------> 151
+        - Tri.h ---------------> 126
+        - Vec.h ---------------> 208
+
+    - gui =========================== TOTAL => 1,164
+        - Display.h -----------> 58
+        - Drawer.h ------------> 700
+        - Gui.h ---------------> 84
+        - State.h -------------> 322
+
+    - physics ======================= TOTAL => 301
+        - Bounding.h ----------> 95
+        - ObjectSet.h ---------> 206
+
+    - ui ============================ TOTAL => 1,021
+        - Action.h ------------> 92
+        - BindFuncs.h ---------> 47
+        - BindManager.h -------> 65
+        - Context.h -----------> 66
+        - Core.h --------------> 89
+        - UI.h ----------------> 117
+        - Window.h ------------> 169
+        - WindowElement.h -----> 376
+
+    - util ========================== TOTAL => 909
+        - FileReader.h --------> 30
+        - LinkedList.h --------> 654
+        - Log.h ---------------> 40
+        - Math.h --------------> 94
+        - Utility.h -----------> 91
+
+    - xml =========================== TOTAL => 526
+        - Core.h --------------> 59
+        - ElementSet.h --------> 91
+        - ParameterInfo.h -----> 110
+        - TagSequence.h -------> 107
+        - XML.h ---------------> 61
+        - XMLFile.h -----------> 98
+
+- Source Files ========================== TOTAL => 12,153
+
+    - geometry ====================== TOTAL => 2,505
+        - Camera.cpp ----------> 331
+        - Mesh.cpp ------------> 1,235
+        - Tri.cpp -------------> 335
+        - Vec.cpp -------------> 604
+
+    - gui =========================== TOTAL => 2,599
+        - Display.cpp ---------> 117
+        - Drawer.cpp ----------> 1809
+        - Gui.cpp -------------> 199
+        - State.cpp -----------> 474
+
+    - physics ======================= TOTAL => 931
+        - Bounding.cpp --------> 193
+        - ObjectSet.cpp -------> 738
+
+    - ui ============================ TOTAL => 2,082
+        - Action.cpp ----------> 66
+        - BindFuncs.cpp -------> 224
+        - BindManager.cpp -----> 141
+        - Core.cpp ------------> 74
+        - UI.cpp --------------> 440
+        - Window.cpp ----------> 338
+        - WindowElement.cpp ---> 799
+
+    - util ========================== TOTAL => 1,150
+        - FileReader.cpp ------> 112
+        - Log.cpp -------------> 168
+        - Math.cpp ------------> 543
+        - Utility.cpp ---------> 327
+
+    - xml =========================== TOTAL => 2,886
+        - Core.cpp ------------> 42
+        - ElementSet.cpp ------> 211
+        - ParameterInfo.cpp ---> 228
+        - TagSequence.cpp -----> 854
+        - XML.cpp -------------> 868
+        - XMLFile.cpp ---------> 683
 
 
-Total   -> 16,815
+main.cpp    -> 407
+
+Total       -> 17,067
