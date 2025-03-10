@@ -60,6 +60,14 @@ class WindowHandle {
             this->context = context;
         }
 
+        bool hasValidContext() {
+            return (this->context != nullptr);
+        }
+
+        bool hasNoContext() {
+            return (this->context == nullptr);
+        }
+
     private:
 
         Window* ptr;

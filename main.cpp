@@ -33,7 +33,20 @@ WindowHandle* windowObjects;
 
 bool doMainLoop = true;
 
-void handleInput(State* state, Camera* camera) {
+void giveUiData() {
+
+    if (windowObjects != nullptr) {
+
+        // Only give it new context if it does not have one
+        if ( windowObjects->hasNoContext() ) {
+            windowObjects->setContext( new ContextObjects(objects) );
+        }
+
+    }
+
+}
+
+void handleInput() {
 
     /*
         ---  Directional Movement  ---
@@ -282,7 +295,8 @@ void init() {
     /*   Main Objects   */
 
     newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy()->scale(15)->move(0, 0, 50)->setColor(Color::WHITE);
+    newObject->mesh = Mesh::cubeMesh->copy();
+    newObject->scaleBy(15)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
 
     newObject = new Object();
@@ -352,7 +366,10 @@ int main(int argc, char* argv[]) {
     while (doMainLoop) {
 
         // Does all the user input handling
-        handleInput(state, camera);
+        handleInput();
+
+        // Give the UI any data it needs
+        giveUiData();
 
         // Handle the physics for the frame
         objects->doAllPhysics(state->time->dt);

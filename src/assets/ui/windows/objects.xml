@@ -2,73 +2,38 @@
 
     <background=0xFF303030/>
     <border=0xFFA78BFA/>
+    <buttonColor=0xFF009999/>
+    <white=0xFFFFFFFF/>
 
 </labels>
 
 <main>
 
-    <filledRect posx=330 posy=50 sizex=300 sizey=105 color=background>
+    <filledRect posx=330 posy=50 sizex=260 sizey=76 color=background>
 
-        <outlinedRect posx=0 posy=0 sizex=300 sizey=105 color=border/>
+        <outlinedRect posx=0 posy=0 sizex=260 sizey=75 color=border/>
 
-        <topbar width=300 buttonPos=281 title=ObjectManager/>
+        <topbar width=260 buttonPos=241 title=ObjectManager/>
 
-        <!-- Position Section -->
-        <div posx=20 posy=30 sizex=250 sizey=20>
+        <!-- Create Cube Button -->
+        <button posx=20 posy=30 sizex=100 sizey=35 id=createCube>
 
-            <textStatic posx=0 posy=7 text=Position/>
+            <filledRect posx=0 posy=0 sizex=100 sizey=35 color=buttonColor/>
+            <outlinedRect posx=0 posy=0 sizex=100 sizey=35 color=white/>
 
-            <!-- X Component -->
-            <textStatic posx=75 posy=7 text=X/>
-            <textbox posx=85 posy=4 width=35 id=positionx/>
+            <textStatic posx=26 posy=14 text=New-Cube/>
 
-            <!-- Y Component -->
-            <textStatic posx=135 posy=7 text=Y/>
-            <textbox posx=145 posy=4 width=35 id=positiony/>
+        </button>
 
-            <!-- Z Component -->
-            <textStatic posx=195 posy=7 text=Z/>
-            <textbox posx=205 posy=4 width=35 id=positionz/>
+        <!-- Create Cube Button -->
+        <button posx=140 posy=30 sizex=100 sizey=35 id=createSphere>
 
-        </div>
+            <filledRect posx=0 posy=0 sizex=100 sizey=35 color=buttonColor/>
+            <outlinedRect posx=0 posy=0 sizex=100 sizey=35 color=white/>
 
-        <!-- Rotation Section -->
-        <div posx=20 posy=50 sizex=250 sizey=20>
+            <textStatic posx=20 posy=14 text=New-Sphere/>
 
-            <textStatic posx=0 posy=7 text=Rotation/>
-
-            <!-- X Component -->
-            <textStatic posx=75 posy=7 text=X/>
-            <textbox posx=85 posy=4 width=35 id=rotationx/>
-
-            <!-- Y Component -->
-            <textStatic posx=135 posy=7 text=Y/>
-            <textbox posx=145 posy=4 width=35 id=rotationy/>
-
-            <!-- Z Component -->
-            <textStatic posx=195 posy=7 text=Z/>
-            <textbox posx=205 posy=4 width=35 id=rotationz/>
-
-        </div>
-
-        <!-- Scale Section -->
-        <div posx=20 posy=70 sizex=250 sizey=20>
-
-            <textStatic posx=0 posy=7 text=Scale/>
-
-            <!-- X Component -->
-            <textStatic posx=75 posy=7 text=X/>
-            <textbox posx=85 posy=4 width=35 id=scalex/>
-
-            <!-- Y Component -->
-            <textStatic posx=135 posy=7 text=Y/>
-            <textbox posx=145 posy=4 width=35 id=scaley/>
-
-            <!-- Z Component -->
-            <textStatic posx=195 posy=7 text=Z/>
-            <textbox posx=205 posy=4 width=35 id=scalez/>
-
-        </div>
+        </button>
 
     </filledRect>
 

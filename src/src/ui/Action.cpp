@@ -47,7 +47,7 @@ ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** windowHa
 /* ---------- ActionRunFunc ---------- */
 /* ----------------------------------- */
 
-ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context* context) {
+ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context** context) {
 
     this->actionType = UIEnum::ActionType::CALL_FUNC;
 
@@ -58,6 +58,8 @@ ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context* context) {
 
 void ActionCallFunc::callFunc() {
 
-    this->func(this->context);
+    if (this->context == nullptr) return;
+
+    this->func( *(this->context) );
 
 }

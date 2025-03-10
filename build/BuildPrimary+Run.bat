@@ -33,7 +33,7 @@ if not exist "%objdir%" (
 @REM g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%gui-State.o
 
 :: physics
-@REM g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%physics-ObjectSet.o
+g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%physics-ObjectSet.o
 @REM g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%physics-Bounding.o
 
 :: ui

@@ -34,9 +34,11 @@ Object::Object(Mesh* mesh) {
 
     this->mesh = mesh;
 
-    this->pos = new Vec3();
-    this->velocity = new Vec3();
-    this->gravity = new Vec3();
+    this->pos = new Vec3(0, 0, 0);
+    this->rotation = new Vec3(0, 0, 0);
+    this->scale = new Vec3(1, 1, 1);
+    this->velocity = new Vec3(0, 0, 0);
+    this->gravity = new Vec3(0, 0, 0);
 
     this->opacity = 1;
 
@@ -44,6 +46,9 @@ Object::Object(Mesh* mesh) {
     this->gravityFactor = 1;
     this->frictionFactor = 1;
     this->bounceFactor = 1;
+
+    this->lastRotation = this->rotation->copy();
+    this->lastScale = this->scale->copy();
 
     return;
 
@@ -55,8 +60,15 @@ Object::~Object() {
     if (this->mesh != nullptr) delete this->mesh;
 
     if (this->pos != nullptr) delete this->pos;
+    if (this->rotation != nullptr) delete this->rotation;
+    if (this->scale != nullptr) delete this->scale;
     if (this->velocity != nullptr) delete this->velocity;
     if (this->gravity != nullptr) delete this->gravity;
+
+    if (this->lastRotation != nullptr) delete this->lastRotation;
+    if (this->lastScale != nullptr) delete this->lastScale;
+
+    return;
 
 }
 

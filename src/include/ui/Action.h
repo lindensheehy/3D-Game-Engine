@@ -68,7 +68,7 @@ class ActionCallFunc : public Action {
     public:
 
         // Constructor
-        ActionCallFunc(void (*func)(Context*), Context* context);
+        ActionCallFunc(void (*func)(Context*), Context** context);
 
 
         /*   Instance Functions   */
@@ -83,8 +83,9 @@ class ActionCallFunc : public Action {
         // Function pointer to call
         void (*func)(Context*);
 
-        // Context to call with
-        // This should be a shared pointer, so it can be modified from a WindowHandle object
-        Context* context;
+        // Context to call the func with
+        // This should point to the Context object from the WindowHandle for the window the button belongs to
+        // Its a double pointer so that it will be updated when WindowHandle::setContext() is called
+        Context** context;
 
 };

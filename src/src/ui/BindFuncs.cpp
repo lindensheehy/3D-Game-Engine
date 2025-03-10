@@ -71,11 +71,8 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
     Context* context = windowHandle->context;
 
-    if (context == nullptr) {
-        logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing null Context!", true);
-        logWrite(" -> This bind function requires a Context of type TRANSFORM (ContextTransform)", true);
-        return;
-    }
+    // Null Context is okay, just the rest of the function cant run
+    if (context == nullptr) return;
 
     if (context->type != UIEnum::ContextType::TRANSFORM) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
@@ -137,14 +134,90 @@ void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
     window->bindDragable("WindowDragBar", window->pos, window->endPos);
 
 
+    /*   The rest of the binds dont actually need the Context for this function   */
+
+    window->bindButton("createCube", new ActionCallFunc(BindFuncs::Objects::createCube, &(windowHandle->context)));
+    window->bindButton("createSphere", new ActionCallFunc(BindFuncs::Objects::createSphere, &(windowHandle->context)));
+
+
     return;
 
 }
 
 void BindFuncs::Objects::createCube(Context* contextObjects) {
 
+    logWrite("Trying to create a cube!", true);
+
+    /*   Verify the contents of the Context object   */
+
+    // Null Context is okay, just the function cant run this time
+    if (contextObjects == nullptr) return;
+
+    if (contextObjects->type != UIEnum::ContextType::OBJECTS) {
+        logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
+        logWrite(" -> Expected type ");
+        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::OBJECTS));
+        logWrite(" but found type ");
+        logWrite(UIEnum::contextTypeToString(contextObjects->type), true);
+        return;
+    }
+
+    ContextObjects* castedContext = (ContextObjects*) contextObjects;
+    ObjectSet* objectSet = castedContext->objectSet;
+
+    if (objectSet == nullptr) {
+        logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing invalid Context!", true);
+        logWrite(" -> The ContextObjects contained a null ObjectSet pointer", true);
+        return;
+    }
+
+
+    /*   Execution logic   */
+
+    // Create the new Object
+    Object* newObject = new Object();
+    newObject->mesh = Mesh::cubeMesh->copy();
+    objectSet->pushBack(newObject);
+
+    return;
+
 }
 
 void BindFuncs::Objects::createSphere(Context* contextObjects) {
     
+    logWrite("Trying to create a sphere!", true);
+
+    /*   Verify the contents of the Context object   */
+
+    // Null Context is okay, just the function cant run this time
+    if (contextObjects == nullptr) return;
+
+    if (contextObjects->type != UIEnum::ContextType::OBJECTS) {
+        logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
+        logWrite(" -> Expected type ");
+        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::OBJECTS));
+        logWrite(" but found type ");
+        logWrite(UIEnum::contextTypeToString(contextObjects->type), true);
+        return;
+    }
+
+    ContextObjects* castedContext = (ContextObjects*) contextObjects;
+    ObjectSet* objectSet = castedContext->objectSet;
+
+    if (objectSet == nullptr) {
+        logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing invalid Context!", true);
+        logWrite(" -> The ContextObjects contained a null ObjectSet pointer", true);
+        return;
+    }
+
+
+    /*   Execution logic   */
+
+    // Create the new Object
+    Object* newObject = new Object();
+    newObject->mesh = Mesh::sphereMesh->copy();
+    objectSet->pushBack(newObject);
+
+    return;
+
 }
