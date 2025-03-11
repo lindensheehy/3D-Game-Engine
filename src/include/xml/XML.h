@@ -36,10 +36,10 @@ class XML {
 
         // Builds an element from an XMLFile object
         // Takes a predefined XMLFile object
-        WindowElement* buildElement(XMLFile* xmlFile);
+        Ui::WindowElement* buildElement(XMLFile* xmlFile);
 
         // Builds a window from a file name
-        Window* buildWindow(const char* fileName);
+        Ui::Window* buildWindow(const char* fileName);
         
 
     private:

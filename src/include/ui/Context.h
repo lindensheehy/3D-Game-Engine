@@ -12,54 +12,58 @@
 #include "physics/ObjectSet.h"
 
 
-class Context {
+namespace Ui {
 
-    public:
+    class Context {
 
-        UIEnum::ContextType type = UIEnum::ContextType::NONE;
+        public:
 
-        Context() {}
+            Ui::ContextType type = Ui::ContextType::NONE;
 
-        virtual ~Context() {}
+            Context() {}
 
-};
+            virtual ~Context() {}
 
-class ContextNavBar : public Context {
+    };
 
-    public:
+    class ContextNavBar : public Context {
 
-        // Handles to the windows owned by the NavBar
-        WindowHandle** transform;
-        WindowHandle** objects;
+        public:
 
-        ContextNavBar(WindowHandle** transform, WindowHandle** objects) : transform(transform), objects(objects) {
-            this->type = UIEnum::ContextType::NAVBAR;
-        }
+            // Handles to the windows owned by the NavBar
+            WindowHandle** transform;
+            WindowHandle** objects;
 
-};
+            ContextNavBar(WindowHandle** transform, WindowHandle** objects) : transform(transform), objects(objects) {
+                this->type = Ui::ContextType::NAVBAR;
+            }
 
-class ContextTransform : public Context {
+    };
 
-    public:
+    class ContextTransform : public Context {
 
-        // Not owned by this class
-        Object* object;
+        public:
 
-        ContextTransform(Object* object) : object(object) {
-            this->type = UIEnum::ContextType::TRANSFORM;
-        }
+            // Not owned by this class
+            Object* object;
 
-};
+            ContextTransform(Object* object) : object(object) {
+                this->type = Ui::ContextType::TRANSFORM;
+            }
 
-class ContextObjects : public Context {
+    };
 
-    public:
+    class ContextObjects : public Context {
 
-        // Not owned by this class
-        ObjectSet* objectSet;
+        public:
 
-        ContextObjects(ObjectSet* objectSet) : objectSet(objectSet) {
-            this->type = UIEnum::ContextType::OBJECTS;
-        }
+            // Not owned by this class
+            ObjectSet* objectSet;
 
-};
+            ContextObjects(ObjectSet* objectSet) : objectSet(objectSet) {
+                this->type = Ui::ContextType::OBJECTS;
+            }
+
+    };
+
+}

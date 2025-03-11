@@ -1,198 +1,146 @@
-#include "gui/Gui.h"
+#include "gui/GUI.h"
 
+
+/*
+    The following code is here to route Windows messages to the right GUI instance
+    This is not accessible from GUI.h, and it doesnt need to be
+*/
+
+namespace Gui {
+
+    // List of all existing GUI instances
+    LinkedList<GUI*>* windowList = nullptr;
+
+    // Generic WindowProc function that routes messages to their respective GUI instance
+    LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+        // Find the GUI instance that matches the HWND
+        GUI* current;
+        for (windowList->iterStart(0); windowList->iterHasNext(); windowList->iterNext()) {
+    
+            current = windowList->iterGetObj();
+    
+            // Found match
+            if (current->window->hwnd == hwnd) {
+                return current->handleMessage(uMsg, wParam, lParam);
+            }
+    
+        }
+    
+        // None found, just do default handling
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    
+    }
+
+}
+
+
+/*
+    Everything else is for the actual GUI class
+*/
 
 // Constructor
-Gui::Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle /* default value = "Window" */) {
+GUI::GUI(int width, int height, const char* windowName) {
 
-    this->windowWidth = windowWidth;
-    this->windowHeight = windowHeight;
-    this->windowTitle = windowTitle;
+    // First i instantiate the windowList if it hasnt already been
+    if (Gui::windowList == nullptr) Gui::windowList = new LinkedList<GUI*>();
 
-    this->buffer = new uint32[PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT] {};
+    this->window = new Gui::Window(Gui::WindowProc, width, height, windowName);
 
-    // Get hInstance, since I'm not using WinMain
-    this->hInstance = GetModuleHandle(nullptr);
-
-    // Create and register Window Class
-    WNDCLASS wc = {};
-    wc.lpfnWndProc = windowProcFunc;
-    wc.hInstance = this->hInstance;
-    wc.lpszClassName = this->windowTitle;
-
-    if (!RegisterClass(&wc)) {
-        logWrite("Failed to create window class", true);
+    // Ensure the window was properly created and has a HWND
+    if (this->window->hwnd == nullptr) {
+        logWrite("GUI failed to create window \"");
+        logWrite(windowName);
+        logWrite("\"!", true);
         return;
     }
 
-    // Create Window
-    this->hwnd = CreateWindowEx(
-        0,                              // Optional window styles.
-        this->windowTitle,              // Window class
-        this->windowTitle,              // Window text
-        WS_OVERLAPPEDWINDOW,            // Window style
+    this->state = new Gui::State(this->window->hwnd);
 
-        // Position
-        0, 0, 
-        
-        // Size
-        windowWidth, windowHeight,
+    this->display = new Gui::Display(width, height);
 
-        nullptr,            // Parent window    
-        nullptr,            // Menu
-        this->hInstance,    // Instance handle
-        nullptr             // Additional application data
-    );
+    this->drawer = new Gui::Drawer(this->display);
+    this->drawer->initFont();
+    this->drawer->buffer = this->window->buffer;
 
-    if (this->hwnd == NULL) {
-        logWrite("Failed to create window.", true);
-        return;
-    }
+    this->shouldDestroyWindow = false;
 
-    // Show the window
-    ShowWindow(this->hwnd, SW_SHOW);
+    Gui::windowList->pushBack(this);
 
-    this->hdc = GetDC(this->hwnd);
-    this->memDC = CreateCompatibleDC(this->hdc);
-    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
-    SelectObject(this->memDC, this->hBitmap);
-
-    // Set up the BITMAPINFO structure
-    this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
-    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
-    this->bitmapInfo.bmiHeader.biPlanes = 1;
-    this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
-    this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
-
-    this->handleMessages();
-    this->flip();
-
-    // Load the cursor handles
-    this->hCursorArrow = LoadCursor(NULL, IDC_ARROW);
-    this->hCursorHand = LoadCursor(NULL, IDC_HAND);
-    this->hCursorText = LoadCursor(NULL, IDC_IBEAM);
+    return;
 
 }
 
 // Destructor
-Gui::~Gui() {
-    delete[] this->buffer;
-    DestroyWindow(this->hwnd);
-    UnregisterClass(this->windowTitle, this->hInstance);
-}
+GUI::~GUI() {
 
-// Instance functions
-void Gui::updateDimensions(int width, int height) {
-
-    if (width > PIXEL_BUFFER_WIDTH) {
-        logWrite("Drawer::updateBounds() tried to set the width beyond the max range!", true);
-        logWrite(" -> Tried to set ");
-        logWrite(width);
-        logWrite(" while the max allowed is ");
-        logWrite(PIXEL_BUFFER_WIDTH, true);
-        return;
-    }
-
-    if (height > PIXEL_BUFFER_HEIGHT) {
-        logWrite("Drawer::updateBounds() tried to set the height beyond the max range!", true);
-        logWrite(" -> Tried to set ");
-        logWrite(height);
-        logWrite(" while the max allowed is ");
-        logWrite(PIXEL_BUFFER_HEIGHT, true);
-        return;
-    }
-
-    this->windowWidth = width;
-    this->windowHeight = height;
-
-    // Get a new bitmap + pause execution
-    this->hBitmap = CreateCompatibleBitmap(this->hdc, this->windowWidth, this->windowHeight);
-    SelectObject(this->memDC, this->hBitmap);
-
-    // Set up the BITMAPINFO structure
-    this->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    this->bitmapInfo.bmiHeader.biWidth = this->windowWidth;
-    this->bitmapInfo.bmiHeader.biHeight = -this->windowHeight;  // Negative to indicate top-down bitmap
-    this->bitmapInfo.bmiHeader.biPlanes = 1;
-    this->bitmapInfo.bmiHeader.biBitCount = 32;  // 32 bits per pixel
-    this->bitmapInfo.bmiHeader.biCompression = BI_RGB;
-
-    return;
+    if (this->display != nullptr) delete this->display;
+    if (this->drawer != nullptr) delete this->drawer;
+    if (this->state != nullptr) delete this->state;
+    if (this->window != nullptr) delete this->window;
 
 }
 
-void Gui::flip() const {
+// Instance Functions
+LRESULT GUI::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-    if (!this->hdc) return;
+    // Skip if state does not exist. state is where the input events are tracked
+    if (this->state == nullptr) return 1;
 
-    // Transfer the buffer to the bitmap
-    SetDIBitsToDevice(
-        this->memDC, 
-        0, 0, 
-        this->windowWidth, this->windowHeight, 
-        0, 0, 
-        0, this->windowHeight, 
-        this->buffer, 
-        &this->bitmapInfo, 
-        DIB_RGB_COLORS
-    );
+    int status = this->state->handleMessage(uMsg, wParam, lParam);
 
-    // Blit the bitmap to the window's device context
-    BitBlt(
-        this->hdc, 
-        0, 0, 
-        this->windowWidth, this->windowHeight, 
-        this->memDC, 
-        0, 0, 
-        SRCCOPY
-    );
+    switch (status) {
 
-    this->handleMessages();
+        // Message was properly handled
+        case 0:
+            return 0;
 
-    return;
+        // Message was a quit message, leave main loop
+        case 1:
+            this->shouldDestroyWindow = true;
+            return 0;
 
-}
-
-void Gui::handleMessages() const {
-
-    MSG msg;
-
-    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-
-        if (msg.message == WM_QUIT) return;
-        if (msg.message == WM_PAINT) return;
-
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-
-    }
-
-    return;
-
-}
-
-void Gui::setCursorState(CursorState cursorState) {
-
-    switch (cursorState) {
-
-        case CURSOR_ARROW:
-            SetCursor(this->hCursorArrow);
-            break;
-
-        case CURSOR_HAND:
-            SetCursor(this->hCursorHand);
-            break;
-
-        case CURSOR_TEXT:
-            SetCursor(this->hCursorText);
-            break;
-
+        // Message was not handled, continue the rest of the function
         default:
-            logWrite("Gui::setCursorState() wants to set the cursor to an unrecognized state!", true);
             break;
 
     }
 
-    return;
+    int newWidth;
+    int newHeight;
+
+    switch (uMsg) {
+
+        case WM_SIZE: {
+
+            // Skip if gui, display, or drawer are not instantiated yet
+            if (this->window == nullptr) break;
+            if (this->display == nullptr) break;
+            if (this->drawer == nullptr) break;
+
+            newWidth = LOWORD(lParam);
+            newHeight = HIWORD(lParam);
+
+            // Tell display about the new dimensions
+            this->display->updateDimensions(newWidth, newHeight);
+
+            // Tell gui about the new dimensions
+            this->window->updateDimensions(newWidth, newHeight);
+            
+            // Tell drawer about the new dimensions
+            this->drawer->updateDimensions(newWidth, newHeight);
+
+            // Also do default handling
+            return 0;
+
+        }
+
+        // Default handling
+        default:
+            break;
+
+    }
+
+    return DefWindowProc(this->window->hwnd, uMsg, wParam, lParam);
 
 }

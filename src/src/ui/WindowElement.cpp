@@ -5,10 +5,10 @@
 /* ----------------------------------- */
 
 // Static declarations
-LinkedList<Action*>* WindowElement::actionQueue;
+LinkedList<Ui::Action*>* Ui::WindowElement::actionQueue;
 
 // Constructor
-WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
+Ui::WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
     this->pos = new Vec2(posx, posy);
     this->size = new Vec2(sizex, sizey);
@@ -21,7 +21,7 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
 }
 
-WindowElement::WindowElement(Vec2* pos, Vec2* size) {
+Ui::WindowElement::WindowElement(Vec2* pos, Vec2* size) {
 
     this->pos = pos->copy();
     this->size = size->copy();
@@ -33,7 +33,7 @@ WindowElement::WindowElement(Vec2* pos, Vec2* size) {
 }
 
 // Destrcutor
-WindowElement::~WindowElement() {
+Ui::WindowElement::~WindowElement() {
 
     if (this->pos != nullptr) delete this->pos;
     if (this->size != nullptr) delete this->size;
@@ -61,14 +61,14 @@ WindowElement::~WindowElement() {
 }
 
 // Instance Functions
-void WindowElement::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowElement::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     // Log becuase this shouldnt ever be called
     logWrite("Called WindowElement->draw()!", true);
 
 }
 
-WindowElement* WindowElement::hitTest(int x, int y, Vec2* offset) {
+Ui::WindowElement* Ui::WindowElement::hitTest(int x, int y, Vec2* offset) {
 
     Vec2 newPos;
     newPos.set(this->pos);
@@ -88,9 +88,9 @@ WindowElement* WindowElement::hitTest(int x, int y, Vec2* offset) {
 
     // Return this if its interactable
     if (
-        this->type == UIEnum::ElementType::BUTTON ||
-        this->type == UIEnum::ElementType::DRAGABLE ||
-        this->type == UIEnum::ElementType::TEXTINPUT
+        this->type == Ui::ElementType::BUTTON ||
+        this->type == Ui::ElementType::DRAGABLE ||
+        this->type == Ui::ElementType::TEXTINPUT
     ) return this;
 
     // Check children
@@ -111,7 +111,7 @@ WindowElement* WindowElement::hitTest(int x, int y, Vec2* offset) {
 
 }
 
-WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
+Ui::WindowElement* Ui::WindowElement::doInput(Gui::State* state, Vec2* offset) {
 
     int x = state->mouse->posX;
     int y = state->mouse->posY;
@@ -145,7 +145,7 @@ WindowElement* WindowElement::doInput(State* state, Vec2* offset) {
 
 }
 
-void WindowElement::setPos(int x, int y) {
+void Ui::WindowElement::setPos(int x, int y) {
 
     this->pos->set(x, y);
 
@@ -154,29 +154,29 @@ void WindowElement::setPos(int x, int y) {
 
 }
 
-void WindowElement::setPos(Vec2* newPos) {
+void Ui::WindowElement::setPos(Vec2* newPos) {
     this->setPos( (int) newPos->x, (int) newPos->y );
 }
 
-void WindowElement::addChild(WindowElement* child) {
+void Ui::WindowElement::addChild(WindowElement* child) {
 
     this->children->pushBack(child);
     return;
 
 }
 
-void WindowElement::drawChildren(Drawer* drawer, Vec2* offset) {
+void Ui::WindowElement::drawChildren(Gui::Drawer* drawer, Vec2* offset) {
 
     for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext())
         this->children->iterGetObj()->draw(drawer, offset);
 
 }
 
-void WindowElement::setActionQueue(LinkedList<Action*>* queue) {
+void Ui::WindowElement::setActionQueue(LinkedList<Action*>* queue) {
     WindowElement::actionQueue = queue;
 }
 
-void WindowElement::queueAction(Action* action) {
+void Ui::WindowElement::queueAction(Action* action) {
     WindowElement::actionQueue->pushBack(action);
 }
 
@@ -187,10 +187,10 @@ void WindowElement::queueAction(Action* action) {
 /* ------------------------------- */
 
 // Constructor
-WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
+Ui::WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
 
 // Instance Functions
-void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowDiv::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -207,16 +207,16 @@ void WindowDiv::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------- */
 
 // Constructor
-WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
     this->color = color;
 
 }
 
 // Instance Functions
-void WindowLine::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowLine::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -236,16 +236,16 @@ void WindowLine::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------------- */
 
 // Constructor
-WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
     this->color = color;
 
 }
 
 // Instance Functions
-void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowFilledRect::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -265,16 +265,16 @@ void WindowFilledRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------------- */
 
 // Constructor
-WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
     this->color = color;
 
 }
 
 // Instance Functions
-void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowOutlinedRect::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -294,26 +294,26 @@ void WindowOutlinedRect::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------- */
 
 // Constructor
-WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowElement(posx, posy, size, size) {
+Ui::WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowElement(posx, posy, size, size) {
 
     this->middle = this->size->copy()->scale(0.5)->add(this->pos);
     this->radius = size;
 
     this->color = color;
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
 }
 
 // Destructor
-WindowCircle::~WindowCircle() {
+Ui::WindowCircle::~WindowCircle() {
     
     if (this->middle != nullptr) delete this->middle;
 
 }
 
 // Instance Functions
-void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowCircle::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newMiddle = this->middle->copy()->add(offset);
@@ -333,17 +333,17 @@ void WindowCircle::draw(Drawer* drawer, Vec2* offset) {
 /* -------------------------------------- */
 
 // Constructor
-WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
+Ui::WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
     this->color = Color::WHITE;
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
 }
 
 // Destructor
-WindowTextStatic::~WindowTextStatic() {
+Ui::WindowTextStatic::~WindowTextStatic() {
 
     // this->text should be heap allocated. This will crash otherwise
     // Then again, WindowElement objects should never be created directly without the help of XML
@@ -352,7 +352,7 @@ WindowTextStatic::~WindowTextStatic() {
 }
 
 // Instance Functions
-void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowTextStatic::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -370,7 +370,7 @@ void WindowTextStatic::draw(Drawer* drawer, Vec2* offset) {
 /* ------------------------------------- */
 
 // Constructor
-WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : WindowElement(posx, posy, width, 12) {
+Ui::WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
@@ -383,7 +383,7 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : Wind
 
     this->color = Color::WHITE;
 
-    this->type = UIEnum::ElementType::TEXTINPUT;
+    this->type = Ui::ElementType::TEXTINPUT;
     this->isInteractable = true;
 
     this->id = id;
@@ -391,12 +391,12 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : Wind
 }
 
 // Destructor
-WindowTextInput::~WindowTextInput() {
+Ui::WindowTextInput::~WindowTextInput() {
     delete[] this->text;
 }
 
 // Instance Functions
-void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowTextInput::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     // Update the internal string
     this->updateString();
@@ -430,7 +430,7 @@ void WindowTextInput::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowTextInput::onInput(State* state) {
+void Ui::WindowTextInput::onInput(Gui::State* state) {
 
     if (state->wasLeftJustPressed()) this->cursorPos = this->length;
 
@@ -443,7 +443,7 @@ void WindowTextInput::onInput(State* state) {
         
         key = state->newKeyPresses[i];
 
-        keyChar = State::keyCodeToChar(key);
+        keyChar = Gui::keyCodeToChar(key);
 
         // If the keyChar is valid, write it to the internal string
         if (keyChar != '\0') {
@@ -467,23 +467,23 @@ void WindowTextInput::onInput(State* state) {
 
         switch (key) {
 
-            case KEY_ARROWUP:
+            case KeyCode::ARROWUP:
                 this->cursorPos = 0;
                 break;
 
-            case KEY_ARROWDOWN:
+            case KeyCode::ARROWDOWN:
                 this->cursorPos = this->length;
                 break;
 
-            case KEY_ARROWLEFT:
+            case KeyCode::ARROWLEFT:
                 if (this->cursorPos > 0) this->cursorPos--;
                 break;
 
-            case KEY_ARROWRIGHT:
+            case KeyCode::ARROWRIGHT:
                 if (this->cursorPos < this->length) this->cursorPos++;
                 break;
 
-            case KEY_BACKSPACE:
+            case KeyCode::BACKSPACE:
 
                 if (this->cursorPos < 1) break;
 
@@ -510,7 +510,7 @@ void WindowTextInput::onInput(State* state) {
 
 }
 
-void WindowTextInput::onDeselect() {
+void Ui::WindowTextInput::onDeselect() {
 
     // Hides the cursor
     this->cursorPos = -1;
@@ -519,7 +519,7 @@ void WindowTextInput::onDeselect() {
 
 }
 
-void WindowTextInput::bind(int* variable) {
+void Ui::WindowTextInput::bind(int* variable) {
     
     this->unbind();
 
@@ -530,7 +530,7 @@ void WindowTextInput::bind(int* variable) {
 
 }
 
-void WindowTextInput::bind(float* variable) {
+void Ui::WindowTextInput::bind(float* variable) {
     
     this->unbind();
 
@@ -541,7 +541,7 @@ void WindowTextInput::bind(float* variable) {
 
 }
 
-void WindowTextInput::unbind() {
+void Ui::WindowTextInput::unbind() {
 
     switch (this->bindType) {
 
@@ -563,7 +563,7 @@ void WindowTextInput::unbind() {
 
 }
 
-void WindowTextInput::updateString() {
+void Ui::WindowTextInput::updateString() {
 
     if (this->selected) return;
 
@@ -591,7 +591,7 @@ void WindowTextInput::updateString() {
 
 }
 
-void WindowTextInput::writeToValue() {
+void Ui::WindowTextInput::writeToValue() {
 
     int intValue;
     float floatValue;
@@ -623,35 +623,28 @@ void WindowTextInput::writeToValue() {
 /* ----------------------------------- */
 
 // Constructor
-WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, char* fileName) : WindowElement(posx, posy, sizex, sizey) {
-    
-    this->texture = texture;
+Ui::WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::VISUAL;
+    this->type = Ui::ElementType::VISUAL;
 
     /*   Insert PNG handling here   */
-    this->texture = nullptr;
-    /*   Insert PNG handling here   */
 
-    // fileName should be heap allocated. This will crash otherwise
-    // Then again, WindowElement objects should never be created directly without the help of XML
-    delete fileName;
+    return;
 
 }
 
 // Destructor
-WindowTexture::~WindowTexture() {
-
-    if (this->texture != nullptr) delete this->texture;
+Ui::WindowTexture::~WindowTexture() {
 
 }
 
 // Instance Functions
-void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowTexture::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
-    drawer->drawpng(this->texture, newOffset);
+    /* Insert PNG drawing logic here */
+
     this->drawChildren(drawer, newOffset);
 
     delete newOffset;
@@ -665,9 +658,9 @@ void WindowTexture::draw(Drawer* drawer, Vec2* offset) {
 /* ---------------------------------- */
 
 // Constructors
-WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
     
-    this->type = UIEnum::ElementType::BUTTON;
+    this->type = Ui::ElementType::BUTTON;
     this->isInteractable = true;
 
     this->action = nullptr;
@@ -676,9 +669,9 @@ WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) :
 
 }
 
-WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::BUTTON;
+    this->type = Ui::ElementType::BUTTON;
     this->isInteractable = true;
 
     this->action = action;
@@ -688,7 +681,7 @@ WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* act
 }
 
 // Destructor
-WindowButton::~WindowButton() {
+Ui::WindowButton::~WindowButton() {
     
     if (this->action != nullptr) delete this->action;
 
@@ -697,7 +690,7 @@ WindowButton::~WindowButton() {
 }
 
 // Instance Functions
-void WindowButton::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowButton::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
     Vec2* newEndPos = this->endPos->copy()->add(offset);
@@ -709,7 +702,7 @@ void WindowButton::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowButton::onInput(State* state) {
+void Ui::WindowButton::onInput(Gui::State* state) {
 
     if (state->wasLeftJustPressed()) {
 
@@ -723,7 +716,7 @@ void WindowButton::onInput(State* state) {
 
 }
 
-void WindowButton::bind(Action* action) {
+void Ui::WindowButton::bind(Action* action) {
 
     // Free old action if there was one
     if (this->action != nullptr) delete this->action;
@@ -739,9 +732,9 @@ void WindowButton::bind(Action* action) {
 /* ------------------------------------ */
 
 // Constructors
-WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::DRAGABLE;
+    this->type = Ui::ElementType::DRAGABLE;
     this->isInteractable = true;
 
     this->posToDrag = nullptr;
@@ -753,9 +746,9 @@ WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* i
 
 }
 
-WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
+Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = UIEnum::ElementType::DRAGABLE;
+    this->type = Ui::ElementType::DRAGABLE;
     this->isInteractable = true;
 
     this->posToDrag = posToDrag;
@@ -768,7 +761,7 @@ WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* p
 }
 
 // Instance Functions
-void WindowDragable::draw(Drawer* drawer, Vec2* offset) {
+void Ui::WindowDragable::draw(Gui::Drawer* drawer, Vec2* offset) {
 
     Vec2* newOffset = this->pos->copy()->add(offset);
 
@@ -778,7 +771,7 @@ void WindowDragable::draw(Drawer* drawer, Vec2* offset) {
 
 }
 
-void WindowDragable::onInput(State* state) {
+void Ui::WindowDragable::onInput(Gui::State* state) {
 
     if (this->posToDrag == nullptr || this->endPosToDrag == nullptr) return;
 
@@ -790,7 +783,7 @@ void WindowDragable::onInput(State* state) {
 
 }
 
-void WindowDragable::bind(Vec2* posToDrag, Vec2* endPosToDrag) {
+void Ui::WindowDragable::bind(Vec2* posToDrag, Vec2* endPosToDrag) {
 
     this->posToDrag = posToDrag;
     this->endPosToDrag = endPosToDrag;

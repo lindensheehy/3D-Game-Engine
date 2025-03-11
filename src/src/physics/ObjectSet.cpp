@@ -468,16 +468,16 @@ void ObjectSet::updateAll() {
 
 }
 
-void ObjectSet::projectAll(Camera* camera, Display* display) {
+void ObjectSet::projectAll(Camera* camera, Gui::Display* display) {
 
     // Log the error cases
     if (camera == nullptr) {
-        logWrite("Called ObjectSet->projectAll(Camera*, Display*) with 'camera' being a null pointer!", true);
+        logWrite("Called ObjectSet->projectAll(Camera*, Gui::Display*) with arg1 being a null pointer!", true);
         return;
     }
 
     if (display == nullptr) {
-        logWrite("Called ObjectSet->projectAll(Camera*, Display*) with 'display' being on a null pointer!", true);
+        logWrite("Called ObjectSet->projectAll(Camera*, Gui::Display*) with arg2 being on a null pointer!", true);
         return;
     }
 
@@ -496,21 +496,21 @@ void ObjectSet::projectAll(Camera* camera, Display* display) {
 
 }
 
-void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
+void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* display) {
 
     // Log the error cases
     if (drawer == nullptr) {
-        logWrite("Called ObjectSet->drawAll(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAll(Gui::Drawer*, Camera*, Gui::Display*) with arg1 as a null pointer!", true);
         return;
     }
 
     if (camera == nullptr) {
-        logWrite("Called ObjectSet->drawAll(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAll(Gui::Drawer*, Camera*, Gui::Display*) with arg2 as a null pointer!", true);
         return;
     }
 
     if (display == nullptr) {
-        logWrite("Called ObjectSet->drawAll(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAll(Gui::Drawer*, Camera*, Gui::Display*) with arg3 as a null pointer!", true);
         return;
     }
 
@@ -586,27 +586,27 @@ void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display) {
 
 }
 
-void ObjectSet::drawAll(Drawer* drawer, Camera* camera, Display* display, float opacity) {
+void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* display, float opacity) {
 
     
 
 }
 
-void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display) {
+void ObjectSet::drawAllWithNormals(Gui::Drawer* drawer, Camera* camera, Gui::Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (drawer == nullptr) {
-        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'drawer' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Gui::Drawer*, Camera*, Gui::Display*) with arg1 as a null pointer!", true);
         return;
     }
 
     if (camera == nullptr) {
-        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Gui::Drawer*, Camera*, Gui::Display*) with arg2 as a null pointer!", true);
         return;
     }
 
     if (display == nullptr) {
-        logWrite("Called ObjectSet->drawAllWithNormals(Drawer*, Camera*, Display*) with 'display' as a null pointer!", true);
+        logWrite("Called ObjectSet->drawAllWithNormals(Gui::Drawer*, Camera*, Gui::Display*) with arg3 as a null pointer!", true);
         return;
     }
 
@@ -730,7 +730,7 @@ void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* disp
 
 }
 
-void ObjectSet::drawAllWithNormals(Drawer* drawer, Camera* camera, Display* display, float opacity) {
+void ObjectSet::drawAllWithNormals(Gui::Drawer* drawer, Camera* camera, Gui::Display* display, float opacity) {
 
     
 

@@ -180,7 +180,7 @@ void XML::initCustomElements() {
 
 }
 
-WindowElement* XML::buildElement(XMLFile* xmlFile) {
+Ui::WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
     /*
         Yes this function is extremely long
@@ -261,16 +261,16 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
         XMLFile* elementXMLFile;
 
         // This is the hierarchy stack. opening an element pushes, closing pops
-        LinkedList<WindowElement*>* stack = new LinkedList<WindowElement*>();
+        LinkedList<Ui::WindowElement*>* stack = new LinkedList<Ui::WindowElement*>();
 
         // Flag says if the stack was emptied at any point
         bool poppedLast = false;
 
         // Holds the last popped element. This is also the return value
-        WindowElement* lastPopped = nullptr;
+        Ui::WindowElement* lastPopped = nullptr;
 
         // This holds the current element that is being built
-        WindowElement* currentElement = nullptr;
+        Ui::WindowElement* currentElement = nullptr;
 
         // This is used to differentiate between a regular return and an error return
         bool error = false;
@@ -390,27 +390,27 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                 // Default elements defined in code
                 case ElementSet::DIV:
-                    vars.currentElement = new WindowDiv(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
+                    vars.currentElement = new Ui::WindowDiv(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
                     handled = true;
                     break;
 
                 case ElementSet::LINE:
-                    vars.currentElement = new WindowLine(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    vars.currentElement = new Ui::WindowLine(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
                     handled = true;
                     break;
 
                 case ElementSet::FILLED_RECT:
-                    vars.currentElement = new WindowFilledRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    vars.currentElement = new Ui::WindowFilledRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
                     handled = true;
                     break;
 
                 case ElementSet::OUTLINED_RECT:
-                    vars.currentElement = new WindowOutlinedRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
+                    vars.currentElement = new Ui::WindowOutlinedRect(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], vars.intBuffer[4]);
                     handled = true;
                     break;
 
                 case ElementSet::CIRCLE:
-                    vars.currentElement = new WindowCircle(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
+                    vars.currentElement = new Ui::WindowCircle(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3]);
                     handled = true;
                     break;
 
@@ -458,7 +458,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                         copy[length] = '\0';
 
                         // Create the element with the copied string
-                        vars.currentElement = new WindowTextStatic(vars.intBuffer[0], vars.intBuffer[1], copy);
+                        vars.currentElement = new Ui::WindowTextStatic(vars.intBuffer[0], vars.intBuffer[1], copy);
                         
                         handled = true;
                         break;
@@ -476,7 +476,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                         copy[length] = '\0';
 
                         // Create the element with the copied string
-                        vars.currentElement = new WindowTextInput(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], copy);
+                        vars.currentElement = new Ui::WindowTextInput(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], copy);
                         
                         handled = true;
                         break;
@@ -494,7 +494,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                         copy[length] = '\0';
 
                         // Create the element with the copied string
-                        vars.currentElement = new WindowTexture(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        vars.currentElement = new Ui::WindowTexture(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
                         
                         handled = true;
                         break;
@@ -512,7 +512,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                         copy[length] = '\0';
 
                         // Create the element with the copied string
-                        vars.currentElement = new WindowButton(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        vars.currentElement = new Ui::WindowButton(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
                         
                         handled = true;
                         break;
@@ -530,7 +530,7 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
                         copy[length] = '\0';
 
                         // Create the element with the copied string
-                        vars.currentElement = new WindowDragable(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
+                        vars.currentElement = new Ui::WindowDragable(vars.intBuffer[0], vars.intBuffer[1], vars.intBuffer[2], vars.intBuffer[3], copy);
                         
                         handled = true;
                         break;
@@ -850,13 +850,13 @@ WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
 }
 
-Window* XML::buildWindow(const char* fileName) {
+Ui::Window* XML::buildWindow(const char* fileName) {
     
-    Window* ret = new Window(0, 0, 0, 0);
+    Ui::Window* ret = new Ui::Window(0, 0, 0, 0);
 
     // Build an element from the file
     XMLFile* file = new XMLFile(fileName);
-    WindowElement* contents = this->buildElement(file);
+    Ui::WindowElement* contents = this->buildElement(file);
     delete file;
 
     // Add the element to the window

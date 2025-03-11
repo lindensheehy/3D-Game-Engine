@@ -1,83 +1,67 @@
 #pragma once
 
-#include "util/Utility.h"
+#include "gui/Core.h"
 
-// Typedef to help pass a WindowProc to the constructor
-typedef LRESULT(CALLBACK* WindowProcFunc)(HWND, UINT, WPARAM, LPARAM);
+#include "gui/Display.h"
+#include "gui/Drawer.h"
+#include "gui/State.h"
+#include "gui/Window.h"
+
+#include "util/LinkedList.h"
 
 
-// Enum used to help set the mouse cursor state
-enum CursorState {
-
-    // Regular arrow cursor
-    CURSOR_ARROW,
-
-    // Clickable hand cursor
-    CURSOR_HAND,
-
-    // Edit text cursor
-    CURSOR_TEXT
-
-};
-
-class Gui {
+class GUI {
 
     /*
-        This class is basically just a wrapper for the windows API. 
-        It serves to simplify and abstract away from the low level aspects of window handling.
-        The constructor creates the window, and then the instance variable "buffer" holds the pixel data of the window.
-        Calling flip() will write the pixels in the buffer to the window.
+        This class serves as the entry point for the gui module
+        This contains everything you need to open and use a Windows window
+        When instantiating this class, a new window will be created
+        This instance then allows for drawing to the window, and lets you track input events in a usable interface
     */
 
     public:
 
-        /* --- Instance variables --- */
+        /*   Instance Variables   */
 
-        // Window size
-        int windowWidth, windowHeight;
+        // This class is composed mostly of these other classes in this module
 
-        LPCSTR windowTitle;
+        // Holds information about the window dimensions, alongside some utility functions for rendering
+        Gui::Display* display;
 
-        // Pixel buffer
-        uint32* buffer;
+        // This is the object that handles all the drawing
+        // Contains high level functions to draw various shapes
+        Gui::Drawer* drawer;
 
-        HWND hwnd;                      // Handle to created window
-        HINSTANCE hInstance;            // Handle to main
+        // Holds information about the state of the GUI window
+        // Contains data for time, mouse buttons/position, key presses, etc.
+        Gui::State* state;
+
+        // Holds the actual Windows window
+        // This is the main wrapper for all the low level Windows API stuff
+        Gui::Window* window;
+
+        // Tells if the window has been closed or not
+        // When this is set to true, you should free this instance and stop using it
+        bool shouldDestroyWindow;
 
 
         // Constructor
-        Gui(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle = "Window");
+        GUI(int width, int height, const char* windowName);
 
         // Destructor
-        ~Gui();
+        ~GUI();
 
-        /*   Instance functions   */
 
-        // Updates this instance with new window dimensions
-        void updateDimensions(int width, int height);
-        
-        // Tells Windows to redraw the window
-        void flip() const;
+        /*   Instance Functions   */
 
-        // Sends all the messages from Windows to the WindowProc function. Will break on a WM_PAINT message so the main loop can execute before drawing
-        void handleMessages() const;
+        // This updates the data in this GUI instance based on the message from Windows
+        // This will return non 0 if the message was not handled
+        LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-        // Updates the cursor state
-        void setCursorState(CursorState cursorState);
+
 
     private:
 
-        /*   Instance Variables   */
+        /*   Instance Functions   */
 
-        HDC hdc;
-        HDC memDC;
-        HBITMAP hBitmap;
-
-        BITMAPINFO bitmapInfo;          // Stores info to help windows translate the pixel buffer into Uint32 format
-
-        // Stores the different cursor type handles
-        HCURSOR hCursorArrow;
-        HCURSOR hCursorHand;
-        HCURSOR hCursorText;
-        
 };

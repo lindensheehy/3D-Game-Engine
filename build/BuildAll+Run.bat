@@ -14,12 +14,6 @@ if not exist "%objdir%" (
 
 :: Build dependancies
 
-:: util
-g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%util-Utility.o
-g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%util-Math.o
-g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%util-Log.o
-g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%util-FileReader.o
-
 :: geometry
 g++ -Ofast %include%        -c %srcdir%geometry/Vec.cpp         -o %objdir%geometry-Vec.o
 g++ -Ofast %include%        -c %srcdir%geometry/Tri.cpp         -o %objdir%geometry-Tri.o
@@ -27,14 +21,19 @@ g++ -Ofast %include%        -c %srcdir%geometry/Mesh.cpp        -o %objdir%geome
 g++ -Ofast %include%        -c %srcdir%geometry/Camera.cpp      -o %objdir%geometry-Camera.o
 
 :: gui
+g++ -Ofast %include%        -c %srcdir%gui/Core.cpp             -o %objdir%gui-Core.o
 g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%gui-Display.o
 g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%gui-Drawer.o
-g++ -Ofast %include%        -c %srcdir%gui/Gui.cpp              -o %objdir%gui-Gui.o
+g++ -Ofast %include%        -c %srcdir%gui/GUI.cpp              -o %objdir%gui-GUI.o
 g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%gui-State.o
+g++ -Ofast %include%        -c %srcdir%gui/Window.cpp           -o %objdir%gui-Window.o
 
 :: physics
 g++ -Ofast %include%        -c %srcdir%physics/ObjectSet.cpp    -o %objdir%physics-ObjectSet.o
 g++ -Ofast %include%        -c %srcdir%physics/Bounding.cpp     -o %objdir%physics-Bounding.o
+
+:: png
+:: This one cant be compiled yet as i havent rewritten it since i removed LodePNG (an external lib i used in the past)
 
 :: ui
 g++ -Ofast %include%        -c %srcdir%ui/Action.cpp            -o %objdir%ui-Action.o
@@ -44,6 +43,12 @@ g++ -Ofast %include%        -c %srcdir%ui/Core.cpp              -o %objdir%ui-Co
 g++ -Ofast %include%        -c %srcdir%ui/UI.cpp                -o %objdir%ui-UI.o
 g++ -Ofast %include%        -c %srcdir%ui/Window.cpp            -o %objdir%ui-Window.o
 g++ -Ofast %include%        -c %srcdir%ui/WindowElement.cpp     -o %objdir%ui-WindowElement.o
+
+:: util
+g++ -Ofast %include%        -c %srcdir%util/Utility.cpp         -o %objdir%util-Utility.o
+g++ -Ofast %include%        -c %srcdir%util/Math.cpp            -o %objdir%util-Math.o
+g++ -Ofast %include%        -c %srcdir%util/Log.cpp             -o %objdir%util-Log.o
+g++ -Ofast %include%        -c %srcdir%util/FileReader.cpp      -o %objdir%util-FileReader.o
 
 :: xml
 g++ -Ofast %include%        -c %srcdir%xml/Core.cpp             -o %objdir%xml-Core.o

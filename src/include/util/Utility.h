@@ -20,10 +20,34 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 
 
-// This is the default size of any pixel mapped buffer
-// This is intended to be big enough that resizing will never require reallocations
-static constexpr int PIXEL_BUFFER_WIDTH = 1920;
-static constexpr int PIXEL_BUFFER_HEIGHT = 1080;
+// A small Color namespace for general use
+namespace Color {
+
+    // Constant color codes
+    // Bytes are [opacity][red][green][blue]
+    const uint32 RED         = 0xFFFF0000;
+    const uint32 GREEN       = 0xFF00FF00;
+    const uint32 BLUE        = 0xFF0000FF;
+    const uint32 BLACK       = 0xFF000000;
+    const uint32 WHITE       = 0xFFFFFFFF;
+    const uint32 GREY        = 0xFF888888;
+    const uint32 DARKGREY    = 0xFF333333;
+
+    // For UI drawing
+    const uint32 BACKGROUND  = 0xFF303030;
+    const uint32 LIGHTER     = 0xFF505050;
+    const uint32 DARKER      = 0xFF181818;
+    const uint32 ACCENT      = 0xFFA78BFA;
+
+
+    // Sets the brightness of a given color (uint32) to a float between 0-1.
+    // Values higher than 1 CAN be used, but could cause overflow issues.
+    uint32 setBrightness(uint32 color, float newBrightness);
+
+    // Merges the rgb values of two colors based on opacity values. The sum of opacity1 and opacity2 should be 1
+    uint32 merge(uint32 color1, float opacity1, uint32 color2, float opacity2);
+
+}
 
 
 

@@ -6,7 +6,7 @@
 /*  -----------------------------------  */
 
 // Constructor
-State::TimeState::TimeState() {
+Gui::State::TimeState::TimeState() {
 
     // Variable initialization
     this->totalFrameCount = 0;
@@ -24,7 +24,7 @@ State::TimeState::TimeState() {
 }
 
 // Instance functions
-void State::TimeState::updateDt() {
+void Gui::State::TimeState::updateDt() {
 
     this->lastFrameTime = this->frameTime;
 
@@ -39,7 +39,7 @@ void State::TimeState::updateDt() {
 
 }
 
-void State::TimeState::updateFps() {
+void Gui::State::TimeState::updateFps() {
 
     double frameTimeMillis = (double) (this->frameTime.QuadPart) / this->frequency.QuadPart;
     frameTimeMillis *= 1000;
@@ -60,7 +60,7 @@ void State::TimeState::updateFps() {
 
 }
 
-void State::TimeState::update() {
+void Gui::State::TimeState::update() {
 
     this->totalFrameCount++;
     this->framesSinceLastSecond++;
@@ -70,7 +70,7 @@ void State::TimeState::update() {
 
 }
 
-double State::TimeState::getTimeMillis() {
+double Gui::State::TimeState::getTimeMillis() {
 
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
@@ -79,7 +79,7 @@ double State::TimeState::getTimeMillis() {
 
 }
 
-void State::TimeState::initTimer() {
+void Gui::State::TimeState::initTimer() {
 
     QueryPerformanceFrequency( &(this->frequency) );
     QueryPerformanceCounter( &(this->frameTime) );
@@ -93,7 +93,7 @@ void State::TimeState::initTimer() {
 /*  ------------------------------------  */
 
 // Contructor
-State::MouseState::MouseState() {
+Gui::State::MouseState::MouseState() {
     this->leftButtonIsDown = false;
     this->rightButtonIsDown = false;
     this->posX = 0;
@@ -101,7 +101,7 @@ State::MouseState::MouseState() {
 }
 
 // Instance functions
-void State::MouseState::setState(MouseState* state) {
+void Gui::State::MouseState::setState(MouseState* state) {
     this->leftButtonIsDown = state->leftButtonIsDown;
     this->rightButtonIsDown = state->rightButtonIsDown;
     this->middleButtonIsDown = state->middleButtonIsDown;
@@ -109,7 +109,7 @@ void State::MouseState::setState(MouseState* state) {
     this->posY = state->posY;
 }
 
-void State::MouseState::buttonDown(WPARAM wParam) {
+void Gui::State::MouseState::buttonDown(WPARAM wParam) {
 
     switch (wParam) {
 
@@ -129,7 +129,7 @@ void State::MouseState::buttonDown(WPARAM wParam) {
 
 }
 
-void State::MouseState::buttonUp(WPARAM wParam) {
+void Gui::State::MouseState::buttonUp(WPARAM wParam) {
     
     switch (wParam) {
 
@@ -149,31 +149,31 @@ void State::MouseState::buttonUp(WPARAM wParam) {
 
 }
 
-void State::MouseState::leftButtonDown() {
+void Gui::State::MouseState::leftButtonDown() {
     this->leftButtonIsDown = true;
 }
 
-void State::MouseState::leftButtonUp() {
+void Gui::State::MouseState::leftButtonUp() {
     this->leftButtonIsDown = false;
 }
 
-void State::MouseState::middleButtonDown() {
+void Gui::State::MouseState::middleButtonDown() {
     this->middleButtonIsDown = true;
 }
 
-void State::MouseState::middleButtonUp() {
+void Gui::State::MouseState::middleButtonUp() {
     this->middleButtonIsDown = false;
 }
 
-void State::MouseState::rightButtonDown() {
+void Gui::State::MouseState::rightButtonDown() {
     this->rightButtonIsDown = true;
 }
 
-void State::MouseState::rightButtonUp() {
+void Gui::State::MouseState::rightButtonUp() {
     this->rightButtonIsDown = false;
 }
 
-void State::MouseState::setPos(int x, int y) {
+void Gui::State::MouseState::setPos(int x, int y) {
     this->posX = x;
     this->posY = y;
 }
@@ -185,17 +185,17 @@ void State::MouseState::setPos(int x, int y) {
 /*  -------------------------------------  */
 
 // Constructor
-State::KeyboardState::KeyboardState() {
+Gui::State::KeyboardState::KeyboardState() {
     this->keyStates = new bool[this->keyStatesLength] {};
 }
 
 // Destructor
-State::KeyboardState::~KeyboardState() {
+Gui::State::KeyboardState::~KeyboardState() {
     delete[] this->keyStates;
 }
 
 // Instance functions
-void State::KeyboardState::setState(KeyboardState* state) {
+void Gui::State::KeyboardState::setState(KeyboardState* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {
@@ -210,7 +210,7 @@ void State::KeyboardState::setState(KeyboardState* state) {
 
 }
 
-bool* State::KeyboardState::getKeyRef(KeyCode keyCode) {
+bool* Gui::State::KeyboardState::getKeyRef(KeyCode keyCode) {
 
     /*
         Returns a pointer to the key boolean value within the instance variables
@@ -218,13 +218,13 @@ bool* State::KeyboardState::getKeyRef(KeyCode keyCode) {
     */
     
     // Invalid value
-    if (keyCode > 0xFF) return nullptr;
+    if ( (int) keyCode > 0xFF ) return nullptr;
 
-    return &(this->keyStates[keyCode]);
+    return &(this->keyStates[ (int) keyCode ]);
 
 }
 
-void State::KeyboardState::keyDown(KeyCode keyCode) {
+void Gui::State::KeyboardState::keyDown(KeyCode keyCode) {
 
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = true;
@@ -233,7 +233,7 @@ void State::KeyboardState::keyDown(KeyCode keyCode) {
 
 }
 
-void State::KeyboardState::keyUp(KeyCode keyCode) {
+void Gui::State::KeyboardState::keyUp(KeyCode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) (*key) = false;
@@ -242,7 +242,7 @@ void State::KeyboardState::keyUp(KeyCode keyCode) {
 
 }
 
-bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
+bool Gui::State::KeyboardState::keyIsDown(KeyCode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
@@ -252,14 +252,14 @@ bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
 
 
 
-/*  ------------------------------------  */
+/*  -------------------------------  */
 /*  ----------   State   ----------  */
-/*  ------------------------------------  */
+/*  -------------------------------  */
 
 // Contructor
-State::State(HWND hwnd, bool hasChild /* default value = true */) {
+Gui::State::State(HWND hwnd, bool hasChild /* default value = true */) {
 
-    this->newKeyPresses = new KeyCode[3] {KEY_NULL, KEY_NULL, KEY_NULL};
+    this->newKeyPresses = new KeyCode[3] {KeyCode::NONE, KeyCode::NONE, KeyCode::NONE};
     this->newKeyPressesIndex = 0;
 
     this->time = new TimeState();
@@ -274,7 +274,7 @@ State::State(HWND hwnd, bool hasChild /* default value = true */) {
 }
 
 // Destructor
-State::~State() {
+Gui::State::~State() {
     if (this->newKeyPresses != nullptr) delete[] this->newKeyPresses;
     if (this->time != nullptr)          delete this->time;
     if (this->mouse != nullptr)         delete this->mouse;
@@ -283,7 +283,7 @@ State::~State() {
 }
 
 // Instance functions
-int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+int Gui::State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
     KeyCode keyCode = (KeyCode) wParam;
 
@@ -347,11 +347,11 @@ int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 }
 
-void State::nextFrame() {
+void Gui::State::nextFrame() {
 
-    this->newKeyPresses[0] = KEY_NULL;
-    this->newKeyPresses[1] = KEY_NULL;
-    this->newKeyPresses[2] = KEY_NULL;
+    this->newKeyPresses[0] = KeyCode::NONE;
+    this->newKeyPresses[1] = KeyCode::NONE;
+    this->newKeyPresses[2] = KeyCode::NONE;
     this->newKeyPressesIndex = 0;
 
     if (this->lastFrame == nullptr) return;
@@ -365,15 +365,15 @@ void State::nextFrame() {
 
 }
 
-bool State::wasLeftJustPressed() {
+bool Gui::State::wasLeftJustPressed() {
     return (this->mouse->leftButtonIsDown && !this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool State::wasRightJustPressed() {
+bool Gui::State::wasRightJustPressed() {
     return (this->mouse->rightButtonIsDown && !this->lastFrame->mouse->rightButtonIsDown);
 }
 
-bool State::wasLeftHeld() {
+bool Gui::State::wasLeftHeld() {
 
     return (
         this->mouse->leftButtonIsDown &&
@@ -382,7 +382,7 @@ bool State::wasLeftHeld() {
 
 }
 
-bool State::wasRightHeld() {
+bool Gui::State::wasRightHeld() {
 
     return (
         this->mouse->rightButtonIsDown &&
@@ -391,15 +391,15 @@ bool State::wasRightHeld() {
 
 }
 
-bool State::wasLeftJustReleased() {
+bool Gui::State::wasLeftJustReleased() {
     return (!this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool State::wasRightJustReleased() {
+bool Gui::State::wasRightJustReleased() {
     return (!this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
-void State::updateMousePos() {
+void Gui::State::updateMousePos() {
 
     POINT point;
 
@@ -411,21 +411,21 @@ void State::updateMousePos() {
 
 }
 
-int State::deltaMousePosX() {
+int Gui::State::deltaMousePosX() {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posX) - (this->lastFrame->mouse->posX);
 }
 
-int State::deltaMousePosY() {
+int Gui::State::deltaMousePosY() {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posY) - (this->lastFrame->mouse->posY);
 }
 
-bool State::keyIsDown(KeyCode keyCode) {
+bool Gui::State::keyIsDown(KeyCode keyCode) {
     return this->keys->keyIsDown(keyCode);
 }
 
-bool State::keyJustDown(KeyCode keyCode) {
+bool Gui::State::keyJustDown(KeyCode keyCode) {
 
     bool isDown = this->keys->keyIsDown(keyCode);
     bool wasDown = this->lastFrame->keys->keyIsDown(keyCode);
@@ -434,33 +434,7 @@ bool State::keyJustDown(KeyCode keyCode) {
 
 }
 
-bool State::hasValidChar(KeyCode key) {
-
-    // Letter Keys
-    if (key >= KEY_0 && key <= KEY_9) return true;
-
-    // Number Keys
-    if (key >= KEY_A && key <= KEY_Z) return true;
-
-    if (key == KEY_PERIOD) return true;
-    if (key == KEY_MINUS) return true;
-
-    return false;
-
-}
-
-char State::keyCodeToChar(KeyCode key) {
-
-    if ( !(State::hasValidChar(key)) ) return '\0';
-
-    if (key == KEY_PERIOD) return '.';
-    if (key == KEY_MINUS) return '-';
-
-    // Conveinently, the Windows keycodes are the same as the char codes, so direct casting works
-    return (char) (key);
-}
-
-void State::setState(State* state) {
+void Gui::State::setState(State* state) {
 
     // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {

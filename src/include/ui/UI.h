@@ -33,7 +33,7 @@ class UI {
 
         // Contains a BindManager object, owned by this class
         // This handles all the binding logic for the windows
-        BindManager* bindManager;
+        Ui::BindManager* bindManager;
 
 
         // Constructor
@@ -46,25 +46,25 @@ class UI {
         /*   Instance Functions   */
 
         // Draws all the windows
-        void draw(Drawer* drawer);
+        void draw(Gui::Drawer* drawer);
 
         // Updates the UI based on the input events. Returns true if the input was handled by the UI. 
         // If a variable is passed to cursorStateOut, it will be set to the state the cursor should be in
-        bool doInput(State* state, CursorState* cursorStateOut = nullptr);
+        bool doInput(Gui::State* state, Gui::CursorState* cursorStateOut = nullptr);
 
         // Creates a new window and returns the window identifier
-        WindowHandle* createWindow(const char* fileName);
+        Ui::WindowHandle* createWindow(const char* fileName);
 
         // Destroys the given window
         // Also sets the values in the struct to invalid states
-        void destroyWindow(WindowHandle* windowHandle);
+        void destroyWindow(Ui::WindowHandle* windowHandle);
 
         // This ensures that a Window object that the handle refers to exists
         // If it doesnt, it will free the handle and set the pointer to nullptr
-        void validateWindowHandle(WindowHandle** windowHandle);
+        void validateWindowHandle(Ui::WindowHandle** windowHandle);
 
         // Sets the window to the specified position ( (0, 0) is the top left )
-        void setWindowPos(WindowHandle* windowHandle, int posx, int posy);
+        void setWindowPos(Ui::WindowHandle* windowHandle, int posx, int posy);
 
         
     private:
@@ -75,10 +75,10 @@ class UI {
         // Used for parsing .xml files into UI elements/windows
         XML* xml;
 
-        LinkedList<Window*>* windows;
+        LinkedList<Ui::Window*>* windows;
 
         // Saves the last clicked element to be used with input
-        WindowElement* lastClicked;
+        Ui::WindowElement* lastClicked;
 
         // Stores the location the next window should go, changes on every window made to reduce window overlap
         Vec2* nextWindowPos;
@@ -93,7 +93,7 @@ class UI {
         static const Vec2* TransformWindowSize;
 
         // Reference to a shared Action queue
-        static LinkedList<Action*>* actionQueue;
+        static LinkedList<Ui::Action*>* actionQueue;
 
 
         /*   Instance Functions   */
@@ -104,13 +104,13 @@ class UI {
         void updateNextWindowPos();
 
         // Private overloads of destroyWindow
-        void destroyWindow(WindowID windowId);
-        void destroyWindow(Window* window);
+        void destroyWindow(Ui::WindowID windowId);
+        void destroyWindow(Ui::Window* window);
 
         // Returns the Window object with the given id
-        Window* getWindowByHandle(WindowHandle windowHandle);
+        Ui::Window* getWindowByHandle(Ui::WindowHandle windowHandle);
 
         // Returns the next Action object from the actionQueue
-        static Action* getNextAction();
+        static Ui::Action* getNextAction();
         
 };

@@ -1,35 +1,35 @@
 #pragma once
 
 /*
-    These enums are a way for me to pass information between classes without needing to know anything about the classes
-    This allows my UI system to be much more modular, and less coupled
-
-    Its worth noting that the namespace UI overlaps with my class UI
-    This is like this becuase logically it makes sense that these enums would exist within the UI class
-    but unfortunately to avoid circular dependancies, I need them in a seperate file
+    This is all the general data that some or all files need
+    Everything here does not depend on anything else
 */
 
 
-// Forward declare WindowHandle globally
-// This module is pretty entangled, so this helps with circular dependancy issues
-class WindowHandle;
+// Forward declare class UI in the global namespace
+class UI;
 
 
-// String literals for commonly used file paths
-namespace File {
+namespace Ui {
 
-    constexpr const char* TRANSFORM   = "../src/assets/ui/windows/transform.xml";
-    constexpr const char* NAVBAR      = "../src/assets/ui/windows/navbar.xml";
-    constexpr const char* OBJECTS     = "../src/assets/ui/windows/objects.xml";
-
-};
+    // Forward declare WindowHandle globally
+    // This module is pretty entangled, so this helps with circular dependancy issues
+    class WindowHandle;
 
 
-// Type def used to identify windows
-typedef unsigned int WindowID;
+    // String literals for commonly used file paths
+    namespace File {
+
+        constexpr const char* TRANSFORM   = "../src/assets/ui/windows/transform.xml";
+        constexpr const char* NAVBAR      = "../src/assets/ui/windows/navbar.xml";
+        constexpr const char* OBJECTS     = "../src/assets/ui/windows/objects.xml";
+
+    };
 
 
-namespace UIEnum {
+    // Type def used to identify windows
+    typedef unsigned int WindowID;
+
 
     enum class ActionType {
         NONE,               // Given to Action objects (not subclasses) as these shouldnt be used

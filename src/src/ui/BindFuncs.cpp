@@ -1,6 +1,6 @@
 #include "ui/BindFuncs.h"
 
-void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
+void Ui::BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a nullptr!", true);
@@ -22,12 +22,12 @@ void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
         return;
     }
 
-    if (context->type != UIEnum::ContextType::NAVBAR) {
+    if (context->type != Ui::ContextType::NAVBAR) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::NAVBAR));
+        logWrite(Ui::contextTypeToString(Ui::ContextType::NAVBAR));
         logWrite(" but found type ");
-        logWrite(UIEnum::contextTypeToString(context->type), true);
+        logWrite(Ui::contextTypeToString(context->type), true);
         return;
     }
 
@@ -45,7 +45,7 @@ void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
 }
 
-void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
+void Ui::BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
 
     /*   First do the binds that do not depend on the Context object   */
@@ -74,12 +74,12 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
     // Null Context is okay, just the rest of the function cant run
     if (context == nullptr) return;
 
-    if (context->type != UIEnum::ContextType::TRANSFORM) {
+    if (context->type != Ui::ContextType::TRANSFORM) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::TRANSFORM));
+        logWrite(Ui::contextTypeToString(Ui::ContextType::TRANSFORM));
         logWrite(" but found type ");
-        logWrite(UIEnum::contextTypeToString(context->type), true);
+        logWrite(Ui::contextTypeToString(context->type), true);
         return;
     }
 
@@ -112,7 +112,7 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
 }
 
-void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
+void Ui::BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
 
     /*   First do the binds that to not depend on the Context object   */
@@ -144,7 +144,7 @@ void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
 }
 
-void BindFuncs::Objects::createCube(Context* contextObjects) {
+void Ui::BindFuncs::Objects::createCube(Context* contextObjects) {
 
     logWrite("Trying to create a cube!", true);
 
@@ -153,12 +153,12 @@ void BindFuncs::Objects::createCube(Context* contextObjects) {
     // Null Context is okay, just the function cant run this time
     if (contextObjects == nullptr) return;
 
-    if (contextObjects->type != UIEnum::ContextType::OBJECTS) {
+    if (contextObjects->type != Ui::ContextType::OBJECTS) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::OBJECTS));
+        logWrite(Ui::contextTypeToString(Ui::ContextType::OBJECTS));
         logWrite(" but found type ");
-        logWrite(UIEnum::contextTypeToString(contextObjects->type), true);
+        logWrite(Ui::contextTypeToString(contextObjects->type), true);
         return;
     }
 
@@ -183,7 +183,7 @@ void BindFuncs::Objects::createCube(Context* contextObjects) {
 
 }
 
-void BindFuncs::Objects::createSphere(Context* contextObjects) {
+void Ui::BindFuncs::Objects::createSphere(Context* contextObjects) {
     
     logWrite("Trying to create a sphere!", true);
 
@@ -192,12 +192,12 @@ void BindFuncs::Objects::createSphere(Context* contextObjects) {
     // Null Context is okay, just the function cant run this time
     if (contextObjects == nullptr) return;
 
-    if (contextObjects->type != UIEnum::ContextType::OBJECTS) {
+    if (contextObjects->type != Ui::ContextType::OBJECTS) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(UIEnum::contextTypeToString(UIEnum::ContextType::OBJECTS));
+        logWrite(Ui::contextTypeToString(Ui::ContextType::OBJECTS));
         logWrite(" but found type ");
-        logWrite(UIEnum::contextTypeToString(contextObjects->type), true);
+        logWrite(Ui::contextTypeToString(contextObjects->type), true);
         return;
     }
 

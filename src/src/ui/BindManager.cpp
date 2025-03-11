@@ -1,7 +1,7 @@
 #include "ui/BindManager.h"
 
 // Constructor
-BindManager::BindManager() {
+Ui::BindManager::BindManager() {
 
     this->binds = new LinkedList<Bind*>();
 
@@ -10,7 +10,7 @@ BindManager::BindManager() {
 }
 
 // Destructor
-BindManager::~BindManager() {
+Ui::BindManager::~BindManager() {
 
     // List items are stack allocated, no need to free them
     if (this->binds != nullptr) {
@@ -36,7 +36,7 @@ BindManager::~BindManager() {
 }
 
 // Instance Functions
-void BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
+void Ui::BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
     
     if (windowHandle == nullptr) {
         logWrite("BindManager::addBind(WindowHandle*, BindFunc) was called on a nullptr!", true);
@@ -52,7 +52,7 @@ void BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
 
 }
 
-void BindManager::removeBind(WindowHandle* windowHandle) {
+void Ui::BindManager::removeBind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindManager::removeBind(WindowHandle*) was called on a nullptr!", true);
@@ -70,7 +70,7 @@ void BindManager::removeBind(WindowHandle* windowHandle) {
 
 }
 
-void BindManager::rebind(WindowHandle* windowHandle) {
+void Ui::BindManager::rebind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindManager::rebind(WindowHandle*) was called on a nullptr!", true);
@@ -90,7 +90,7 @@ void BindManager::rebind(WindowHandle* windowHandle) {
 
 }
 
-void BindManager::rebindAll() {
+void Ui::BindManager::rebindAll() {
 
     Bind* current;
 
@@ -110,7 +110,7 @@ void BindManager::rebindAll() {
 
 }
 
-BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
+Ui::BindManager::Bind* Ui::BindManager::getBind(WindowHandle* windowHandle) {
 
     Bind* current;
 
@@ -133,7 +133,7 @@ BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
 
 }
 
-void BindManager::removeBind(Bind* bind) {
+void Ui::BindManager::removeBind(Bind* bind) {
 
     this->binds->pop(bind);
 

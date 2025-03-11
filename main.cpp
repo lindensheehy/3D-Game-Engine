@@ -2,19 +2,14 @@
 
 #include "geometry/Camera.h"
 #include "geometry/Mesh.h"
-#include "gui/Drawer.h"
-#include "gui/State.h"
-#include "gui/Gui.h"
+#include "gui/GUI.h"
 #include "ui/UI.h"
 
 #include "xml/XML.h"
 #include "xml/XMLFile.h"
 
 // Global declarations
-Gui* gui;
-State* state;
-Drawer* drawer;
-Display* display;
+GUI* gui;
 Camera* camera;
 
 int selectedObjectId;
@@ -27,11 +22,9 @@ bool gravity;
 
 UI* ui;
 
-WindowHandle* navBar;
-WindowHandle* windowTransform;
-WindowHandle* windowObjects;
-
-bool doMainLoop = true;
+Ui::WindowHandle* navBar;
+Ui::WindowHandle* windowTransform;
+Ui::WindowHandle* windowObjects;
 
 void giveUiData() {
 
@@ -39,7 +32,7 @@ void giveUiData() {
 
         // Only give it new context if it does not have one
         if ( windowObjects->hasNoContext() ) {
-            windowObjects->setContext( new ContextObjects(objects) );
+            windowObjects->setContext( new Ui::ContextObjects(objects) );
         }
 
     }
@@ -61,27 +54,27 @@ void handleInput() {
     // Give the state to the UI to handle. 
     // If the input is handled through the UI (based on return value), the rest of this is skipped
     // This also updates the mouse cursor state if needed
-    CursorState cursorState;
-    bool inputHandled = ui->doInput(state, &cursorState);
-    gui->setCursorState(cursorState);
+    Gui::CursorState cursorState;
+    bool inputHandled = ui->doInput(gui->state, &cursorState);
+    gui->window->setCursorState(cursorState);
     if (inputHandled) return;
 
     // Find distance to move based on the delta time of the frame
-    float dist = camera->movementSpeed * (state->time->dt / 1000);
+    float dist = camera->movementSpeed * (gui->state->time->dt / 1000);
 
-    if (state->keyIsDown(KEY_SHIFT))
+    if (gui->state->keyIsDown(KeyCode::SHIFT))
         dist *= camera->sprintFactor;
 
     // Vertical Movement
-    if (state->keyIsDown(KEY_SPACE)) camera->pos->y += dist; // Up
-    if (state->keyIsDown(KEY_CONTROL)) camera->pos->y -= dist; // Down
+    if (gui->state->keyIsDown(KeyCode::SPACE)) camera->pos->y += dist; // Up
+    if (gui->state->keyIsDown(KeyCode::CONTROL)) camera->pos->y -= dist; // Down
 
     // Horizontal Movement
     Vec2* cameraMovVec = new Vec2();
-    if (state->keyIsDown(KEY_W)) cameraMovVec->y += dist; // Forward
-    if (state->keyIsDown(KEY_S)) cameraMovVec->y -= dist; // Backward
-    if (state->keyIsDown(KEY_A)) cameraMovVec->x -= dist; // Left
-    if (state->keyIsDown(KEY_D)) cameraMovVec->x += dist; // Right
+    if (gui->state->keyIsDown(KeyCode::W)) cameraMovVec->y += dist; // Forward
+    if (gui->state->keyIsDown(KeyCode::S)) cameraMovVec->y -= dist; // Backward
+    if (gui->state->keyIsDown(KeyCode::A)) cameraMovVec->x -= dist; // Left
+    if (gui->state->keyIsDown(KeyCode::D)) cameraMovVec->x += dist; // Right
 
     // Move camera based on its rotation
     cameraMovVec->rotate(-camera->yaw);
@@ -90,12 +83,12 @@ void handleInput() {
     delete cameraMovVec;
 
     /*  ---  Camera Rotation  ---  */
-    if (state->mouse->leftButtonIsDown) {
+    if (gui->state->mouse->leftButtonIsDown) {
 
         // 0.2 is just a random number I chose becuase it felt good in the app
         float mouseSensitivity = 0.2;
-        float camDeltaYaw = (float) state->deltaMousePosX();
-        float camDeltaPitch = (float) state->deltaMousePosY();
+        float camDeltaYaw = (float) gui->state->deltaMousePosX();
+        float camDeltaPitch = (float) gui->state->deltaMousePosY();
         camera->rotate( camDeltaYaw * mouseSensitivity, -camDeltaPitch * mouseSensitivity, 0 );
 
     }
@@ -104,7 +97,7 @@ void handleInput() {
     /*   Temporary stuff   */
 
     // Toggle normal vector drawing on key n
-    if (state->keyJustDown(KEY_N)) {
+    if (gui->state->keyJustDown(KeyCode::N)) {
 
         drawNormals = !drawNormals;
 
@@ -116,13 +109,13 @@ void handleInput() {
     // Pick object based on id, this cycles through all the objects with ids 1-7
     bool changeObject = false;
 
-    if (state->keyJustDown(KEY_Q)) {
+    if (gui->state->keyJustDown(KeyCode::Q)) {
         selectedObjectId--;
         if (selectedObjectId < 1) selectedObjectId += 8;
         changeObject = true;
     }
 
-    if (state->keyJustDown(KEY_E)) {
+    if (gui->state->keyJustDown(KeyCode::E)) {
         selectedObjectId++;
         if (selectedObjectId > 8) selectedObjectId -= 8;
         changeObject = true;
@@ -137,50 +130,50 @@ void handleInput() {
         ui->validateWindowHandle(&windowTransform);
 
         if (windowTransform != nullptr) {
-            windowTransform->setContext( new ContextTransform(selectedObject) );
+            windowTransform->setContext( new Ui::ContextTransform(selectedObject) );
             ui->bindManager->rebind(windowTransform);
         }
 
     }
 
-    if (state->keyJustDown(KEY_ENTER)) {
+    if (gui->state->keyJustDown(KeyCode::ENTER)) {
         if (selectedObject != nullptr) selectedObject->opacity = 1;
         selectedObject = nullptr;
     }
 
     // This rotates the selected object when pressing keys j,k,l
-    if (state->keyIsDown(KEY_J))
+    if (gui->state->keyIsDown(KeyCode::J))
         if (selectedObject != nullptr) selectedObject->rotateSelf(1, 0, 0);
 
-    if (state->keyIsDown(KEY_K))
+    if (gui->state->keyIsDown(KeyCode::K))
         if (selectedObject != nullptr) selectedObject->rotateSelf(0, 1, 0);
 
-    if (state->keyIsDown(KEY_L))
+    if (gui->state->keyIsDown(KeyCode::L))
         if (selectedObject != nullptr) selectedObject->rotateSelf(0, 0, 1);
 
     // This moves the selected object along the y-axis when pressing keys o,p
-    if (state->keyIsDown(KEY_O))
+    if (gui->state->keyIsDown(KeyCode::O))
         if (selectedObject != nullptr) selectedObject->move(0, 0.5, 0);
 
-    if (state->keyIsDown(KEY_P))
+    if (gui->state->keyIsDown(KeyCode::P))
         if (selectedObject != nullptr) selectedObject->move(0, -0.5, 0);
 
     // This moves the selected object along the x-axis when pressing keys o,p
-    if (state->keyIsDown(KEY_U))
+    if (gui->state->keyIsDown(KeyCode::U))
         if (selectedObject != nullptr) selectedObject->move(0.5, 0, 0);
 
-    if (state->keyIsDown(KEY_I))
+    if (gui->state->keyIsDown(KeyCode::I))
         if (selectedObject != nullptr) selectedObject->move(-0.5, 0, 0);
 
     // This moves the selected object along the z-axis when pressing keys o,p
-    if (state->keyIsDown(KEY_T))
+    if (gui->state->keyIsDown(KeyCode::T))
         if (selectedObject != nullptr) selectedObject->move(0, 0, 0.5);
 
-    if (state->keyIsDown(KEY_Y))
+    if (gui->state->keyIsDown(KeyCode::Y))
         if (selectedObject != nullptr) selectedObject->move(0, 0, -0.5);
 
     // Toggles gravity
-    if (state->keyJustDown(KEY_G)) {
+    if (gui->state->keyJustDown(KeyCode::G)) {
         
         if (gravity) {
             objects->setGravityAll(0.0);
@@ -195,71 +188,8 @@ void handleInput() {
     }
 
     // Gives all the objects some vertical velocity
-    if (state->keyJustDown(KEY_Z))
+    if (gui->state->keyJustDown(KeyCode::Z))
         objects->setVelocityAll(0, 25, 0);
-
-}
-
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-    // Skip manual handling if state is not instantiated yet
-    if (state == nullptr) return DefWindowProc(hwnd, uMsg, wParam, lParam);
-
-    int status = state->handleMessage(uMsg, wParam, lParam);
-
-    switch (status) {
-
-        // Message was properly handled
-        case 0:
-            return 0;
-
-        // Message was a quit message, leave main loop
-        case 1:
-            doMainLoop = false;
-            return 0;
-
-        // Message was not handled, continue the rest of the function
-        default:
-            break;
-
-    }
-
-    int newWidth;
-    int newHeight;
-
-    switch (uMsg) {
-
-        case WM_SIZE: {
-
-            // Skip if gui, display, or drawer are not instantiated yet
-            if (gui == nullptr) break;
-            if (display == nullptr) break;
-            if (drawer == nullptr) break;
-
-            newWidth = LOWORD(lParam);
-            newHeight = HIWORD(lParam);
-
-            // Tell display about the new dimensions
-            display->updateDimensions(newWidth, newHeight);
-
-            // Tell gui about the new dimensions
-            gui->updateDimensions(newWidth, newHeight);
-            
-            // Tell drawer about the new dimensions
-            drawer->updateDimensions(newWidth, newHeight);
-
-            // Also do default handling
-            return 0;
-
-        }
-
-        // Default handling
-        default:
-            break;
-
-    }
-
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 }
 
@@ -271,18 +201,10 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Gui(WindowProc, 1200, 700, "Game Engine");
+    gui = new GUI(1200, 700, "Game Engine");
 
-    // Init all the working objects
-    state = new State(gui->hwnd);
-
-    display = new Display(gui->windowWidth, gui->windowHeight);
     camera = new Camera();
     camera->setPreset(0);
-
-    drawer = new Drawer(display);
-    drawer->initFont();
-    drawer->buffer = gui->buffer;
 
     // Sets up the default meshes
     Mesh::initMeshes();
@@ -346,11 +268,11 @@ void init() {
     ui = new UI();
 
     // Create the navbar
-    navBar = ui->createWindow(File::NAVBAR);
+    navBar = ui->createWindow(Ui::File::NAVBAR);
 
     // Bind the nav bar
-    navBar->setContext( new ContextNavBar(&windowTransform, &windowObjects) );
-    ui->bindManager->addBind(navBar, BindFuncs::NavBar::bind);
+    navBar->setContext( new Ui::ContextNavBar(&windowTransform, &windowObjects) );
+    ui->bindManager->addBind(navBar, Ui::BindFuncs::NavBar::bind);
 
     // Move the navbar to the top left
     ui->setWindowPos(navBar, 0, 0);
@@ -363,7 +285,7 @@ int main(int argc, char* argv[]) {
     init();
 
     // Main loop
-    while (doMainLoop) {
+    while ( !(gui->shouldDestroyWindow) ) {
 
         // Does all the user input handling
         handleInput();
@@ -372,33 +294,30 @@ int main(int argc, char* argv[]) {
         giveUiData();
 
         // Handle the physics for the frame
-        objects->doAllPhysics(state->time->dt);
+        objects->doAllPhysics(gui->state->time->dt);
 
         // Prep the pixel and depth buffers
-        drawer->resetDepthBuffer();
-        drawer->drawSky(camera, display); // This acts as a pixel buffer reset since it draws to every pixel
+        gui->drawer->resetDepthBuffer();
+        gui->drawer->drawSky(camera, gui->display); // This acts as a pixel buffer reset since it draws to every pixel
 
         // Draw all the objects
-        if (drawNormals) objects->drawAllWithNormals(drawer, camera, display);
-        else objects->drawAll(drawer, camera, display);
+        if (drawNormals) objects->drawAllWithNormals(gui->drawer, camera, gui->display);
+        else objects->drawAll(gui->drawer, camera, gui->display);
         
         // Draw the UI
-        drawer->drawFps(state, display);
-        ui->draw(drawer);
-        drawer->drawCrosshair(display);
+        gui->drawer->drawFps(gui->state, gui->display);
+        ui->draw(gui->drawer);
+        gui->drawer->drawCrosshair(gui->display);
 
         // Tell State that the frame is over
-        state->nextFrame();
+        gui->state->nextFrame();
 
         // Update the GUI
-        gui->flip();
+        gui->window->flip();
 
     }
 
-    delete state;
     delete camera;
-    delete display;
-    delete drawer;
     delete gui;
 
     return 0;

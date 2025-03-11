@@ -7,27 +7,27 @@
 
 // Static declarations
 const Vec2* UI::TransformWindowSize = new Vec2(300, 105);
-LinkedList<Action*>* UI::actionQueue;
+LinkedList<Ui::Action*>* UI::actionQueue;
 
 
 // Constructor
 UI::UI() {
 
-    this->windows = new LinkedList<Window*>();
+    this->windows = new LinkedList<Ui::Window*>();
 
     this->nextWindowPos = new Vec2(100, 100);
 
-    LinkedList<Action*>* queue = new LinkedList<Action*>();
+    LinkedList<Ui::Action*>* queue = new LinkedList<Ui::Action*>();
 
     UI::actionQueue = queue;
-    Window::setActionQueue(queue);
-    WindowElement::setActionQueue(queue);
+    Ui::Window::setActionQueue(queue);
+    Ui::WindowElement::setActionQueue(queue);
 
     this->xml = new XML();
     this->xml->initDefaultElements();
     this->xml->initCustomElements();
 
-    this->bindManager = new BindManager();
+    this->bindManager = new Ui::BindManager();
     
     return;
 
@@ -37,7 +37,7 @@ UI::UI() {
 UI::~UI() {
 
     if (this->windows->length > 0) {
-        Window* window;
+        Ui::Window* window;
         for (this->windows->iterStart(0); !this->windows->iterIsDone(); this->windows->iterNext()) {
             window = this->windows->iterGetObj();
             if (window != nullptr) delete window;
@@ -51,25 +51,25 @@ UI::~UI() {
 }
 
 // Instance Functions
-void UI::draw(Drawer* drawer) {
+void UI::draw(Gui::Drawer* drawer) {
 
     for (this->windows->iterStart(0); !this->windows->iterIsDone(); this->windows->iterNext())
         this->windows->iterGetObj()->draw(drawer);
 
 }
 
-bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nullptr */) {
+bool UI::doInput(Gui::State* state, Gui::CursorState* cursorStateOut /* Default value = nullptr */) {
     
     // Handle actions before starting
     this->handleActions();
 
-    Window* currentWindow;
+    Ui::Window* currentWindow;
 
     // First I check where the mouse is relative to the UI. This is how the cursor state is updated
     // Also store some values to make the logic afterwards more simple
     bool mouseIsOnUi = false;
-    Window* hoveredWindow = nullptr;
-    WindowElement* hoveredElement = nullptr;
+    Ui::Window* hoveredWindow = nullptr;
+    Ui::WindowElement* hoveredElement = nullptr;
 
     // Loop backwards so the front windows take priority
     for (this->windows->iterStart(this->windows->length - 1); this->windows->iterHasNext(); this->windows->iterLast()) {
@@ -89,16 +89,16 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
             // Cursor state depends on the type of element that is hovered
             switch (hoveredElement->type) {
 
-                case UIEnum::ElementType::BUTTON:
-                    *cursorStateOut = CURSOR_HAND;
+                case Ui::ElementType::BUTTON:
+                    *cursorStateOut = Gui::CURSOR_HAND;
                     break;
 
-                case UIEnum::ElementType::TEXTINPUT:
-                    *cursorStateOut = CURSOR_TEXT;
+                case Ui::ElementType::TEXTINPUT:
+                    *cursorStateOut = Gui::CURSOR_TEXT;
                     break;
 
                 default:
-                    *cursorStateOut = CURSOR_ARROW;
+                    *cursorStateOut = Gui::CURSOR_ARROW;
                     break;
 
             }
@@ -172,21 +172,21 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
     if (this->lastClicked == nullptr) return true;
 
     // Button handling
-    if (this->lastClicked->type == UIEnum::ElementType::BUTTON) {
+    if (this->lastClicked->type == Ui::ElementType::BUTTON) {
 
         this->lastClicked->onInput(state);
 
     }
 
     // Drag handling
-    if (this->lastClicked->type == UIEnum::ElementType::DRAGABLE && state->wasLeftHeld()) {
+    if (this->lastClicked->type == Ui::ElementType::DRAGABLE && state->wasLeftHeld()) {
 
         this->lastClicked->onInput(state);
 
     }
 
     // Text box handling
-    if (this->lastClicked->type == UIEnum::ElementType::TEXTINPUT) {
+    if (this->lastClicked->type == Ui::ElementType::TEXTINPUT) {
 
         this->lastClicked->onInput(state);
 
@@ -197,13 +197,13 @@ bool UI::doInput(State* state, CursorState* cursorStateOut /* Default value = nu
 
 }
 
-WindowHandle* UI::createWindow(const char* fileName) {
+Ui::WindowHandle* UI::createWindow(const char* fileName) {
 
     // Build the Window object from the xml file
-    Window* newWindow = this->xml->buildWindow(fileName);
+    Ui::Window* newWindow = this->xml->buildWindow(fileName);
 
     // The created window will have exaclty one parent element, and this element will be the actual visible window
-    WindowElement* parentElement = newWindow->elements->getFirst();
+    Ui::WindowElement* parentElement = newWindow->elements->getFirst();
 
     // Tell the window how big it is
     newWindow->size->set(parentElement->size);
@@ -235,20 +235,20 @@ WindowHandle* UI::createWindow(const char* fileName) {
     newWindow->id = this->nextFreeWindowId;
     this->nextFreeWindowId++;
 
-    WindowHandle* ret = new WindowHandle(newWindow->id, newWindow);
+    Ui::WindowHandle* ret = new Ui::WindowHandle(newWindow->id, newWindow);
 
     return ret;
 
 }
 
-void UI::destroyWindow(WindowHandle* pWindowHandle) {
+void UI::destroyWindow(Ui::WindowHandle* pWindowHandle) {
 
     if (pWindowHandle == nullptr) {
         logWrite("UI::destroyWindow(WindowHandle*) Was called on a nullptr!", true);
         return;
     }
 
-    Window* window = (*pWindowHandle).ptr;
+    Ui::Window* window = (*pWindowHandle).ptr;
 
     if (window == nullptr) {
         logWrite("UI::destroyWindow(WindowHandle*) Tried to destroy an invalid window!", true);
@@ -261,7 +261,7 @@ void UI::destroyWindow(WindowHandle* pWindowHandle) {
 
 }
 
-void UI::validateWindowHandle(WindowHandle** pWindowHandle) {
+void UI::validateWindowHandle(Ui::WindowHandle** pWindowHandle) {
 
     if (pWindowHandle == nullptr) {
         logWrite("UI::validateWindowHandle(WindowHandle**) Was called on a nullptr!", true);
@@ -271,10 +271,10 @@ void UI::validateWindowHandle(WindowHandle** pWindowHandle) {
     // This is actually fine, just the rest of the code cant execute in this case
     if ((*pWindowHandle) == nullptr) return;
 
-    Window* window = (*pWindowHandle)->ptr;
+    Ui::Window* window = (*pWindowHandle)->ptr;
 
     // Check the Window list to see if it actually exists
-    Window* current;
+    Ui::Window* current;
     for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
 
         current = this->windows->iterGetObj();
@@ -293,14 +293,14 @@ void UI::validateWindowHandle(WindowHandle** pWindowHandle) {
 
 }
 
-void UI::setWindowPos(WindowHandle* windowHandle, int posx, int posy) {
+void UI::setWindowPos(Ui::WindowHandle* windowHandle, int posx, int posy) {
 
     if (windowHandle == nullptr) {
         logWrite("UI::setWindowPos(WindowHandle*, int, int) was called on a nullptr!", true);
         return;
     }
 
-    Window* window = windowHandle->ptr;
+    Ui::Window* window = windowHandle->ptr;
 
     if (window == nullptr) {
         logWrite("UI::setWindowPos() Wants to set the position of an invalid window!", true);
@@ -316,7 +316,7 @@ void UI::setWindowPos(WindowHandle* windowHandle, int posx, int posy) {
 void UI::handleActions() {
 
     // General declarations for use in loops
-    Action* currentAction;
+    Ui::Action* currentAction;
 
     // Handle actions in queue, if any exist
     while (UI::actionQueue->length != 0) {
@@ -325,14 +325,14 @@ void UI::handleActions() {
 
         if (currentAction == nullptr) break;
 
-        switch (currentAction->actionType) {
+        switch (currentAction->type) {
 
-            case UIEnum::ActionType::NONE:
+            case Ui::ActionType::NONE:
                 break;
 
-            case UIEnum::ActionType::CLOSE_WINDOW: {
+            case Ui::ActionType::CLOSE_WINDOW: {
 
-                ActionCloseWindow* castedAction = (ActionCloseWindow*) currentAction;
+                Ui::ActionCloseWindow* castedAction = (Ui::ActionCloseWindow*) currentAction;
 
                 this->destroyWindow(castedAction->targetWindowId);
 
@@ -340,9 +340,9 @@ void UI::handleActions() {
 
             }
 
-            case UIEnum::ActionType::OPEN_WINDOW: {
+            case Ui::ActionType::OPEN_WINDOW: {
 
-                ActionOpenWindow* castedAction = (ActionOpenWindow*) currentAction;
+                Ui::ActionOpenWindow* castedAction = (Ui::ActionOpenWindow*) currentAction;
 
                 // First I make sure the window isnt already open
                 this->validateWindowHandle( (castedAction->windowHandle) );
@@ -358,9 +358,9 @@ void UI::handleActions() {
 
             }
 
-            case UIEnum::ActionType::CALL_FUNC: {
+            case Ui::ActionType::CALL_FUNC: {
 
-                ActionCallFunc* castedAction = (ActionCallFunc*) currentAction;
+                Ui::ActionCallFunc* castedAction = (Ui::ActionCallFunc*) currentAction;
 
                 castedAction->callFunc();
 
@@ -373,7 +373,7 @@ void UI::handleActions() {
                 logWrite("UI is trying to handle an unrecognized Action!", true);
 
                 logWrite(" -> Action type ");
-                logWrite(UIEnum::actionTypeToString(currentAction->actionType));
+                logWrite(Ui::actionTypeToString(currentAction->type));
                 logWrite(" cannot be matched", true);
 
                 break;
@@ -397,9 +397,9 @@ void UI::updateNextWindowPos() {
 
 }
 
-void UI::destroyWindow(WindowID windowId) {
+void UI::destroyWindow(Ui::WindowID windowId) {
 
-    Window* current;
+    Ui::Window* current;
 
     for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
 
@@ -416,21 +416,21 @@ void UI::destroyWindow(WindowID windowId) {
 
 }
 
-void UI::destroyWindow(Window* window) {
+void UI::destroyWindow(Ui::Window* window) {
 
     if (window == nullptr) {
         logWrite("UI::destroyWindow(Window*) was called on a nullptr!", true);
         return;
     }
 
-    Window* removed = this->windows->pop(window);
+    Ui::Window* removed = this->windows->pop(window);
     if (removed == nullptr) return;
     
     delete removed;
 
 }
 
-Action* UI::getNextAction() {
+Ui::Action* UI::getNextAction() {
 
     if (UI::actionQueue->length == 0) return nullptr;
 

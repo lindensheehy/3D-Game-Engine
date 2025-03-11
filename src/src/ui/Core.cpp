@@ -1,72 +1,73 @@
 #include "ui/Core.h"
 
-const char* UIEnum::actionTypeToString(ActionType type) {
+
+const char* Ui::actionTypeToString(ActionType type) {
 
     switch (type) {
 
-        case UIEnum::ActionType::NONE:
-            return UIEnum::ActionTypeString::NONE;
+        case Ui::ActionType::NONE:
+            return Ui::ActionTypeString::NONE;
 
-        case UIEnum::ActionType::CLOSE_WINDOW:
-            return UIEnum::ActionTypeString::CLOSE_WINDOW;
+        case Ui::ActionType::CLOSE_WINDOW:
+            return Ui::ActionTypeString::CLOSE_WINDOW;
 
-        case UIEnum::ActionType::OPEN_WINDOW:
-            return UIEnum::ActionTypeString::OPEN_WINDOW;
+        case Ui::ActionType::OPEN_WINDOW:
+            return Ui::ActionTypeString::OPEN_WINDOW;
 
-        case UIEnum::ActionType::CALL_FUNC:
-            return UIEnum::ActionTypeString::CALL_FUNC;
+        case Ui::ActionType::CALL_FUNC:
+            return Ui::ActionTypeString::CALL_FUNC;
 
         default:
-            return UIEnum::UNKNOWN_TYPE;
+            return Ui::UNKNOWN_TYPE;
 
     }
 
 }
 
-const char* UIEnum::elementTypeToString(ElementType type) {
+const char* Ui::elementTypeToString(ElementType type) {
 
     switch (type) {
 
-        case UIEnum::ElementType::INVISIBLE:
-            return UIEnum::ElementTypeString::INVISIBLE;
+        case Ui::ElementType::INVISIBLE:
+            return Ui::ElementTypeString::INVISIBLE;
 
-        case UIEnum::ElementType::VISUAL:
-            return UIEnum::ElementTypeString::VISUAL;
+        case Ui::ElementType::VISUAL:
+            return Ui::ElementTypeString::VISUAL;
 
-        case UIEnum::ElementType::BUTTON:
-            return UIEnum::ElementTypeString::BUTTON;
+        case Ui::ElementType::BUTTON:
+            return Ui::ElementTypeString::BUTTON;
 
-        case UIEnum::ElementType::DRAGABLE:
-            return UIEnum::ElementTypeString::DRAGABLE;
+        case Ui::ElementType::DRAGABLE:
+            return Ui::ElementTypeString::DRAGABLE;
 
-        case UIEnum::ElementType::TEXTINPUT:
-            return UIEnum::ElementTypeString::TEXTINPUT;
+        case Ui::ElementType::TEXTINPUT:
+            return Ui::ElementTypeString::TEXTINPUT;
 
         default:
-            return UIEnum::UNKNOWN_TYPE;
+            return Ui::UNKNOWN_TYPE;
 
     }
 
 }
 
-const char* UIEnum::contextTypeToString(ContextType type) {
+const char* Ui::contextTypeToString(ContextType type) {
 
     switch (type) {
 
-        case UIEnum::ContextType::NONE:
-            return UIEnum::ContextTypeString::NONE;
+        case Ui::ContextType::NONE:
+            return Ui::ContextTypeString::NONE;
 
-        case UIEnum::ContextType::NAVBAR:
-            return UIEnum::ContextTypeString::NAVBAR;
+        case Ui::ContextType::NAVBAR:
+            return Ui::ContextTypeString::NAVBAR;
 
-        case UIEnum::ContextType::TRANSFORM:
-            return UIEnum::ContextTypeString::TRANSFORM;
+        case Ui::ContextType::TRANSFORM:
+            return Ui::ContextTypeString::TRANSFORM;
 
-        case UIEnum::ContextType::OBJECTS:
-            return UIEnum::ContextTypeString::OBJECTS;
+        case Ui::ContextType::OBJECTS:
+            return Ui::ContextTypeString::OBJECTS;
 
         default:
-            return UIEnum::UNKNOWN_TYPE;
+            return Ui::UNKNOWN_TYPE;
 
     }
 

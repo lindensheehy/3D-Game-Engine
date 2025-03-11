@@ -1,6 +1,72 @@
 #include "util/Utility.h"
 
 
+/*   -----   Color Functions   -----   */
+uint32 Color::setBrightness(uint32 color, float newBrightness) {
+
+    // Unpack color code
+    uint8 opacityValue = (uint8) (color >> 24);
+    uint8 redValue = (uint8) (color >> 16);
+    uint8 greenValue = (uint8) (color >> 8);
+    uint8 blueValue = (uint8) (color);
+
+    // Update values
+    redValue *= newBrightness;
+    greenValue *= newBrightness;
+    blueValue *= newBrightness;
+
+    // Repack color code
+    uint32 newColor = 0x00000000;
+    newColor |= opacityValue;
+    newColor <<= 8;
+    newColor |= redValue;
+    newColor <<= 8;
+    newColor |= greenValue;
+    newColor <<= 8;
+    newColor |= blueValue;
+
+    return newColor;
+
+}
+
+uint32 Color::merge(uint32 color1, float opacity1, uint32 color2, float opacity2) {
+
+    // Unpack color codes
+    uint8 redValue1 = (uint8) (color1 >> 16);
+    uint8 greenValue1 = (uint8) (color1 >> 8);
+    uint8 blueValue1 = (uint8) (color1);
+
+    uint8 redValue2 = (uint8) (color2 >> 16);
+    uint8 greenValue2 = (uint8) (color2 >> 8);
+    uint8 blueValue2 = (uint8) (color2);
+
+    // Downscale values accordingly, ignoring opacityValue
+    redValue1 *= opacity1;
+    greenValue1 *= opacity1;
+    blueValue1 *= opacity1;
+
+    redValue2 *= opacity2;
+    greenValue2 *= opacity2;
+    blueValue2 *= opacity2;
+
+    // Get resulting color codes, using the first set to store this to avoid unnecessary variables
+    redValue1 += redValue2;
+    greenValue1 += greenValue2;
+    blueValue1 += blueValue2;
+
+    // Pack resulting color code
+    uint32 newColor = 0x0000FF00; // This FF will become the opacity value after the bit shifts
+    newColor |= redValue1;
+    newColor <<= 8;
+    newColor |= greenValue1;
+    newColor <<= 8;
+    newColor |= blueValue1;
+
+    return newColor;
+
+}
+
+
 /*   -----   Swap Variants   -----   */
 void swap(int* var1, int* var2) {
     /*
@@ -49,6 +115,7 @@ void swap(double* var1, double* var2) {
     return;
 
 }
+
 
 /*   -----   Casting With char*   -----   */
 bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGITS) {
@@ -323,4 +390,3 @@ bool stringHexToInt(char* string, int* result, int MAXLENGTH) {
     return true;
     
 }
-

@@ -1,233 +1,8 @@
 #include "gui/Drawer.h"
 
 
-/* --------------------------- */
-/* ---------- Color ---------- */
-/* --------------------------- */
-
-// Contructors
-Color::Color(uint32 color) {
-
-    this->rawValue = color;
-
-    // This gets the sub values at each 8 bit interval of the 32 bit input
-    this->opacityValue = (uint8) (color >> 24);
-    this->redValue = (uint8) (color >> 16);
-    this->greenValue = (uint8) (color >> 8);
-    this->blueValue = (uint8) (color);
-}
-
-Color::Color(uint8 o, uint8 r, uint8 g, uint8 b) {
-
-    this->redValue = r;
-    this->greenValue = g;
-    this->blueValue = b;
-    this->opacityValue = o;
-    
-    // Load each 8 sub bits into a bigger variable
-    this->rawValue = 0x00000000;
-    this->rawValue |= o;
-    this->rawValue <<= 8;
-    this->rawValue |= r;
-    this->rawValue <<= 8;
-    this->rawValue |= g;
-    this->rawValue <<= 8;
-    this->rawValue |= b;
-}
-
-// Class functions
-uint32 Color::setBrightness(uint32 color, float newBrightness) {
-
-    // Unpack color code
-    uint8 opacityValue = (uint8) (color >> 24);
-    uint8 redValue = (uint8) (color >> 16);
-    uint8 greenValue = (uint8) (color >> 8);
-    uint8 blueValue = (uint8) (color);
-
-    // Update values
-    redValue *= newBrightness;
-    greenValue *= newBrightness;
-    blueValue *= newBrightness;
-
-    // Repack color code
-    uint32 newColor = 0x00000000;
-    newColor |= opacityValue;
-    newColor <<= 8;
-    newColor |= redValue;
-    newColor <<= 8;
-    newColor |= greenValue;
-    newColor <<= 8;
-    newColor |= blueValue;
-
-    return newColor;
-
-}
-
-uint32 Color::merge(uint32 color1, float opacity1, uint32 color2, float opacity2) {
-
-    // Unpack color codes
-    uint8 redValue1 = (uint8) (color1 >> 16);
-    uint8 greenValue1 = (uint8) (color1 >> 8);
-    uint8 blueValue1 = (uint8) (color1);
-
-    uint8 redValue2 = (uint8) (color2 >> 16);
-    uint8 greenValue2 = (uint8) (color2 >> 8);
-    uint8 blueValue2 = (uint8) (color2);
-
-    // Downscale values accordingly, ignoring opacityValue
-    redValue1 *= opacity1;
-    greenValue1 *= opacity1;
-    blueValue1 *= opacity1;
-
-    redValue2 *= opacity2;
-    greenValue2 *= opacity2;
-    blueValue2 *= opacity2;
-
-    // Get resulting color codes, using the first set to store this to avoid unnecessary variables
-    redValue1 += redValue2;
-    greenValue1 += greenValue2;
-    blueValue1 += blueValue2;
-
-    // Pack resulting color code
-    uint32 newColor = 0x0000FF00; // This FF will become the opacity value after the bit shifts
-    newColor |= redValue1;
-    newColor <<= 8;
-    newColor |= greenValue1;
-    newColor <<= 8;
-    newColor |= blueValue1;
-
-    return newColor;
-
-}
-
-
-/* ------------------------- */
-/* ---------- PNG ---------- */
-/* ------------------------- */
-
-// Constructor from filename
-PNG::PNG(const char* filename) {
-
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (fileName == nullptr) {
-        logWrite("Called PNG->PNG(const char*) on a null pointer!", true);
-        return;
-    }
-
-    // Not implemented yet
-
-}
-
-// Constructor from other PNG object
-PNG::PNG(PNG* input, int startx, int starty, int endx, int endy) {
-
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (input == nullptr) {
-        logWrite("Called PNG->PNG(PNG*, int, int, int, int) on a null pointer!", true);
-        return;
-    }
-
-    this->width = (endx - startx);
-    this->height = (endy - starty);
-
-    this->fileName = nullptr;
-    int size = this->width * this->height;
-    this->rawData = new uint8[size * 4];
-    this->pixels = new Color*[size];
-
-    for (int i = 0; i < size; i += 1) {
-
-        int x = ((i % this->width) + startx);
-        int y = (int) (i / this->width) + (starty);
-
-        uint8 r = input->getChannel( x, y, RED);
-        uint8 g = input->getChannel( x, y, GREEN);
-        uint8 b = input->getChannel( x, y, BLUE);
-        uint8 o = input->getChannel( x, y, OPACITY);
-
-        if (r == -1 || g == -1 || b == -1 || o == -1) {
-            logWrite("color channel failed to get", true);
-
-        }
-
-        this->rawData[i * 4] = r;
-        this->rawData[(i * 4) + 1] = g;
-        this->rawData[(i * 4) + 2] = b;
-        this->rawData[(i * 4) + 3] = o;
-
-        this->pixels[i] = new Color(o, r, g, b);
-
-    }
-    
-    return;
-
-}
-
-// Destructor
-PNG::~PNG() {
-
-    for (int i = 0; i < this->width * this-> height; i++) {
-        delete this->pixels[i];
-    }
-
-    delete[] this->rawData;
-    delete[] this->pixels;
-
-    return;
-
-}
-
-// Instance Functions
-Color* PNG::getPixel(int x, int y) {
-
-    if (x >= this->width || y >= this->height) return nullptr;
-
-    return this->pixels[ (this->width * y) + x ];
-
-}
-
-bool PNG::setPixel(int x, int y, Color* pixel) {
-
-    if (x >= this->width || y >= this->height) return false;
-
-    if (pixel == nullptr) return false;
-
-    this->pixels[ (this->width * y) + x ] = pixel;
-
-    return true;
-
-}
-
-uint8 PNG::getChannel(int x, int y, char channel) {
-
-    if (x >= this->width || y >= this->height) return -1;
-
-    if (channel > 3 || channel < 0) return -1;
-
-    return this->rawData[ (((this->width * y) + x) * 4) + channel];
-
-}
-
-bool PNG::setChannel(int x, int y, char channel, uint8 value) {
-    
-    if (x >= this->width || y >= this->height) return false;
-
-    if (channel > 3 || channel < 0) return false;
-
-    this->rawData[ (((this->width * y) + x) * 4) + channel] = value;
-
-    return true;
-
-}
-
-
-
-/* ---------------------------- */
-/* ---------- Drawer ---------- */
-/* ---------------------------- */
-
 // Constructors
-Drawer::Drawer(Display* display) {
+Gui::Drawer::Drawer(Gui::Display* display) {
 
     this->buffer = nullptr;
     this->bufferWidth = display->width;
@@ -245,7 +20,7 @@ Drawer::Drawer(Display* display) {
 
 }
 
-Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
+Gui::Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
 
     this->buffer = buffer;
     this->bufferWidth = bufferWidthInput;
@@ -264,7 +39,7 @@ Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int buffe
 }
 
 // Destructor
-Drawer::~Drawer() {
+Gui::Drawer::~Drawer() {
 
     delete[] this->fullDepthBuffer;
 
@@ -277,7 +52,7 @@ Drawer::~Drawer() {
 }
 
 // Instance functions
-void Drawer::updateDimensions(int width, int height) {
+void Gui::Drawer::updateDimensions(int width, int height) {
 
     if (width > PIXEL_BUFFER_WIDTH) {
         logWrite("Drawer::updateBounds() tried to set the width beyond the max range!", true);
@@ -305,7 +80,7 @@ void Drawer::updateDimensions(int width, int height) {
 
 }
 
-void Drawer::resetDepthBuffer() {
+void Gui::Drawer::resetDepthBuffer() {
 
     int index;
 
@@ -323,7 +98,7 @@ void Drawer::resetDepthBuffer() {
 
 }
 
-int Drawer::bufferIndex(int x, int y) const {
+int Gui::Drawer::bufferIndex(int x, int y) const {
 
     if (!this->inBufferRange(x, y)) return -1;
 
@@ -331,7 +106,7 @@ int Drawer::bufferIndex(int x, int y) const {
 
 }
 
-bool Drawer::inBufferRange(int x, int y) const {
+bool Gui::Drawer::inBufferRange(int x, int y) const {
 
     return (
         x >= 0 &&
@@ -342,7 +117,7 @@ bool Drawer::inBufferRange(int x, int y) const {
 
 }
 
-void Drawer::clipCoordinates(int* x, int* y) const {
+void Gui::Drawer::clipCoordinates(int* x, int* y) const {
 
     if (x == nullptr) return;
     if (y == nullptr) return;
@@ -357,7 +132,7 @@ void Drawer::clipCoordinates(int* x, int* y) const {
 
 }
 
-void Drawer::writePixel(uint32 pixel, int x, int y) {
+void Gui::Drawer::writePixel(uint32 pixel, int x, int y) {
 
     if (this->buffer == nullptr) {
         return;
@@ -373,7 +148,7 @@ void Drawer::writePixel(uint32 pixel, int x, int y) {
     
 }
 
-void Drawer::writePixel(uint32 pixel, int x, int y, float depth) {
+void Gui::Drawer::writePixel(uint32 pixel, int x, int y, float depth) {
 
     if (this->buffer == nullptr) {
         return;
@@ -391,7 +166,7 @@ void Drawer::writePixel(uint32 pixel, int x, int y, float depth) {
 
 }
 
-void Drawer::writePixel(uint32 pixel, int x, int y, float depth, float opacity) {
+void Gui::Drawer::writePixel(uint32 pixel, int x, int y, float depth, float opacity) {
 
     if (this->buffer == nullptr) {
         return;
@@ -412,7 +187,7 @@ void Drawer::writePixel(uint32 pixel, int x, int y, float depth, float opacity) 
 
 }
 
-void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2) {
+void Gui::Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -433,7 +208,7 @@ void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2) {
+void Gui::Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -456,7 +231,7 @@ void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1
 
 }
 
-void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2, float opacity) {
+void Gui::Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1, float depth2, float opacity) {
 
     if (this->buffer == nullptr) {
         return;
@@ -479,7 +254,7 @@ void Drawer::drawLine(uint32 pixel, int x1, int y1, int x2, int y2, float depth1
 
 }
 
-void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to) {
+void Gui::Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
@@ -497,7 +272,7 @@ void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to) {
 
 }
 
-void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2) {
+void Gui::Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
@@ -515,7 +290,7 @@ void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float de
 
 }
 
-void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2, float opacity) {
+void Gui::Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float depth2, float opacity) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (from == nullptr) {
@@ -533,7 +308,7 @@ void Drawer::drawLine(uint32 pixel, Vec2* from, Vec2* to, float depth1, float de
 
 }
 
-void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x) {
+void Gui::Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -552,7 +327,7 @@ void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x) {
 
 }
 
-void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1, float depth2) {
+void Gui::Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1, float depth2) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -598,7 +373,7 @@ void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1,
 
 }
 
-void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1, float depth2, float opacity) {
+void Gui::Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1, float depth2, float opacity) {
 
     // Skip if this line lies outside the screen horizontally
     if (!this->inBufferRange(x, 0)) return;
@@ -644,7 +419,7 @@ void Drawer::drawVerticalLine(uint32 pixel, int y1, int y2, int x, float depth1,
 
 }
 
-void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y) {
+void Gui::Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y) {
 
     if (x1 > x2) {
         swap(&x1, &x2);
@@ -656,7 +431,7 @@ void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y) {
 
 }
 
-void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth1, float depth2) {
+void Gui::Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth1, float depth2) {
 
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
@@ -698,7 +473,7 @@ void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth
 
 }
 
-void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth1, float depth2, float opacity) {
+void Gui::Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth1, float depth2, float opacity) {
 
     // Skip if coordinates are out of range
     if (!this->inBufferRange(x1, y) && !this->inBufferRange(x2, y)) return;
@@ -740,7 +515,7 @@ void Drawer::drawHorizontalLine(uint32 pixel, int x1, int x2, int y, float depth
     
 }
 
-void Drawer::drawRect(uint32 pixel, int x1, int y1, int x2, int y2) {
+void Gui::Drawer::drawRect(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -755,7 +530,7 @@ void Drawer::drawRect(uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawRect(uint32 pixel, Vec2* pos1, Vec2* pos2) {
+void Gui::Drawer::drawRect(uint32 pixel, Vec2* pos1, Vec2* pos2) {
 
     this->drawRect(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
 
@@ -763,7 +538,7 @@ void Drawer::drawRect(uint32 pixel, Vec2* pos1, Vec2* pos2) {
     
 }
 
-void Drawer::drawRectFilled(uint32 pixel, int x1, int y1, int x2, int y2) {
+void Gui::Drawer::drawRectFilled(uint32 pixel, int x1, int y1, int x2, int y2) {
 
     if (this->buffer == nullptr) {
         return;
@@ -785,7 +560,7 @@ void Drawer::drawRectFilled(uint32 pixel, int x1, int y1, int x2, int y2) {
 
 }
 
-void Drawer::drawRectFilled(uint32 pixel, Vec2* pos1, Vec2* pos2) {
+void Gui::Drawer::drawRectFilled(uint32 pixel, Vec2* pos1, Vec2* pos2) {
 
     this->drawRectFilled(pixel, pos1->x, pos1->y, pos2->x, pos2->y);
 
@@ -793,11 +568,11 @@ void Drawer::drawRectFilled(uint32 pixel, Vec2* pos1, Vec2* pos2) {
     
 }
 
-void Drawer::fillScreen(uint32 pixel) {
+void Gui::Drawer::fillScreen(uint32 pixel) {
     this->drawRectFilled(pixel, 0, 0, this->bufferWidth, this->bufferHeight);
 }
 
-void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy) {
+void Gui::Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy) {
 
     int limit = radiusx * radiusy;
     float factorx = sqrt( (float) (radiusy / radiusx) );
@@ -814,7 +589,7 @@ void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
-void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, float depth) {
+void Gui::Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx, int radiusy, float depth) {
 
     int limit = radiusx * radiusy;
     float factorx = sqrt( (float) (radiusy / radiusx) );
@@ -831,7 +606,7 @@ void Drawer::drawElipse(uint32 pixel, int locationx, int locationy, int radiusx,
     }
 }
 
-void Drawer::drawCircle(uint32 pixel, int x, int y, int radius) {
+void Gui::Drawer::drawCircle(uint32 pixel, int x, int y, int radius) {
 
     int limit = radius * radius;
 
@@ -846,13 +621,13 @@ void Drawer::drawCircle(uint32 pixel, int x, int y, int radius) {
     }
 }
 
-void Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius) {
+void Gui::Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius) {
 
     this->drawCircle(pixel, pos->x, pos->y, radius);
 
 }
 
-void Drawer::drawCircle(uint32 pixel, int x, int y, int radius, float depth) {
+void Gui::Drawer::drawCircle(uint32 pixel, int x, int y, int radius, float depth) {
 
     int limit = radius * radius;
 
@@ -867,13 +642,13 @@ void Drawer::drawCircle(uint32 pixel, int x, int y, int radius, float depth) {
     }
 }
 
-void Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius, float depth) {
+void Gui::Drawer::drawCircle(uint32 pixel, Vec2* pos, int radius, float depth) {
 
     this->drawCircle(pixel, pos->x, pos->y, radius, depth);
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
+void Gui::Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -987,7 +762,7 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3) {
+void Gui::Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -1158,7 +933,7 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3, float opacity) {
+void Gui::Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3, float opacity) {
 
     /*
         This works from left to right (+x direction) drawing vertical lines from the bounds of the triangle
@@ -1329,7 +1104,7 @@ void Drawer::drawTriangle(uint32 pixel, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, Tri2* tri) {
+void Gui::Drawer::drawTriangle(uint32 pixel, Tri2* tri) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
@@ -1365,7 +1140,7 @@ void Drawer::drawTriangle(uint32 pixel, Tri2* tri) {
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, Tri3* tri) {
+void Gui::Drawer::drawTriangle(uint32 pixel, Tri3* tri) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
@@ -1405,7 +1180,7 @@ void Drawer::drawTriangle(uint32 pixel, Tri3* tri) {
 
 }
 
-void Drawer::drawTriangle(uint32 pixel, Tri3* tri, float opacity) {
+void Gui::Drawer::drawTriangle(uint32 pixel, Tri3* tri, float opacity) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (tri == nullptr) {
@@ -1447,67 +1222,7 @@ void Drawer::drawTriangle(uint32 pixel, Tri3* tri, float opacity) {
 
 }
 
-void Drawer::drawpng(PNG* texture, int x, int y) {
-
-    if (x + texture->width > bufferWidth) return;
-    if (y + texture->height > bufferHeight) return;
-    
-    if (this->buffer == nullptr) {
-        return;
-    }
-
-    for (int i = x; i < (x + texture->width); i++) {
-        for (int j = y; j < (y + texture->height); j++) {
-
-            Color* pixel = texture->getPixel(i - x, j - y);
-
-            if (pixel->opacityValue != 0x00) {
-                this->writePixel(pixel->rawValue, i, j);
-            }
-
-        }
-    }
-    
-    return;
-}
-
-void Drawer::drawpng(PNG* texture, Vec2* pos) {
-
-    this->drawpng(texture, pos->x, pos->y);
-
-}
-
-void Drawer::drawpng(PNG* texture, int x, int y, float depth) {
-
-    if (x + texture->width > bufferWidth) return;
-    if (y + texture->height > bufferHeight) return;
-    
-    if (this->buffer == nullptr) {
-        return;
-    }
-
-    for (int i = x; i < (x + texture->width); i++) {
-        for (int j = y; j < (y + texture->height); j++) {
-
-            Color* pixel = texture->getPixel(i - x, j - y);
-
-            if (pixel->opacityValue != 0x00) {
-                this->writePixel(pixel->rawValue, i, j, depth);
-            }
-
-        }
-    }
-    
-    return;
-}
-
-void Drawer::drawpng(PNG* texture, Vec2* pos, float depth) {
-
-    this->drawpng(texture, pos->x, pos->y, depth);
-
-}
-
-void Drawer::initFont() {
+void Gui::Drawer::initFont() {
 
     this->chars = new bool*[this->rawCharsCount];
 
@@ -1557,7 +1272,7 @@ void Drawer::initFont() {
 
 }
 
-void Drawer::drawChar(uint32 pixel, char ch, int x, int y) {
+void Gui::Drawer::drawChar(uint32 pixel, char ch, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawChar() without calling Drawer->initFont()!", true);
@@ -1572,7 +1287,7 @@ void Drawer::drawChar(uint32 pixel, char ch, int x, int y) {
 
 }
 
-void Drawer::drawString(uint32 pixel, const char* string, int x, int y) {
+void Gui::Drawer::drawString(uint32 pixel, const char* string, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawString() without calling Drawer->initFont()!", true);
@@ -1592,14 +1307,14 @@ void Drawer::drawString(uint32 pixel, const char* string, int x, int y) {
     
 }
 
-void Drawer::drawString(uint32 pixel, const char* string, Vec2* pos) {
+void Gui::Drawer::drawString(uint32 pixel, const char* string, Vec2* pos) {
 
     this->drawString(pixel, string, pos->x, pos->y);
     return;
 
 }
 
-void Drawer::drawInt(uint32 pixel, int num, int x, int y) {
+void Gui::Drawer::drawInt(uint32 pixel, int num, int x, int y) {
 
     if (this->chars == nullptr) {
         logWrite("Called Drawer->drawInt() without calling Drawer->initFont()!", true);
@@ -1635,7 +1350,7 @@ void Drawer::drawInt(uint32 pixel, int num, int x, int y) {
 
 }
 
-void Drawer::drawFps(State* state, Display* display) {
+void Gui::Drawer::drawFps(State* state, Display* display) {
 
     if (state == nullptr) {
         logWrite("Called Drawer->drawFps(State) on a nullptr!", true);
@@ -1655,7 +1370,7 @@ void Drawer::drawFps(State* state, Display* display) {
 
 }
 
-void Drawer::drawPixels(uint32 pixel, bool* pixels, int x, int y) {
+void Gui::Drawer::drawPixels(uint32 pixel, bool* pixels, int x, int y) {
 
     if (pixels == nullptr) return;
     
@@ -1677,7 +1392,7 @@ void Drawer::drawPixels(uint32 pixel, bool* pixels, int x, int y) {
 
 }
 
-bool* Drawer::getCharRef(char ch) const {
+bool* Gui::Drawer::getCharRef(char ch) const {
 
     /*
         Because the chars 'a' - 'z' are in order for their cooresponding integer value, I can use this to simplify the indexing
@@ -1722,7 +1437,7 @@ bool* Drawer::getCharRef(char ch) const {
 
 }
 
-bool* Drawer::getCharRef(int num) const {
+bool* Gui::Drawer::getCharRef(int num) const {
 
     // Return ref to null char if the int is negative or not single digit
     if ( num < 0 || num > 9 ) {
@@ -1734,7 +1449,7 @@ bool* Drawer::getCharRef(int num) const {
 
 }
 
-void Drawer::drawSky(Camera* camera, Display* display) {
+void Gui::Drawer::drawSky(Camera* camera, Display* display) {
 
     // Address error cases, but dont kill the process yet in case its not fatal
     if (camera == nullptr) {
@@ -1789,7 +1504,7 @@ void Drawer::drawSky(Camera* camera, Display* display) {
 
 }
 
-void Drawer::drawCrosshair(Display* display) {
+void Gui::Drawer::drawCrosshair(Display* display) {
 
     int centerX = display->middleX();
     int centerY = display->middleY();
@@ -1806,3 +1521,69 @@ void Drawer::drawCrosshair(Display* display) {
     this->drawHorizontalLine(Color::WHITE, centerX + 6, centerX + 12, centerY);
 
 }
+
+
+/*
+    The following are some old functions for drawing PNG objects
+    Im keeping them around in case they are helpful when i end up creating my own PNG system
+*/
+
+// void Gui::Drawer::drawpng(PNG* texture, int x, int y) {
+
+//     if (x + texture->width > bufferWidth) return;
+//     if (y + texture->height > bufferHeight) return;
+    
+//     if (this->buffer == nullptr) {
+//         return;
+//     }
+
+//     for (int i = x; i < (x + texture->width); i++) {
+//         for (int j = y; j < (y + texture->height); j++) {
+
+//             Color* pixel = texture->getPixel(i - x, j - y);
+
+//             if (pixel->opacityValue != 0x00) {
+//                 this->writePixel(pixel->rawValue, i, j);
+//             }
+
+//         }
+//     }
+    
+//     return;
+// }
+
+// void Gui::Drawer::drawpng(PNG* texture, Vec2* pos) {
+
+//     this->drawpng(texture, pos->x, pos->y);
+
+// }
+
+// void Gui::Drawer::drawpng(PNG* texture, int x, int y, float depth) {
+
+//     if (x + texture->width > bufferWidth) return;
+//     if (y + texture->height > bufferHeight) return;
+    
+//     if (this->buffer == nullptr) {
+//         return;
+//     }
+
+//     for (int i = x; i < (x + texture->width); i++) {
+//         for (int j = y; j < (y + texture->height); j++) {
+
+//             Color* pixel = texture->getPixel(i - x, j - y);
+
+//             if (pixel->opacityValue != 0x00) {
+//                 this->writePixel(pixel->rawValue, i, j, depth);
+//             }
+
+//         }
+//     }
+    
+//     return;
+// }
+
+// void Gui::Drawer::drawpng(PNG* texture, Vec2* pos, float depth) {
+
+//     this->drawpng(texture, pos->x, pos->y, depth);
+
+// }
