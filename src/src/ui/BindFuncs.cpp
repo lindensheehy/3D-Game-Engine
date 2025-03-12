@@ -146,8 +146,6 @@ void Ui::BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
 void Ui::BindFuncs::Objects::createCube(Context* contextObjects) {
 
-    logWrite("Trying to create a cube!", true);
-
     /*   Verify the contents of the Context object   */
 
     // Null Context is okay, just the function cant run this time
@@ -184,8 +182,6 @@ void Ui::BindFuncs::Objects::createCube(Context* contextObjects) {
 }
 
 void Ui::BindFuncs::Objects::createSphere(Context* contextObjects) {
-    
-    logWrite("Trying to create a sphere!", true);
 
     /*   Verify the contents of the Context object   */
 

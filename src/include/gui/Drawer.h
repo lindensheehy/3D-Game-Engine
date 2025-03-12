@@ -8,6 +8,7 @@
 #include "geometry/Camera.h"
 #include "gui/Display.h"
 #include "gui/State.h"
+#include "gui/PixelTracker.h"
 #include "util/LinkedList.h"
 
 
@@ -39,9 +40,13 @@ namespace Gui {
             unsigned int bufferHeight, bufferWidth;
             unsigned int bufferSize;
 
+            // Used to track what Object drew to a certain pixel
+            // This is how the user can select objects by clicking them
+            PixelTracker* pixelTracker;
+
 
             // Constructors
-            Drawer(Gui::Display* gui);
+            Drawer(Display* gui);
             Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput);
 
             // Destructor

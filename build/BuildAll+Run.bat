@@ -25,6 +25,7 @@ g++ -Ofast %include%        -c %srcdir%gui/Core.cpp             -o %objdir%gui-C
 g++ -Ofast %include%        -c %srcdir%gui/Display.cpp          -o %objdir%gui-Display.o
 g++ -Ofast %include%        -c %srcdir%gui/Drawer.cpp           -o %objdir%gui-Drawer.o
 g++ -Ofast %include%        -c %srcdir%gui/GUI.cpp              -o %objdir%gui-GUI.o
+g++ -Ofast %include%        -c %srcdir%gui/PixelTracker.cpp     -o %objdir%gui-PixelTracker.o
 g++ -Ofast %include%        -c %srcdir%gui/State.cpp            -o %objdir%gui-State.o
 g++ -Ofast %include%        -c %srcdir%gui/Window.cpp           -o %objdir%gui-Window.o
 

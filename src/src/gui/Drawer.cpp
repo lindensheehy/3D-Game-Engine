@@ -18,6 +18,8 @@ Gui::Drawer::Drawer(Gui::Display* display) {
 
     this->chars = nullptr;
 
+    this->pixelTracker = new PixelTracker();
+
 }
 
 Gui::Drawer::Drawer(uint32* buffer, unsigned int bufferWidthInput, unsigned int bufferHeightInput) {
@@ -134,13 +136,16 @@ void Gui::Drawer::clipCoordinates(int* x, int* y) const {
 
 void Gui::Drawer::writePixel(uint32 pixel, int x, int y) {
 
-    if (this->buffer == nullptr) {
-        return;
-    }
-
-    // Get index, and skip if its outside the buffer size
+    // Validate requested write
     int index = this->bufferIndex(x, y);
     if (index == -1) return;
+
+    // Check with PixelTracker
+    if (this->pixelTracker->watchingPixelWrites) {
+        if (this->pixelTracker->watchedPixel->is(x, y)) {
+            this->pixelTracker->foundWrite();
+        }
+    }
 
     this->buffer[index] = pixel;
 
@@ -150,14 +155,18 @@ void Gui::Drawer::writePixel(uint32 pixel, int x, int y) {
 
 void Gui::Drawer::writePixel(uint32 pixel, int x, int y, float depth) {
 
-    if (this->buffer == nullptr) {
-        return;
-    }
-
+    // Validate requested write
     int index = this->bufferIndex(x, y);
     if (index == -1) return;
 
     if (depth > this->depthBuffer[index]) return;
+
+    // Check with PixelTracker
+    if (this->pixelTracker->watchingPixelWrites) {
+        if (this->pixelTracker->watchedPixel->is(x, y)) {
+            this->pixelTracker->foundWrite();
+        }
+    }
 
     this->buffer[index] = pixel;
     this->depthBuffer[index] = depth;
@@ -168,14 +177,18 @@ void Gui::Drawer::writePixel(uint32 pixel, int x, int y, float depth) {
 
 void Gui::Drawer::writePixel(uint32 pixel, int x, int y, float depth, float opacity) {
 
-    if (this->buffer == nullptr) {
-        return;
-    }
-
+    // Validate requested write
     int index = this->bufferIndex(x, y);
     if (index == -1) return;
 
     if (depth > this->depthBuffer[index]) return;
+
+    // Check with PixelTracker
+    if (this->pixelTracker->watchingPixelWrites) {
+        if (this->pixelTracker->watchedPixel->is(x, y)) {
+            this->pixelTracker->foundWrite();
+        }
+    }
 
     // Find effective color based on pixel color, opacity, and color behind
     uint32 originalPixel = this->buffer[index];

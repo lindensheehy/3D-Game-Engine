@@ -28,6 +28,21 @@ Ui::WindowHandle* windowObjects;
 
 void giveUiData() {
 
+    // Transform window
+    if (windowTransform != nullptr) {
+        if (selectedObject != nullptr) {
+            if (windowTransform->hasNoContext()) {
+
+                windowTransform->setContext( new Ui::ContextTransform(selectedObject) );
+
+                // Rebind with new context
+                ui->bindManager->rebind(windowTransform);
+
+            }
+        }
+    }
+
+    // Objects window
     if (windowObjects != nullptr) {
 
         // Only give it new context if it does not have one
@@ -82,7 +97,9 @@ void handleInput() {
     camera->pos->z += cameraMovVec->y;
     delete cameraMovVec;
 
+
     /*  ---  Camera Rotation  ---  */
+
     if (gui->state->mouse->leftButtonIsDown) {
 
         // 0.2 is just a random number I chose becuase it felt good in the app
@@ -91,6 +108,66 @@ void handleInput() {
         float camDeltaPitch = (float) gui->state->deltaMousePosY();
         camera->rotate( camDeltaYaw * mouseSensitivity, -camDeltaPitch * mouseSensitivity, 0 );
 
+    }
+
+
+    /*   Object Selection   */
+
+    // Object selection is done by requesting to the Drawer which pixel to watch
+    // So then, on the next frame, the information about which Object drew there now exists
+    // So before requesting the next selection, I process whatever exists from last frame
+
+    // Check if an object was selected last frame
+    if (gui->drawer->pixelTracker->watchingPixelWrites) {
+
+        Object* newSelection = gui->drawer->pixelTracker->foundObject;
+
+        // First make sure its non-null, otherwise the object would be instantly deselected after selection
+        if (newSelection != nullptr) {
+
+            // Reset opacity of old selectedObject if needed
+            if (selectedObject != nullptr) selectedObject->opacity = 1;
+
+            selectedObject = newSelection;
+
+            // Now I update the opacity, and pass it to the UI, rebinding the Transform Window as well
+            selectedObject->opacity = 0.5;
+
+            ui->validateWindowHandle(&windowTransform);
+
+            if (windowTransform != nullptr) {
+                windowTransform->setContext( new Ui::ContextTransform(selectedObject) );
+                ui->bindManager->rebind(windowTransform);
+            }
+
+        }
+
+        // Also set it back to null, so as to not carry the information over unnecessarily
+        gui->drawer->pixelTracker->foundObject = nullptr;
+
+    }
+
+    // Tell Drawer->PixelTracker to watch the pixel the mouse is on
+    if (gui->state->wasRightJustPressed()) {
+
+        gui->drawer->pixelTracker->watchedPixel->set(
+            gui->state->mouse->posX,
+            gui->state->mouse->posY
+        );
+
+        gui->drawer->pixelTracker->watchingPixelWrites = true;
+
+    }
+
+    // Otherwise tell PixelTracker to not track anything
+    else {
+        gui->drawer->pixelTracker->watchingPixelWrites = false;
+    }
+
+    // The enter key will deselect the selected object, if it exists
+    if (gui->state->keyJustDown(KeyCode::ENTER)) {
+        if (selectedObject != nullptr) selectedObject->opacity = 1;
+        selectedObject = nullptr;
     }
 
 
@@ -104,41 +181,6 @@ void handleInput() {
         if (drawNormals) objects->setOpacityAll(0.5);
         else objects->setOpacityAll(1);
 
-    }
-
-    // Pick object based on id, this cycles through all the objects with ids 1-7
-    bool changeObject = false;
-
-    if (gui->state->keyJustDown(KeyCode::Q)) {
-        selectedObjectId--;
-        if (selectedObjectId < 1) selectedObjectId += 8;
-        changeObject = true;
-    }
-
-    if (gui->state->keyJustDown(KeyCode::E)) {
-        selectedObjectId++;
-        if (selectedObjectId > 8) selectedObjectId -= 8;
-        changeObject = true;
-    }
-
-    if (changeObject) {
-
-        if (selectedObject != nullptr) selectedObject->opacity = 1;
-        selectedObject = objects->getById(selectedObjectId);
-        selectedObject->opacity = 0.5;
-
-        ui->validateWindowHandle(&windowTransform);
-
-        if (windowTransform != nullptr) {
-            windowTransform->setContext( new Ui::ContextTransform(selectedObject) );
-            ui->bindManager->rebind(windowTransform);
-        }
-
-    }
-
-    if (gui->state->keyJustDown(KeyCode::ENTER)) {
-        if (selectedObject != nullptr) selectedObject->opacity = 1;
-        selectedObject = nullptr;
     }
 
     // This rotates the selected object when pressing keys j,k,l

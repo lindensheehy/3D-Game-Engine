@@ -525,6 +525,11 @@ void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* displ
 
         if (currentObj->opacity != 1) continue;
 
+        // Tell PixelTracker which Object is being drawn (if needed)
+        if (drawer->pixelTracker->watchingPixelWrites) {
+            drawer->pixelTracker->currentObject = currentObj;
+        }
+
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
             // Skip if all the vertices are behind the camera. This is flagged by marking the depth as inf
@@ -544,9 +549,14 @@ void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* displ
             uint32 shade = currentObj->mesh->color;
             shade = Color::setBrightness(shade, lightFactor);
 
-            // Draw the tri    
+            // Draw the triangle
             drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i]);
 
+        }
+
+        // Reset PixelTracker (again, if needed)
+        if (drawer->pixelTracker->watchingPixelWrites) {
+            drawer->pixelTracker->currentObject = nullptr;
         }
 
     }
@@ -557,6 +567,11 @@ void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* displ
         currentObj = this->iterGetObj();
 
         if (currentObj->opacity == 1) continue;
+
+        // Tell PixelTracker which Object is being drawn (if needed)
+        if (drawer->pixelTracker->watchingPixelWrites) {
+            drawer->pixelTracker->currentObject = currentObj;
+        }
 
         for (int i = 0; i < currentObj->mesh->triCount; i++) {
 
@@ -580,6 +595,11 @@ void ObjectSet::drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* displ
             // Draw the tri    
             drawer->drawTriangle(shade, currentObj->mesh->projectedTris[i], currentObj->opacity);
 
+        }
+
+        // Reset PixelTracker (again, if needed)
+        if (drawer->pixelTracker->watchingPixelWrites) {
+            drawer->pixelTracker->currentObject = nullptr;
         }
 
     }
