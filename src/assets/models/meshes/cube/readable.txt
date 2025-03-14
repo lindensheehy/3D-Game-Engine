@@ -1,0 +1,94 @@
+[start]
+
+[vertices-8]
+
+0-(-0.5, -0.5, -0.5)
+1-(-0.5, -0.5, 0.5)
+2-(0.5, -0.5, -0.5)
+3-(0.5, -0.5, 0.5)
+4-(-0.5, 0.5, -0.5)
+5-(-0.5, 0.5, 0.5)
+6-(0.5, 0.5, -0.5)
+7-(0.5, 0.5, 0.5)
+
+[normals-6]
+
+/* ------------------- */
+/* ---  Cube Mesh  --- */
+/* ------------------- */
+
+vertexCount = 8;
+triCount = 12;
+normalCount = 6;
+
+
+// Create lists
+vertexList = new Vec3*[vertexCount];
+normalList = new Vec3*[normalCount];
+triList = new Tri3*[triCount];
+projectedVertexList = new Vec3*[vertexCount];
+projectedTriList = new Tri3*[triCount];
+
+// Load verticies
+vertexList[0] = new Vec3(-0.5, -0.5, -0.5);
+vertexList[1] = new Vec3(-0.5, -0.5, 0.5);
+vertexList[2] = new Vec3(0.5, -0.5, -0.5);
+vertexList[3] = new Vec3(0.5, -0.5, 0.5);
+vertexList[4] = new Vec3(-0.5, 0.5, -0.5);
+vertexList[5] = new Vec3(-0.5, 0.5, 0.5);
+vertexList[6] = new Vec3(0.5, 0.5, -0.5);
+vertexList[7] = new Vec3(0.5, 0.5, 0.5);
+
+// Load Normals
+normalList[0] = new Vec3(0, -1, 0);
+normalList[1] = new Vec3(0, 1, 0);
+normalList[2] = new Vec3(-1, 0, 0);
+normalList[3] = new Vec3(1, 0, 0);
+normalList[4] = new Vec3(0, 0, -1);
+normalList[5] = new Vec3(0, 0, 1);
+
+// Load index map
+indexMap = new IndexMap(triCount);
+//              triangle     v2      normal
+//                 ||   v1   ||   v3   ||
+//                 \/   \/   \/   \/   \/
+indexMap->setGroup(0,   0,   3,   1,   0); // facing -y
+indexMap->setGroup(1,   0,   3,   2,   0); // facing -y
+indexMap->setGroup(2,   4,   7,   5,   1); // facing +y
+indexMap->setGroup(3,   4,   7,   6,   1); // facing +y
+indexMap->setGroup(4,   0,   5,   4,   2); // facing -x
+indexMap->setGroup(5,   0,   5,   1,   2); // facing -x
+indexMap->setGroup(6,   2,   7,   3,   3); // facing +x
+indexMap->setGroup(7,   2,   7,   6,   3); // facing +x
+indexMap->setGroup(8,   0,   6,   2,   4); // facing -z
+indexMap->setGroup(9,   0,   6,   4,   4); // facing -z
+indexMap->setGroup(10,  1,   7,   3,   5); // facing +z
+indexMap->setGroup(11,  1,   7,   5,   5); // facing +z
+
+// Space for triangle objects (which point to the verticies vectors)
+for (int i = 0; i < triCount; i++)
+    triList[i] = new Tri3(true);
+
+// allocate space for projection values
+for (int i = 0; i < vertexCount; i++) 
+    projectedVertexList[i] = new Vec3();
+for (int i = 0; i < triCount; i++)
+    projectedTriList[i] = new Tri3(true);
+
+// Store the created mesh in the class variable
+Mesh::cubeMesh = new Mesh();
+
+Mesh::cubeMesh->indexMap = indexMap;
+Mesh::cubeMesh->verticies = vertexList;
+Mesh::cubeMesh->normals = normalList;
+
+Mesh::cubeMesh->vertexCount = vertexCount;
+Mesh::cubeMesh->triCount = triCount;
+Mesh::cubeMesh->normalCount = normalCount;
+
+Mesh::cubeMesh->tris = triList;
+Mesh::cubeMesh->projectedVerticies = projectedVertexList;
+Mesh::cubeMesh->projectedTris = projectedTriList;
+
+// Populate tri lists with pointers
+Mesh::cubeMesh->mapTris();

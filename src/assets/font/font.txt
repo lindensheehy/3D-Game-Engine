@@ -5,7 +5,7 @@ This file stores the character textures used for my font renderer
 Each character is stored in order in this file. This file is then parsed into a more usable format.
 Youll notice these textures are huge, this is because my renderer downsizes the textures to produce textures
 
-Each character has its label at the top, denoted by [character], for example [a]
+Each character has its label at the top, denoted by the character in square brackets
 Then following each character label is a 32x32 grid of pixel states
 
 The characters used are:
@@ -14,7 +14,7 @@ The characters used are:
 
 There are also '|' delimiters to help keep track of the characters
 
-My code starts interpreting this file after the "[start]" substring 
+My code starts interpreting this file after the start tag (in square brackets)
 
 [start]
 
