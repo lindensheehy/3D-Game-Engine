@@ -60,8 +60,8 @@ class Mesh {
                 // This does the actual construction, since IndexMap is stack allocated in Mesh
                 void init(int size);
 
-                // Creates a copy of the instance, and returns a pointer to it.
-                IndexMap* copy() const;
+                // This is the equivalent to a deep copy, just sets all the instance variables of this to that of other
+                void setState(const IndexMap* other);
 
                 // Sets the values of the Set item at a given index
                 void setGroup(int index, int v1, int v2, int v3, int normal);
