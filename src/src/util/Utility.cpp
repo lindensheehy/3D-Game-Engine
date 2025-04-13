@@ -142,11 +142,22 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
 
     // Not enough space in the string for a number and '\0'
     if (MAXLENGTH < 2) return false;
-    
-    // Use intToString to handle the integer portion of the double
-    int intPart = (int) value;
-    bool intPartComplete = intToString(intPart, string, MAXLENGTH);
-    if (!intPartComplete) return false;
+
+    // Using intToString to handle the integer portion of the double
+    int intPart = (int) abs(value);
+    bool intPartSucceded;
+
+    // Add a negative sign if needed
+    if (value < 0) {
+        string[0] = '-';
+        intPartSucceded = intToString(intPart, &(string[1]), MAXLENGTH - 1);
+    }
+
+    else {
+        intPartSucceded = intToString(intPart, string, MAXLENGTH);
+    }
+
+    if (!intPartSucceded) return false;
     
     // Find index where intToString left off
     int index = 0;

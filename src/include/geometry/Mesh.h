@@ -6,6 +6,18 @@
 #include "geometry/Tri.h"
 
 
+// Forward declaration
+namespace Graphics {
+namespace Rendering {
+
+class Renderer;
+
+}
+}
+
+
+namespace Geometry {
+
 class Mesh {
 
     /*
@@ -17,6 +29,16 @@ class Mesh {
     */
 
     public:
+
+        // Meshes, populated from initMeshes()
+        // These will be removed when I implement mesh importing from files
+        static Mesh* tempMesh;
+        static Mesh* cubeMesh;
+        static Mesh* sphereMesh;
+        static Mesh* tetrahedronMesh;
+        static Mesh* capsuleMesh;
+
+    private:
 
         class IndexMap {
 
@@ -41,61 +63,58 @@ class Mesh {
                 int size;
 
                 // Constructor
-                IndexMap(int size);
+                IndexMap();
 
                 // Destructor
                 ~IndexMap();
 
                 /*   Instance Functions   */
 
-                // Creates a copy of the instance, and returns a pointer to it.
-                IndexMap* copy() const;
+                // This does the actual construction, since IndexMap is stack allocated in Mesh
+                void init(int size);
+
+                // This is the equivalent to a deep copy, just sets all the instance variables of this to that of other
+                void setState(const IndexMap* other);
 
                 // Sets the values of the Set item at a given index
                 void setGroup(int index, int v1, int v2, int v3, int normal);
-                //void setValue(int index, int subIndex, int value);
 
                 // Gets the values of the Set item at a given index. These values will be placed into the pointers given to the function.
                 void getGroup(int index, int* v1, int* v2, int* v3, int* normal) const;
-                //int getValue(int index, int subIndex);
 
         };
 
-        // Meshes, populated from initMeshes()
-        static Mesh* cubeMesh;
-        static Mesh* sphereMesh;
-        static Mesh* tetrahedronMesh;
-        static Mesh* capsuleMesh;
+    public:
 
         /*   Instance Variables   */
 
-        // List containing pointers to the verticies in the mesh.
-        Vec3** verticies;
+        /*
+            For all "vertices", "normals", and "tris":
+            The list items are stored directly at the list location, not pointers
+            This is done for performance, but also so they can be easily imported from files
 
-        // List containing pointers to the normals for the triangles in the mesh
-        Vec3** normals;
+            All three lists are also stored contiguously in memory, in one allocation
+            So they are in the same place, for cache locality, and the pointers are just offset to allow this
 
-        // List containing the triangles making up the mesh. All vecs within these triangles are the same ones from 'verticies' list.
-        Tri3** tris;
+            Also note the Tri3 objects in "tris" just point to Vec3 objects from the other 2 lists (no duplication)
+        */
 
-        // Variables which count how many items are in each of the above lists. used for list iteration.
-        int vertexCount, normalCount, triCount;
+        const int vertexCount, normalCount, triCount;
 
-        // The color which the mesh should appear as.
-        uint32 color;
+        Vec3* vertices;
+        Vec3* normals;
+        Tri3* tris;
 
         // Maps vecs from verticies and normals to tris
-        IndexMap* indexMap;
+        IndexMap indexMap;
 
-        // Contains the position on the window which thier respective points from the Vec3 list should appear. Vec3 to hold depth
-        Vec3** projectedVerticies;
-
-        // Same as 'tris' list. all the vecs witihin these triangles are the same ones from 'projectedVerticies' list.
-        Tri3** projectedTris;
+        // The color which the mesh should appear as.
+        // This will be changed in the near future, each triangle should have their own color/texture
+        uint32 color;
 
 
         // Constructor
-        Mesh();
+        Mesh(int vertexCount, int normalCount, int triCount);
 
         // Destructor
         ~Mesh();
@@ -103,7 +122,7 @@ class Mesh {
 
         /*   Instance Funtions   */
 
-        // Creates a copy of the instance, and returns a pointer to it.
+        // Deep copy
         Mesh* copy() const;
 
         // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
@@ -121,10 +140,6 @@ class Mesh {
         Mesh* rotate(Vec3* angle, Vec3* around);
         Mesh* rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
 
-        // Rotates the mesh around its center
-        Mesh* rotateSelf(Vec3* angle);
-        Mesh* rotateSelf(float yaw, float pitch, float roll);
-
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);
 
@@ -139,12 +154,33 @@ class Mesh {
         /*   Class functions   */
 
         // Initializes all the standard meshes. Such as cubeMesh for example.
+        // Temporary, while i implement mesh file importing
         static void initMeshes();
 
     private:
 
+        /*
+            I also store the memory for the screen coordinates of each vertex
+            This allows for better cache locality during rendering, plus it just keeps things organized in memory
+            The Renderer class is friended for this reason, as no other piece of this app cares about this memory
+        */
+
+        friend class Graphics::Rendering::Renderer;
+
+        Vec2* screenVertices;       // Screen space data
+        Vec3* cameraVertices;       // Camera space data
+        Vec3* transformedNormals;   // Rotated versions of the normals (with respect to object and camera rotation)
+
+
+        // This is the main pointer to the memory block owned by this mesh
+        // This memory holds all of "vertices", "normals", and "tris"
+        void* mem;
+        int memSize;
+
         // The center of the mesh. Will be updated when the flag is false.
-        Vec3* center;
+        Vec3 center;
         bool centerValid;
 
 };
+
+}

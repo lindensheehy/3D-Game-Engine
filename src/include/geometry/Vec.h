@@ -3,11 +3,13 @@
 #include "util/Utility.h"
 
 
+namespace Geometry {
+
 class Vec2 {
 
     /*
         Class encapsulating 2 float values so that they are treated as a vector.
-        Wide array of functions to act upon these vector.
+        Wide array of functions to act upon these vectors.
         These are the base for everything 2d in this program.
     */
 
@@ -28,38 +30,40 @@ class Vec2 {
 
         /*   Instance functions   */
 
-        // Creates a copy of the instance, and returns a pointer to it.
+        // Deep copy. Returns a NEW heap object
         Vec2* copy() const;
 
         // Logs the vector in the format "Vec2( x, y )"
         void log() const;
+        
+        // Equivalent to a '==' overload. Returns true if all components are equal to each other
+        bool is(float x, float y) const;
+        bool is(const Vec2& other) const;
+        bool is(const Vec2* other) const;
 
         // Sets the values of the components
-        Vec2* set(Vec2* other);
-        Vec2* set(float x, float y);
-
-        // Acts similar to '=='. Returns true if all components are equal to each other
-        bool is(float x, float y) const;
-        bool is(Vec2* other) const;
-
-        // The following are self transformation functions. they all return 'this' so they can be chained ( ex. this->add(vec)->sub(vec2) )
+        Vec2& set(float x, float y);
+        Vec2& set(const Vec2& other);
+        Vec2& set(const Vec2* other);
 
         // Adds the components of other to those of this.
-        Vec2* add(float x, float y);
-        Vec2* add(Vec2* other);
+        Vec2& add(float x, float y);
+        Vec2& add(const Vec2& other);
+        Vec2& add(const Vec2* other);
 
         // Subtracts the components of other from those of this.
-        Vec2* sub(float x, float y);
-        Vec2* sub(Vec2* other);
+        Vec2& sub(float x, float y);
+        Vec2& sub(const Vec2& other);
+        Vec2& sub(const Vec2* other);
 
         // Scalar multiplication by a given factor
-        Vec2* scale(float factor);
+        Vec2& scale(float factor);
 
         // Same as scale, but uses 1/factor
-        Vec2* inverseScale(float factor);
+        Vec2& inverseScale(float factor);
 
         // Sets the magnitude of the vector to a given value, while keeping the ratios between components the same.
-        Vec2* normalise(float toMagnitude = 1.0);
+        Vec2& normalize(float toMagnitude = 1.0);
 
 
         // Allows these objects to be indexed like an array.
@@ -72,17 +76,24 @@ class Vec2 {
         float magnitude();
 
         // Returns the distance between this vector and other
-        float distanceTo(Vec2* other) const;
+        float distanceTo(float x, float y) const;
+        float distanceTo(const Vec2& other) const;
+        float distanceTo(const Vec2* other) const;
 
         // Returns the midpoint between this and other as a new Vec2 object.
-        Vec2* midpoint(Vec2* other) const;
+        void midpoint(float x, float y, Vec2* out) const;
+        void midpoint(const Vec2& other, Vec2* out) const;
+        void midpoint(const Vec2* other, Vec2* out) const;
 
         // Returns the dot product of this and other.
-        float dotProduct(Vec2* other) const;
+        float dotProduct(float x, float y) const;
+        float dotProduct(const Vec2& other) const;
+        float dotProduct(const Vec2* other) const;
 
         // Rotates the vector around a given point (by default (0, 0)) by a given angle.
         // Vector will be rotated COUNTER CLOCKWISE
-        void rotate(float degrees, Vec2* around = nullptr);
+        void rotate(float degrees, const Vec2* around = nullptr);
+        void rotate(float degrees, const Vec2& around);
 
     private:
     
@@ -100,12 +111,11 @@ class Vec2 {
 };
 
 
-
 class Vec3 {
 
     /*
         Class encapsulating 3 float values so that they are treated as a vector.
-        Wide array of functions to act upon these vector.
+        Wide array of functions to act upon these vectors.
         These are the base for everything 3d in this program.
     */
 
@@ -126,39 +136,41 @@ class Vec3 {
 
         /*   Instance functions   */
 
-        // Creates a copy of the instance, and returns a pointer to it.
+        // Deep copy. Returns a NEW heap object
         Vec3* copy() const;
 
         // Logs the vector in the format "Vec3( x, y, z )"
         void log() const;
 
-        // Sets the values of the components
-        Vec3* set(Vec3* other);
-        Vec3* set(float x, float y, float z);
-
-        // Acts similar to '=='. Returns true if all components are equal to each other
-        bool is(Vec3* other) const;
+        // Equivalent to a '==' overload. Returns true if all components are equal to each other
+        bool is(const Vec3* other) const;
+        bool is(const Vec3& other) const;
         bool is(float x, float y, float z) const;
 
-        // The following are self transformation functions. they all return 'this' so they can be chained ( ex. this->add(vec)->sub(vec2) )
+        // Sets the values of the components
+        Vec3& set(float x, float y, float z);
+        Vec3& set(const Vec3& other);
+        Vec3& set(const Vec3* other);
 
         // Adds the components of other to those of this.
-        Vec3* add(Vec3* other);
-        Vec3* add(float dx, float dy, float dz);
+        Vec3& add(float dx, float dy, float dz);
+        Vec3& add(const Vec3& other);
+        Vec3& add(const Vec3* other);
 
         // Subtracts the components of other from those of this.
-        Vec3* sub(Vec3* other);
-        Vec3* sub(float dx, float dy, float dz);
+        Vec3& sub(float dx, float dy, float dz);
+        Vec3& sub(const Vec3& other);
+        Vec3& sub(const Vec3* other);
 
         // Scalar multiplication by a given factor
-        Vec3* scale(float factor);
-        Vec3* scale(float fx, float fy, float fz);
+        Vec3& scale(float factor);
+        Vec3& scale(float fx, float fy, float fz);
 
         // Same as above, but uses 1/factor
-        Vec3* inverseScale(float factor);
+        Vec3& inverseScale(float factor);
 
         // Sets the magnitude of the vector to a given value, while keeping the ratios between components the same.
-        Vec3* normalise(float toMagnitude = 1.0);
+        Vec3& normalize(float toMagnitude = 1.0);
 
 
         // Allows these objects to be indexed like an array.
@@ -171,23 +183,34 @@ class Vec3 {
         float magnitude();
 
         // Returns the distance between this vector and other
-        float distanceTo(Vec3* other) const;
+        float distanceTo(float x, float y, float z) const;
+        float distanceTo(const Vec3& other) const;
+        float distanceTo(const Vec3* other) const;
 
         // Returns the midpoint between this and other as a new Vec3 object.
-        Vec3* midpoint(Vec3* other) const;
+        void midpoint(float x, float y, float z, Vec3* out) const;
+        void midpoint(const Vec3& other, Vec3* out) const;
+        void midpoint(const Vec3* other, Vec3* out) const;
 
         // Returns the dot product of this and other.
-        float dotProduct(Vec3* other) const;
+        float dotProduct(float x, float y, float z) const;
+        float dotProduct(const Vec3& other) const;
+        float dotProduct(const Vec3* other) const;
 
         // Returns the cross product of this and other as a new Vec3 object. This vector is perpendicular to both other and this.
-        Vec3* crossProduct(Vec3* other) const;
+        void crossProduct(float x, float y, float z, Vec3* out) const;
+        void crossProduct(const Vec3& other, Vec3* out) const;
+        void crossProduct(const Vec3* other, Vec3* out) const;
 
         // Find the angle in degrees between this and other. This angle will always be between 0-180.
-        float getAngle(Vec3* other);
+        float getAngle(float x, float y, float z) const;
+        float getAngle(const Vec3& other) const;
+        float getAngle(const Vec3* other) const;
 
         // Rotates the vector around a certain point (by default (0, 0, 0)) by a given angle on each direction.
         // Each rotation occurs COUNTER CLOCKWISE assuming you are looking down upon the rotation.
         void rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
+        void rotate(float yaw, float pitch, float roll, Vec3& around);
 
         // Projects the point to 2d space. The z value becomes the depth. The values of the components are changed
         void project();
@@ -205,3 +228,5 @@ class Vec3 {
         bool magnitudeUpdated;
 
 };
+
+}

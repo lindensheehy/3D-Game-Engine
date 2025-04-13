@@ -1,8 +1,3 @@
-/*
-    Note: Im very aware that there are several libraries which have most of, if not all, of these functions, but I wanted to write it myself
-          There are more function definitions in the header file (math.h), becuase they are inline functions
-*/
-
 #include "util/Math.h"
 
 
@@ -436,7 +431,6 @@ double arccos(double x) {
         Theres simply a check at the end of fix this.
     */
 
-    // Address error case, but dont kill the process yet in case its not fatal
     if (abs(x) > 1) {
         logWrite("Called arccos(double) on a value outside (-1, 1)", true);
         return 0;
@@ -484,9 +478,10 @@ float distance3(float x1, float y1, float z1, float x2 /* default value = 0 */, 
 
 }
 
-float range(float num, float from, float to) {
+float normalize(float num, float from, float to) {
+
     /*
-        This function basically normalizes a value with respect to some given range
+        This function normalizes a value with respect to some given range
         Returns a value between 0-1 if the num is in the range, and can be bigger or smaller depending how far outside the range is lies
     */
 
@@ -538,5 +533,19 @@ float getAngle(float x1, float y1, float x2 /* default value = 0 */, float y2 /*
     if (x1 < x2) radians = (2 * pi) - radians;
 
     return toDegrees(radians);
+
+}
+
+void rolloverAngle(float* pAngle) {
+
+    while ( *(pAngle) < 0 ) {
+        *(pAngle) += 360;
+    }
+
+    while ( *(pAngle) > 360 ) {
+        *(pAngle) -= 360;
+    }
+
+    return;
 
 }

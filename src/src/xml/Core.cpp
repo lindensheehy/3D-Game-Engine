@@ -1,7 +1,9 @@
 #include "xml/Core.h"
 
-// Helper functions
-bool isValidChar(char c) {
+using namespace Xml;
+
+
+bool Xml::isValidChar(char c) {
 
     // Only spaces count as syntactical whitespace
     if (c == ' ') return true;
@@ -12,7 +14,7 @@ bool isValidChar(char c) {
 
 }
 
-bool isReservedChar(char c) {
+bool Xml::isReservedChar(char c) {
 
     // These are all the reserved chars. ie. not allowed in tag names
     if (c == '<') return true;
@@ -25,7 +27,7 @@ bool isReservedChar(char c) {
 
 }
 
-int getTagLength(const char* tag) {
+int Xml::getTagLength(const char* tag) {
 
     int length = 0;
 

@@ -1,10 +1,12 @@
 #include "xml/ParameterInfo.h"
 
+using namespace Xml;
+
+
 /* ----------------------------------- */
 /* ---------- ParameterInfo ---------- */
 /* ----------------------------------- */
 
-// Constructor
 ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
 
     this->length = params->length;
@@ -76,19 +78,15 @@ ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
 
 }
 
-// Destructor
 ParameterInfo::~ParameterInfo() {
 
-    if (this->names != nullptr) delete[] this->names;
-
-    if (this->namesIndexes != nullptr) delete[] this->namesIndexes;
-    if (this->namesLengths != nullptr) delete[] this->namesLengths;
-
-    if (this->types != nullptr) delete[] this->types;
+    delete[] this->names;
+    delete[] this->namesIndexes;
+    delete[] this->namesLengths;
+    delete[] this->types;
 
 }
 
-// Instance Functions
 ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) {
 
     if (name == nullptr) return TYPE_NONE;
@@ -162,7 +160,6 @@ ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) 
 /* ---------- ParameterInfoBuilder ---------- */
 /* ------------------------------------------ */
 
-// Constructor
 ParameterInfoBuilder::ParameterInfoBuilder() {
 
     this->params = new LinkedList<Parameter*>();
@@ -171,7 +168,6 @@ ParameterInfoBuilder::ParameterInfoBuilder() {
 
 }
 
-// Destructor
 ParameterInfoBuilder::~ParameterInfoBuilder() {
 
     for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext())
@@ -183,7 +179,6 @@ ParameterInfoBuilder::~ParameterInfoBuilder() {
 
 }
 
-// Instance Functions
 ParameterInfo* ParameterInfoBuilder::build() {
 
     ParameterInfo* ret =  new ParameterInfo(this->params);

@@ -1,7 +1,8 @@
 #include "xml/TagSequence.h"
 
+using namespace Xml;
 
-// Constructor
+
 TagSequence::TagSequence(char* file, int fromIndex, int toIndex, const char* fileName) {
 
     // This effectively makes this->file a subset of the given file
@@ -25,12 +26,10 @@ TagSequence::TagSequence(char* file, int fromIndex, int toIndex, const char* fil
 
 }
 
-// Destructor
 TagSequence::~TagSequence() {
     if (this->buffer != nullptr) delete[] this->buffer;
 }
 
-// Instance Functions
 TagSequence* TagSequence::copy() {
 
     TagSequence* ret = new TagSequence();
@@ -655,7 +654,7 @@ void TagSequence::populatePrimTags() {
     bool isReserved;
 
     // This is the internal index of the tag. 
-    // This is related, but not the same as, the actual index of this->tagSequence
+    // This is related to, but not the same as, the actual index of this->tagSequence
     int tagIndex = 0;
 
     // True when the index lies inside a string tag.

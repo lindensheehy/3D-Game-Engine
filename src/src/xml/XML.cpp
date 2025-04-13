@@ -1,6 +1,8 @@
 #include "xml/XML.h"
 
-// Constructor
+using namespace Xml;
+
+
 XML::XML() {
     
     this->elementSet = new ElementSet();
@@ -9,7 +11,6 @@ XML::XML() {
 
 }
 
-// Destructor
 XML::~XML() {
 
     if (this->elementSet != nullptr) delete this->elementSet;
@@ -18,7 +19,6 @@ XML::~XML() {
 
 }
 
-// Instance functions
 void XML::initDefaultElements() {
 
     /*   

@@ -8,6 +8,8 @@
 #include "xml/ParameterInfo.h"
 
 
+namespace Xml {
+
 class ElementSet {
 
     /*  
@@ -88,3 +90,5 @@ class ElementSet {
 
 
 };
+
+}

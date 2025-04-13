@@ -14,56 +14,56 @@
 
 namespace Ui {
 
-    class Context {
+class Context {
 
-        public:
+    public:
 
-            Ui::ContextType type = Ui::ContextType::NONE;
+        Ui::ContextType type = Ui::ContextType::NONE;
 
-            Context() {}
+        Context() {}
 
-            virtual ~Context() {}
+        virtual ~Context() {}
 
-    };
+};
 
-    class ContextNavBar : public Context {
+class ContextNavBar : public Context {
 
-        public:
+    public:
 
-            // Handles to the windows owned by the NavBar
-            WindowHandle** transform;
-            WindowHandle** objects;
+        // Handles to the windows owned by the NavBar
+        WindowHandle** transform;
+        WindowHandle** objects;
 
-            ContextNavBar(WindowHandle** transform, WindowHandle** objects) : transform(transform), objects(objects) {
-                this->type = Ui::ContextType::NAVBAR;
-            }
+        ContextNavBar(WindowHandle** transform, WindowHandle** objects) : transform(transform), objects(objects) {
+            this->type = Ui::ContextType::NAVBAR;
+        }
 
-    };
+};
 
-    class ContextTransform : public Context {
+class ContextTransform : public Context {
 
-        public:
+    public:
 
-            // Not owned by this class
-            Object* object;
+        // Not owned by this class
+        Physics::Object* object;
 
-            ContextTransform(Object* object) : object(object) {
-                this->type = Ui::ContextType::TRANSFORM;
-            }
+        ContextTransform(Physics::Object* object) : object(object) {
+            this->type = Ui::ContextType::TRANSFORM;
+        }
 
-    };
+};
 
-    class ContextObjects : public Context {
+class ContextObjects : public Context {
 
-        public:
+    public:
 
-            // Not owned by this class
-            ObjectSet* objectSet;
+        // Not owned by this class
+        Physics::ObjectSet* objectSet;
 
-            ContextObjects(ObjectSet* objectSet) : objectSet(objectSet) {
-                this->type = Ui::ContextType::OBJECTS;
-            }
+        ContextObjects(Physics::ObjectSet* objectSet) : objectSet(objectSet) {
+            this->type = Ui::ContextType::OBJECTS;
+        }
 
-    };
+};
 
 }

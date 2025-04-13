@@ -1,0 +1,9 @@
+Starting...
+
+Found lambda values (0.0545, 0.0000, 0.0000)
+On iteration 175919 ( 0.1759% )
+On iteration 37132931 ( 37.1329% )
+On iteration 74468044 ( 74.4680% )
+
+
+Completed Execution in 2653.3132 ms

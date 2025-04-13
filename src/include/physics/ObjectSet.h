@@ -4,9 +4,12 @@
 
 #include "util/LinkedList.h"
 #include "geometry/Mesh.h"
-#include "geometry/Camera.h"
-#include "gui/Drawer.h"
+#include "graphics/rendering/Camera.h"
+#include "graphics/rendering/Renderer.h"
+#include "graphics/drawing/Drawer.h"
 
+
+namespace Physics {
 
 class Object {
     
@@ -19,13 +22,13 @@ class Object {
 
         /*   Instance Variables   */
 
-        Mesh* mesh;
+        Geometry::Mesh* mesh;
 
-        Vec3* pos;
-        Vec3* rotation;
-        Vec3* scale;
-        Vec3* velocity;
-        Vec3* gravity;
+        Geometry::Vec3 pos;
+        Geometry::Vec3 rotation;
+        Geometry::Vec3 scale;
+        Geometry::Vec3 velocity;
+        Geometry::Vec3 gravity;
 
         float opacity;
 
@@ -37,10 +40,7 @@ class Object {
 
         // Constructor
         Object();
-        Object(Mesh* mesh);
-
-        // Destructor
-        ~Object();
+        Object(Geometry::Mesh* mesh);
 
 
         /*   Instance Functions   */
@@ -49,10 +49,10 @@ class Object {
         Object* copy();
 
         // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
-        Vec3* getCenter();
+        Geometry::Vec3* getCenter();
 
         // Moves the object in space by the specified distance.
-        Object* move(Vec3* dist);
+        Object* move(Geometry::Vec3* dist);
         Object* move(float dx, float dy, float dz);
 
         // Scales the object by a given factor on each axis
@@ -60,12 +60,8 @@ class Object {
         Object* scaleBy(float fx, float fy, float fz);
 
         // Rotates the object by the specified angles. rotates around (0, 0, 0) if no around vector is given
-        Object* rotate(Vec3* angle, Vec3* around);
-        Object* rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */);
-
-        // Rotates the object around its center
-        Object* rotateSelf(Vec3* angle);
-        Object* rotateSelf(float yaw, float pitch, float roll);
+        Object* rotate(Geometry::Vec3* angle);
+        Object* rotate(float yaw, float pitch, float roll);
 
         // Sets the color of the object
         Object* setColor(uint32 color);
@@ -76,17 +72,14 @@ class Object {
         // Simple collision check. the object will act as though there is an infinite mass plane at a y level
         void doFloorCollision(float y);
 
-        // Updates the mesh if any vectors have been changed
-        void update();
-
         bool collides(Object* other);
 
     private:
 
         // Stores the last version of each vector so update() knows what to do. 
         // pos does not need this becuase its handled object side as opposed to mesh side
-        Vec3* lastRotation;
-        Vec3* lastScale;
+        Geometry::Vec3 lastRotation;
+        Geometry::Vec3 lastScale;
 
 
 };
@@ -152,23 +145,23 @@ class ObjectSet {
         /*   Functions to affect all objects in the set   */
 
         // Changes the position of all the objects
-        void moveAll(Vec3* dist);
+        void moveAll(Geometry::Vec3* dist);
         void moveAll(float dx, float dy, float dz);
 
         // Sets the position of all the objects
-        void setPosAll(Vec3* pos);
+        void setPosAll(Geometry::Vec3* pos);
         void setPosAll(float x, float y, float z);
 
         // Adds velocity to all the objects
-        void addVelocityAll(Vec3* v);
+        void addVelocityAll(Geometry::Vec3* v);
         void addVelocityAll(float vx, float vy, float vz);
 
         // Sets the velocity of all the objects
-        void setVelocityAll(Vec3* v);
+        void setVelocityAll(Geometry::Vec3* v);
         void setVelocityAll(float vx, float vy, float vz);
 
         // Sets the gravitational acceleration for all objects in the set
-        void setGravityAll(Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
+        void setGravityAll(Geometry::Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
         void setGravityAll(float gx, float gy, float gz);  // Sets all the instance variables to these values
         void setGravityAll(float gy);  // Sets the gravity to just down or up
 
@@ -178,19 +171,14 @@ class ObjectSet {
         // Calls Object->doPhysics for all in the set
         void doAllPhysics(float dt);
 
-        // Updates any objects where vectors have been changed
-        void updateAll();
-
         // Projects all the objects into window coordinates
-        void projectAll(Camera* camera, Gui::Display* display);
+        void projectAll(Graphics::Rendering::Camera* camera, Graphics::Rendering::Display* display);
 
         // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest, optional opacity value from 0-1
-        void drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* display);
-        void drawAll(Gui::Drawer* drawer, Camera* camera, Gui::Display* display, float opacity);
+        void drawAll(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera);
 
         // Does the same as drawAll(), but also draws red normal vectors on all the tris
-        void drawAllWithNormals(Gui::Drawer* drawer, Camera* camera, Gui::Display* display);
-        void drawAllWithNormals(Gui::Drawer* drawer, Camera* camera, Gui::Display* display, float opacity);
+        void drawAllWithNormals(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera);
 
         // Logs all of the nodes in the order they stand in the list
         inline void log() { this->list->log(); }
@@ -203,3 +191,5 @@ class ObjectSet {
         LinkedList<Object*>* list;
 
 };
+
+}

@@ -9,6 +9,8 @@
 #include "ui/WindowElement.h"
 
 
+namespace Xml {
+
 class XML {
 
     /*
@@ -58,3 +60,5 @@ class XML {
         int callCount;
 
 };
+
+}

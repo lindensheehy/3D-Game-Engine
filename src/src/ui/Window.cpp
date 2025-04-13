@@ -1,42 +1,37 @@
 #include "ui/Window.h"
 
+using namespace Ui;
 
-// Static Declarations
-LinkedList<Ui::Action*>* Ui::Window::actionQueue;
 
-// Constructors
-Ui::Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
+LinkedList<Action*>* Window::actionQueue;
 
-    this->pos = new Vec2(posx, posy);
-    this->size = new Vec2(sizex, sizey);
+Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
+
+    this->pos.set(posx, posy);
+    this->size.set(sizex, sizey);
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
     this->bindables = new LinkedList<Bindable*>();
 
-    this->endPos = this->pos->copy()->add(this->size);
+    this->endPos.set( &(this->pos) ).add( &(this->size) );
 
 }
 
-Ui::Window::Window(Vec2* pos, Vec2* size, int layer /* Default value = 0 */) {
+Window::Window(Geometry::Vec2* pos, Geometry::Vec2* size, int layer /* Default value = 0 */) {
 
-    this->pos = pos;
-    this->size = size;
+    this->pos.set(pos);
+    this->size.set(size);
     this->layer = layer;
 
     this->elements = new LinkedList<WindowElement*>();
     this->bindables = new LinkedList<Bindable*>();
 
-    this->endPos = this->pos->copy()->add(this->size);
+    this->endPos.set( &(this->pos) ).add( &(this->size) );
 
 }
 
-// Destructor
-Ui::Window::~Window() {
-
-    if (this->pos != nullptr) delete this->pos;
-    if (this->size != nullptr) delete this->size;
-    if (this->endPos != nullptr) delete this->endPos;
+Window::~Window() {
 
     // Free the child elements
     if (this->elements != nullptr) {
@@ -78,24 +73,23 @@ Ui::Window::~Window() {
 
 }
 
-// Instance Functions
-void Ui::Window::draw(Gui::Drawer* drawer) {
+void Window::draw(Graphics::Drawing::Drawer* drawer) {
 
     for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext())
-        this->elements->iterGetObj()->draw(drawer, this->pos);
+        this->elements->iterGetObj()->draw(drawer, &(this->pos));
 
     return;
 
 }
 
-Ui::WindowElement* Ui::Window::hitTest(int x, int y) {
+WindowElement* Window::hitTest(int x, int y) {
 
     // Position does not lie within the window
     if (
-        x > this->endPos->x || 
-        x < this->pos->x ||
-        y > this->endPos->y || 
-        y < this->pos->y 
+        x > this->endPos.x || 
+        x < this->pos.x ||
+        y > this->endPos.y || 
+        y < this->pos.y 
     ) return nullptr;
 
     // Check children
@@ -105,7 +99,7 @@ Ui::WindowElement* Ui::Window::hitTest(int x, int y) {
 
         current = this->elements->iterGetObj();
 
-        found = current->hitTest(x, y, this->pos);
+        found = current->hitTest(x, y, &(this->pos) );
 
         if (found != nullptr) break;
 
@@ -115,7 +109,7 @@ Ui::WindowElement* Ui::Window::hitTest(int x, int y) {
 
 }
 
-void Ui::Window::addElement(WindowElement* element) {
+void Window::addElement(WindowElement* element) {
 
     this->elements->pushBack(element);
 
@@ -126,7 +120,7 @@ void Ui::Window::addElement(WindowElement* element) {
 
 }
 
-void Ui::Window::bindButton(const char* id, Action* action) {
+void Window::bindButton(const char* id, Action* action) {
 
     WindowElement* bindable = this->getBindable(id);
 
@@ -139,7 +133,7 @@ void Ui::Window::bindButton(const char* id, Action* action) {
     }
 
     // First make sure its actually a WindowButton
-    if (bindable->type != Ui::ElementType::BUTTON) return;
+    if (bindable->type != ElementType::BUTTON) return;
 
     WindowButton* casted = (WindowButton*) bindable;
 
@@ -149,12 +143,12 @@ void Ui::Window::bindButton(const char* id, Action* action) {
 
 }
 
-void Ui::Window::bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDrag) {
+void Window::bindDragable(const char* id, Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag) {
 
     WindowElement* bindable = this->getBindable(id);
 
     // First make sure its actually a WindowDragable
-    if (bindable->type != Ui::ElementType::DRAGABLE) return;
+    if (bindable->type != ElementType::DRAGABLE) return;
 
     WindowDragable* casted = (WindowDragable*) bindable;
 
@@ -164,12 +158,12 @@ void Ui::Window::bindDragable(const char* id, Vec2* posToDrag, Vec2* endPosToDra
 
 }
 
-void Ui::Window::bindTextInput(const char* id, int* boundValue) {
+void Window::bindTextInput(const char* id, int* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
 
     // First make sure its actually a WindowDragable
-    if (bindable->type != Ui::ElementType::TEXTINPUT) return;
+    if (bindable->type != ElementType::TEXTINPUT) return;
 
     WindowTextInput* casted = (WindowTextInput*) bindable;
 
@@ -179,12 +173,12 @@ void Ui::Window::bindTextInput(const char* id, int* boundValue) {
 
 }
 
-void Ui::Window::bindTextInput(const char* id, float* boundValue) {
+void Window::bindTextInput(const char* id, float* boundValue) {
 
     WindowElement* bindable = this->getBindable(id);
 
     // First make sure its actually a WindowDragable
-    if (bindable->type != Ui::ElementType::TEXTINPUT) return;
+    if (bindable->type != ElementType::TEXTINPUT) return;
 
     WindowTextInput* casted = (WindowTextInput*) bindable;
 
@@ -194,33 +188,31 @@ void Ui::Window::bindTextInput(const char* id, float* boundValue) {
 
 }
 
-void Ui::Window::setPos(int x, int y) {
+void Window::setPos(int x, int y) {
 
-    Vec2* temp = this->pos->copy()->sub(x, y);
+    Geometry::Vec2 temp;
+    temp.set(this->pos).sub(x, y);
 
-    this->pos->sub(temp);
-    this->endPos->sub(temp);
-
-    delete temp;
-
-    return;
-
-}
-
-void Ui::Window::setPos(Vec2* newPos) {
-
-    Vec2* temp = this->pos->copy()->sub(newPos);
-
-    this->pos->sub(temp);
-    this->endPos->sub(temp);
-
-    delete temp;
+    this->pos.sub(temp);
+    this->endPos.sub(temp);
 
     return;
 
 }
 
-Ui::WindowElement* Ui::Window::getBindable(const char* id) {
+void Window::setPos(Geometry::Vec2* newPos) {
+
+    Geometry::Vec2 temp;
+    temp.set(this->pos).sub(newPos);
+
+    this->pos.sub(temp);
+    this->endPos.sub(temp);
+
+    return;
+
+}
+
+WindowElement* Window::getBindable(const char* id) {
 
     if (this->bindablesUpdated == false) {
         this->locateBindables();
@@ -264,7 +256,7 @@ Ui::WindowElement* Ui::Window::getBindable(const char* id) {
 
 }
 
-void Ui::Window::locateBindables() {
+void Window::locateBindables() {
 
     if (this->bindables->length != 0) {
 
@@ -298,7 +290,7 @@ void Ui::Window::locateBindables() {
 
 }
 
-void Ui::Window::locateBindables(WindowElement* root) {
+void Window::locateBindables(WindowElement* root) {
     
     // This is the part that adds the bindable if needed
     if (root->id != nullptr) {
@@ -327,11 +319,10 @@ void Ui::Window::locateBindables(WindowElement* root) {
 
 }
 
-// Class Functions
-void Ui::Window::setActionQueue(LinkedList<Action*>* queue) {
+void Window::setActionQueue(LinkedList<Action*>* queue) {
     Window::actionQueue = queue;
 }
 
-void Ui::Window::queueAction(Action* action) {
+void Window::queueAction(Action* action) {
     Window::actionQueue->pushBack(action);
 }

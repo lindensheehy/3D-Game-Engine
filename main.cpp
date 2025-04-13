@@ -1,26 +1,30 @@
 #include "util/Utility.h"
 
-#include "geometry/Camera.h"
+#include "graphics/rendering/Camera.h"
+#include "graphics/rendering/Renderer.h"
+#include "graphics/gui/GUI.h"
 #include "geometry/Mesh.h"
-#include "gui/GUI.h"
 #include "ui/UI.h"
 
 #include "xml/XML.h"
 #include "xml/XMLFile.h"
 
 // Global declarations
-GUI* gui;
-Camera* camera;
+Graphics::Gui::GUI* gui;
+Graphics::Rendering::Camera* camera;
+
+Graphics::Drawing::Drawer* drawer;
+Graphics::Rendering::Renderer* renderer;
 
 int selectedObjectId;
-Object* selectedObject;
+Physics::Object* selectedObject;
 
-ObjectSet* objects;
+Physics::ObjectSet* objects;
 
 bool drawNormals;
 bool gravity;
 
-UI* ui;
+Ui::UI* ui;
 
 Ui::WindowHandle* navBar;
 Ui::WindowHandle* windowTransform;
@@ -69,7 +73,7 @@ void handleInput() {
     // Give the state to the UI to handle. 
     // If the input is handled through the UI (based on return value), the rest of this is skipped
     // This also updates the mouse cursor state if needed
-    Gui::CursorState cursorState;
+    Graphics::Gui::CursorState cursorState;
     bool inputHandled = ui->doInput(gui->state, &cursorState);
     gui->window->setCursorState(cursorState);
     if (inputHandled) return;
@@ -81,21 +85,21 @@ void handleInput() {
         dist *= camera->sprintFactor;
 
     // Vertical Movement
-    if (gui->state->keyIsDown(KeyCode::SPACE)) camera->pos->y += dist; // Up
-    if (gui->state->keyIsDown(KeyCode::CONTROL)) camera->pos->y -= dist; // Down
+    if (gui->state->keyIsDown(KeyCode::SPACE)) camera->pos.y += dist; // Up
+    if (gui->state->keyIsDown(KeyCode::CONTROL)) camera->pos.y -= dist; // Down
 
     // Horizontal Movement
-    Vec2* cameraMovVec = new Vec2();
-    if (gui->state->keyIsDown(KeyCode::W)) cameraMovVec->y += dist; // Forward
-    if (gui->state->keyIsDown(KeyCode::S)) cameraMovVec->y -= dist; // Backward
-    if (gui->state->keyIsDown(KeyCode::A)) cameraMovVec->x -= dist; // Left
-    if (gui->state->keyIsDown(KeyCode::D)) cameraMovVec->x += dist; // Right
+    Geometry::Vec2 cameraMovVec;
+    cameraMovVec.set(0, 0);
+    if (gui->state->keyIsDown(KeyCode::W)) cameraMovVec.y += dist; // Forward
+    if (gui->state->keyIsDown(KeyCode::S)) cameraMovVec.y -= dist; // Backward
+    if (gui->state->keyIsDown(KeyCode::A)) cameraMovVec.x -= dist; // Left
+    if (gui->state->keyIsDown(KeyCode::D)) cameraMovVec.x += dist; // Right
 
     // Move camera based on its rotation
-    cameraMovVec->rotate(-camera->yaw);
-    camera->pos->x += cameraMovVec->x;
-    camera->pos->z += cameraMovVec->y;
-    delete cameraMovVec;
+    cameraMovVec.rotate(camera->facingAngle.y);
+    camera->pos.x += cameraMovVec.x;
+    camera->pos.z += cameraMovVec.y;
 
 
     /*  ---  Camera Rotation  ---  */
@@ -106,8 +110,18 @@ void handleInput() {
         float mouseSensitivity = 0.2;
         float camDeltaYaw = (float) gui->state->deltaMousePosX();
         float camDeltaPitch = (float) gui->state->deltaMousePosY();
-        camera->rotate( camDeltaYaw * mouseSensitivity, -camDeltaPitch * mouseSensitivity, 0 );
+        camera->rotate( -camDeltaPitch * mouseSensitivity, -camDeltaYaw * mouseSensitivity, 0 );
 
+    }
+
+    if (gui->state->keyJustDown(KeyCode::K)) {
+        logWrite("Camera Angle: ");
+        camera->facingAngle.log();
+        logNewLine();
+        logWrite("Camera Facing Vec: ");
+        camera->facingVec.log();
+        logNewLine();
+        logNewLine();
     }
 
 
@@ -118,9 +132,9 @@ void handleInput() {
     // So before requesting the next selection, I process whatever exists from last frame
 
     // Check if an object was selected last frame
-    if (gui->drawer->pixelTracker->watchingPixelWrites) {
+    if (renderer->pixelDrawer->pixelTracker.watchingPixelWrites) {
 
-        Object* newSelection = gui->drawer->pixelTracker->foundObject;
+        Physics::Object* newSelection = renderer->pixelDrawer->pixelTracker.foundObject;
 
         // First make sure its non-null, otherwise the object would be instantly deselected after selection
         if (newSelection != nullptr) {
@@ -143,25 +157,25 @@ void handleInput() {
         }
 
         // Also set it back to null, so as to not carry the information over unnecessarily
-        gui->drawer->pixelTracker->foundObject = nullptr;
+        renderer->pixelDrawer->pixelTracker.foundObject = nullptr;
 
     }
 
     // Tell Drawer->PixelTracker to watch the pixel the mouse is on
     if (gui->state->wasRightJustPressed()) {
 
-        gui->drawer->pixelTracker->watchedPixel->set(
+        renderer->pixelDrawer->pixelTracker.watchedPixel.set(
             gui->state->mouse->posX,
             gui->state->mouse->posY
         );
 
-        gui->drawer->pixelTracker->watchingPixelWrites = true;
+        renderer->pixelDrawer->pixelTracker.watchingPixelWrites = true;
 
     }
 
     // Otherwise tell PixelTracker to not track anything
     else {
-        gui->drawer->pixelTracker->watchingPixelWrites = false;
+        renderer->pixelDrawer->pixelTracker.watchingPixelWrites = false;
     }
 
     // The enter key will deselect the selected object, if it exists
@@ -182,37 +196,6 @@ void handleInput() {
         else objects->setOpacityAll(1);
 
     }
-
-    // This rotates the selected object when pressing keys j,k,l
-    if (gui->state->keyIsDown(KeyCode::J))
-        if (selectedObject != nullptr) selectedObject->rotateSelf(1, 0, 0);
-
-    if (gui->state->keyIsDown(KeyCode::K))
-        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 1, 0);
-
-    if (gui->state->keyIsDown(KeyCode::L))
-        if (selectedObject != nullptr) selectedObject->rotateSelf(0, 0, 1);
-
-    // This moves the selected object along the y-axis when pressing keys o,p
-    if (gui->state->keyIsDown(KeyCode::O))
-        if (selectedObject != nullptr) selectedObject->move(0, 0.5, 0);
-
-    if (gui->state->keyIsDown(KeyCode::P))
-        if (selectedObject != nullptr) selectedObject->move(0, -0.5, 0);
-
-    // This moves the selected object along the x-axis when pressing keys o,p
-    if (gui->state->keyIsDown(KeyCode::U))
-        if (selectedObject != nullptr) selectedObject->move(0.5, 0, 0);
-
-    if (gui->state->keyIsDown(KeyCode::I))
-        if (selectedObject != nullptr) selectedObject->move(-0.5, 0, 0);
-
-    // This moves the selected object along the z-axis when pressing keys o,p
-    if (gui->state->keyIsDown(KeyCode::T))
-        if (selectedObject != nullptr) selectedObject->move(0, 0, 0.5);
-
-    if (gui->state->keyIsDown(KeyCode::Y))
-        if (selectedObject != nullptr) selectedObject->move(0, 0, -0.5);
 
     // Toggles gravity
     if (gui->state->keyJustDown(KeyCode::G)) {
@@ -243,63 +226,69 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new GUI(1200, 700, "Game Engine");
+    gui = new Graphics::Gui::GUI(1200, 700, "Game Engine");
 
-    camera = new Camera();
+    renderer = new Graphics::Rendering::Renderer( &(gui->drawer->pixelDrawer), gui->display );
+
+    camera = new Graphics::Rendering::Camera();
     camera->setPreset(0);
 
     // Sets up the default meshes
-    Mesh::initMeshes();
-
+    Geometry::Mesh::initMeshes();
 
     // Create and populate the object set
-    objects = new ObjectSet();
-    Object* newObject;
+    objects = new Physics::ObjectSet();
+    Physics::Object* newObject;
 
     /*   Main Objects   */
 
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::tempMesh;
+    // newObject->scaleBy(15)->move(0, 0, 50)->setColor(Color::WHITE);
+    // objects->pushBack(newObject);
+
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh;
     newObject->scaleBy(15)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
-    newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
-    objects->pushBack(newObject, 2);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    // newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
+    // objects->pushBack(newObject, 2);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
-    newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotateSelf(10, 0, 0)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 3);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    // newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotate(10, 0, 0)->setColor(Color::BLUE);
+    // objects->pushBack(newObject, 3);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::capsuleMesh->copy();
-    newObject->scaleBy(15)->move(0, -20, 50)->setColor(Color::GREEN);
-    objects->pushBack(newObject, 4);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::capsuleMesh->copy();
+    // newObject->scaleBy(15)->move(0, -20, 50)->setColor(Color::GREEN);
+    // objects->pushBack(newObject, 4);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy();
-    newObject->scaleBy(15, 40, 15)->move(-30, 0, 50)->setColor(Color::BLUE);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::sphereMesh;
+    newObject->scaleBy(12)->move(0, 0, 40)->setColor(Color::BLUE);
     objects->pushBack(newObject, 5);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy();
-    newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
-    objects->pushBack(newObject, 6);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::sphereMesh->copy();
+    // newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    // objects->pushBack(newObject, 6);
 
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
-    newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
-    objects->pushBack(newObject, 7);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    // newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    // objects->pushBack(newObject, 7);
 
 
     /*   Floor   */
 
-    newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
-    newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
-    objects->pushBack(newObject, 8);
+    // newObject = new Physics::Object();
+    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    // newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
+    // objects->pushBack(newObject, 8);
 
 
     gravity = false;
@@ -307,7 +296,7 @@ void init() {
 
     selectedObjectId = 1;
 
-    ui = new UI();
+    ui = new Ui::UI();
 
     // Create the navbar
     navBar = ui->createWindow(Ui::File::NAVBAR);
@@ -321,46 +310,58 @@ void init() {
 
 }
 
-int main(int argc, char* argv[]) {
+void doFrame() {
 
-    // Starts up everything needed for the main loop
-    init();
+    // Does all the user input handling
+    handleInput();
 
-    // Main loop
-    while ( !(gui->shouldDestroyWindow) ) {
+    // Give the UI any data it needs
+    giveUiData();
 
-        // Does all the user input handling
-        handleInput();
+    // Handle the physics for the frame
+    objects->doAllPhysics(gui->state->time->dt);
 
-        // Give the UI any data it needs
-        giveUiData();
+    // Prep the pixel and depth buffers
+    renderer->pixelDrawer->resetDepthBuffer();
+    gui->drawer->drawSky(camera, gui->display); // This acts as a pixel buffer reset since it draws to every pixel
 
-        // Handle the physics for the frame
-        objects->doAllPhysics(gui->state->time->dt);
+    // // Draw all the objects
+    if (drawNormals) objects->drawAllWithNormals(renderer, camera);
+    else objects->drawAll(renderer, camera);
+    
+    // Draw the UI
+    gui->drawer->drawFps(gui->state, gui->display);
+    ui->draw(gui->drawer);
+    gui->drawer->drawCrosshair(gui->display);
 
-        // Prep the pixel and depth buffers
-        gui->drawer->resetDepthBuffer();
-        gui->drawer->drawSky(camera, gui->display); // This acts as a pixel buffer reset since it draws to every pixel
+    // Tell State that the frame is over
+    gui->state->nextFrame();
 
-        // Draw all the objects
-        if (drawNormals) objects->drawAllWithNormals(gui->drawer, camera, gui->display);
-        else objects->drawAll(gui->drawer, camera, gui->display);
-        
-        // Draw the UI
-        gui->drawer->drawFps(gui->state, gui->display);
-        ui->draw(gui->drawer);
-        gui->drawer->drawCrosshair(gui->display);
+    // Update the GUI
+    gui->window->flip();
 
-        // Tell State that the frame is over
-        gui->state->nextFrame();
+    return;
 
-        // Update the GUI
-        gui->window->flip();
+}
 
-    }
+void cleanup() {
 
     delete camera;
     delete gui;
+    delete objects;
+    delete ui;
+
+}
+
+int main(int argc, char* argv[]) {
+
+    init();
+
+    while ( !(gui->shouldDestroyWindow) ) {
+        doFrame();
+    }
+
+    cleanup();
 
     return 0;
 

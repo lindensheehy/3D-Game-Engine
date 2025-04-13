@@ -1,5 +1,6 @@
 #include "util/FileReader.h"
 
+
 HANDLE hFile = nullptr;
 
 int openFile(const char* fileName) {

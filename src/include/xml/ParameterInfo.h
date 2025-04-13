@@ -6,12 +6,13 @@
 #include "xml/Core.h"
 
 
+namespace Xml {
+
 struct Parameter {
     const char* name;
     ParameterType type;
     // position is stored as id in the linked list
 };
-
 
 
 class ParameterInfo {
@@ -65,7 +66,6 @@ class ParameterInfo {
 };
 
 
-
 class ParameterInfoBuilder {
 
     /*
@@ -107,3 +107,5 @@ class ParameterInfoBuilder {
         LinkedList<Parameter*>* params;
 
 };
+
+}

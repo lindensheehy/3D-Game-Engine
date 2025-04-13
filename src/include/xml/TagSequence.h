@@ -5,6 +5,8 @@
 #include "xml/Core.h"
 
 
+namespace Xml {
+
 class TagSequence {
 
     /*
@@ -104,3 +106,5 @@ class TagSequence {
         int validatePrimTagIndex(int index, const char* functionName = nullptr) const;
 
 };
+
+}

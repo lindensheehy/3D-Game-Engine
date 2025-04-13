@@ -1,7 +1,9 @@
 #include "ui/BindManager.h"
 
-// Constructor
-Ui::BindManager::BindManager() {
+using namespace Ui;
+
+
+BindManager::BindManager() {
 
     this->binds = new LinkedList<Bind*>();
 
@@ -9,10 +11,8 @@ Ui::BindManager::BindManager() {
 
 }
 
-// Destructor
-Ui::BindManager::~BindManager() {
+BindManager::~BindManager() {
 
-    // List items are stack allocated, no need to free them
     if (this->binds != nullptr) {
         
         // Free any item in the list, as these are heap allocated
@@ -35,8 +35,7 @@ Ui::BindManager::~BindManager() {
 
 }
 
-// Instance Functions
-void Ui::BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
+void BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
     
     if (windowHandle == nullptr) {
         logWrite("BindManager::addBind(WindowHandle*, BindFunc) was called on a nullptr!", true);
@@ -52,7 +51,7 @@ void Ui::BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
 
 }
 
-void Ui::BindManager::removeBind(WindowHandle* windowHandle) {
+void BindManager::removeBind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindManager::removeBind(WindowHandle*) was called on a nullptr!", true);
@@ -70,7 +69,7 @@ void Ui::BindManager::removeBind(WindowHandle* windowHandle) {
 
 }
 
-void Ui::BindManager::rebind(WindowHandle* windowHandle) {
+void BindManager::rebind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindManager::rebind(WindowHandle*) was called on a nullptr!", true);
@@ -90,7 +89,7 @@ void Ui::BindManager::rebind(WindowHandle* windowHandle) {
 
 }
 
-void Ui::BindManager::rebindAll() {
+void BindManager::rebindAll() {
 
     Bind* current;
 
@@ -110,7 +109,7 @@ void Ui::BindManager::rebindAll() {
 
 }
 
-Ui::BindManager::Bind* Ui::BindManager::getBind(WindowHandle* windowHandle) {
+BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
 
     Bind* current;
 
@@ -133,7 +132,7 @@ Ui::BindManager::Bind* Ui::BindManager::getBind(WindowHandle* windowHandle) {
 
 }
 
-void Ui::BindManager::removeBind(Bind* bind) {
+void BindManager::removeBind(Bind* bind) {
 
     this->binds->pop(bind);
 

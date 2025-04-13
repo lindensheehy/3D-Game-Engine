@@ -1,19 +1,20 @@
 #include "ui/WindowElement.h"
 
+using namespace Ui;
+
+
 /* ----------------------------------- */
 /* ---------- WindowElement ---------- */
 /* ----------------------------------- */
 
-// Static declarations
-LinkedList<Ui::Action*>* Ui::WindowElement::actionQueue;
+LinkedList<Action*>* WindowElement::actionQueue;
 
-// Constructor
-Ui::WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
+WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
-    this->pos = new Vec2(posx, posy);
-    this->size = new Vec2(sizex, sizey);
+    this->pos.set(posx, posy);
+    this->size.set(sizex, sizey);
 
-    this->endPos = this->pos->copy()->add(this->size);
+    this->endPos.set(this->pos).add(this->size);
 
     this->children = new LinkedList<WindowElement*>();
 
@@ -21,24 +22,18 @@ Ui::WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
 }
 
-Ui::WindowElement::WindowElement(Vec2* pos, Vec2* size) {
+WindowElement::WindowElement(Geometry::Vec2* pos, Geometry::Vec2* size) {
 
-    this->pos = pos->copy();
-    this->size = size->copy();
+    this->pos.set(pos);
+    this->size.set(size);
 
-    this->endPos = this->pos->copy()->add(this->size);
+    this->endPos.set(this->pos).add(this->size);
 
     this->children = new LinkedList<WindowElement*>();
 
 }
 
-// Destrcutor
-Ui::WindowElement::~WindowElement() {
-
-    if (this->pos != nullptr) delete this->pos;
-    if (this->size != nullptr) delete this->size;
-
-    if (this->endPos != nullptr) delete this->endPos;
+WindowElement::~WindowElement() {
 
     if (this->children != nullptr) {
 
@@ -60,21 +55,20 @@ Ui::WindowElement::~WindowElement() {
 
 }
 
-// Instance Functions
-void Ui::WindowElement::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowElement::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
     // Log becuase this shouldnt ever be called
     logWrite("Called WindowElement->draw()!", true);
 
 }
 
-Ui::WindowElement* Ui::WindowElement::hitTest(int x, int y, Vec2* offset) {
+WindowElement* WindowElement::hitTest(int x, int y, Geometry::Vec2* offset) {
 
-    Vec2 newPos;
+    Geometry::Vec2 newPos;
     newPos.set(this->pos);
     newPos.add(offset);
 
-    Vec2 newEndPos;
+    Geometry::Vec2 newEndPos;
     newEndPos.set(this->endPos);
     newEndPos.add(offset);
 
@@ -88,9 +82,9 @@ Ui::WindowElement* Ui::WindowElement::hitTest(int x, int y, Vec2* offset) {
 
     // Return this if its interactable
     if (
-        this->type == Ui::ElementType::BUTTON ||
-        this->type == Ui::ElementType::DRAGABLE ||
-        this->type == Ui::ElementType::TEXTINPUT
+        this->type == ElementType::BUTTON ||
+        this->type == ElementType::DRAGABLE ||
+        this->type == ElementType::TEXTINPUT
     ) return this;
 
     // Check children
@@ -111,7 +105,7 @@ Ui::WindowElement* Ui::WindowElement::hitTest(int x, int y, Vec2* offset) {
 
 }
 
-Ui::WindowElement* Ui::WindowElement::doInput(Gui::State* state, Vec2* offset) {
+WindowElement* WindowElement::doInput(Graphics::Gui::State* state, Geometry::Vec2* offset) {
 
     int x = state->mouse->posX;
     int y = state->mouse->posY;
@@ -129,12 +123,13 @@ Ui::WindowElement* Ui::WindowElement::doInput(Gui::State* state, Vec2* offset) {
 
     WindowElement* current; // The child element checked on the given iteration
     WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
-    Vec2* nextOffset = offset->copy()->add(this->pos);
+    Geometry::Vec2 nextOffset;
+    nextOffset.set(offset).add(this->pos);
 
     for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
 
         current = this->children->iterGetObj();
-        found = current->doInput(state, nextOffset);
+        found = current->doInput(state, &(nextOffset));
 
         if (found != nullptr) return found;
 
@@ -145,38 +140,38 @@ Ui::WindowElement* Ui::WindowElement::doInput(Gui::State* state, Vec2* offset) {
 
 }
 
-void Ui::WindowElement::setPos(int x, int y) {
+void WindowElement::setPos(int x, int y) {
 
-    this->pos->set(x, y);
+    this->pos.set(x, y);
 
-    this->endPos->set(this->size);
-    this->endPos->add(x, y);
+    this->endPos.set(this->size);
+    this->endPos.add(x, y);
 
 }
 
-void Ui::WindowElement::setPos(Vec2* newPos) {
+void WindowElement::setPos(Geometry::Vec2* newPos) {
     this->setPos( (int) newPos->x, (int) newPos->y );
 }
 
-void Ui::WindowElement::addChild(WindowElement* child) {
+void WindowElement::addChild(WindowElement* child) {
 
     this->children->pushBack(child);
     return;
 
 }
 
-void Ui::WindowElement::drawChildren(Gui::Drawer* drawer, Vec2* offset) {
+void WindowElement::drawChildren(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
     for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext())
         this->children->iterGetObj()->draw(drawer, offset);
 
 }
 
-void Ui::WindowElement::setActionQueue(LinkedList<Action*>* queue) {
+void WindowElement::setActionQueue(LinkedList<Action*>* queue) {
     WindowElement::actionQueue = queue;
 }
 
-void Ui::WindowElement::queueAction(Action* action) {
+void WindowElement::queueAction(Action* action) {
     WindowElement::actionQueue->pushBack(action);
 }
 
@@ -186,17 +181,16 @@ void Ui::WindowElement::queueAction(Action* action) {
 /* ---------- WindowDiv ---------- */
 /* ------------------------------- */
 
-// Constructor
-Ui::WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
+WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
 
-// Instance Functions
-void Ui::WindowDiv::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowDiv::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    this->drawChildren(drawer, newOffset);
+    this->drawChildren(drawer, &(newOffset));
 
-    delete newOffset;
+    return;
 
 }
 
@@ -206,26 +200,26 @@ void Ui::WindowDiv::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowLine ---------- */
 /* -------------------------------- */
 
-// Constructor
-Ui::WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
     this->color = color;
 
 }
 
-// Instance Functions
-void Ui::WindowLine::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowLine::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
-    Vec2* newEndPos = this->endPos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    drawer->drawLine(this->color, newOffset, newEndPos);
-    this->drawChildren(drawer, newOffset);
+    Geometry::Vec2 newEndPos;
+    newEndPos.set(this->endPos).add(offset);
 
-    delete newOffset;
-    delete newEndPos;
+    drawer->drawLine(this->color, newOffset.x, newOffset.y, newEndPos.x, newEndPos.y);
+    this->drawChildren(drawer, &(newOffset));
+
+    return;
 
 }
 
@@ -235,26 +229,26 @@ void Ui::WindowLine::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowFilledRect ---------- */
 /* -------------------------------------- */
 
-// Constructor
-Ui::WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
     this->color = color;
 
 }
 
-// Instance Functions
-void Ui::WindowFilledRect::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowFilledRect::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
-    Vec2* newEndPos = this->endPos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    drawer->drawRectFilled(this->color, newOffset, newEndPos);
-    this->drawChildren(drawer, newOffset);
+    Geometry::Vec2 newEndPos;
+    newEndPos.set(this->endPos).add(offset);
 
-    delete newOffset;
-    delete newEndPos;
+    drawer->drawRectFilled(this->color, newOffset.x, newOffset.y, newEndPos.x, newEndPos.y);
+    this->drawChildren(drawer, &(newOffset));
+
+    return;
 
 }
 
@@ -264,26 +258,26 @@ void Ui::WindowFilledRect::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowOutlinedRect ---------- */
 /* ---------------------------------------- */
 
-// Constructor
-Ui::WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
+WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
     this->color = color;
 
 }
 
-// Instance Functions
-void Ui::WindowOutlinedRect::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowOutlinedRect::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
-    Vec2* newEndPos = this->endPos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    drawer->drawRect(this->color, newOffset, newEndPos);
-    this->drawChildren(drawer, newOffset);
+    Geometry::Vec2 newEndPos;
+    newEndPos.set(this->endPos).add(offset);
 
-    delete newOffset;
-    delete newEndPos;
+    drawer->drawRect(this->color, newOffset.x, newOffset.y, newEndPos.x, newEndPos.y);
+    this->drawChildren(drawer, &(newOffset));
+
+    return;
 
 }
 
@@ -293,36 +287,29 @@ void Ui::WindowOutlinedRect::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowCircle ---------- */
 /* ---------------------------------- */
 
-// Constructor
-Ui::WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowElement(posx, posy, size, size) {
+WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowElement(posx, posy, size, size) {
 
-    this->middle = this->size->copy()->scale(0.5)->add(this->pos);
+    this->middle.set(this->size).scale(0.5).add(this->pos);
     this->radius = size;
 
     this->color = color;
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
 }
 
-// Destructor
-Ui::WindowCircle::~WindowCircle() {
-    
-    if (this->middle != nullptr) delete this->middle;
+void WindowCircle::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-}
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-// Instance Functions
-void Ui::WindowCircle::draw(Gui::Drawer* drawer, Vec2* offset) {
+    Geometry::Vec2 newMiddle;
+    newMiddle.set(this->middle).add(offset);
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
-    Vec2* newMiddle = this->middle->copy()->add(offset);
+    drawer->drawCircle(this->color, newMiddle.x, newMiddle.y, this->radius);
+    this->drawChildren(drawer, &(newOffset));
 
-    drawer->drawCircle(this->color, newMiddle, this->radius);
-    this->drawChildren(drawer, newOffset);
-
-    delete newOffset;
-    delete newMiddle;
+    return;
 
 }
 
@@ -332,18 +319,16 @@ void Ui::WindowCircle::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowTextStatic ---------- */
 /* -------------------------------------- */
 
-// Constructor
-Ui::WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
+WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
     this->color = Color::WHITE;
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
 }
 
-// Destructor
-Ui::WindowTextStatic::~WindowTextStatic() {
+WindowTextStatic::~WindowTextStatic() {
 
     // this->text should be heap allocated. This will crash otherwise
     // Then again, WindowElement objects should never be created directly without the help of XML
@@ -351,15 +336,15 @@ Ui::WindowTextStatic::~WindowTextStatic() {
 
 }
 
-// Instance Functions
-void Ui::WindowTextStatic::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowTextStatic::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    drawer->drawString(this->color, this->text, newOffset);
-    this->drawChildren(drawer, newOffset);
+    drawer->fontDrawer.drawString(this->color, this->text, newOffset.x, newOffset.y);
+    this->drawChildren(drawer, &(newOffset));
 
-    delete newOffset;
+    return;
 
 }
 
@@ -369,8 +354,7 @@ void Ui::WindowTextStatic::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowTextInput ---------- */
 /* ------------------------------------- */
 
-// Constructor
-Ui::WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : WindowElement(posx, posy, width, 12) {
+WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : WindowElement(posx, posy, width, 12) {
 
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
@@ -383,54 +367,51 @@ Ui::WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : 
 
     this->color = Color::WHITE;
 
-    this->type = Ui::ElementType::TEXTINPUT;
+    this->type = ElementType::TEXTINPUT;
     this->isInteractable = true;
 
     this->id = id;
 
 }
 
-// Destructor
-Ui::WindowTextInput::~WindowTextInput() {
+WindowTextInput::~WindowTextInput() {
     delete[] this->text;
 }
 
-// Instance Functions
-void Ui::WindowTextInput::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
     // Update the internal string
     this->updateString();
     
-    Vec2* newOffset = this->pos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
     // Give the text some padding
-    newOffset->add(3, 3);
-    drawer->drawString(this->color, this->text, newOffset);
+    newOffset.add(3, 3);
+    drawer->fontDrawer.drawString(this->color, this->text, newOffset.x, newOffset.y);
 
     // Draw cursor if needed
     if (this->cursorPos != -1) {
 
-        Vec2* cursorDrawPos = newOffset->copy()->add( (this->cursorPos * 6), 0 );
-        Vec2* cursorDrawEndPos = cursorDrawPos->copy()->add(1, 7);
+        Geometry::Vec2 start;
+        start.set(newOffset).add( (this->cursorPos * 6), 0 );
 
-        drawer->drawRectFilled(this->color, cursorDrawPos, cursorDrawEndPos);
+        Geometry::Vec2 end;
+        end.set(start).add(1, 7);
 
-        delete cursorDrawPos;
-        delete cursorDrawEndPos;
+        drawer->drawRectFilled(this->color, start.x, start.y, end.x, end.y);
 
     }
 
     // Remove the padding before drawing children
-    newOffset->sub(3, 3);
-    this->drawChildren(drawer, newOffset);
-
-    delete newOffset;
+    newOffset.sub(3, 3);
+    this->drawChildren(drawer, &(newOffset));
 
     return;
 
 }
 
-void Ui::WindowTextInput::onInput(Gui::State* state) {
+void WindowTextInput::onInput(Graphics::Gui::State* state) {
 
     if (state->wasLeftJustPressed()) this->cursorPos = this->length;
 
@@ -443,7 +424,7 @@ void Ui::WindowTextInput::onInput(Gui::State* state) {
         
         key = state->newKeyPresses[i];
 
-        keyChar = Gui::keyCodeToChar(key);
+        keyChar = keyCodeToChar(key);
 
         // If the keyChar is valid, write it to the internal string
         if (keyChar != '\0') {
@@ -510,7 +491,7 @@ void Ui::WindowTextInput::onInput(Gui::State* state) {
 
 }
 
-void Ui::WindowTextInput::onDeselect() {
+void WindowTextInput::onDeselect() {
 
     // Hides the cursor
     this->cursorPos = -1;
@@ -519,7 +500,7 @@ void Ui::WindowTextInput::onDeselect() {
 
 }
 
-void Ui::WindowTextInput::bind(int* variable) {
+void WindowTextInput::bind(int* variable) {
     
     this->unbind();
 
@@ -530,7 +511,7 @@ void Ui::WindowTextInput::bind(int* variable) {
 
 }
 
-void Ui::WindowTextInput::bind(float* variable) {
+void WindowTextInput::bind(float* variable) {
     
     this->unbind();
 
@@ -541,7 +522,7 @@ void Ui::WindowTextInput::bind(float* variable) {
 
 }
 
-void Ui::WindowTextInput::unbind() {
+void WindowTextInput::unbind() {
 
     switch (this->bindType) {
 
@@ -563,7 +544,7 @@ void Ui::WindowTextInput::unbind() {
 
 }
 
-void Ui::WindowTextInput::updateString() {
+void WindowTextInput::updateString() {
 
     if (this->selected) return;
 
@@ -591,7 +572,7 @@ void Ui::WindowTextInput::updateString() {
 
 }
 
-void Ui::WindowTextInput::writeToValue() {
+void WindowTextInput::writeToValue() {
 
     int intValue;
     float floatValue;
@@ -622,10 +603,9 @@ void Ui::WindowTextInput::writeToValue() {
 /* ---------- WindowTexture ---------- */
 /* ----------------------------------- */
 
-// Constructor
-Ui::WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName) : WindowElement(posx, posy, sizex, sizey) {
+WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const char* fileName) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::VISUAL;
+    this->type = ElementType::VISUAL;
 
     /*   Insert PNG handling here   */
 
@@ -633,21 +613,20 @@ Ui::WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const
 
 }
 
-// Destructor
-Ui::WindowTexture::~WindowTexture() {
+WindowTexture::~WindowTexture() {
 
 }
 
-// Instance Functions
-void Ui::WindowTexture::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowTexture::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
     /* Insert PNG drawing logic here */
 
-    this->drawChildren(drawer, newOffset);
+    this->drawChildren(drawer, &(newOffset));
 
-    delete newOffset;
+    return;
 
 }
 
@@ -657,10 +636,9 @@ void Ui::WindowTexture::draw(Gui::Drawer* drawer, Vec2* offset) {
 /* ---------- WindowButton ---------- */
 /* ---------------------------------- */
 
-// Constructors
-Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
     
-    this->type = Ui::ElementType::BUTTON;
+    this->type = ElementType::BUTTON;
     this->isInteractable = true;
 
     this->action = nullptr;
@@ -669,9 +647,9 @@ Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* i
 
 }
 
-Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
+WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::BUTTON;
+    this->type = ElementType::BUTTON;
     this->isInteractable = true;
 
     this->action = action;
@@ -680,8 +658,7 @@ Ui::WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action*
 
 }
 
-// Destructor
-Ui::WindowButton::~WindowButton() {
+WindowButton::~WindowButton() {
     
     if (this->action != nullptr) delete this->action;
 
@@ -689,20 +666,21 @@ Ui::WindowButton::~WindowButton() {
 
 }
 
-// Instance Functions
-void Ui::WindowButton::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowButton::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
-    Vec2* newEndPos = this->endPos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
+
+    Geometry::Vec2 newEndPos;
+    newEndPos.set(this->endPos).add(offset);
     
-    this->drawChildren(drawer, newOffset);
+    this->drawChildren(drawer, &(newOffset));
 
-    delete newOffset;
-    delete newEndPos;
+    return;
 
 }
 
-void Ui::WindowButton::onInput(Gui::State* state) {
+void WindowButton::onInput(Graphics::Gui::State* state) {
 
     if (state->wasLeftJustPressed()) {
 
@@ -716,7 +694,7 @@ void Ui::WindowButton::onInput(Gui::State* state) {
 
 }
 
-void Ui::WindowButton::bind(Action* action) {
+void WindowButton::bind(Action* action) {
 
     // Free old action if there was one
     if (this->action != nullptr) delete this->action;
@@ -731,10 +709,9 @@ void Ui::WindowButton::bind(Action* action) {
 /* ---------- WindowDragable ---------- */
 /* ------------------------------------ */
 
-// Constructors
-Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, char* id) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::DRAGABLE;
+    this->type = ElementType::DRAGABLE;
     this->isInteractable = true;
 
     this->posToDrag = nullptr;
@@ -746,9 +723,9 @@ Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, cha
 
 }
 
-Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec2* posToDrag, Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
+WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag) : WindowElement(posx, posy, sizex, sizey) {
 
-    this->type = Ui::ElementType::DRAGABLE;
+    this->type = ElementType::DRAGABLE;
     this->isInteractable = true;
 
     this->posToDrag = posToDrag;
@@ -760,18 +737,18 @@ Ui::WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Vec
 
 }
 
-// Instance Functions
-void Ui::WindowDragable::draw(Gui::Drawer* drawer, Vec2* offset) {
+void WindowDragable::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    Vec2* newOffset = this->pos->copy()->add(offset);
+    Geometry::Vec2 newOffset;
+    newOffset.set(this->pos).add(offset);
 
-    this->drawChildren(drawer, newOffset);
+    this->drawChildren(drawer, &(newOffset));
 
-    delete newOffset;
+    return;
 
 }
 
-void Ui::WindowDragable::onInput(Gui::State* state) {
+void WindowDragable::onInput(Graphics::Gui::State* state) {
 
     if (this->posToDrag == nullptr || this->endPosToDrag == nullptr) return;
 
@@ -783,7 +760,7 @@ void Ui::WindowDragable::onInput(Gui::State* state) {
 
 }
 
-void Ui::WindowDragable::bind(Vec2* posToDrag, Vec2* endPosToDrag) {
+void WindowDragable::bind(Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag) {
 
     this->posToDrag = posToDrag;
     this->endPosToDrag = endPosToDrag;

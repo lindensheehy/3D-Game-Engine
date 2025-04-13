@@ -1,5 +1,7 @@
 new stuff:
 
+- DLLs for scripting. use a language like C# (or maybe just stick with C++), and compile into a DLL dynamically.
+
 - physics
     - collision checks
         - bounding box for objects (probably not 1-to-1 with the mesh for easier computing)
@@ -16,9 +18,22 @@ new stuff:
 
 fixes:
 - fix depth interpolation, depth between two points is not always linear.
+    - take the distance of the pixel from each of the vertex coordinates (from 0-1 for each, totaling to 1)
+    - use these factors to find the 3d coordinate of the pixel, and find the depth directly of that position
 - fix TextInput UI elements from drawing to infinite length.
     - probably just add a parameter 'maxLength' to Drawer::drawString()
 
 optimizations:
+
+- Put all (or most) error checks inside a "#ifdef SAFEMODE" block
+  This way i can have the added performance of skipping the error checks, and optionally activate them again by defining SAFEMODE globally and recompiling
+
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
 - add a draw queue which will have threads to work only on drawing, while the main thread can do the math and feed the stuff that needs to be drawn to the queue
+
+
+
+Notes:
+
+the issue is somewhere in the projection pipeline. its probably an issue with the matrix
+what i know for sure is that drawTri works properly (though i havent confirmed the depth aspect of it yet)

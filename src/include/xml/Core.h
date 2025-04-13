@@ -1,5 +1,8 @@
 #pragma once
 
+
+namespace Xml {
+
 constexpr int MAX_TAG_LENGTH = 64;
 
 // These help to group the Primitive tags. The values are the relative indexes
@@ -56,3 +59,5 @@ bool isReservedChar(char c);
 // Returns the length of the tag. 
 // Very similar to strlen, but this early returns after a certain length
 int getTagLength(const char* tag);
+
+}

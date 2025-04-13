@@ -1,11 +1,12 @@
 #include "geometry/Vec.h"
 
+using namespace Geometry;
+
 
 /* ------------ */
 /* --- Vec2 --- */
 /* ------------ */
 
-// Constructor
 Vec2::Vec2(float inputX, float inputY) {
     this->x = inputX;
     this->y = inputY;
@@ -20,7 +21,6 @@ Vec2::Vec2() {
     this->magnitudeUpdated = false;
 }
 
-// Instance functions
 Vec2* Vec2::copy() const {
     return new Vec2(this->x, this->y);
 }
@@ -37,38 +37,26 @@ void Vec2::log() const {
     
 }
 
-Vec2* Vec2::set(Vec2* other) {
-
-    if (other == nullptr) {
-        logWrite("Called Vec2->set(Vec2*) on a null pointer!", true);
-        return this;
-    }
-
-    this->x = other->x;
-    this->y = other->y;
-    return this;
-
-}
-
-Vec2* Vec2::set(float x, float y) {
-
-    this->x = x;
-    this->y = y;
-    return this;
-
-}
-
 bool Vec2::is(float x, float y) const {
 
     return (
         this->x == x &&
         this->y == y
     );
+
 }
 
-bool Vec2::is(Vec2* other) const {
+bool Vec2::is(const Vec2& other) const {
+    
+    return (
+        this->x == other.x &&
+        this->y == other.y
+    );
 
-    // Address error case, but dont kill the process yet in case its not fatal
+}
+
+bool Vec2::is(const Vec2* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec2->is(Vec2*) on a null pointer!", true);
         return false;
@@ -78,62 +66,134 @@ bool Vec2::is(Vec2* other) const {
         this->x == other->x &&
         this->y == other->y
     );
+
 }
 
-Vec2* Vec2::add(float x, float y) {
+Vec2& Vec2::set(float x, float y) {
+
+    this->x = x;
+    this->y = y;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec2& Vec2::set(const Vec2& other) {
+
+    this->x = other.x;
+    this->y = other.y;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec2& Vec2::set(const Vec2* other) {
+
+    if (other == nullptr) {
+        logWrite("Called Vec2->set(Vec2*) on a null pointer!", true);
+        return *(this);
+    }
+
+    this->x = other->x;
+    this->y = other->y;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec2& Vec2::add(float x, float y) {
+
     this->x += x;
     this->y += y;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec2* Vec2::add(Vec2* other) {
+Vec2& Vec2::add(const Vec2& other) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    this->x += other.x;
+    this->y += other.y;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec2& Vec2::add(const Vec2* other) {
+
     if (other == nullptr) {
         logWrite("Called Vec2->add(Vec2*) on a null pointer!", true);
-        return nullptr;
+        return *(this);
     }
 
     this->x += other->x;
     this->y += other->y;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec2* Vec2::sub(float x, float y) {
+Vec2& Vec2::sub(float x, float y) {
+
     this->x -= x;
     this->y -= y;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec2* Vec2::sub(Vec2* other) {
+Vec2& Vec2::sub(const Vec2& other) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    this->x -= other.x;
+    this->y -= other.y;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec2& Vec2::sub(const Vec2* other) {
+
     if (other == nullptr) {
         logWrite("Called Vec2->sub(Vec2*) on a null pointer!", true);
-        return nullptr;
+        return *(this);
     }
 
     this->x -= other->x;
     this->y -= other->y;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec2* Vec2::scale(float factor) {
+Vec2& Vec2::scale(float factor) {
+
     this->x *= factor;
     this->y *= factor;
     if (this->magnitudeUpdated) this->magnitudeValue *= factor;
-    return this;
+
+    return *(this);
 }
 
-Vec2* Vec2::inverseScale(float factor) {
-    return this->scale(1 / factor);
+Vec2& Vec2::inverseScale(float factor) {
+    
+    this->x /= factor;
+    this->y /= factor;
+    if (this->magnitudeUpdated) this->magnitudeValue /= factor;
+
+    return *(this);
+
 }
 
-Vec2* Vec2::normalise(float toMagnitude /* default value = 1.0 */) {
+Vec2& Vec2::normalize(float toMagnitude /* default value = 1.0 */) {
     float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
@@ -157,43 +217,115 @@ float* Vec2::toArray() const {
 }
 
 float Vec2::magnitude() {
+
     if (!this->magnitudeUpdated) {
         this->magnitudeValue = distance2(this->x, this->y);
         this->magnitudeUpdated = true;
     }
+
     return this->magnitudeValue;
+
 }
 
-float Vec2::distanceTo(Vec2* other) const {
+float Vec2::distanceTo(float x, float y) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    return distance2(
+        this->x, this->y, 
+        x, y
+    );
+
+}
+
+float Vec2::distanceTo(const Vec2& other) const {
+
+    return distance2(
+        this->x, this->y, 
+        other.x, other.y
+    );
+
+}
+
+float Vec2::distanceTo(const Vec2* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec2->distanceTo(Vec2*) on a null pointer!", true);
         return 0;
     }
 
-    return distance2(this->x, this->y, other->x, other->y);
-
-}
-
-Vec2* Vec2::midpoint(Vec2* other) const {
-    
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (other == nullptr) {
-        logWrite("Called Vec2->midpoint(Vec2*) on a null pointer!", true);
-        return nullptr;
-    }
-
-    return new Vec2(
-        (this->x + other->x) / 2,
-        (this->y + other->y) / 2
+    return distance2(
+        this->x, this->y, 
+        other->x, other->y
     );
 
 }
 
-float Vec2::dotProduct(Vec2* other) const {
+void Vec2::midpoint(float x, float y, Vec2* out) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    if (out == nullptr) {
+        logWrite("Called Vec2->midpoint(float, float, Vec2*) on a nullptr!", true);
+        return;
+    }
+
+    out->set(
+        (this->x + x) / 2.0,
+        (this->y + y) / 2.0
+    );
+
+    return;
+
+}
+
+void Vec2::midpoint(const Vec2& other, Vec2* out) const {
+
+    if (out == nullptr) {
+        logWrite("Called Vec2->midpoint(Vec2&, Vec2*) on a nullptr!", true);
+        return;
+    }
+
+    out->set(
+        (this->x + other.x) / 2.0,
+        (this->y + other.y) / 2.0
+    );
+
+    return;
+
+}
+
+void Vec2::midpoint(const Vec2* other, Vec2* out) const {
+    
+    if (other == nullptr) {
+        logWrite("Called Vec2->midpoint(Vec2*, Vec2*) with arg1 as nullptr!", true);
+        return;
+    }
+
+    if (out == nullptr) {
+        logWrite("Called Vec2->midpoint(Vec2*, Vec2*) with arg2 as nullptr!", true);
+        return;
+    }
+
+    out->set(
+        (this->x + other->x) / 2.0,
+        (this->y + other->y) / 2.0
+    );
+
+    return;
+
+}
+
+float Vec2::dotProduct(float x, float y) const {
+
+    return (this->x * x) + (this->y * y);
+
+}
+
+float Vec2::dotProduct(const Vec2& other) const {
+
+    return (this->x * other.x) + (this->y * other.y);
+
+}
+
+float Vec2::dotProduct(const Vec2* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec2->dotProduct(Vec2*) on a null pointer!", true);
         return 0;
@@ -203,10 +335,8 @@ float Vec2::dotProduct(Vec2* other) const {
 
 }
 
-void Vec2::rotate(float degrees, Vec2* around /* default value = nullptr */) {
+void Vec2::rotate(float degrees, const Vec2* around /* default value = nullptr */) {
     
-    // around = nullptr already addressed here, no need for error case
-
     if (degrees == 0) return;
 
     float aroundX = 0;
@@ -233,13 +363,18 @@ void Vec2::rotate(float degrees, Vec2* around /* default value = nullptr */) {
     
 }
 
+void Vec2::rotate(float degrees, const Vec2& around) {
+
+    this->rotate(degrees, &(around));
+
+}
+
 
 
 /* ------------ */
 /* --- Vec3 --- */
 /* ------------ */
 
-// Constructors
 Vec3::Vec3(float inputX, float inputY, float inputZ) {
     this->x = inputX;
     this->y = inputY;
@@ -256,7 +391,6 @@ Vec3::Vec3() {
     this->magnitudeUpdated = false;
 }
 
-// Instance functions
 Vec3* Vec3::copy() const {
     return new Vec3(this->x, this->y, this->z);
 }
@@ -275,42 +409,6 @@ void Vec3::log() const {
     
 }
 
-Vec3* Vec3::set(Vec3* other) {
-
-    if (other == nullptr) {
-        logWrite("Called Vec3->set(Vec3*) on a null pointer!", true);
-        return this;
-    }
-
-    this->x = other->x;
-    this->y = other->y;
-    this->z = other->z;
-    return this;
-
-}
-
-Vec3* Vec3::set(float x, float y, float z) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    return this;
-}
-
-bool Vec3::is(Vec3* other) const {
-
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (other == nullptr) {
-        logWrite("Called Vec3->is(Vec3*) on a null pointer!", true);
-        return false;
-    }
-
-    return (
-        this->x == other->x &&
-        this->y == other->y &&
-        this->z == other->z
-    );
-}
-
 bool Vec3::is(float x, float y, float z) const {
 
     return (
@@ -321,73 +419,179 @@ bool Vec3::is(float x, float y, float z) const {
 
 }
 
-Vec3* Vec3::add(Vec3* other) {
+bool Vec3::is(const Vec3& other) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    return (
+        this->x == other.x &&
+        this->y == other.y &&
+        this->z == other.z
+    );
+
+}
+
+bool Vec3::is(const Vec3* other) const {
+
+    if (other == nullptr) {
+        logWrite("Called Vec3->is(Vec3*) on a null pointer!", true);
+        return false;
+    }
+
+    return (
+        this->x == other->x &&
+        this->y == other->y &&
+        this->z == other->z
+    );
+
+}
+
+Vec3& Vec3::set(float x, float y, float z) {
+
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::set(const Vec3& other) {
+
+    this->x = other.x;
+    this->y = other.y;
+    this->z = other.z;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::set(const Vec3* other) {
+
+    if (other == nullptr) {
+        logWrite("Called Vec3->set(Vec3*) on a null pointer!", true);
+        return *(this);
+    }
+
+    this->x = other->x;
+    this->y = other->y;
+    this->z = other->z;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::add(float dx, float dy, float dz) {
+
+    this->x += dx;
+    this->y += dy;
+    this->z += dz;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::add(const Vec3& other) {
+
+    this->x += other.x;
+    this->y += other.y;
+    this->z += other.z;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::add(const Vec3* other) {
+
     if (other == nullptr) {
         logWrite("Called Vec3->add(Vec3*) on a null pointer!", true);
-        return nullptr;
+        return *(this);
     }
 
     this->x += other->x;
     this->y += other->y;
     this->z += other->z;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::add(float dx, float dy, float dz) {
-    this->x += dx;
-    this->y += dy;
-    this->z += dz;
+Vec3& Vec3::sub(float dx, float dy, float dz) {
+
+    this->x -= dx;
+    this->y -= dy;
+    this->z -= dz;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::sub(Vec3* other) {
+Vec3& Vec3::sub(const Vec3& other) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    this->x -= other.x;
+    this->y -= other.y;
+    this->z -= other.z;
+    this->magnitudeUpdated = false;
+
+    return *(this);
+
+}
+
+Vec3& Vec3::sub(const Vec3* other) {
+
     if (other == nullptr) {
         logWrite("Called Vec3->sub(Vec3*) on a null pointer!", true);
-        return nullptr;
+        return *(this);
     }
 
     this->x -= other->x;
     this->y -= other->y;
     this->z -= other->z;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::sub(float dx, float dy, float dz) {
-    this->x -= dx;
-    this->y -= dy;
-    this->z -= dz;
-    this->magnitudeUpdated = false;
-    return this;
-}
+Vec3& Vec3::scale(float factor) {
 
-Vec3* Vec3::scale(float factor) {
     this->x *= factor;
     this->y *= factor;
     this->z *= factor;
     if (this->magnitudeUpdated) this->magnitudeValue *= factor;
-    return this;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::scale(float fx, float fy, float fz) {
+Vec3& Vec3::scale(float fx, float fy, float fz) {
+
     this->x *= fx;
     this->y *= fy;
     this->z *= fz;
     this->magnitudeUpdated = false;
-    return this;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::inverseScale(float factor) {
-    return this->scale(1 / factor);
+Vec3& Vec3::inverseScale(float factor) {
+
+    this->x /= factor;
+    this->y /= factor;
+    this->z /= factor;
+    if (this->magnitudeUpdated) this->magnitudeValue /= factor;
+
+    return *(this);
+
 }
 
-Vec3* Vec3::normalise(float toMagnitude /* default value = 1.0 */) {
+Vec3& Vec3::normalize(float toMagnitude /* default value = 1.0 */) {
     float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
@@ -424,77 +628,210 @@ float Vec3::magnitude() {
 
 }
 
-float Vec3::distanceTo(Vec3* other) const {
+float Vec3::distanceTo(float x, float y, float z) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    return distance3(
+        this->x, this->y, this->z,
+        x, y, z
+    );
+
+}
+
+float Vec3::distanceTo(const Vec3& other) const {
+
+    return distance3(
+        this->x, this->y, this->z,
+        other.x, other.y, other.z
+    );
+
+}
+
+float Vec3::distanceTo(const Vec3* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec3->distanceTo(Vec3*) on a null pointer!", true);
         return 0;
     }
 
-    return distance3(this->x, this->y, this->z, other->x, other->y, other->z);
+    return distance3(
+        this->x, this->y, this->z, 
+        other->x, other->y, other->z
+    );
 
 }
 
-Vec3* Vec3::midpoint(Vec3* other) const {
+void Vec3::midpoint(float x, float y, float z, Vec3* out) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (other == nullptr) {
-        logWrite("Called Vec3->midpoint(Vec3*) on a null pointer!", true);
-        return nullptr;
+    if (out == nullptr) {
+        logWrite("Called Vec3->midpoint(float, float, float, Vec3*) on a nullptr!", true);
+        return;
     }
 
-    return new Vec3(
+    out->set(
+        (this->x + x) / 2,
+        (this->y + y) / 2,
+        (this->z + z) / 2
+    );
+
+    return;
+
+}
+
+void Vec3::midpoint(const Vec3& other, Vec3* out) const {
+
+    if (out == nullptr) {
+        logWrite("Called Vec3->midpoint(Vec3&, Vec3*) on a nullptr!", true);
+        return;
+    }
+
+    out->set(
+        (this->x + other.x) / 2,
+        (this->y + other.y) / 2,
+        (this->z + other.z) / 2
+    );
+
+    return;
+
+}
+
+void Vec3::midpoint(const Vec3* other, Vec3* out) const {
+
+    if (other == nullptr) {
+        logWrite("Called Vec3->midpoint(Vec3*, Vec3*) with arg1 as nullptr!", true);
+        return;
+    }
+
+    if (out == nullptr) {
+        logWrite("Called Vec3->midpoint(Vec3*, Vec3*) with arg2 as nullptr!", true);
+        return;
+    }
+
+    out->set(
         (this->x + other->x) / 2,
         (this->y + other->y) / 2,
         (this->z + other->z) / 2
     );
+
+    return;
+
 }
 
-float Vec3::dotProduct(Vec3* other) const {
+float Vec3::dotProduct(float x, float y, float z) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    return (this->x * x) + (this->y * y) + (this->z * z);
+
+}
+
+float Vec3::dotProduct(const Vec3& other) const {
+
+    return (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
+
+}
+
+float Vec3::dotProduct(const Vec3* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec3->dotProduct(Vec3*) on a null pointer!", true);
         return 0;
     }
 
     return (this->x * other->x) + (this->y * other->y) + (this->z * other->z);
+
 }
 
-Vec3* Vec3::crossProduct(Vec3* other) const {
+void Vec3::crossProduct(float x, float y, float z, Vec3* out) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    if (out == nullptr) {
+        logWrite("Called Vec3->midpoint(float, float, float, Vec3*) on a nullptr!", true);
+        return;
+    }
+
+    float xOut = (this->y * z) - (this->z * y);
+    float yOut = (this->z * x) - (this->x * z);
+    float zOut = (this->x * y) - (this->y * x);
+    out->set(xOut, yOut, zOut);
+
+    return;
+
+}
+
+void Vec3::crossProduct(const Vec3& other, Vec3* out) const {
+
+    if (out == nullptr) {
+        logWrite("Called Vec3->midpoint(Vec3&, Vec3*) on a nullptr!", true);
+        return;
+    }
+
+    float x = (this->y * other.z) - (this->z * other.y);
+    float y = (this->z * other.x) - (this->x * other.z);
+    float z = (this->x * other.y) - (this->y * other.x);
+    out->set(x, y, z);
+
+    return;
+
+}
+
+void Vec3::crossProduct(const Vec3* other, Vec3* out) const {
+
     if (other == nullptr) {
-        logWrite("Called Vec3->crossProduct(Vec3*) on a null pointer!", true);
-        return nullptr;
+        logWrite("Called Vec3->crossProduct(Vec3*, Vec3*) with arg1 as nullptr!", true);
+        return;
+    }
+
+    if (out == nullptr) {
+        logWrite("Called Vec3->crossProduct(Vec3*, Vec3*) with arg2 as nullptr!", true);
+        return;
     }
 
     float x = (this->y * other->z) - (this->z * other->y);
     float y = (this->z * other->x) - (this->x * other->z);
     float z = (this->x * other->y) - (this->y * other->x);
-    return new Vec3(x, y, z);
+    out->set(x, y, z);
+
+    return;
+
 }
 
-float Vec3::getAngle(Vec3* other) {
+float Vec3::getAngle(float x, float y, float z) const {
 
-    // Address error case, but dont kill the process yet in case its not fatal
+    Vec3 thisCopy;
+    thisCopy.set(this);
+
+    Vec3 otherCopy;
+    otherCopy.set(x, y, z);
+
+    thisCopy.normalize();
+    otherCopy.normalize();
+
+    float dotProduct = thisCopy.dotProduct(otherCopy);
+
+    // These cases shouldnt happen but floating point errors can cause them
+    if (dotProduct < -1) return 180;
+    if (dotProduct > 1)  return 0;
+
+    float radians = arccos(dotProduct);
+    
+    return toDegrees(radians);
+
+}
+
+float Vec3::getAngle(const Vec3& other) const {
+
+    // This functions a bit bigger, so ill just use the float overload here
+    return this->getAngle(other.x, other.y, other.z);
+
+}
+
+float Vec3::getAngle(const Vec3* other) const {
+
     if (other == nullptr) {
         logWrite("Called Vec3->getAngle(Vec3*) on a null pointer!", true);
         return 0;
     }
 
-    float dotProduct = this->dotProduct(other);
-    float magnitudeFactor = this->magnitude() * other->magnitude();
-    float ratio = dotProduct / magnitudeFactor;
+    // This functions a bit bigger, so ill just use the float overload here
+    return this->getAngle(other->x, other->y, other->z);
 
-    // These cases shouldnt happen but floating point errors can cause them
-    if (ratio < -1) return 180;
-    if (ratio > 1)  return 0;
-
-    float radians = arccos(ratio);
-    
-    return toDegrees(radians);
 }
 
 void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
@@ -566,6 +903,15 @@ void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default va
     }
 
     return;
+
+}
+
+void Vec3::rotate(float yaw, float pitch, float roll, Vec3& around) {
+
+    this->rotate(yaw, pitch, roll, &(around));
+
+    return;
+
 }
 
 void Vec3::project() {

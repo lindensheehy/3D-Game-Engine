@@ -6,11 +6,10 @@
 */
 
 
-// Forward declare class UI in the global namespace
-class UI;
-
-
 namespace Ui {
+
+    // Forward declare class UI in the relative global namespace
+    class UI;
 
     // Forward declare WindowHandle globally
     // This module is pretty entangled, so this helps with circular dependancy issues

@@ -3,8 +3,8 @@
 #include "util/Utility.h"
 
 #include "geometry/Vec.h"
-#include "gui/Drawer.h"
-#include "gui/Gui.h"
+#include "graphics/drawing/Drawer.h"
+#include "graphics/gui/Gui.h"
 #include "util/LinkedList.h"
 
 #include "ui/Core.h"
@@ -16,6 +16,8 @@
 #include "xml/XML.h"
 
 
+
+namespace Ui {
 
 class UI {
 
@@ -46,11 +48,11 @@ class UI {
         /*   Instance Functions   */
 
         // Draws all the windows
-        void draw(Gui::Drawer* drawer);
+        void draw(Graphics::Drawing::Drawer* drawer);
 
         // Updates the UI based on the input events. Returns true if the input was handled by the UI. 
         // If a variable is passed to cursorStateOut, it will be set to the state the cursor should be in
-        bool doInput(Gui::State* state, Gui::CursorState* cursorStateOut = nullptr);
+        bool doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursorStateOut = nullptr);
 
         // Creates a new window and returns the window identifier
         Ui::WindowHandle* createWindow(const char* fileName);
@@ -73,7 +75,7 @@ class UI {
 
         // Contains an XML object, owned by this class
         // Used for parsing .xml files into UI elements/windows
-        XML* xml;
+        Xml::XML* xml;
 
         LinkedList<Ui::Window*>* windows;
 
@@ -81,7 +83,7 @@ class UI {
         Ui::WindowElement* lastClicked;
 
         // Stores the location the next window should go, changes on every window made to reduce window overlap
-        Vec2* nextWindowPos;
+        Geometry::Vec2* nextWindowPos;
 
         // This is the next free id that will be assigned to a window on creation
         // This is also incremented on each window creation
@@ -90,7 +92,7 @@ class UI {
 
         /*   Class Variables   */
 
-        static const Vec2* TransformWindowSize;
+        static const Geometry::Vec2* TransformWindowSize;
 
         // Reference to a shared Action queue
         static LinkedList<Ui::Action*>* actionQueue;
@@ -114,3 +116,5 @@ class UI {
         static Ui::Action* getNextAction();
         
 };
+
+}

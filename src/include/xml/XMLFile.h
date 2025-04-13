@@ -8,6 +8,7 @@
 #include "xml/ParameterInfo.h"
 
 
+namespace Xml {
 
 class XMLFile {
 
@@ -95,3 +96,5 @@ class XMLFile {
         int mainEnd;
 
 };
+
+}

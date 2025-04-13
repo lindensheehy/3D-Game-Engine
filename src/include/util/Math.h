@@ -3,6 +3,11 @@
 // For logging error cases
 #include "util/Log.h"
 
+/*
+    Note: Im very aware that there are several libraries which provide most, if not all, of this content, but I wanted to write it myself
+*/
+
+
 const float pi = 3.14159265358979323846;
 const float inf = 1e100;
 const float degToRadFactor = pi / 180;
@@ -66,7 +71,7 @@ float distance2(float x1, float y1, float x2 = 0, float y2 = 0);
 float distance3(float x1, float y1, float z1, float x2 = 0, float y2 = 0, float z2 = 0);
 
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
-float range(float num, float from, float to);
+float normalize(float num, float from, float to);
 
 // Same as above, but allows values outside the range, in which case it would return values outside 0-1
 float inRange(float num, float from, float to);
@@ -76,6 +81,10 @@ float inRange(float num, float from, float to);
 // For example if (x2, y2) is directly right of (x1, y1) this returns 90. 
 // The second position is set to (0, 0) by default.
 float getAngle(float x1, float y1, float x2 = 0, float y2 = 0);
+
+// Normalizes the angle to a 0-360 range. Adds and subtracts by 360 to achieve this
+// Angle is an out parameter, this function works directly on the given value
+void rolloverAngle(float* angle);
 
 
 /*   ----------------------------   */

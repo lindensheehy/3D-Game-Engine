@@ -11,87 +11,85 @@
     then they will later be handled by the UI object when doInput() is called
 */
 
-// Namespace is used so these dont clutter the global namespace
-// These do not need to be used outside this module, generally speaking anyway
 namespace Ui {
 
-    class Action {
+class Action {
 
-        public:
+    public:
 
-            /*   Instance Variables   */
+        /*   Instance Variables   */
 
-            Ui::ActionType type;
-            
+        Ui::ActionType type;
+        
 
-            // Constructor
-            Action();
+        // Constructor
+        Action();
 
-            // Destructor
-            virtual ~Action();
+        // Destructor
+        virtual ~Action();
 
-    };
+};
 
-    class ActionCloseWindow : public Action {
+class ActionCloseWindow : public Action {
 
-        public:
+    public:
 
-            /*   Instance Variables   */
+        /*   Instance Variables   */
 
-            WindowID targetWindowId;
-
-
-            // Constructor
-            ActionCloseWindow(WindowID targetWindowId);
-
-    };
-
-    class ActionOpenWindow : public Action {
-
-        /*
-            This class takes an optional WindowHandle pointer
-            This handle will be populated with the Window information upon creation
-        */
-
-        public:
-
-            /*   Instance Variables   */
-
-            const char* fileName;
-            WindowHandle** windowHandle;
-            void (*bindFunc)(WindowHandle*);
+        WindowID targetWindowId;
 
 
-            // Constructor
-            ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*));
+        // Constructor
+        ActionCloseWindow(WindowID targetWindowId);
 
-    };
+};
 
-    class ActionCallFunc : public Action {
+class ActionOpenWindow : public Action {
 
-        public:
+    /*
+        This class takes an optional WindowHandle pointer
+        This handle will be populated with the Window information upon creation
+    */
 
-            // Constructor
-            ActionCallFunc(void (*func)(Context*), Context** context);
+    public:
+
+        /*   Instance Variables   */
+
+        const char* fileName;
+        WindowHandle** windowHandle;
+        void (*bindFunc)(WindowHandle*);
 
 
-            /*   Instance Functions   */
+        // Constructor
+        ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*));
 
-            // Calls the stored function
-            void callFunc();
+};
 
-        private:
+class ActionCallFunc : public Action {
 
-            /*   Instance Variables   */
+    public:
 
-            // Function pointer to call
-            void (*func)(Context*);
+        // Constructor
+        ActionCallFunc(void (*func)(Context*), Context** context);
 
-            // Context to call the func with
-            // This should point to the Context object from the WindowHandle for the window the button belongs to
-            // Its a double pointer so that it will be updated when WindowHandle::setContext() is called
-            Context** context;
 
-    };
+        /*   Instance Functions   */
+
+        // Calls the stored function
+        void callFunc();
+
+    private:
+
+        /*   Instance Variables   */
+
+        // Function pointer to call
+        void (*func)(Context*);
+
+        // Context to call the func with
+        // This should point to the Context object from the WindowHandle for the window the button belongs to
+        // Its a double pointer so that it will be updated when WindowHandle::setContext() is called
+        Context** context;
+
+};
 
 }

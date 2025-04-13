@@ -1,24 +1,26 @@
 #include "ui/Core.h"
 
+using namespace Ui;
+
 
 const char* Ui::actionTypeToString(ActionType type) {
 
     switch (type) {
 
-        case Ui::ActionType::NONE:
-            return Ui::ActionTypeString::NONE;
+        case ActionType::NONE:
+            return ActionTypeString::NONE;
 
-        case Ui::ActionType::CLOSE_WINDOW:
-            return Ui::ActionTypeString::CLOSE_WINDOW;
+        case ActionType::CLOSE_WINDOW:
+            return ActionTypeString::CLOSE_WINDOW;
 
-        case Ui::ActionType::OPEN_WINDOW:
-            return Ui::ActionTypeString::OPEN_WINDOW;
+        case ActionType::OPEN_WINDOW:
+            return ActionTypeString::OPEN_WINDOW;
 
-        case Ui::ActionType::CALL_FUNC:
-            return Ui::ActionTypeString::CALL_FUNC;
+        case ActionType::CALL_FUNC:
+            return ActionTypeString::CALL_FUNC;
 
         default:
-            return Ui::UNKNOWN_TYPE;
+            return UNKNOWN_TYPE;
 
     }
 
@@ -28,23 +30,23 @@ const char* Ui::elementTypeToString(ElementType type) {
 
     switch (type) {
 
-        case Ui::ElementType::INVISIBLE:
-            return Ui::ElementTypeString::INVISIBLE;
+        case ElementType::INVISIBLE:
+            return ElementTypeString::INVISIBLE;
 
-        case Ui::ElementType::VISUAL:
-            return Ui::ElementTypeString::VISUAL;
+        case ElementType::VISUAL:
+            return ElementTypeString::VISUAL;
 
-        case Ui::ElementType::BUTTON:
-            return Ui::ElementTypeString::BUTTON;
+        case ElementType::BUTTON:
+            return ElementTypeString::BUTTON;
 
-        case Ui::ElementType::DRAGABLE:
-            return Ui::ElementTypeString::DRAGABLE;
+        case ElementType::DRAGABLE:
+            return ElementTypeString::DRAGABLE;
 
-        case Ui::ElementType::TEXTINPUT:
-            return Ui::ElementTypeString::TEXTINPUT;
+        case ElementType::TEXTINPUT:
+            return ElementTypeString::TEXTINPUT;
 
         default:
-            return Ui::UNKNOWN_TYPE;
+            return UNKNOWN_TYPE;
 
     }
 
@@ -54,20 +56,20 @@ const char* Ui::contextTypeToString(ContextType type) {
 
     switch (type) {
 
-        case Ui::ContextType::NONE:
-            return Ui::ContextTypeString::NONE;
+        case ContextType::NONE:
+            return ContextTypeString::NONE;
 
-        case Ui::ContextType::NAVBAR:
-            return Ui::ContextTypeString::NAVBAR;
+        case ContextType::NAVBAR:
+            return ContextTypeString::NAVBAR;
 
-        case Ui::ContextType::TRANSFORM:
-            return Ui::ContextTypeString::TRANSFORM;
+        case ContextType::TRANSFORM:
+            return ContextTypeString::TRANSFORM;
 
-        case Ui::ContextType::OBJECTS:
-            return Ui::ContextTypeString::OBJECTS;
+        case ContextType::OBJECTS:
+            return ContextTypeString::OBJECTS;
 
         default:
-            return Ui::UNKNOWN_TYPE;
+            return UNKNOWN_TYPE;
 
     }
 

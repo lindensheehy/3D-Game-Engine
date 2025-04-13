@@ -1,5 +1,8 @@
 #include "physics/Bounding.h"
 
+using namespace Physics;
+
+
 /* ----------------- */
 /* --- Collision --- */
 /* ----------------- */
@@ -19,11 +22,10 @@ bool Collision::sphereSphere(BoundingShape* sphere1, BoundingShape* sphere2) {
     BoundingSphere* castedSphere1 = (BoundingSphere*) sphere1;
     BoundingSphere* castedSphere2 = (BoundingSphere*) sphere2;
 
-    Vec3* distanceVec = castedSphere1->pos->copy()->sub(castedSphere2->pos);
-    float distance = distanceVec->magnitude();
+    Geometry::Vec3 distanceVec;
+    distanceVec.set(castedSphere1->pos).sub(castedSphere2->pos);
+    float distance = distanceVec.magnitude();
     float totalRadius = castedSphere1->radius + castedSphere2->radius;
-
-    delete distanceVec;
 
     return distance < totalRadius;
 
@@ -69,12 +71,12 @@ bool BoundingShape::collidesWith(BoundingShape* other) {
 /* --- BoundingRect --- */
 /* -------------------- */
 
-BoundingRect::BoundingRect(Vec3* start, Vec3* end) {
+BoundingRect::BoundingRect(Geometry::Vec3* start, Geometry::Vec3* end) {
 
     this->type = BoundType::RECTPRISM;
 
-    this->start = start->copy();
-    this->end = end->copy();
+    this->start.set(start);
+    this->end.set(end);
 
     return;
 
@@ -84,17 +86,8 @@ BoundingRect::BoundingRect(float x1, float y1, float z1, float x2, float y2, flo
 
     this->type = BoundType::RECTPRISM;
 
-    this->start = new Vec3(x1, y1, z1);
-    this->end = new Vec3(x2, y2, z2);
-
-    return;
-
-}
-
-BoundingRect::~BoundingRect() {
-
-    if (this->start != nullptr) delete this->start;
-    if (this->end != nullptr) delete this->end;
+    this->start.set(x1, y1, z1);
+    this->end.set(x2, y2, z2);
 
     return;
 
@@ -134,11 +127,11 @@ bool BoundingRect::collidesWith(BoundingShape* other) {
 /* --- BoundingSphere --- */
 /* ---------------------- */
 
-BoundingSphere::BoundingSphere(Vec3* pos, float radius) {
+BoundingSphere::BoundingSphere(Geometry::Vec3* pos, float radius) {
     
     this->type = BoundType::SPHERE;
 
-    this->pos = pos->copy();
+    this->pos.set(pos);
     this->radius = radius;
 
     return;
@@ -149,16 +142,8 @@ BoundingSphere::BoundingSphere(float x, float y, float z, float radius) {
     
     this->type = BoundType::SPHERE;
 
-    this->pos = new Vec3(x, y, z);
+    this->pos.set(x, y, z);
     this->radius = radius;
-
-    return;
-
-}
-
-BoundingSphere::~BoundingSphere() {
-
-    if (this->pos != nullptr) delete this->pos;
 
     return;
 

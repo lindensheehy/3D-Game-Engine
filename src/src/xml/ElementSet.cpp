@@ -1,6 +1,8 @@
 #include "xml/ElementSet.h"
 
-// Constructor
+using namespace Xml;
+
+
 ElementSet::ElementSet() {
 
     this->set = new LinkedList<Element*>();
@@ -9,7 +11,6 @@ ElementSet::ElementSet() {
 
 }
 
-// Destructor
 ElementSet::~ElementSet() {
 
     // Delete strings and ParameterInfo objects from the set
@@ -31,7 +32,6 @@ ElementSet::~ElementSet() {
 
 }
 
-// Instance Functions
 ElementSet::Element* ElementSet::matchElement(const char* elementName) {
 
     // Start by finding the length of the requested string

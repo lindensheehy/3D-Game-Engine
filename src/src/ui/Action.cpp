@@ -1,15 +1,17 @@
 #include "ui/Action.h"
 
+using namespace Ui;
+
 
 /* ---------------------------- */
 /* ---------- Action ---------- */
 /* ---------------------------- */
 
-Ui::Action::Action() {
-    this->type = Ui::ActionType::NONE;
+Action::Action() {
+    this->type = ActionType::NONE;
 }
 
-Ui::Action::~Action() {}
+Action::~Action() {}
 
 
 
@@ -17,9 +19,9 @@ Ui::Action::~Action() {}
 /* ---------- ActionCloseWindow ---------- */
 /* --------------------------------------- */
 
-Ui::ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
+ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
 
-    this->type = Ui::ActionType::CLOSE_WINDOW;
+    this->type = ActionType::CLOSE_WINDOW;
 
     this->targetWindowId = targetWindowId;
     
@@ -31,9 +33,9 @@ Ui::ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
 /* ---------- ActionOpenWindow ---------- */
 /* -------------------------------------- */
 
-Ui::ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*)) {
+ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** windowHandle, void (*bindFunc)(WindowHandle*)) {
 
-    this->type = Ui::ActionType::OPEN_WINDOW;
+    this->type = ActionType::OPEN_WINDOW;
 
     this->fileName = fileName;
     this->windowHandle = windowHandle;
@@ -47,16 +49,16 @@ Ui::ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** wind
 /* ---------- ActionRunFunc ---------- */
 /* ----------------------------------- */
 
-Ui::ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context** context) {
+ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context** context) {
 
-    this->type = Ui::ActionType::CALL_FUNC;
+    this->type = ActionType::CALL_FUNC;
 
     this->func = func;
     this->context = context;
 
 }
 
-void Ui::ActionCallFunc::callFunc() {
+void ActionCallFunc::callFunc() {
 
     if (this->context == nullptr) return;
 

@@ -4,6 +4,9 @@
 
 #include "geometry/Vec.h"
 
+
+namespace Physics {
+
 // Early declaration for Collision namespace
 class BoundingShape;
 
@@ -53,16 +56,13 @@ class BoundingRect : public BoundingShape {
 
         /*   Instance Variables   */
 
-        Vec3* start;
-        Vec3* end;
+        Geometry::Vec3 start;
+        Geometry::Vec3 end;
 
 
-        // Constructor
-        BoundingRect(Vec3* start, Vec3* end);
+        // Constructors
+        BoundingRect(Geometry::Vec3* start, Geometry::Vec3* end);
         BoundingRect(float x1, float y1, float z1, float x2, float y2, float z2);
-
-        // Destructor
-        ~BoundingRect() override;
 
         /*   Instance Functions   */
 
@@ -76,19 +76,18 @@ class BoundingSphere : public BoundingShape {
 
         /*   Instance Variables   */
 
-        Vec3* pos;
+        Geometry::Vec3 pos;
         float radius;
 
 
         // Constructor
-        BoundingSphere(Vec3* pos, float radius);
+        BoundingSphere(Geometry::Vec3* pos, float radius);
         BoundingSphere(float x, float y, float z, float radius);
-
-        // Destructor
-        ~BoundingSphere() override;
 
         /*   Instance Functions   */
 
         bool collidesWith(BoundingShape* other) override;
 
 };
+
+}

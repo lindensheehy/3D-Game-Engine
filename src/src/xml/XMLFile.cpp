@@ -1,7 +1,8 @@
 #include "xml/XMLFile.h"
 
+using namespace Xml;
 
-// Constructor
+
 XMLFile::XMLFile(const char* fileName) {
 
     // Variable initialization
@@ -47,7 +48,6 @@ XMLFile::XMLFile(const char* fileName) {
 
 }
 
-// Destructor
 XMLFile::~XMLFile() {
 
     if (this->file != nullptr) delete[] this->file;
@@ -60,7 +60,6 @@ XMLFile::~XMLFile() {
 
 }
 
-// Instance Functions
 XMLFile* XMLFile::copy() {
 
     // Empty constructor becuase this assumes the data is already pre-processed

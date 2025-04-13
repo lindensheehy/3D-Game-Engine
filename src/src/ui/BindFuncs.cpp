@@ -1,6 +1,9 @@
 #include "ui/BindFuncs.h"
 
-void Ui::BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
+using namespace Ui;
+
+
+void BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a nullptr!", true);
@@ -22,12 +25,12 @@ void Ui::BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
         return;
     }
 
-    if (context->type != Ui::ContextType::NAVBAR) {
+    if (context->type != ContextType::NAVBAR) {
         logWrite("BindFuncs::NavBar::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(Ui::contextTypeToString(Ui::ContextType::NAVBAR));
+        logWrite(contextTypeToString(ContextType::NAVBAR));
         logWrite(" but found type ");
-        logWrite(Ui::contextTypeToString(context->type), true);
+        logWrite(contextTypeToString(context->type), true);
         return;
     }
 
@@ -45,7 +48,7 @@ void Ui::BindFuncs::NavBar::bind(WindowHandle* windowHandle) {
 
 }
 
-void Ui::BindFuncs::Transform::bind(WindowHandle* windowHandle) {
+void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
 
     /*   First do the binds that do not depend on the Context object   */
@@ -64,7 +67,7 @@ void Ui::BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
     // Top bar elements
     window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
-    window->bindDragable("WindowDragBar", window->pos, window->endPos);
+    window->bindDragable("WindowDragBar", &(window->pos), &(window->endPos));
 
 
     /*   Then try to grab the Context object, and bind the rest if it exists   */
@@ -74,17 +77,17 @@ void Ui::BindFuncs::Transform::bind(WindowHandle* windowHandle) {
     // Null Context is okay, just the rest of the function cant run
     if (context == nullptr) return;
 
-    if (context->type != Ui::ContextType::TRANSFORM) {
+    if (context->type != ContextType::TRANSFORM) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(Ui::contextTypeToString(Ui::ContextType::TRANSFORM));
+        logWrite(contextTypeToString(ContextType::TRANSFORM));
         logWrite(" but found type ");
-        logWrite(Ui::contextTypeToString(context->type), true);
+        logWrite(contextTypeToString(context->type), true);
         return;
     }
 
     ContextTransform* castedContext = (ContextTransform*) context;
-    Object* object = castedContext->object;
+    Physics::Object* object = castedContext->object;
 
     if (object == nullptr) {
         logWrite("BindFuncs::Transform::bind(WindowHandle*) was called on a handle containing invalid Context!", true);
@@ -93,26 +96,26 @@ void Ui::BindFuncs::Transform::bind(WindowHandle* windowHandle) {
     }
 
     // Position
-    window->bindTextInput("positionx", &(object->pos->x));
-    window->bindTextInput("positiony", &(object->pos->y));
-    window->bindTextInput("positionz", &(object->pos->z));
+    window->bindTextInput("positionx", &(object->pos.x));
+    window->bindTextInput("positiony", &(object->pos.y));
+    window->bindTextInput("positionz", &(object->pos.z));
 
     // Rotation
-    window->bindTextInput("rotationx", &(object->rotation->x));
-    window->bindTextInput("rotationy", &(object->rotation->y));
-    window->bindTextInput("rotationz", &(object->rotation->z));
+    window->bindTextInput("rotationx", &(object->rotation.x));
+    window->bindTextInput("rotationy", &(object->rotation.y));
+    window->bindTextInput("rotationz", &(object->rotation.z));
 
     // Scale
-    window->bindTextInput("scalex", &(object->scale->x));
-    window->bindTextInput("scaley", &(object->scale->y));
-    window->bindTextInput("scalez", &(object->scale->z));
+    window->bindTextInput("scalex", &(object->scale.x));
+    window->bindTextInput("scaley", &(object->scale.y));
+    window->bindTextInput("scalez", &(object->scale.z));
 
 
     return;
 
 }
 
-void Ui::BindFuncs::Objects::bind(WindowHandle* windowHandle) {
+void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
 
     /*   First do the binds that to not depend on the Context object   */
@@ -131,7 +134,7 @@ void Ui::BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
     // Top bar elements
     window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
-    window->bindDragable("WindowDragBar", window->pos, window->endPos);
+    window->bindDragable("WindowDragBar", &(window->pos), &(window->endPos));
 
 
     /*   The rest of the binds dont actually need the Context for this function   */
@@ -144,24 +147,24 @@ void Ui::BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
 }
 
-void Ui::BindFuncs::Objects::createCube(Context* contextObjects) {
+void BindFuncs::Objects::createCube(Context* contextObjects) {
 
     /*   Verify the contents of the Context object   */
 
     // Null Context is okay, just the function cant run this time
     if (contextObjects == nullptr) return;
 
-    if (contextObjects->type != Ui::ContextType::OBJECTS) {
+    if (contextObjects->type != ContextType::OBJECTS) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(Ui::contextTypeToString(Ui::ContextType::OBJECTS));
+        logWrite(contextTypeToString(ContextType::OBJECTS));
         logWrite(" but found type ");
-        logWrite(Ui::contextTypeToString(contextObjects->type), true);
+        logWrite(contextTypeToString(contextObjects->type), true);
         return;
     }
 
     ContextObjects* castedContext = (ContextObjects*) contextObjects;
-    ObjectSet* objectSet = castedContext->objectSet;
+    Physics::ObjectSet* objectSet = castedContext->objectSet;
 
     if (objectSet == nullptr) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing invalid Context!", true);
@@ -173,32 +176,32 @@ void Ui::BindFuncs::Objects::createCube(Context* contextObjects) {
     /*   Execution logic   */
 
     // Create the new Object
-    Object* newObject = new Object();
-    newObject->mesh = Mesh::cubeMesh->copy();
+    Physics::Object* newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
     objectSet->pushBack(newObject);
 
     return;
 
 }
 
-void Ui::BindFuncs::Objects::createSphere(Context* contextObjects) {
+void BindFuncs::Objects::createSphere(Context* contextObjects) {
 
     /*   Verify the contents of the Context object   */
 
     // Null Context is okay, just the function cant run this time
     if (contextObjects == nullptr) return;
 
-    if (contextObjects->type != Ui::ContextType::OBJECTS) {
+    if (contextObjects->type != ContextType::OBJECTS) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing the wrong Context!", true);
         logWrite(" -> Expected type ");
-        logWrite(Ui::contextTypeToString(Ui::ContextType::OBJECTS));
+        logWrite(contextTypeToString(ContextType::OBJECTS));
         logWrite(" but found type ");
-        logWrite(Ui::contextTypeToString(contextObjects->type), true);
+        logWrite(contextTypeToString(contextObjects->type), true);
         return;
     }
 
     ContextObjects* castedContext = (ContextObjects*) contextObjects;
-    ObjectSet* objectSet = castedContext->objectSet;
+    Physics::ObjectSet* objectSet = castedContext->objectSet;
 
     if (objectSet == nullptr) {
         logWrite("BindFuncs::Objects::createCube(Context*) was called on a handle containing invalid Context!", true);
@@ -210,8 +213,8 @@ void Ui::BindFuncs::Objects::createSphere(Context* contextObjects) {
     /*   Execution logic   */
 
     // Create the new Object
-    Object* newObject = new Object();
-    newObject->mesh = Mesh::sphereMesh->copy();
+    Physics::Object* newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::sphereMesh->copy();
     objectSet->pushBack(newObject);
 
     return;

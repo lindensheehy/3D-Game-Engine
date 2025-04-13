@@ -1,5 +1,6 @@
 #include "util/Log.h"
 
+
 HANDLE hOutputFile = nullptr;
 
 char* stringBuffer = nullptr;
@@ -107,7 +108,7 @@ void logWrite(long long message, bool newLine /* default value = false */) {
 
 void logWrite(float message, bool newLine /* default value = false */) {
 
-    floatToString(message, stringBuffer, 64);
+    floatToString(message, stringBuffer, 64, 4);
     logWrite(stringBuffer, newLine);
 
     return;
@@ -116,7 +117,7 @@ void logWrite(float message, bool newLine /* default value = false */) {
 
 void logWrite(double message, bool newLine /* default value = false */) {
 
-    doubleToString(message, stringBuffer, 64);
+    doubleToString(message, stringBuffer, 64, 4);
     logWrite(stringBuffer, newLine);
 
     return;

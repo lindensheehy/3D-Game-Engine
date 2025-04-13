@@ -67,6 +67,7 @@ class BindManager {
     
 };
 
+
 int* p;
 
 void func() {
@@ -78,5 +79,5 @@ void func() {
 int main() {
     p = nullptr;
     func();
-    return (*p)
+    return (*p);
 }
