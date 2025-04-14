@@ -225,11 +225,10 @@ void Renderer::drawTri(
     int x2 = round( max(a.x, max(b.x, c.x)) ) + padding;
     int y2 = round( max(a.y, max(b.y, c.y)) ) + padding;
 
-    // Break early if the triangle is unreasonably large (this means it lies outside the cameras FOV)
+    // Break early if the triangle is unreasonably large (this likely means it lies outside the cameras FOV)
     // This will be replaced later with proper frustum culling, but it does the job for the time being
-    if ( (x2 - x1 > 4096) || (y2 - y1 > 4096) ) return; 
-
-    // Lambda helper functions
+    constexpr int maxTriSize = 2048;
+    if ( (x2 - x1 > maxTriSize) || (y2 - y1 > maxTriSize) ) return; 
 
     // Returns true if the pixel (x, y) lies within the triangle (a, b, c)
     auto insideTri = [a, b, c](
@@ -253,61 +252,89 @@ void Renderer::drawTri(
     };
 
 
-    // Some general stuff for finding barycentric coordinates in the loop
-    float inverseAreaTotal = 1.0f / abs(
-        (a.x * (b.y - c.y)) +
-        (b.x * (c.y - a.y)) +
-        (c.x * (a.y - b.y))
+    /*
+        Now we set up the barycentric coordinate system
+        This coordinate system lets me iterate over the 3d triangle, in steps relative to the 2d triangle
+        To do this i need to set up three vectors:
+        - stepper   => The 3d position of the top left of the bounding box
+        - stepRight => The distance in 3d space equal to stepping 1 pixel right (i++)
+        - stepDown  => The distance in 3d space equal to stepping 1 pixel down (j++)
+        - reset     => The coordinate stepper should go to each time it finished the inner loop
+
+    */
+
+    // Set up
+    float inverseAreaTotal = 1.0f / (
+        (a.x * (b.y - c.y)) + (b.x * (c.y - a.y)) + (c.x * (a.y - b.y))
     );
 
-    Geometry::Vec3 temp, depthVec;
-    float areaA, areaB, areaC;
-    float lA, lB, lC;
+    auto getBarycentric = [a, b, c, a3, b3, c3, inverseAreaTotal](
+        int x, int y, Geometry::Vec3* out
+    ) -> void {
+
+        float areaA, areaB, areaC;
+        float lA, lB, lC;
+        Geometry::Vec3 temp;
+
+        areaA = (x * (b.y - c.y)) + (b.x * (c.y - y)) + (c.x * (y - b.y));
+        areaB = (a.x * (y - c.y)) + (x * (c.y - a.y)) + (c.x * (a.y - y));
+        areaC = (a.x * (b.y - y)) + (b.x * (y - a.y)) + (x * (a.y - b.y));
+
+        lA = areaA * inverseAreaTotal;
+        lB = areaB * inverseAreaTotal;
+        lC = areaC * inverseAreaTotal;
+
+        temp.set(a3).scale(lA);
+        out->set(temp);
+
+        temp.set(b3).scale(lB);
+        out->add(temp);
+
+        temp.set(c3).scale(lC);
+        out->add(temp);
+
+    };
+    
+    // Get the vectors
+    Geometry::Vec3 stepper, stepRight, stepDown, reset;
+
+    getBarycentric(x1, y1, &(stepper));
+
+    getBarycentric(x1 + 1, y1, &(stepRight));
+    stepRight.sub(stepper);
+
+    getBarycentric(x1, y1 + 1, &(stepDown));
+    stepDown.sub(stepper);
+
+    reset.set(stepper).add(stepRight);
+
+    // Start the stepper one behind so I can do the steps at the start of the loop. This helps continue work well
+    stepper.sub(stepDown);
 
     // Loop over the previously defined bounds
+    float depth;
     for (int i = x1; i < x2; i++) {
+
         for (int j = y1; j < y2; j++) {
+
+            // Step down
+            stepper.add(stepDown);
 
             // Skip iteration if the pixel is outside the triangle
             if ( !insideTri(i, j) ) continue;
 
-            areaA = abs(
-                (i * (b.y - c.y)) +
-                (b.x * (c.y - j)) +
-                (c.x * (j - b.y))
-            );
-        
-            areaB = abs(
-                (a.x * (j - c.y)) +
-                (i * (c.y - a.y)) +
-                (c.x * (a.y - j))
-            );
-        
-            areaC = abs(
-                (a.x * (b.y - j)) +
-                (b.x * (j - a.y)) +
-                (i * (a.y - b.y))
-            );
-        
-            lA = areaA * inverseAreaTotal;
-            lB = areaB * inverseAreaTotal;
-            lC = areaC * inverseAreaTotal;
-            
-            temp.set(a3).scale(lA);
-            depthVec.set(temp);
-
-            temp.set(b3).scale(lB);
-            depthVec.add(temp);
-
-            temp.set(c3).scale(lC);
-            depthVec.add(temp);
-
-            // Magnitude, but without the sqrt call
-            float depth = (depthVec.x * depthVec.x) + (depthVec.y * depthVec.y) + (depthVec.z * depthVec.z);
+            // Squared depth. This approximates stepper.magnitude(), but we dont want to run the sqrt() call
+            // It will be skewed, but thats fine. Its about order, not value
+            depth = (stepper.x * stepper.x) + (stepper.y * stepper.y) + (stepper.z * stepper.z);
 
             this->pixelDrawer->drawPixel(color, i, j, depth, this->drawerOpacity);
 
         }
+
+        // Reset to left, and step the reset down
+        stepper.set(reset);
+        reset.add(stepRight);
+
     }
 
     return;

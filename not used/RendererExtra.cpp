@@ -412,3 +412,126 @@ void Renderer::drawTri(
     return;
 
 }
+
+
+
+
+
+
+/*
+    V2 draw tri
+*/
+
+
+void Renderer::drawTri(
+    uint32 color,
+    Geometry::Vec2& a, Geometry::Vec3& a3,
+    Geometry::Vec2& b, Geometry::Vec3& b3,
+    Geometry::Vec2& c, Geometry::Vec3& c3
+) {
+
+    /*
+        This function uses a bounding box approach to fill the triangle
+        It defines starting points, with some padding (see 'constexpr int padding')
+        Then it uses the edge functions for each edge of the triangle to determine if the pixel lies within
+        It also allows a little bit of leniency (see 'constexpr float leniency'), which helps fill gaps between triangles
+    */
+
+    // First find the bounding box of the triangle
+    constexpr int padding = 1;
+    int x1 = round( min(a.x, min(b.x, c.x)) ) - padding;
+    int y1 = round( min(a.y, min(b.y, c.y)) ) - padding;
+    int x2 = round( max(a.x, max(b.x, c.x)) ) + padding;
+    int y2 = round( max(a.y, max(b.y, c.y)) ) + padding;
+
+    // Break early if the triangle is unreasonably large (this means it lies outside the cameras FOV)
+    // This will be replaced later with proper frustum culling, but it does the job for the time being
+    constexpr int maxTriSize = 1024;
+    if ( (x2 - x1 > maxTriSize) || (y2 - y1 > maxTriSize) ) return; 
+
+    // Returns true if the pixel (x, y) lies within the triangle (a, b, c)
+    auto insideTri = [a, b, c](
+        int x, int y
+    ) -> bool {
+
+        // Get the edge function value for each line (a, b), (b, c), (c, a)
+        float ab = ((b.x - a.x) * (y - a.y)) - ((b.y - a.y) * (x - a.x));
+        float bc = ((c.x - b.x) * (y - b.y)) - ((c.y - b.y) * (x - b.x));
+        float ca = ((a.x - c.x) * (y - c.y)) - ((a.y - c.y) * (x - c.x));
+
+        // Pixels this far away the from the triangle will be counted
+        constexpr float leniency = 0.8f;
+
+        // Return true if they all share a sign. All positive or all negative
+        return (
+            (ab >= -leniency && bc >= -leniency && ca >= -leniency) ||
+            (ab <= leniency && bc <= leniency && ca <= leniency) 
+        );
+
+    };
+
+
+    // Some general stuff for finding barycentric coordinates in the loop
+    float inverseAreaTotal = 1.0f / abs(
+        (a.x * (b.y - c.y)) +
+        (b.x * (c.y - a.y)) +
+        (c.x * (a.y - b.y))
+    );
+
+    Geometry::Vec3 temp, depthVec;
+    float areaA, areaB, areaC;
+    float lA, lB, lC;
+
+    float BsubC = b.y - c.y;
+    float CsubA = c.y - a.y;
+    float AsubB = a.y - b.y;
+
+    // Loop over the previously defined bounds
+    for (int i = x1; i < x2; i++) {
+        for (int j = y1; j < y2; j++) {
+
+            // Skip iteration if the pixel is outside the triangle
+            if ( !insideTri(i, j) ) continue;
+
+            areaA = abs(
+                (i * (BsubC)) +
+                (b.x * (c.y - j)) +
+                (c.x * (j - b.y))
+            );
+        
+            areaB = abs(
+                (a.x * (j - c.y)) +
+                (i * (CsubA)) +
+                (c.x * (a.y - j))
+            );
+        
+            areaC = abs(
+                (a.x * (b.y - j)) +
+                (b.x * (j - a.y)) +
+                (i * (AsubB))
+            );
+        
+            lA = areaA * inverseAreaTotal;
+            lB = areaB * inverseAreaTotal;
+            lC = areaC * inverseAreaTotal;
+            
+            temp.set(a3).scale(lA);
+            depthVec.set(temp);
+
+            temp.set(b3).scale(lB);
+            depthVec.add(temp);
+
+            temp.set(c3).scale(lC);
+            depthVec.add(temp);
+
+            // Magnitude, but without the sqrt call
+            float depth = (depthVec.x * depthVec.x) + (depthVec.y * depthVec.y) + (depthVec.z * depthVec.z);
+
+            this->pixelDrawer->drawPixel(color, i, j, depth, this->drawerOpacity);
+
+        }
+    }
+
+    return;
+
+}
