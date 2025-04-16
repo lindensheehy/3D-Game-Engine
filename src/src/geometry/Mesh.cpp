@@ -20,7 +20,7 @@ Mesh::IndexMap::IndexMap() {
 }
 
 Mesh::IndexMap::~IndexMap() {
-    delete this->map;
+    delete[] this->map;
 }
 
 void Mesh::IndexMap::init(int size) {
@@ -90,14 +90,12 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
 
     int verticesSize = (vertexCount * sizeof(Vec3));
     int normalsSize = (normalCount * sizeof(Vec3));
-    int trisSize = (triCount * sizeof(Tri3)); 
 
     int screenVerticesSize = (vertexCount * sizeof(Vec2));
 
     this->memSize = (
         (2 * verticesSize) +    // These two need second buffers for projection data
         (2 * normalsSize) +     // Vertices for 'cameraVertices' and normals for 'transformedNormals'
-        trisSize + 
         screenVerticesSize
     );
 
@@ -111,9 +109,6 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
     
     // Order is intentional here. Tris first because they are used less often than the rest
     // Then the 3d vertex data, then screen space data, then normal data
-
-    this->tris = reinterpret_cast<Tri3*>(p);
-    p += trisSize;
 
     this->vertices = reinterpret_cast<Vec3*>(p);
     p += verticesSize;
@@ -137,7 +132,7 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
         logWrite("Problem occurred during Mesh instantiation!", true);
         logWrite(" -> Allocated buffer of size ");
         logWrite(this->memSize);
-        logWrite(" but wrote ");
+        logWrite(" but assigned ");
         logWrite(pEnd - pStart);
         logWrite(" bytes", true);
     }
@@ -170,8 +165,6 @@ Mesh* Mesh::copy() const {
 
     // Copy index map
     copy->indexMap.setState( &(this->indexMap) );
-
-    copy->mapTris();
 
     return copy;
     
@@ -306,11 +299,6 @@ Mesh* Mesh::setColor(uint32 color) {
 
 void Mesh::updateNormals() {
 
-    /*   Variables used for this loop   */
-
-    // Current triangle
-    Tri3 tri;
-
     // These are the operands for the cross product
     Vec3 vec1to2, vec1to3;
 
@@ -323,25 +311,31 @@ void Mesh::updateNormals() {
     Vec3 triCenter;
     Vec3 normalOffset;
 
-    // Used to find the index in the normals list for the given triangles normal
-    // The underscore is a placeholder becuase i dont need the first 3 out parameters
-    int _, normalIndex;
+    // Out values for the IndexMap::getGroup() call
+    int v1Index, v2Index, v3Index, normalIndex;
+
+    // Vertex holders
+    Vec3 v1, v2, v3;
 
 
     for (int i = 0; i < this->triCount; i++) {
 
-        tri = this->tris[i];
+        this->indexMap.getGroup(i, &(v1Index), &(v2Index), &(v3Index), &(normalIndex));
+
+        v1.set(this->vertices[v1Index]);
+        v2.set(this->vertices[v2Index]);
+        v3.set(this->vertices[v3Index]);
 
         // Get one of the two possible normals
-        vec1to2.set(tri.v1).sub(tri.v2);
-        vec1to3.set(tri.v1).sub(tri.v3);
+        vec1to2.set(v1).sub(v2);
+        vec1to3.set(v1).sub(v3);
 
         vec1to2.crossProduct( &(vec1to3), &(newNormal) );
         newNormal.normalize();
 
         // Check if the found normal faces outwards
-        tri.getCenter( &(triCenter) );
-        normalOffset.set( &(newNormal) ).scale(0.05);
+        triCenter.set(v1).add(v2).add(v3).inverseScale(3);
+        normalOffset.set( &(newNormal) ).scale(0.01);
 
         triCenter.add( &(normalOffset) );
         float dist1 = triCenter.distanceTo(meshCenter);
@@ -351,40 +345,11 @@ void Mesh::updateNormals() {
         // Flip if its facing towards the center
         if (dist1 < dist2) newNormal.scale(-1);
 
-        this->indexMap.getGroup(i, &_, &_, &_, &normalIndex);
         this->normals[normalIndex].set( &(newNormal) );
 
     }
 
     return;
-
-}
-
-void Mesh::mapTris() {
-
-    if (this->triCount != this->indexMap.size) {
-        logWrite("Called Mesh->mapTris() with ");
-        logWrite(this->triCount);
-        logWrite(" tris, but ");
-        logWrite(this->indexMap.size);
-        logWrite(" entries in the index map", true);
-        return;
-    }
-
-    int vertex1Index, vertex2Index, vertex3Index, normalIndex;
-
-    for (int i = 0; i < this->indexMap.size; i++) {
-
-        // Get values from map
-        this->indexMap.getGroup(i, &vertex1Index, &vertex2Index, &vertex3Index, &normalIndex);
-
-        // Set pointers for 3d tris
-        this->tris[i].v1 = &(this->vertices[vertex1Index]);
-        this->tris[i].v2 = &(this->vertices[vertex2Index]);
-        this->tris[i].v3 = &(this->vertices[vertex3Index]);
-        this->tris[i].normal = &(this->normals[normalIndex]);
-
-    }
 
 }
 
@@ -422,9 +387,6 @@ void Mesh::initMeshes() {
     normalList[0].set(0, 0, -1);
 
     Mesh::tempMesh->indexMap.setGroup(0, 0, 1, 2, 0);
-
-    Mesh::tempMesh->mapTris();
-
 
     /* ------------------- */
     /* ---  Cube Mesh  --- */
@@ -472,9 +434,6 @@ void Mesh::initMeshes() {
     Mesh::cubeMesh->indexMap.setGroup(9,   0,   6,   4,   4); // facing -z
     Mesh::cubeMesh->indexMap.setGroup(10,  1,   7,   3,   5); // facing +z
     Mesh::cubeMesh->indexMap.setGroup(11,  1,   7,   5,   5); // facing +z
-
-    // Populate tri lists with pointers
-    Mesh::cubeMesh->mapTris();
 
     /* --------------------- */
     /* ---  Sphere Mesh  --- */
@@ -758,9 +717,6 @@ void Mesh::initMeshes() {
     Mesh::sphereMesh->indexMap.setGroup(  197,   100,    77,    78,    197  );     //
     Mesh::sphereMesh->indexMap.setGroup(  198,   100,    78,    79,    198  );     //
     Mesh::sphereMesh->indexMap.setGroup(  199,   100,    79,    60,    199  );     // -------------
-
-    // Populate tri lists with pointers
-    Mesh::sphereMesh->mapTris();
 
     // Load normals automatically
     Mesh::sphereMesh->updateNormals();

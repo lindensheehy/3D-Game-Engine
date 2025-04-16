@@ -103,7 +103,6 @@ class Mesh {
 
         Vec3* vertices;
         Vec3* normals;
-        Tri3* tris;
 
         // Maps vecs from verticies and normals to tris
         IndexMap indexMap;
@@ -143,12 +142,8 @@ class Mesh {
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);
 
+        // This sets all the normals to the assumed values. These will always face outwards from the center of the mesh
         void updateNormals();
-
-        // This uses the IndexMap to map the Tri3 vectors so that they point to Vec3 objects from the verticies and normals lists.
-        // Also does the same thing for the projected versions of both.
-        // Should be called when creating a custom mesh. This is done by default for the standard meshes.
-        void mapTris();
 
 
         /*   Class functions   */
@@ -160,7 +155,7 @@ class Mesh {
     private:
 
         /*
-            I also store the memory for the screen coordinates of each vertex
+            I also allocate the memory for rendering vertex data here
             This allows for better cache locality during rendering, plus it just keeps things organized in memory
             The Renderer class is friended for this reason, as no other piece of this app cares about this memory
         */

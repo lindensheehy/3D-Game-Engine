@@ -34,6 +34,3 @@ optimizations:
 
 
 Notes:
-
-the issue is somewhere in the projection pipeline. its probably an issue with the matrix
-what i know for sure is that drawTri works properly (though i havent confirmed the depth aspect of it yet)

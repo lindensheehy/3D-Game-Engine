@@ -656,8 +656,8 @@ void Drawer::drawSky(Rendering::Camera* camera, Rendering::Display* display) {
     }
 
     // Draw the rectangles
-    uint32 skyColorLight = 0xFF323296;  // o->FF, r->32, g->32, b->96
-    uint32 skyColorDark = 0xFF161648;   // o->FF, r->16, g->16, b->48
+    constexpr uint32 skyColorLight = 0x00323296;  // o->FF, r->32, g->32, b->96
+    constexpr uint32 skyColorDark = 0x00161648;   // o->FF, r->16, g->16, b->48
 
     this->drawRectFilled(
         skyColorLight, 

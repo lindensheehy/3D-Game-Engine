@@ -57,14 +57,13 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
 
     // First I build two matrices:
     // - transform      => general transformation matrix for the mesh vertices
-    // - objectRotation => used to transform normals. Also a subpart of transform
+    // - rotation       => used to transform normals. Also a subpart of transform
 
     Matrix4 transform;
     Matrix4 rotation;
     {   
         // For holding intermediate matrices
         Matrix4 temp;
-
 
         Matrix4 objectRotation;
         Matrix4::rotationZ( object->rotation.z, &(objectRotation) );
@@ -75,13 +74,11 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
         Matrix4::rotationY( object->rotation.y, &(temp) );
         objectRotation.mul(temp);
 
-
         Matrix4 cameraRotation;
         Matrix4::rotationX( camera->facingAngle.x, &(cameraRotation) );
 
         Matrix4::rotationY( camera->facingAngle.y, &(temp) );
         cameraRotation.mul(temp);
-
 
         // Build the transform matrix
         transform.set(cameraRotation);
@@ -178,17 +175,13 @@ void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
         triCenter.set(a3).add(b3).add(c3).inverseScale(3);
 
         // Backface culling
-        Geometry::Vec3 triCenterNormalized;
-        triCenterNormalized.set(triCenter).normalize();
-        float angle = triCenterNormalized.getAngle(mesh->transformedNormals[indexNormal]);
+        float angle = triCenter.getAngle(mesh->transformedNormals[indexNormal]);
         if (angle < 90.0f ) continue;
 
         // Find a shade based on the lighting vec
         lightAngle = mesh->transformedNormals[indexNormal].getAngle( &(camera->lightingVec) );
         lightFactor = lightAngle / 180;
-
-        shade = mesh->color;
-        shade = Color::setBrightness(shade, lightFactor);
+        shade = Color::setBrightness(mesh->color, lightFactor);
 
         // Store the screen space vertices before calling drawTri with these values
         a2.set( mesh->screenVertices[indexA] );
