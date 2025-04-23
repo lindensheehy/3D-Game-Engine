@@ -682,12 +682,8 @@ void WindowButton::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offse
 
 void WindowButton::onInput(Graphics::Gui::State* state) {
 
-    if (state->wasLeftJustPressed()) {
-
-        if (this->action != nullptr) {
-            WindowElement::queueAction(this->action);
-        }
-
+    if (this->action != nullptr) {
+        WindowElement::queueAction(this->action);
     }
     
     return;

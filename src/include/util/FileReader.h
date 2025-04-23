@@ -27,3 +27,6 @@ char* readFile();
 // Does all the work for you, just give a filepath and get the contents
 // NOTE: If you had another file open, this will close it
 char* readFile(const char* fileName);
+
+// Same as above, but for Windows HANDLE types
+char* readFile(HANDLE hFile);

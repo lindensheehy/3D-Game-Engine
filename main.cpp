@@ -1,4 +1,5 @@
 #include "util/Utility.h"
+#include "util/FileNavigator.h"
 
 #include "graphics/rendering/Camera.h"
 #include "graphics/rendering/Renderer.h"
@@ -356,6 +357,22 @@ void cleanup() {
 int main(int argc, char* argv[]) {
 
     init();
+
+    // FileNavigator* fileNav = new FileNavigator("../src/assets/fonts/");
+    
+    // char* fileContents;
+    // for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {
+
+
+        
+    //     fileContents = fileNav->readCurrentFile();
+    //     logWrite(fileContents, true);
+
+    //     delete fileContents;
+
+    // }
+
+    // delete fileNav;
 
     while ( !(gui->shouldDestroyWindow) ) {
         doFrame();

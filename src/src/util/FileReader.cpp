@@ -1,16 +1,16 @@
 #include "util/FileReader.h"
 
 
-HANDLE hFile = nullptr;
+HANDLE hFileGlobal = nullptr;
 
 int openFile(const char* fileName) {
 
-    if (hFile != nullptr) {
+    if (hFileGlobal != nullptr) {
         closeFile();
     }
     
     // Get handle to file
-    hFile = CreateFileA(
+    hFileGlobal = CreateFileA(
         fileName,                 // File name
         GENERIC_READ,             // Desired access: read
         FILE_SHARE_READ,          // Share mode: allow other processes to read
@@ -20,8 +20,8 @@ int openFile(const char* fileName) {
         NULL                      // Template file handle
     );
 
-    if (hFile == INVALID_HANDLE_VALUE) {
-        hFile = nullptr;
+    if (hFileGlobal == INVALID_HANDLE_VALUE) {
+        hFileGlobal = nullptr;
         return -1;
     }
 
@@ -31,10 +31,10 @@ int openFile(const char* fileName) {
 
 void closeFile() {
 
-    if (hFile == nullptr) return;
+    if (hFileGlobal == nullptr) return;
 
-    CloseHandle(hFile);
-    hFile = nullptr;
+    CloseHandle(hFileGlobal);
+    hFileGlobal = nullptr;
 
     return;
 
@@ -43,7 +43,22 @@ void closeFile() {
 int getFileSizeBytes() {
 
     // No file open
-    if (hFile == nullptr) return -1;
+    if (hFileGlobal == nullptr) return -1;
+
+    LARGE_INTEGER fileSize;
+    bool status = GetFileSizeEx(hFileGlobal, &fileSize);
+
+    // Failed to get size
+    if (!status) return -1;
+            
+    return static_cast<int>(fileSize.QuadPart);
+
+}
+
+int getFileSizeBytes(HANDLE hFile) {
+
+    // No file open
+    if (hFile == INVALID_HANDLE_VALUE) return -1;
 
     LARGE_INTEGER fileSize;
     bool status = GetFileSizeEx(hFile, &fileSize);
@@ -58,7 +73,7 @@ int getFileSizeBytes() {
 char* readFile() {
 
     // No file open
-    if (hFile == nullptr) return nullptr;
+    if (hFileGlobal == nullptr) return nullptr;
 
     // Get file size, return nullptr if failed
     int fileSize = getFileSizeBytes();
@@ -67,10 +82,10 @@ char* readFile() {
     char* buffer = new char[fileSize + 1];  // +1 for null terminator
     DWORD bytesRead;
 
-    bool status = ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
+    bool status = ReadFile(hFileGlobal, buffer, fileSize, &bytesRead, nullptr);
 
     // Failed to read all bytes
-    if (!status || bytesRead != fileSize) {
+    if ( !status || (bytesRead != fileSize) ) {
         delete[] buffer;
         return nullptr;
     }
@@ -83,7 +98,7 @@ char* readFile() {
 char* readFile(const char* fileName) {
 
     // Close the open file if there is one
-    if (hFile != nullptr) closeFile();
+    if (hFileGlobal != nullptr) closeFile();
 
     int status = openFile(fileName);
 
@@ -106,6 +121,29 @@ char* readFile(const char* fileName) {
 
     // Clean up
     closeFile();
+
+    return buffer;
+
+}
+
+char* readFile(HANDLE hFile) {
+
+    // Get file size, return nullptr if failed
+    int fileSize = getFileSizeBytes(hFile);
+    if (fileSize <= 0) return nullptr;
+
+    char* buffer = new char[fileSize + 1];  // +1 for null terminator
+    DWORD bytesRead;
+
+    bool status = ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
+
+    // Failed to read all bytes
+    if ( !status || (bytesRead != fileSize) ) {
+        delete[] buffer;
+        return nullptr;
+    }
+
+    buffer[fileSize] = '\0';
 
     return buffer;
 

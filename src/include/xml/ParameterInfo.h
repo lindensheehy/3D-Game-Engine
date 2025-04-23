@@ -21,7 +21,7 @@ class ParameterInfo {
         This is a wrapper for two internal arrays as follows
         This is used to determine if a parameter exists, and what type it is
 
-        This simplifies the process a TON, but just use matchParameter so check it
+        This simplifies the process a TON, by just using matchParameter to check it
 
         The constructor is private because it is not intended to be used directly
         ParameterInfoBuilder should do this for you because it will dynamically build the data set

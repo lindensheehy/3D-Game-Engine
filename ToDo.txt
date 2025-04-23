@@ -16,10 +16,13 @@ new stuff:
     - use a 32x32 bitmap, then downscale to specified size
     - probably in a textfile, since thats easiest to parse, but some image format would be easiest to create
 
+- allow file importing meshes
+    - make a file loader subsystem. this will load all 'tracked' files into memory (heap), and check on each frame if any timestamps changed. if any did, reload in memory.
+    - build a parser for the mesh files (assets/models/meshes/)
+    - build some (or update existing) UI to create objects using these meshes
+
 fixes:
-- fix depth interpolation, depth between two points is not always linear.
-    - take the distance of the pixel from each of the vertex coordinates (from 0-1 for each, totaling to 1)
-    - use these factors to find the 3d coordinate of the pixel, and find the depth directly of that position
+
 - fix TextInput UI elements from drawing to infinite length.
     - probably just add a parameter 'maxLength' to Drawer::drawString()
 
@@ -31,6 +34,24 @@ optimizations:
 - make drawTri (and other draw functions) skip out of range values entirely rather than letting writePixel do that work
 - add a draw queue which will have threads to work only on drawing, while the main thread can do the math and feed the stuff that needs to be drawn to the queue
 
+- add multithreading to Renderer
+
 
 
 Notes:
+
+
+Project:
+
+Project Overview – AltJS Runtime & Language
+    Custom language for the browser — simpler, cleaner alternative to JavaScript
+    Syntax inspired by Python / modern C++ — minimal boilerplate, readable
+    Transpiles to JavaScript — same runtime performance and browser compatibility
+    Shipped as a package — drop into any web project, works via loader/runtime
+    Focus on developer experience — faster to write, easier to learn
+    Goal: Lower barrier to frontend, reduce JS verbosity
+    Long-term: Viable JS alternative for real projects, teaching, and dev workflows
+    Compiler/transpiler written in C++ (or Rust/Zig) — fast and portable
+    Minimal JavaScript required — only for bootstrapping and browser glue
+    Designed to be fun, modern, and inventive
+

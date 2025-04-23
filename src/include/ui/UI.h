@@ -31,7 +31,7 @@ class UI {
         /*   Instance Variables   */
 
         // Will be true if the last click landed within the UI
-        bool hasFocus;
+        bool hasMouseFocus;
 
         // Contains a BindManager object, owned by this class
         // This handles all the binding logic for the windows

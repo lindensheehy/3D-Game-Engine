@@ -68,6 +68,8 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
     Window* hoveredWindow = nullptr;
     WindowElement* hoveredElement = nullptr;
 
+    bool mouseStateWasSet = false;
+
     // Loop backwards so the front windows take priority
     for (this->windows->iterStart(this->windows->length - 1); this->windows->iterHasNext(); this->windows->iterLast()) {
 
@@ -100,12 +102,16 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
 
             }
 
+            mouseStateWasSet = true;
+
         }
 
         // Break out of the loop reaches this
         break;
 
     }
+
+    if (!mouseStateWasSet) (*cursorStateOut) = Graphics::Gui::CURSOR_ARROW;
 
     // Click handling
     if (state->wasLeftJustPressed()) {
@@ -120,14 +126,6 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
             this->windows->pop(currentWindow);
             this->windows->pushBack(currentWindow);
 
-            // Tell the UI it has focus
-            this->hasFocus = true;
-
-        }
-
-        // If no window was clicked on
-        else {
-            this->hasFocus = false;
         }
 
 
@@ -164,33 +162,54 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
 
     }
 
-    // Cases where the rest of the code shouldnt or cant execute
-    if (!this->hasFocus) return false;
-    if (this->lastClicked == nullptr) return true;
+    // Update hasMouseFocus
+    if (hoveredWindow == nullptr) this->hasMouseFocus = false;
 
     // Button handling
-    if (this->lastClicked->type == ElementType::BUTTON) {
+    if (this->lastClicked != nullptr) {
 
-        this->lastClicked->onInput(state);
+        if (this->lastClicked->type == ElementType::BUTTON) {
+
+            if (state->wasLeftJustPressed()) {
+
+                this->lastClicked->onInput(state);
+
+                // This also means UI should take focus (if it doesnt already have it)
+                this->hasMouseFocus = true;
+
+            }
+
+        }
+
+        // Drag handling
+        if (this->lastClicked->type == ElementType::DRAGABLE && state->wasLeftHeld()) {
+
+            this->lastClicked->onInput(state);
+
+            // As long as left is held, UI should have the focus
+            this->hasMouseFocus = true;
+
+        }
+
+        // Text box handling
+        if (this->lastClicked->type == ElementType::TEXTINPUT) {
+
+            if (state->wasLeftJustPressed() || (state->newKeyPressesIndex > 0)) {
+
+                logWrite("checking textbox", true);
+
+                this->lastClicked->onInput(state);
+
+                // This also means UI should take the focus, at least for this frame. On key presses, it will be reset next frame
+                this->hasMouseFocus = true;
+
+            }
+
+        }
 
     }
 
-    // Drag handling
-    if (this->lastClicked->type == ElementType::DRAGABLE && state->wasLeftHeld()) {
-
-        this->lastClicked->onInput(state);
-
-    }
-
-    // Text box handling
-    if (this->lastClicked->type == ElementType::TEXTINPUT) {
-
-        this->lastClicked->onInput(state);
-
-    }
-
-    // If the code reaches this point, the focus should be on the UI rather than the camera controls
-    return true;
+    return this->hasMouseFocus;
 
 }
 

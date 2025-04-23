@@ -63,24 +63,25 @@ g++ -Ofast %include%        -c %dir%ObjectSet.cpp         -o %out%ObjectSet.o
 @REM g++ -Ofast %include%        -c %dir%Bounding.cpp          -o %out%Bounding.o
 
 :: ui
-@REM set dir=%srcdir%ui\
-@REM set out=%objdir%ui-
+set dir=%srcdir%ui\
+set out=%objdir%ui-
 @REM g++ -Ofast %include%        -c %dir%Action.cpp            -o %out%Action.o
 @REM g++ -Ofast %include%        -c %dir%BindFuncs.cpp         -o %out%BindFuncs.o
 @REM g++ -Ofast %include%        -c %dir%BindManager.cpp       -o %out%BindManager.o
 @REM g++ -Ofast %include%        -c %dir%Core.cpp              -o %out%Core.o
-@REM g++ -Ofast %include%        -c %dir%UI.cpp                -o %out%UI.o
+g++ -Ofast %include%        -c %dir%UI.cpp                -o %out%UI.o
 @REM g++ -Ofast %include%        -c %dir%Window.cpp            -o %out%Window.o
 @REM g++ -Ofast %include%        -c %dir%WindowElement.cpp     -o %out%WindowElement.o
 
 :: util
 set dir=%srcdir%util\
 set out=%objdir%util-
+g++ -Ofast %include%        -c %dir%FileNavigator.cpp     -o %out%FileNavigator.o
+g++ -Ofast %include%        -c %dir%FileReader.cpp        -o %out%FileReader.o
+@REM g++ -Ofast %include%        -c %dir%KeyCodes.cpp          -o %out%KeyCodes.o
 @REM g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
 @REM g++ -Ofast %include%        -c %dir%Math.cpp              -o %out%Math.o
 @REM g++ -Ofast %include%        -c %dir%Log.cpp               -o %out%Log.o
-@REM g++ -Ofast %include%        -c %dir%FileReader.cpp        -o %out%FileReader.o
-@REM g++ -Ofast %include%        -c %dir%KeyCodes.cpp          -o %out%KeyCodes.o
 
 :: xml
 @REM set dir=%srcdir%xml\

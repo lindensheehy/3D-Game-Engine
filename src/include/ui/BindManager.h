@@ -60,7 +60,7 @@ class BindManager {
         // This just returns the bind that holds the given WindowHandle
         Bind* getBind(WindowHandle* windowHandle);
 
-        // Tells this instance to stop tracking the binds of the given WindowHandle
+        // Tells this instance to stop tracking the given Bind
         void removeBind(Bind* bind);
 
 };
