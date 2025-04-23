@@ -79,6 +79,7 @@ g++ -Ofast %include%        -c %dir%WindowElement.cpp     -o %out%WindowElement.
 :: util
 set dir=%srcdir%util\
 set out=%objdir%util-
+g++ -Ofast %include%        -c %dir%FileNavigator.cpp     -o %out%FileNavigator.o
 g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
 g++ -Ofast %include%        -c %dir%Math.cpp              -o %out%Math.o
 g++ -Ofast %include%        -c %dir%Log.cpp               -o %out%Log.o

@@ -358,21 +358,19 @@ int main(int argc, char* argv[]) {
 
     init();
 
-    // FileNavigator* fileNav = new FileNavigator("../src/assets/fonts/");
+    FileNavigator* fileNav = new FileNavigator("../src/assets/fonts/");
     
-    // char* fileContents;
-    // for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {
+    char* fileContents;
+    for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {
 
-
+        logWrite("file: ", true);
         
-    //     fileContents = fileNav->readCurrentFile();
-    //     logWrite(fileContents, true);
+        fileContents = fileNav->readCurrentFile();
+        logWrite(fileContents, true);
 
-    //     delete fileContents;
+        delete fileContents;
 
-    // }
-
-    // delete fileNav;
+    }
 
     while ( !(gui->shouldDestroyWindow) ) {
         doFrame();

@@ -15,20 +15,20 @@ if not exist "%objdir%" (
 :: Build dependancies
 
 :: geometry
-set dir=%srcdir%geometry\
-set out=%objdir%geometry-
+@REM set dir=%srcdir%geometry\
+@REM set out=%objdir%geometry-
 @REM g++ -Ofast %include%        -c %dir%Vec.cpp         -o %out%Vec.o
 @REM g++ -Ofast %include%        -c %dir%Tri.cpp         -o %out%Tri.o
-g++ -Ofast %include%        -c %dir%Mesh.cpp        -o %out%Mesh.o
+@REM g++ -Ofast %include%        -c %dir%Mesh.cpp        -o %out%Mesh.o
 @REM g++ -Ofast %include%        -c %dir%Matrix.cpp      -o %out%Matrix.o
 
 
 :: graphics
 
     :: drawing
-    set dir=%srcdir%graphics\drawing\
-    set out=%objdir%graphics-drawing-
-    g++ -Ofast %include%        -c %dir%Drawer.cpp           -o %out%Drawer.o
+    @REM set dir=%srcdir%graphics\drawing\
+    @REM set out=%objdir%graphics-drawing-
+    @REM g++ -Ofast %include%        -c %dir%Drawer.cpp           -o %out%Drawer.o
     @REM g++ -Ofast %include%        -c %dir%PixelDrawer.cpp      -o %out%PixelDrawer.o
     @REM g++ -Ofast %include%        -c %dir%PixelTracker.cpp     -o %out%PixelTracker.o
 
@@ -49,27 +49,27 @@ g++ -Ofast %include%        -c %dir%Mesh.cpp        -o %out%Mesh.o
     @REM set out=%objdir%graphics-png-
 
     :: rendering
-    set dir=%srcdir%graphics\rendering\
-    set out=%objdir%graphics-rendering-
-    g++ -Ofast %include%        -c %dir%Camera.cpp           -o %out%Camera.o
-    @REM g++ -Ofast %include%        -c %dir%Display.cpp          -o %out%Display.o
-    g++ -Ofast %include%        -c %dir%Renderer.cpp         -o %out%Renderer.o
+    @REM set dir=%srcdir%graphics\rendering\
+    @REM set out=%objdir%graphics-rendering-
+    @REM g++ -Ofast %include%        -c %dir%Camera.cpp           -o %out%Camera.o
+    @REM @REM g++ -Ofast %include%        -c %dir%Display.cpp          -o %out%Display.o
+    @REM g++ -Ofast %include%        -c %dir%Renderer.cpp         -o %out%Renderer.o
 
 
 :: physics
-set dir=%srcdir%physics\
-set out=%objdir%physics-
-g++ -Ofast %include%        -c %dir%ObjectSet.cpp         -o %out%ObjectSet.o
+@REM set dir=%srcdir%physics\
+@REM set out=%objdir%physics-
+@REM g++ -Ofast %include%        -c %dir%ObjectSet.cpp         -o %out%ObjectSet.o
 @REM g++ -Ofast %include%        -c %dir%Bounding.cpp          -o %out%Bounding.o
 
 :: ui
-set dir=%srcdir%ui\
-set out=%objdir%ui-
+@REM set dir=%srcdir%ui\
+@REM set out=%objdir%ui-
 @REM g++ -Ofast %include%        -c %dir%Action.cpp            -o %out%Action.o
 @REM g++ -Ofast %include%        -c %dir%BindFuncs.cpp         -o %out%BindFuncs.o
 @REM g++ -Ofast %include%        -c %dir%BindManager.cpp       -o %out%BindManager.o
 @REM g++ -Ofast %include%        -c %dir%Core.cpp              -o %out%Core.o
-g++ -Ofast %include%        -c %dir%UI.cpp                -o %out%UI.o
+@REM g++ -Ofast %include%        -c %dir%UI.cpp                -o %out%UI.o
 @REM g++ -Ofast %include%        -c %dir%Window.cpp            -o %out%Window.o
 @REM g++ -Ofast %include%        -c %dir%WindowElement.cpp     -o %out%WindowElement.o
 

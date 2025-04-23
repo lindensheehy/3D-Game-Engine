@@ -110,6 +110,8 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
     window->bindTextInput("scaley", &(object->scale.y));
     window->bindTextInput("scalez", &(object->scale.z));
 
+    // Color
+    // window->bindTextInput("color", (int*) &(object->mesh->color));
 
     return;
 

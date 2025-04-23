@@ -7,9 +7,9 @@
 
 <main>
 
-    <filledRect posx=15 posy=50 sizex=300 sizey=105 color=background>
+    <filledRect posx=15 posy=50 sizex=300 sizey=120 color=background>
 
-        <outlinedRect posx=0 posy=0 sizex=300 sizey=105 color=border/>
+        <outlinedRect posx=0 posy=0 sizex=300 sizey=120 color=border/>
 
         <topbar width=300 buttonPos=281 title=Transform/>
 
@@ -69,6 +69,9 @@
             <textbox posx=205 posy=4 width=35 id=scalez/>
 
         </div>
+
+        <textStatic posx=20 posy=100 text=color-hex-code/>
+        <textbox posx=120 posy=97 width=100 id=color/>
 
     </filledRect>
 

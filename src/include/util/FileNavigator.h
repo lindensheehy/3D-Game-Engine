@@ -3,6 +3,7 @@
 #include "util/Utility.h"
 #include "util/Log.h"
 #include "util/FileReader.h"
+#include "util/LinkedList.h"
 
 class FileNavigator {
 
@@ -17,9 +18,8 @@ class FileNavigator {
         // Heap allocated buffer for the current root file path being used
         char* workingPath;
 
-        // Flags for iteration handling
-        bool doRecursion = false;
-        bool considerDirs = false;
+        // When true, this will make the iterator also include files in subdirectories
+        bool iterUseSubDirs = false;
 
 
         // Constructor
@@ -41,15 +41,11 @@ class FileNavigator {
         // Moves the iterator to the next valid file
         void iterNext();
 
-    private:    
-
-        // Called from iterNext when the doRecursion flag is set
-        void iterNextRecursive();
-
-    public:
-
         // Intended to be used in loops as the condition. Returns false once there are no more valid files for the iterator to use
         bool iterIsValid();
+
+        // Kills the iterator early. This closes all file handles if any are open
+        void iterEnd();
 
         // Returns a heap allocated buffer containing the current files contents
         char* readCurrentFile();
@@ -59,5 +55,28 @@ class FileNavigator {
         // Index in 'workingPath' where the null terminator lies
         // This is used to make string concats easier
         int workingPathEndIndex;
+
+        // Jumps the iterator pointer forward to the first non directory file
+        // This updates the file pointer whenever this->iterUseSubDirs is false
+        void skipDirs();
+
+
+        /*
+            The following code is for subdirectory handling
+            This uses a LinkedList as a stack. Entering a subdirectory pushes to the stack, leaving pops
+            This means several file handles can be held at once, but this->hCurrentFile will be set to the handle at the top of the stack
+            This effectively performs a depth first traversal
+        */
+
+        struct File {
+            HANDLE handle;
+            WIN32_FIND_DATAA data;
+            File(HANDLE handle, WIN32_FIND_DATAA data) : handle(handle), data(data) {}
+        };
+
+        LinkedList<File*>* dirStack;
+
+        // Tells the iterator to
+        void enterDir();
 
 };
