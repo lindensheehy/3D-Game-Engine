@@ -1,6 +1,22 @@
 #include "util/Utility.h"
 
 
+int stringLength(const char* str) {
+
+    int length = 0;
+    while (true) {
+        if (str[length] == '\0') break;
+        length++;
+    }
+
+    // Add one to include the null terminator
+    length++;
+
+    return length;
+
+}
+
+
 /*   -----   Color Functions   -----   */
 uint32 Color::setBrightness(uint32 color, float newBrightness) {
 

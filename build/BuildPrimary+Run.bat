@@ -79,7 +79,7 @@ set out=%objdir%util-
 g++ -Ofast %include%        -c %dir%FileNavigator.cpp     -o %out%FileNavigator.o
 g++ -Ofast %include%        -c %dir%FileReader.cpp        -o %out%FileReader.o
 @REM g++ -Ofast %include%        -c %dir%KeyCodes.cpp          -o %out%KeyCodes.o
-@REM g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
+g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
 @REM g++ -Ofast %include%        -c %dir%Math.cpp              -o %out%Math.o
 @REM g++ -Ofast %include%        -c %dir%Log.cpp               -o %out%Log.o
 

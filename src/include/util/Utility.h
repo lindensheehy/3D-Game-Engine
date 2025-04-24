@@ -20,6 +20,10 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 
 
+// Returns the length of the string INCLUDING the null terminator byte 0x00
+int stringLength(const char* str);
+
+
 // A small Color namespace for general use
 namespace Color {
 

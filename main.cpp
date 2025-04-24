@@ -358,7 +358,10 @@ int main(int argc, char* argv[]) {
 
     init();
 
+    logWrite("\n\n");
+
     FileNavigator* fileNav = new FileNavigator("../src/assets/fonts/");
+    // FileNavigator* fileNav = new FileNavigator("../src/src/xml/");
     
     char* fileContents;
     for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {
@@ -366,7 +369,8 @@ int main(int argc, char* argv[]) {
         logWrite("file: ", true);
         
         fileContents = fileNav->readCurrentFile();
-        logWrite(fileContents, true);
+        logWrite(fileContents);
+        logWrite("\n\n");
 
         delete fileContents;
 

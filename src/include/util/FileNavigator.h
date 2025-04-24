@@ -12,14 +12,15 @@ class FileNavigator {
         /*   Instance Variables   */
 
         // For interacting with Windows
-        HANDLE hCurrentFile;
+        HANDLE hCurrentFile = INVALID_HANDLE_VALUE;
         WIN32_FIND_DATAA fileData;
 
         // Heap allocated buffer for the current root file path being used
         char* workingPath;
+        char* currentPattern;
 
         // When true, this will make the iterator also include files in subdirectories
-        bool iterUseSubDirs = false;
+        bool iterUseSubDirs = true;
 
 
         // Constructor
@@ -52,13 +53,18 @@ class FileNavigator {
 
     private:
 
+        // Pointer to the shared buffer for both char* types
+        char* mem;
+
         // Index in 'workingPath' where the null terminator lies
         // This is used to make string concats easier
         int workingPathEndIndex;
+        
+        int currentPatternLength;
 
-        // Jumps the iterator pointer forward to the first non directory file
-        // This updates the file pointer whenever this->iterUseSubDirs is false
-        void skipDirs();
+        // Jumps past the directories "." and ".."
+        // These are Windows generated, and they dont hold any value here
+        void skipNavDirs();
 
 
         /*
@@ -69,14 +75,31 @@ class FileNavigator {
         */
 
         struct File {
+
+            /*
+                Small helper struct to hold per-directory search nodes
+            */
+
             HANDLE handle;
-            WIN32_FIND_DATAA data;
-            File(HANDLE handle, WIN32_FIND_DATAA data) : handle(handle), data(data) {}
+
+            // Holds the relative path from workingPath to this search node
+            char* relativePath;
+            int relativePathLength;
+
+            File(
+                HANDLE handle, char* relativePath, int relativePathLength
+            ) : handle(handle), relativePath(relativePath), relativePathLength(relativePathLength) {}
+        
         };
 
         LinkedList<File*>* dirStack;
 
-        // Tells the iterator to
+        // Tells the iterator to enter the dir that hCurrentFile lies on
+        // Also ensures the iterator will point to an actual file, entering sub directories if iterUseSubDirs is set
         void enterDir();
+
+        // Tells the iterator to pop the last dir on the stack, and close the cooresponding handle
+        // Also updates hCurrentFile to the new top node, or INVALID_HANDLE_VALUE if the stack is empty
+        void exitDir();
 
 };
