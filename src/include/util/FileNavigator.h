@@ -15,7 +15,7 @@ class FileNavigator {
         HANDLE hCurrentFile = INVALID_HANDLE_VALUE;
         WIN32_FIND_DATAA fileData;
 
-        // Heap allocated buffer for the current root file path being used
+        // Heap allocated path buffers. Owned by this class
         char* workingPath;
         char* currentPattern;
 
