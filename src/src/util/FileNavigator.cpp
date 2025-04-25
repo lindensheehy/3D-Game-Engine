@@ -3,6 +3,11 @@
 
 FileNavigator::FileNavigator(const char* workingPath) {
 
+    if (workingPath == nullptr) {
+        logWrite("Tried to construct a FileNavigator(const char*) on a nullptr!", true);
+        return;
+    }
+
     int length = stringLength(workingPath);
 
     // Points to the null byte so it can be set using this index later
@@ -59,10 +64,7 @@ void FileNavigator::setWorkingPath(const char* newPath) {
     // Make sure the iter is not active
     this->iterEnd();
 
-    int length = stringLength(workingPath);
-
-    // Points to the null byte so it can be set using this index later
-    this->workingPathEndIndex = length - 1;
+    int length = stringLength(newPath);
 
     // Make sure its not too big
     if (length > MAX_PATH) {
@@ -76,8 +78,9 @@ void FileNavigator::setWorkingPath(const char* newPath) {
         return;
     }
 
-    delete this->workingPath;
-    this->workingPath = new char[MAX_PATH];
+    // Points to the null byte so it can be set using this index later
+    this->workingPathEndIndex = length - 1;
+
     memcpy(this->workingPath, newPath, length);
 
     return;
@@ -128,6 +131,8 @@ void FileNavigator::iterStart(const char* pattern) {
 
     this->skipNavDirs();
 
+    this->handleCurrentDir();
+
     return;
 
 }
@@ -140,6 +145,8 @@ void FileNavigator::iterNext() {
 
     if (!foundValidFile) this->exitDir();
 
+    this->handleCurrentDir();
+
     return;
 
 }
@@ -151,6 +158,9 @@ bool FileNavigator::iterIsValid() {
 }
 
 void FileNavigator::iterEnd() {
+
+    // Remove any current pattern
+    memset(this->currentPattern, 0x00, MAX_PATH);
 
     if (this->dirStack->length == 0) return;
 
@@ -165,35 +175,35 @@ char* FileNavigator::readCurrentFile() {
         return nullptr;
     }
 
-    // Find the file name length
-    int length = 0;
-    while (true) {
-        if (this->fileData.cFileName[length] == '\0') break;
-        length++;
-    }
+    // Append index pointer so each memcpy knows where to start
+    int appendIndex = this->workingPathEndIndex;
 
-    // Add one for null terminator
-    length++;
+    // Get relativePath and cFileName
+    File* currentFile = this->dirStack->getFirst();
+    int fileNameLength = stringLength(this->fileData.cFileName);
 
-    // Make sure it wont overflow this->workingPath
-    int fullPathLength = length + this->workingPathEndIndex;
-    if (fullPathLength >= MAX_PATH) {
+    // Defend against buffer overflows
+    int fullLength = appendIndex + currentFile->relativePathLength + fileNameLength + this->currentPatternLength;
+    if (fullLength >= MAX_PATH) {
         logWrite("FileNavigator::iterStart() called with too long of a path!", true);
         logWrite(" -> path \"");
         logWrite(this->workingPath);
+        logWrite(currentFile->relativePath);
         logWrite(this->fileData.cFileName);
-        logWrite("\" has length ");
-        logWrite(length);
-        logWrite(" but max allowed is ");
-        logWrite(MAX_PATH);
+        logWrite(this->currentPattern);
+        logWrite("\" is too long", true);
         return nullptr;
     }
 
-    memcpy(
-        &(this->workingPath[this->workingPathEndIndex]), 
-        this->fileData.cFileName, 
-        length 
-    );
+    /*   Construct the full path   */
+
+    memcpy(this->workingPath + appendIndex, currentFile->relativePath, currentFile->relativePathLength);
+    appendIndex += currentFile->relativePathLength;
+    
+    this->workingPath[appendIndex - 1] = '/';
+
+    memcpy(this->workingPath + appendIndex, this->fileData.cFileName, fileNameLength);
+    appendIndex += fileNameLength;
 
     // Read the file using the whole file path
     char* ret = readFile(this->workingPath);
@@ -207,6 +217,8 @@ char* FileNavigator::readCurrentFile() {
 
 void FileNavigator::skipNavDirs() {
 
+    if (this->hCurrentFile == INVALID_HANDLE_VALUE) return;
+
     while (true) {
 
         bool dotDir = this->fileData.cFileName[0] == '.';
@@ -214,17 +226,27 @@ void FileNavigator::skipNavDirs() {
 
         // Early break
         if ( (!dotDir) && (!dotDotDir) ) break;
-            
-        this->iterNext();
+
+        // Skip the current file
+        bool foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
+
+        // This case means the directory was empty. Containing only Windows generated files
+        if (!foundValidFile) this->exitDir();
 
         if (this->hCurrentFile == INVALID_HANDLE_VALUE) return;
 
     }
 
+    return;
+
+}
+
+void FileNavigator::handleCurrentDir() {
+
     // Try entering the dir if the use sub dirs flag is set
     if (this->iterUseSubDirs) {
 
-        // Go until a regular file is found
+        // Theres no loop here, because enterDir calls this function again
         if ( (this->fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ) {
             this->enterDir();
         }
@@ -235,7 +257,13 @@ void FileNavigator::skipNavDirs() {
     else {
 
         while ( (this->fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ) {
-            this->iterNext();
+            
+            // Skip the current file
+            bool foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
+
+            // This case means there are no more non-directory files in this directory
+            if (!foundValidFile) this->exitDir();
+
         }
 
     }
@@ -245,8 +273,6 @@ void FileNavigator::skipNavDirs() {
 }
 
 void FileNavigator::enterDir() {
-
-    logWrite("Calling FileNavigator::enterDir()!", true);
 
     if ( (this->fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 ) {
         logWrite("FileNavigator::enterDir() was called while the current file was not a directory!", true);
@@ -329,6 +355,8 @@ void FileNavigator::enterDir() {
 
     this->skipNavDirs();
 
+    this->handleCurrentDir();
+
     return;
 
 }
@@ -360,6 +388,7 @@ void FileNavigator::exitDir() {
 
     else {
         this->hCurrentFile = INVALID_HANDLE_VALUE;
+        this->iterEnd();
     }
 
     return;

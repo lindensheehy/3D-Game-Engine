@@ -68,6 +68,7 @@ class BindManager {
 };
 
 
+
 int* p;
 
 void func() {
@@ -81,6 +82,8 @@ int main() {
     func();
     return (*p);
 }
+ 
+
 
 #pragma once
 #include "util/Utility.h"
@@ -90,6 +93,7 @@ namespace Xml{struct Parameter{const char* name;ParameterType type;};class Param
 int* positionOut);private:ParameterInfo(LinkedList<Parameter*>* params);char* names;int* namesIndexes;int* namesLengths;ParameterType* types;int length;};class ParameterInfoBuilder{friend class 
 ParameterInfo;public:ParameterInfoBuilder();~ParameterInfoBuilder();ParameterInfo* build();void reset();void addParameter(const char* name,ParameterType type,int position);void addParameter(
 char* name,ParameterType type,int position);private:LinkedList<Parameter*>* params;};}
+
 
 
 #include <windows.h>
@@ -197,5 +201,134 @@ public:
 
 private:
     int workingPathEndIndex = 0;
+
+};
+
+
+
+#include <vector>
+
+class Vec2 {
+public:
+    float x = 0.0f;
+    float y = 0.0f;
+    Vec2();
+    Vec2& set(Vec2& other);
+    Vec2& add(Vec2& other);
+    Vec2& normalize();
+    Vec2& rotate(float degrees);
+};
+
+constexpr int FOV = 90;
+
+class Entity;
+Entity* checkForCollision(Vec2& ray);
+
+int getRange(int angle);
+
+void func() {
+
+    std::vector<Entity*> drawList;
+
+    Vec2 playerFacing;
+    Vec2 rayCastStart;
+    rayCastStart.set(playerFacing).normalize();
+    rayCastStart.rotate(-45);
+
+    Vec2 rayCastIteration;
+    for (int i = 0; i < FOV; i++) {
+
+        rayCastIteration.set(rayCastStart);
+
+        int range = getRange(i);
+        for (int j = 0; j < range; j++) {
+
+            Entity* foundCollision = checkForCollision(rayCastIteration);
+
+            if (foundCollision != nullptr) {
+                drawList.push_back(foundCollision);
+                continue;
+            }
+
+            rayCastIteration.add(rayCastStart);
+
+        }
+
+        rayCastStart.rotate(1);
+
+    }    
+    
+}
+
+class Entity {};
+class Projectile : public Entity {
+public:
+    float x, y;
+    Projectile(float x, float y) : x(x), y(y) {}
+    void draw();
+};
+
+bool checkProjectile(Projectile* p) {
+
+    Projectile p(1, 2);
+
+    std::vector<Projectile*> list;
+
+    void* mem = operator new(sizeof(Projectile) * 10);
+    Projectile* p2 = new (mem) Projectile(1, 2);
+    Projectile* p2 = new (mem + sizeof(Projectile)) Projectile(1, 2);
+
+}
+
+class Player {
+
+    public:
+
+        Player();
+
+        int timer = 0;
+        std::vector<Projectile*> projectileList;
+
+        void shoot() {
+
+            if (this->timer != 0) return;
+
+            Projectile* p = new Projectile();
+
+            this->projectileList.push_back(p);
+            this->timer = 120;
+
+        }
+
+        void nextFrame() {
+            if (this->timer > 0) this->timer--;
+            return;
+        }
+
+        void draw() {
+
+            for (Projectile* p : this->projectileList) {
+                p->draw();
+            }
+
+        }
+
+        void checkProjectiles() {
+
+            for (Projectile* p : this->projectileList) {
+
+                bool shouldDelete = checkProjectile(p);
+
+                if (shouldDelete) {
+
+                    this->projectileList.erase(p);
+
+                    delete p;
+
+                }
+
+            }
+
+        }
 
 };

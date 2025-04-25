@@ -7,6 +7,18 @@
 
 class FileNavigator {
 
+    /*
+        This class serves to iterator over files in a directory
+        To use it:
+        - construct with the full path to the directory (relative path from the exe also works)
+        - call iterStart with a pattern you want to match. For example, "*" is all files or "*.txt" is all text files
+        - call iterNext to go to the next file
+        - when iterIsValid returns false, the iterator is done
+
+        There is also the 'iterUseSubDirs' flag that can be set to allow recursive iteration
+        This keeps the pattern given in iterStart, but also iterates over all files in subdirectories
+    */
+
     public:
 
         /*   Instance Variables   */
@@ -53,7 +65,7 @@ class FileNavigator {
 
     private:
 
-        // Pointer to the shared buffer for both char* types
+        // Pointer to the shared buffer for workingPath and currentPattern
         char* mem;
 
         // Index in 'workingPath' where the null terminator lies
@@ -65,6 +77,9 @@ class FileNavigator {
         // Jumps past the directories "." and ".."
         // These are Windows generated, and they dont hold any value here
         void skipNavDirs();
+
+        // If the current file is a directory, this function will either skip or enter it depending on the state of iterUseSubDirs
+        void handleCurrentDir();
 
 
         /*

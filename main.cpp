@@ -360,8 +360,7 @@ int main(int argc, char* argv[]) {
 
     logWrite("\n\n");
 
-    FileNavigator* fileNav = new FileNavigator("../src/assets/fonts/");
-    // FileNavigator* fileNav = new FileNavigator("../src/src/xml/");
+    FileNavigator* fileNav = new FileNavigator("../src/");
     
     char* fileContents;
     for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {

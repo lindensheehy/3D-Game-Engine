@@ -57,7 +57,7 @@ class XML {
         // This is used to limit the recursive calls
         // If there were to be two xml files that both referenced each other, the function would recursively call endlessly
         static constexpr int CALL_LIMIT = 32;
-        int callCount;
+        int callCount = 0;
 
 };
 
