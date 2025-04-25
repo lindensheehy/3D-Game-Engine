@@ -162,7 +162,17 @@ void FileNavigator::iterEnd() {
     // Remove any current pattern
     memset(this->currentPattern, 0x00, MAX_PATH);
 
-    if (this->dirStack->length == 0) return;
+    // Remove existing Files in the stack
+    File* popped;
+    while (this->dirStack->length > 0) {
+
+        popped = this->dirStack->popFront();
+
+        FindClose(popped->handle);
+        delete[] popped->relativePath;
+        delete popped;
+        
+    }
 
     return;
 

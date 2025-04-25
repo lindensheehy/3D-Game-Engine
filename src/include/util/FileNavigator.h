@@ -60,7 +60,7 @@ class FileNavigator {
         // Kills the iterator early. This closes all file handles if any are open
         void iterEnd();
 
-        // Returns a heap allocated buffer containing the current files contents
+        // Returns a new heap allocated buffer containing the current files contents
         char* readCurrentFile();
 
     private:
