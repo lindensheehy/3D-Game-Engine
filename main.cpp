@@ -358,23 +358,6 @@ int main(int argc, char* argv[]) {
 
     init();
 
-    logWrite("\n\n");
-
-    FileNavigator* fileNav = new FileNavigator("../src/");
-    
-    char* fileContents;
-    for (fileNav->iterStart("*"); fileNav->iterIsValid(); fileNav->iterNext()) {
-
-        logWrite("file: ", true);
-        
-        fileContents = fileNav->readCurrentFile();
-        logWrite(fileContents);
-        logWrite("\n\n");
-
-        delete fileContents;
-
-    }
-
     while ( !(gui->shouldDestroyWindow) ) {
         doFrame();
     }
