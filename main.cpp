@@ -28,7 +28,7 @@ bool gravity;
 Ui::UI* ui;
 
 Ui::WindowHandle* navBar;
-Ui::WindowHandle* windowTransform;
+Ui::WindowHandle* windowTransform;      
 Ui::WindowHandle* windowObjects;
 
 void giveUiData() {

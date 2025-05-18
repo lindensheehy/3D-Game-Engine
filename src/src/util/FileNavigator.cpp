@@ -359,7 +359,6 @@ void FileNavigator::enterDir() {
     this->workingPath[this->workingPathEndIndex] = '\0';
 
     // Update the directory stack with this first found file
-    // nullptr is passed for 'relativePath' because this is the relative root
     File* newFile = new File(this->hCurrentFile, newRelativePath, newRelativePathLength);
     this->dirStack->pushFront(newFile);
 
