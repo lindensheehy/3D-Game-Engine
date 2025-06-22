@@ -14,11 +14,6 @@ Mesh* Mesh::capsuleMesh = nullptr;
 /*  -----------   IndexMap   -----------  */
 /*  ------------------------------------  */
 
-Mesh::IndexMap::IndexMap() {
-    this->map = nullptr;
-    this->size = 0;
-}
-
 Mesh::IndexMap::~IndexMap() {
     delete[] this->map;
 }
@@ -36,7 +31,9 @@ void Mesh::IndexMap::init(int size) {
 
 void Mesh::IndexMap::setState(const IndexMap* other) {
 
-    for (int i = 0; i < (this->size); i++) {
+    this->init(other->size);
+
+    for (int i = 0; i < (other->size); i++) {
         this->map[i].vertex1 = other->map[i].vertex1;
         this->map[i].vertex2 = other->map[i].vertex2;
         this->map[i].vertex3 = other->map[i].vertex3;
@@ -61,6 +58,9 @@ void Mesh::IndexMap::setGroup(int index, int v1, int v2, int v3, int normal) {
     this->map[index].vertex2 = v2;
     this->map[index].vertex3 = v3;
     this->map[index].normal = normal;
+
+    return;
+
 }
 
 void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal) const {
@@ -77,6 +77,9 @@ void Mesh::IndexMap::getGroup(int index, int* v1, int* v2, int* v3, int* normal)
     (*v2) = this->map[index].vertex2;
     (*v3) = this->map[index].vertex3;
     (*normal) = this->map[index].normal;
+
+    return;
+
 }
 
 /*  ------------------------------------  */
@@ -140,6 +143,8 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
     this->color = 0xFFFFFFFF;
 
     this->centerValid = false;
+
+    return;
 
 }
 
@@ -302,10 +307,11 @@ void Mesh::updateNormals() {
     // These are the operands for the cross product
     Vec3 vec1to2, vec1to3;
 
-    // Stores the result of the cross product. Cross product returns a new Vec3, so this needs to be a pointer
+    // Stores the result of the cross product
     Vec3 newNormal;
 
     // Used to determine normal direction with respect to the plane of the triangle
+    // Basically "is this facing outwards or not?"
     float dist1, dist2;
     Vec3* meshCenter = this->getCenter();;
     Vec3 triCenter;
@@ -358,7 +364,6 @@ void Mesh::initMeshes() {
     // Some pointers to make assignments easier to read
     Vec3* vertexList;
     Vec3* normalList;
-    Tri3* triList;
 
     // General variables used across different mesh instantiations
     int vertexCount;
@@ -409,7 +414,7 @@ void Mesh::initMeshes() {
     vertexList[6].set(0.5, 0.5, -0.5);
     vertexList[7].set(0.5, 0.5, 0.5);
 
-    // Load Normals
+    // Load normals
     normalList = Mesh::cubeMesh->normals;
     normalList[0].set(0, -1, 0);
     normalList[1].set(0, 1, 0);
@@ -446,7 +451,8 @@ void Mesh::initMeshes() {
     Mesh::sphereMesh = new Mesh(vertexCount, normalCount, triCount);
     vertexList = Mesh::sphereMesh->vertices;
     
-    // Load verticies
+
+    /*   Load verticies   */
 
     // Bottom and top
     vertexList[100].set(0, -0.5, 0);
@@ -721,7 +727,7 @@ void Mesh::initMeshes() {
     // Load normals automatically
     Mesh::sphereMesh->updateNormals();
 
-    // Not gonna bother handling these this way yet, this whole function will be deprecated soon anyway
+    // Not gonna bother handling these this way yet, this whole function will be deprecated soon anyway (postponed until V2)
     Mesh::capsuleMesh = nullptr;
     Mesh::tetrahedronMesh = nullptr;
 

@@ -8,7 +8,7 @@
 class FileNavigator {
 
     /*
-        This class serves to iterator over files in a directory
+        This class serves to iterate over and read from files in a directory
         To use it:
         - construct with the full path to the directory (relative path from the exe also works)
         - call iterStart with a pattern you want to match. For example, "*" is all files or "*.txt" is all text files
@@ -23,7 +23,7 @@ class FileNavigator {
 
         /*   Instance Variables   */
 
-        // For interacting with Windows
+        // Windows returned data
         HANDLE hCurrentFile = INVALID_HANDLE_VALUE;
         WIN32_FIND_DATAA fileData;
 
@@ -68,8 +68,8 @@ class FileNavigator {
         // Pointer to the shared buffer for workingPath and currentPattern
         char* mem;
 
-        // Index in 'workingPath' where the null terminator lies
-        // This is used to make string concats easier
+        // Index of the null terminator in 'workingPath'
+        // This is used to make string concats easier and allow truncation
         int workingPathEndIndex;
         
         int currentPatternLength;
@@ -78,7 +78,7 @@ class FileNavigator {
         // These are Windows generated, and they dont hold any value here
         void skipNavDirs();
 
-        // If the current file is a directory, this function will either skip or enter it depending on the state of iterUseSubDirs
+        // If the current file is a directory, this function will either skip or enter it depending on the state of 'iterUseSubDirs'
         void handleCurrentDir();
 
 
@@ -110,7 +110,7 @@ class FileNavigator {
         LinkedList<File*>* dirStack;
 
         // Tells the iterator to enter the dir that hCurrentFile lies on
-        // Also ensures the iterator will point to an actual file, entering sub directories if iterUseSubDirs is set
+        // Also ensures the iterator will point to an actual file, entering or skipping sub directories based on 'iterUseSubDirs'
         void enterDir();
 
         // Tells the iterator to pop the last dir on the stack, and close the cooresponding handle

@@ -57,6 +57,8 @@ FileNavigator::~FileNavigator() {
     
     operator delete(this->mem);
 
+    return;
+
 }
 
 void FileNavigator::setWorkingPath(const char* newPath) {
@@ -152,9 +154,7 @@ void FileNavigator::iterNext() {
 }
 
 bool FileNavigator::iterIsValid() {
-
     return this->hCurrentFile != INVALID_HANDLE_VALUE;
-
 }
 
 void FileNavigator::iterEnd() {

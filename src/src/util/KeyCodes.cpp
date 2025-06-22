@@ -24,5 +24,5 @@ char keyCodeToChar(KeyCode key) {
     if (key == KeyCode::MINUS) return '-';
 
     // Conveinently, the Windows keycodes are the same as the char codes, so direct casting works
-    return (char) (key);
+    return (char) key;
 }

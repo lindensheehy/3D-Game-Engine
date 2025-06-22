@@ -13,12 +13,15 @@ WindowElement::WindowElement(int posx, int posy, int sizex, int sizey) {
 
     this->pos.set(posx, posy);
     this->size.set(sizex, sizey);
-
     this->endPos.set(this->pos).add(this->size);
 
+    this->color = Color::BLACK;
+    
     this->children = new LinkedList<WindowElement*>();
 
     this->id = nullptr;
+
+    return;
 
 }
 
@@ -26,39 +29,46 @@ WindowElement::WindowElement(Geometry::Vec2* pos, Geometry::Vec2* size) {
 
     this->pos.set(pos);
     this->size.set(size);
-
     this->endPos.set(this->pos).add(this->size);
 
+    this->color = Color::BLACK;
+
     this->children = new LinkedList<WindowElement*>();
+
+    this->id = nullptr;
+
+    return;
 
 }
 
 WindowElement::~WindowElement() {
 
-    if (this->children != nullptr) {
+    WindowElement* child;
 
-        if (this->children->length > 0) {
-            WindowElement* child;
-            for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
-                child = this->children->iterGetObj();
-                if (child != nullptr) delete child;
-            }
-        }
+    for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
         
-        delete this->children;
-
+        child = this->children->iterGetObj();
+        delete child;
+    
     }
+
+    delete this->children;
+
 
     // All ids should be heap allocated. This will crash otherwise
     // Then again, WindowElement objects should never be created directly without the help of XML
-    if (this->id != nullptr) delete id;
+    delete id;
+    
+    return;
 
 }
 
 void WindowElement::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    // Log becuase this shouldnt ever be called
+    // Log becuase this shouldnt ever be called (should only be called by subclasses)
     logWrite("Called WindowElement->draw()!", true);
+
+    return;
 
 }
 
@@ -105,41 +115,6 @@ WindowElement* WindowElement::hitTest(int x, int y, Geometry::Vec2* offset) {
 
 }
 
-WindowElement* WindowElement::doInput(Graphics::Gui::State* state, Geometry::Vec2* offset) {
-
-    int x = state->mouse->posX;
-    int y = state->mouse->posY;
-
-    bool clickLands = this->hitTest(x, y, offset);
-    if (!clickLands) return nullptr;
-
-    // Run the input action (this is nothing for most elements)
-    this->onInput(state);
-
-    // Since now the click must lie inside this element, if this is any interactable type, I return this and skip checking the children
-    if (this->isInteractable) return this;
-
-    // Otherwise, I will check the children
-
-    WindowElement* current; // The child element checked on the given iteration
-    WindowElement* found;   // Stores the clicked element found from the window, or nullptr if none
-    Geometry::Vec2 nextOffset;
-    nextOffset.set(offset).add(this->pos);
-
-    for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
-
-        current = this->children->iterGetObj();
-        found = current->doInput(state, &(nextOffset));
-
-        if (found != nullptr) return found;
-
-    }
-
-    // If the loop completes, return nullptr
-    return nullptr;
-
-}
-
 void WindowElement::setPos(int x, int y) {
 
     this->pos.set(x, y);
@@ -147,32 +122,34 @@ void WindowElement::setPos(int x, int y) {
     this->endPos.set(this->size);
     this->endPos.add(x, y);
 
+    return;
+
 }
 
 void WindowElement::setPos(Geometry::Vec2* newPos) {
-    this->setPos( (int) newPos->x, (int) newPos->y );
+
+    this->setPos((int) newPos->x, (int) newPos->y);
+
+    return;
+
 }
 
 void WindowElement::addChild(WindowElement* child) {
 
     this->children->pushBack(child);
+
     return;
 
 }
 
 void WindowElement::drawChildren(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
 
-    for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext())
+    for (this->children->iterStart(0); this->children->iterHasNext(); this->children->iterNext()) {
         this->children->iterGetObj()->draw(drawer, offset);
+    }
 
-}
+    return;
 
-void WindowElement::setActionQueue(LinkedList<Action*>* queue) {
-    WindowElement::actionQueue = queue;
-}
-
-void WindowElement::queueAction(Action* action) {
-    WindowElement::actionQueue->pushBack(action);
 }
 
 
@@ -203,8 +180,9 @@ void WindowDiv::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) 
 WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = ElementType::VISUAL;
-
     this->color = color;
+
+    return;
 
 }
 
@@ -232,8 +210,9 @@ void WindowLine::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset)
 WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = ElementType::VISUAL;
-
     this->color = color;
+
+    return;
 
 }
 
@@ -261,8 +240,9 @@ void WindowFilledRect::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* o
 WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey, uint32 color) : WindowElement(posx, posy, sizex, sizey) {
 
     this->type = ElementType::VISUAL;
-
     this->color = color;
+
+    return;
 
 }
 
@@ -292,9 +272,10 @@ WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowE
     this->middle.set(this->size).scale(0.5).add(this->pos);
     this->radius = size;
 
+    this->type = ElementType::VISUAL;
     this->color = color;
 
-    this->type = ElementType::VISUAL;
+    return;
 
 }
 
@@ -322,9 +303,11 @@ void WindowCircle::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offse
 WindowTextStatic::WindowTextStatic(int posx, int posy, char* text) : WindowElement(posx, posy, 0, 0) {
     
     this->text = text;
-    this->color = Color::WHITE;
 
     this->type = ElementType::VISUAL;
+    this->color = Color::WHITE;
+
+    return;
 
 }
 
@@ -332,7 +315,9 @@ WindowTextStatic::~WindowTextStatic() {
 
     // this->text should be heap allocated. This will crash otherwise
     // Then again, WindowElement objects should never be created directly without the help of XML
-    if (this->text != nullptr) delete this->text;
+    delete this->text;
+
+    return;
 
 }
 
@@ -358,24 +343,30 @@ WindowTextInput::WindowTextInput(int posx, int posy, int width, char* id) : Wind
 
     this->text = new char[this->BUFFERSIZE];
     memset(this->text, '\0', this->BUFFERSIZE); // Initialize all to null chars
-    this->length = 0;
+    this->textLength = 0;
     this->cursorPos = -1;
 
     this->bindType = BindType::NONE;
     this->boundFloat = nullptr;
     this->boundInt = nullptr;
 
-    this->color = Color::WHITE;
-
     this->type = ElementType::TEXTINPUT;
+    this->color = Color::WHITE;
+    
     this->isInteractable = true;
 
     this->id = id;
 
+    return;
+
 }
 
 WindowTextInput::~WindowTextInput() {
+
     delete[] this->text;
+
+    return;
+
 }
 
 void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
@@ -413,7 +404,7 @@ void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* of
 
 void WindowTextInput::onInput(Graphics::Gui::State* state) {
 
-    if (state->wasLeftJustPressed()) this->cursorPos = this->length;
+    if (state->wasLeftJustPressed()) this->cursorPos = this->textLength;
 
     KeyCode key;
     char keyChar;
@@ -430,14 +421,14 @@ void WindowTextInput::onInput(Graphics::Gui::State* state) {
         if (keyChar != '\0') {
             
             // Ensure space in the string
-            if (this->length < this->BUFFERSIZE) {
+            if (this->textLength < this->BUFFERSIZE) {
 
                 // Make space for the new char
-                for (int i = this->length; i >= this->cursorPos; i--)
+                for (int i = this->textLength; i >= this->cursorPos; i--)
                     this->text[i+1] = this->text[i];
 
                 this->text[cursorPos] = keyChar;
-                this->length++;
+                this->textLength++;
                 this->cursorPos++;
 
                 textChanged = true;
@@ -453,7 +444,7 @@ void WindowTextInput::onInput(Graphics::Gui::State* state) {
                 break;
 
             case KeyCode::ARROWDOWN:
-                this->cursorPos = this->length;
+                this->cursorPos = this->textLength;
                 break;
 
             case KeyCode::ARROWLEFT:
@@ -461,7 +452,7 @@ void WindowTextInput::onInput(Graphics::Gui::State* state) {
                 break;
 
             case KeyCode::ARROWRIGHT:
-                if (this->cursorPos < this->length) this->cursorPos++;
+                if (this->cursorPos < this->textLength) this->cursorPos++;
                 break;
 
             case KeyCode::BACKSPACE:
@@ -470,11 +461,11 @@ void WindowTextInput::onInput(Graphics::Gui::State* state) {
 
                 // Move everything past the cursor left one space
                 // This also overwrites the char at the cursor, so this is the 'backspace'
-                for (int i = (this->cursorPos - 1); i < this->length; i++)
+                for (int i = (this->cursorPos - 1); i < this->textLength; i++)
                     this->text[i] = this->text[i+1];
 
-                this->text[this->length] = '\0';
-                this->length--;
+                this->text[this->textLength] = '\0';
+                this->textLength--;
                 this->cursorPos--;
 
                 textChanged = true;
@@ -486,8 +477,11 @@ void WindowTextInput::onInput(Graphics::Gui::State* state) {
 
     }
 
-    if (textChanged)
+    if (textChanged) {
         this->writeToValue();
+    }
+
+    return;
 
 }
 
@@ -566,7 +560,7 @@ void WindowTextInput::updateString() {
     int newLength = 0;
     for (; this->text[newLength] != '\0'; newLength++);
 
-    this->length = newLength;
+    this->textLength = newLength;
 
     return;
 
@@ -584,16 +578,37 @@ void WindowTextInput::writeToValue() {
         case BindType::NONE:
             break;
 
-        case BindType::INT:
+        case BindType::INT: {
+            
             passed = stringToInt(this->text, &intValue, this->BUFFERSIZE);
-            if (passed) *(this->boundInt) = intValue;
 
-        case BindType::FLOAT:
+            if (passed) {
+                *(this->boundInt) = intValue;
+            }
+        
+            break;
+        
+        }
+
+
+        case BindType::FLOAT: {
+
             passed = stringToFloat(this->text, &floatValue, this->BUFFERSIZE);
-            if (passed) *(this->boundFloat) = floatValue;
+            
+            if (passed) {
+                *(this->boundFloat) = floatValue;
+            }
 
+            break;
 
+        }
+
+        default:
+            break;
+        
     }
+
+    return;
 
 }
 
@@ -645,6 +660,8 @@ WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, char* id) :
 
     this->id = id;
 
+    return;
+
 }
 
 WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* action) : WindowElement(posx, posy, sizex, sizey) {
@@ -656,11 +673,13 @@ WindowButton::WindowButton(int posx, int posy, int sizex, int sizey, Action* act
 
     this->id = nullptr;
 
+    return;
+
 }
 
 WindowButton::~WindowButton() {
     
-    if (this->action != nullptr) delete this->action;
+    delete this->action;
 
     return;
 
@@ -692,10 +711,10 @@ void WindowButton::onInput(Graphics::Gui::State* state) {
 
 void WindowButton::bind(Action* action) {
 
-    // Free old action if there was one
-    if (this->action != nullptr) delete this->action;
-
+    delete this->action;
     this->action = action;
+
+    return;
 
 }
 
@@ -754,11 +773,15 @@ void WindowDragable::onInput(Graphics::Gui::State* state) {
     this->posToDrag->add(dx, dy);
     this->endPosToDrag->add(dx, dy);
 
+    return;
+
 }
 
 void WindowDragable::bind(Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag) {
 
     this->posToDrag = posToDrag;
     this->endPosToDrag = endPosToDrag;
+
+    return;
 
 }

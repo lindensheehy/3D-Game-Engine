@@ -12,9 +12,7 @@ facingAngle(0, 0, 0), facingVec(0, 0, 1), fov(0, 0) {
 
     this->lightingVec.set(0, 0, 0);
 
-}
-
-Camera::~Camera() {
+    return;
 
 }
 
@@ -29,7 +27,12 @@ void Camera::setPreset(int preset) {
             this->movementSpeed = 50;
             break;
 
+        default:
+            break;
+
     }
+
+    return;
 
 }
 
@@ -48,13 +51,7 @@ void Camera::rotate(float yaw, float pitch, float roll) {
 
 }
 
-void Camera::drawMesh(const Geometry::Mesh* mesh, const Geometry::Vec3* positionOffset) const {
-
-
-
-}
-
-void Camera::loadProjectionMatrix(Geometry::Matrix4* out) {
+void Camera::loadProjectionMatrix(Geometry::Matrix4* out) const {
 
     // This also handles the nullptr check
     Geometry::Matrix4::identity(out);
@@ -71,63 +68,6 @@ void Camera::loadProjectionMatrix(Geometry::Matrix4* out) {
     out->m[4][3] = -1.0f;
 
     return;
-
-}
-
-void Camera::project(const Geometry::Vec3* vec, Geometry::Vec3* out, const Geometry::Vec3* offset /* default value = nullptr */) const {
-
-    /*
-        This projects 'vec' into 'displayPos' based on this camera
-        The optional 'offset' parameter allows passing a position to
-    */
-
-    // Address error cases, but dont kill the process yet in case its not fatal
-    if (vec == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec3*, Vec3*) with arg1 as a nullptr!", true);
-        return;
-    }
-
-    if (out == nullptr) {
-        logWrite("Called Camera->project(Vec3*, Vec3*, Vec3*) with arg2 as a nullptr!", true);
-        return;
-    }
-    
-    // Get points location relative to the cameras position and rotation
-    out->set(vec);
-    out->add(offset);
-    out->sub( &(this->pos) );
-    out->rotate(this->facingAngle.x, this->facingAngle.y, 0);
-
-    // // In case the new one is broken
-    // displayPos->rotate(this->yaw, 0, 0);
-    // displayPos->rotate(0, this->pitch, 0);
-
-    out->project();
-
-    return;
-
-}
-
-bool Camera::canSee(const Geometry::Tri3* tri) const {
-
-    // Find the distance to the triangle, relative to the camera position
-    Geometry::Vec3 distance;
-    tri->getCenter( &(distance) );
-    distance.sub( &(this->pos) );
-
-    return tri->isFacing( &(distance) );
-
-}
-
-bool Camera::canSee(const Geometry::Tri3* tri, const Geometry::Vec3* offset) const {
-
-    // Find the distance to the triangle, relative to the camera position, accounting for offset
-    Geometry::Vec3 distance;
-    tri->getCenter( &(distance) );
-    distance.add(offset);
-    distance.sub( &(this->pos) );
-
-    return tri->isFacing( &(distance) );
 
 }
 

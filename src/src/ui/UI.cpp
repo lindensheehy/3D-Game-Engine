@@ -7,26 +7,39 @@ using namespace Ui;
 /* ---------- UI ---------- */
 /* ------------------------ */
 
-const Geometry::Vec2* UI::TransformWindowSize = new Geometry::Vec2(300, 105);
-LinkedList<Action*>* UI::actionQueue;
+LinkedList<Action*>* UI::actionQueue = nullptr;
 
 UI::UI() {
 
+    // Only one UI object should exist at once (for now)
+    // Since this constructor populates 'actionQueue', this is an effective way to check
+    if (UI::actionQueue != nullptr) {
+        logWrite("Warning: UI is trying to construct more than once!", true);
+        logWrite(" -> Because of the current 'actionQueue' system, only one UI instance can exist at once", true);
+        return;
+    }
+
+    this->hasMouseFocus = false;
+
+    this->bindManager = new BindManager();
+
+    this->xml = new Xml::XML();
+    this->xml->initDefaultElements();
+    this->xml->initCustomElements();
+
     this->windows = new LinkedList<Window*>();
 
-    this->nextWindowPos = new Geometry::Vec2(100, 100);
+    this->lastClicked = nullptr;
+
+    this->nextWindowPos.set(100, 100);
+
+    this->nextFreeWindowId = 0;
 
     LinkedList<Action*>* queue = new LinkedList<Action*>();
 
     UI::actionQueue = queue;
     Window::setActionQueue(queue);
     WindowElement::setActionQueue(queue);
-
-    this->xml = new Xml::XML();
-    this->xml->initDefaultElements();
-    this->xml->initCustomElements();
-
-    this->bindManager = new BindManager();
     
     return;
 
@@ -34,24 +47,39 @@ UI::UI() {
 
 UI::~UI() {
 
-    if (this->windows->length > 0) {
-        Window* window;
-        for (this->windows->iterStart(0); !this->windows->iterIsDone(); this->windows->iterNext()) {
-            window = this->windows->iterGetObj();
-            if (window != nullptr) delete window;
-        }
+    // Regular objects
+    delete this->bindManager;
+    delete this->xml;
+
+
+    // Clear any items in 'windows'
+    Window* window;
+
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
+        
+        window = this->windows->iterGetObj();
+        if (window != nullptr) delete window;
+
     }
 
-    if (this->windows != nullptr) delete this->windows;
+    delete this->windows;
 
-    if (this->bindManager != nullptr) delete this->bindManager;
+
+    delete UI::actionQueue;
+    UI::actionQueue = nullptr;
+
+
+    return;
 
 }
 
 void UI::draw(Graphics::Drawing::Drawer* drawer) {
 
-    for (this->windows->iterStart(0); !this->windows->iterIsDone(); this->windows->iterNext())
+    for (this->windows->iterStart(0); this->windows->iterHasNext(); this->windows->iterNext()) {
         this->windows->iterGetObj()->draw(drawer);
+    }
+
+    return;
 
 }
 
@@ -63,7 +91,7 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
     Window* currentWindow;
 
     // First I check where the mouse is relative to the UI. This is how the cursor state is updated
-    // Also store some values to make the logic afterwards more simple
+    // Also cache some values to make the logic afterwards more simple
     bool mouseIsOnUi = false;
     Window* hoveredWindow = nullptr;
     WindowElement* hoveredElement = nullptr;
@@ -111,7 +139,9 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
 
     }
 
-    if (!mouseStateWasSet) (*cursorStateOut) = Graphics::Gui::CURSOR_ARROW;
+    if (cursorStateOut != nullptr) {
+        if (!mouseStateWasSet) (*cursorStateOut) = Graphics::Gui::CURSOR_ARROW;
+    }
 
     // Click handling
     if (state->wasLeftJustPressed()) {
@@ -196,8 +226,6 @@ bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursor
 
             if (state->wasLeftJustPressed() || (state->newKeyPressesIndex > 0)) {
 
-                logWrite("checking textbox", true);
-
                 this->lastClicked->onInput(state);
 
                 // This also means UI should take the focus, at least for this frame. On key presses, it will be reset next frame
@@ -225,7 +253,7 @@ WindowHandle* UI::createWindow(const char* fileName) {
     newWindow->size.set(parentElement->size);
     newWindow->endPos.set(parentElement->size);
 
-    // Place the window at the nextWindowPos if position was not specified (flag is -1)
+    // Place the window at the nextWindowPos if position was not specified ((-1, -1) is the flag for unspecified position)
     if (parentElement->pos.is(-1, -1)) {
 
         newWindow->pos.set(this->nextWindowPos);
@@ -257,14 +285,14 @@ WindowHandle* UI::createWindow(const char* fileName) {
 
 }
 
-void UI::destroyWindow(WindowHandle* pWindowHandle) {
+void UI::destroyWindow(WindowHandle* windowHandle) {
 
-    if (pWindowHandle == nullptr) {
+    if (windowHandle == nullptr) {
         logWrite("UI::destroyWindow(WindowHandle*) Was called on a nullptr!", true);
         return;
     }
 
-    Window* window = (*pWindowHandle).ptr;
+    Window* window = windowHandle->ptr;
 
     if (window == nullptr) {
         logWrite("UI::destroyWindow(WindowHandle*) Tried to destroy an invalid window!", true);
@@ -331,8 +359,8 @@ void UI::setWindowPos(WindowHandle* windowHandle, int posx, int posy) {
 
 void UI::handleActions() {
 
-    // Handle actions in queue, if any exist
     Action* currentAction;
+
     while (UI::actionQueue->length != 0) {
 
         currentAction = UI::getNextAction();
@@ -404,10 +432,12 @@ void UI::handleActions() {
 
 void UI::updateNextWindowPos() {
     
-    this->nextWindowPos->add(50, 50);
+    this->nextWindowPos.add(50, 50);
 
-    if (this->nextWindowPos->x > 500) this->nextWindowPos->x = 100;
-    if (this->nextWindowPos->y > 300) this->nextWindowPos->y = 100;
+    if (this->nextWindowPos.x > 500) this->nextWindowPos.x = 100;
+    if (this->nextWindowPos.y > 300) this->nextWindowPos.y = 100;
+
+    return;
 
 }
 
@@ -441,6 +471,8 @@ void UI::destroyWindow(Window* window) {
     if (removed == nullptr) return;
     
     delete removed;
+
+    return;
 
 }
 

@@ -5,7 +5,6 @@ using namespace Xml;
 
 XMLFile::XMLFile(const char* fileName) {
 
-    // Variable initialization
     this->parametersStart = -1;
     this->parametersEnd = -1;
     this->labelsStart = -1;
@@ -50,11 +49,11 @@ XMLFile::XMLFile(const char* fileName) {
 
 XMLFile::~XMLFile() {
 
-    if (this->file != nullptr) delete[] this->file;
+    delete[] this->file;
 
-    if (this->parameters != nullptr) delete this->parameters;
-    if (this->labels != nullptr) delete this->labels;
-    if (this->main != nullptr) delete this->main;
+    delete this->parameters;
+    delete this->labels;
+    delete this->main;
 
     return;
 
@@ -62,7 +61,7 @@ XMLFile::~XMLFile() {
 
 XMLFile* XMLFile::copy() {
 
-    // Empty constructor becuase this assumes the data is already pre-processed
+    // This empty constructor does not initialize any member variables
     XMLFile* ret = new XMLFile();
 
     ret->fileName = this->fileName;
@@ -168,6 +167,8 @@ void XMLFile::setParameter(const char* tag, int value) {
 
     delete[] valueString;
 
+    return;
+
 }
 
 void XMLFile::setParameter(const char* tag, float value) {
@@ -179,6 +180,8 @@ void XMLFile::setParameter(const char* tag, float value) {
     this->setParameter(tag, (const char*) valueString);
 
     delete[] valueString;
+
+    return;
     
 }
 
@@ -238,8 +241,8 @@ void XMLFile::formatFile() {
 
     /*
         This function removes all unnessecary whitespace and non printable characters from the file
-        This will write over this->file, but it does not change the contents in a way that affects the data within
-        The whole point of this is just to make parsing easier, it will be more predictable what will come after what
+        This will write over this->file, but it does not change the contents of the actual file on disk
+        The whole point of this is just to make parsing easier. It will be more predictable what will come after what
 
         I use a two pointer approach here
         The first pointer will refer to the location where the next valid char should go
@@ -258,7 +261,6 @@ void XMLFile::formatFile() {
     // Only gets used when inside a tag, and it basically caps the spaces at one between traits
     bool lastWasSpace = false;
 
-    // For the loop
     char currentChar;
     bool isValid;
 
@@ -391,7 +393,7 @@ void XMLFile::locateSections() {
     /*
         This finds the index within the file of each reserved tag
         Actually holds the index after the first, and before the second. 
-        So the contents between the two indices is whats between the open and close tags
+        So the contents between the two indices (inclusive) is whats between the open and close tags
 
         The reserved tags are:
         - <parameters>  => this->parametersStart
@@ -439,12 +441,11 @@ void XMLFile::locateSections() {
         Lambda helper functions for the loop   
 
         These functions update the given SearchTags based on the characters
-        In the context of the loop, these will be called for each character in the file
+        In the context of the loop, this will be called for each character in the file
 
         There is two because theres slightly different handling for start and end tags
         Start tags will find the index after the end of the tag
         Eng tags will find the index before the start of the tag
-        This leaves a range that represents the data between the two tags
     */
 
     // This will be called for each 'Start' tag
@@ -498,7 +499,7 @@ void XMLFile::locateSections() {
     };
 
 
-    // Now the loop
+    // Now the loop (which is very simple due to all the work done above)
     char currentChar;
     for (int i = 0; file[i] != '\0'; i++) {
 
@@ -515,6 +516,7 @@ void XMLFile::locateSections() {
         matchCharEnd(mainEnd,       currentChar, i);
 
     }
+
 
     /*   Error checking stuff   */
 
@@ -537,7 +539,7 @@ void XMLFile::locateSections() {
             logWrite(" -> Failed to find a closing </parameters> tag to match the opening <parameters> tag", true);
         }
 
-        // Do not finish the code. This leaves the section pointers as -1
+        // Do not finish the code. This leaves all the section pointers as -1
         return;
 
     }
@@ -559,7 +561,7 @@ void XMLFile::locateSections() {
             logWrite(" -> Failed to find a closing </labels> tag to match the opening <labels> tag", true);
         }
 
-        // Do not finish the code. This leaves the section pointers as -1
+        // Do not finish the code. This leaves all the section pointers as -1
         return;
 
     }
@@ -585,7 +587,7 @@ void XMLFile::locateSections() {
             logWrite(" -> Failed to find a closing </main> tag", true);
         }
 
-        // Do not finish the code. This leaves the section pointers as -1
+        // Do not finish the code. This leaves all the section pointers as -1
         return;
         
     }
@@ -662,14 +664,14 @@ void XMLFile::applyLabels() {
     char* oldTag;
     char* newTag;
 
-    // This is passed to TagSequence::getStringTag() becuase I dont care about the length here
-    int placeHolder;
+    // This is passed as the outparam to TagSequence::getStringTag() becuase I dont care about the length here
+    int _;
 
     for (int i = 0; i < labelCount; i += 2) {
 
         // Get the 2 string tags from the label
-        oldTag = this->labels->getStringTag(i, &placeHolder);
-        newTag = this->labels->getStringTag(i + 1, &placeHolder);
+        oldTag = this->labels->getStringTag(i, &_);
+        newTag = this->labels->getStringTag(i + 1, &_);
 
         // Treat the label as a parameter (its functionally the same)
         this->setLabel(oldTag, newTag);

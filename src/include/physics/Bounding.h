@@ -1,3 +1,17 @@
+/*
+    --- THIS FILE IS NOT PART OF THE CURRENT BUILD ---
+
+    This file is incomplete, but it’s here on purpose.
+
+    It’s meant to define physics bounding shapes.
+    These will be used for physics interaction handling, and will be tied to Object instances
+
+    This code only exists to help layout the project structure.
+    It will be properly implemented (or refactored) in V2.
+
+    Leaving it here to show what was planned. Not forgotten, just moved forward.
+*/
+
 #pragma once
 
 #include "util/Utility.h"
@@ -10,13 +24,12 @@ namespace Physics {
 // Early declaration for Collision namespace
 class BoundingShape;
 
-enum BoundType {
-    RECTPRISM,
-    SPHERE,
-    NONE
-};
-
 namespace Collision {
+
+    /*
+        These functions contain the core collision logic
+        The 'collidesWith' overrides dynamically dispatch to these
+    */
 
     // Handles Sphere on Sphere collision
     bool sphereSphere(BoundingShape* sphere1, BoundingShape* sphere2);
@@ -27,6 +40,12 @@ namespace Collision {
     // Handles Rect on Sphere collision
     bool rectSphere(BoundingShape* rect, BoundingShape* sphere);
 
+};
+
+enum BoundType {
+    RECTPRISM,
+    SPHERE,
+    NONE
 };
 
 class BoundingShape {
@@ -43,6 +62,7 @@ class BoundingShape {
 
         // Destructor
         virtual ~BoundingShape() {}
+
 
         /*   Instance Functions   */
 
@@ -64,6 +84,7 @@ class BoundingRect : public BoundingShape {
         BoundingRect(Geometry::Vec3* start, Geometry::Vec3* end);
         BoundingRect(float x1, float y1, float z1, float x2, float y2, float z2);
 
+
         /*   Instance Functions   */
 
         bool collidesWith(BoundingShape* other) override;
@@ -83,6 +104,7 @@ class BoundingSphere : public BoundingShape {
         // Constructor
         BoundingSphere(Geometry::Vec3* pos, float radius);
         BoundingSphere(float x, float y, float z, float radius);
+
 
         /*   Instance Functions   */
 

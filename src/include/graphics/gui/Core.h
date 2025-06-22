@@ -14,12 +14,12 @@ namespace Gui {
     static constexpr unsigned int PIXEL_BUFFER_HEIGHT = 2160;
 
 
-    // Typedef to help pass a WindowProc to the constructor
+    // Typedef to help clarify typing of a WindowProc in the Window constructor
     typedef LRESULT(CALLBACK* WindowProcFunc)(HWND, UINT, WPARAM, LPARAM);
 
 
     // Enum used to help set the mouse cursor state
-    enum CursorState {
+    enum CursorState : int {
 
         // Regular arrow cursor
         CURSOR_ARROW,
@@ -28,7 +28,7 @@ namespace Gui {
         CURSOR_HAND,
 
         // Edit text cursor
-        CURSOR_TEXT
+        CURSOR_TEXT,
 
     };
 

@@ -5,8 +5,7 @@
 #include "geometry/Vec.h"
 
 
-// Forward declare Object to avoid circular dependance
-// Also the namespace is nessecary here because the actual Object exists in this namespace
+// Forward declaration
 namespace Physics {
     class Object;
 }
@@ -21,14 +20,15 @@ class PixelTracker {
         This class serves to track which Object is drawing to pixels
         This is how I let the user select objects, instead of raycasting
 
-        Theres not a whole lot going on here, its pretty much just a container that gets instantiated in Drawer
+        Theres not a whole lot going on here, its pretty much just a data container that Drawer uses
+        None of the pointers here are owned by this class
     */
 
     public:
 
         /*   Instance Variables   */
 
-        // The Object that is active
+        // The Object that is being drawn
         Physics::Object* currentObject;
 
         // Contains the Object that last wrote to the requested pixel
@@ -47,7 +47,7 @@ class PixelTracker {
         
         /*   Instance Functions   */
 
-        // Tells this object to set foundObject to SelectedObject
+        // Sets foundObject to SelectedObject
         void foundWrite();
 
 

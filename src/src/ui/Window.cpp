@@ -3,9 +3,9 @@
 using namespace Ui;
 
 
-LinkedList<Action*>* Window::actionQueue;
+LinkedList<Action*>* Window::actionQueue = nullptr;
 
-Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default value = 0 */) {
+Window::Window(int posx, int posy, int sizex, int sizey, int layer) {
 
     this->pos.set(posx, posy);
     this->size.set(sizex, sizey);
@@ -14,11 +14,13 @@ Window::Window(int posx, int posy, int sizex, int sizey, int layer /* Default va
     this->elements = new LinkedList<WindowElement*>();
     this->bindables = new LinkedList<Bindable*>();
 
-    this->endPos.set( &(this->pos) ).add( &(this->size) );
+    this->endPos.set(this->pos).add(this->size);
+
+    return;
 
 }
 
-Window::Window(Geometry::Vec2* pos, Geometry::Vec2* size, int layer /* Default value = 0 */) {
+Window::Window(Geometry::Vec2* pos, Geometry::Vec2* size, int layer) {
 
     this->pos.set(pos);
     this->size.set(size);
@@ -27,47 +29,39 @@ Window::Window(Geometry::Vec2* pos, Geometry::Vec2* size, int layer /* Default v
     this->elements = new LinkedList<WindowElement*>();
     this->bindables = new LinkedList<Bindable*>();
 
-    this->endPos.set( &(this->pos) ).add( &(this->size) );
+    this->endPos.set(this->pos).add(this->size);
+
+    return;
 
 }
 
 Window::~Window() {
 
     // Free the child elements
-    if (this->elements != nullptr) {
+    WindowElement* element;
 
-        if (this->elements->length > 0) {
+    for (this->elements->iterStart(0); this->elements->iterHasNext(); this->elements->iterNext()) {
 
-            WindowElement* element;
-
-            for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext()) {
-                element = this->elements->iterGetObj();
-                if (element != nullptr) delete element;
-            }
-
-        }
-
-        delete this->elements;
+        element = this->elements->iterGetObj();
+        delete element;
 
     }
+
+    delete this->elements;
+
 
     // Free the bindables
-    if (this->bindables != nullptr) {
+    Bindable* bindable;
 
-        if (this->bindables->length > 0) {
+    for (this->bindables->iterStart(0); this->bindables->iterHasNext(); this->bindables->iterNext()) {
 
-            Bindable* bindable;
-
-            for (this->bindables->iterStart(0); !this->bindables->iterIsDone(); this->bindables->iterNext()) {
-                bindable = this->bindables->iterGetObj();
-                if (bindable != nullptr) delete bindable;
-            }
-            
-        }
-
-        delete this->bindables;
-
+        bindable = this->bindables->iterGetObj();
+        delete bindable;
+        
     }
+
+    delete this->bindables;
+
 
     return;
 
@@ -75,8 +69,9 @@ Window::~Window() {
 
 void Window::draw(Graphics::Drawing::Drawer* drawer) {
 
-    for (this->elements->iterStart(0); !this->elements->iterIsDone(); this->elements->iterNext())
+    for (this->elements->iterStart(0); this->elements->iterHasNext(); this->elements->iterNext()) {
         this->elements->iterGetObj()->draw(drawer, &(this->pos));
+    }
 
     return;
 
@@ -262,9 +257,11 @@ void Window::locateBindables() {
 
         Bindable* bindable;
 
-        for (this->bindables->iterStart(0); !this->bindables->iterIsDone(); this->bindables->iterNext()) {
+        for (this->bindables->iterStart(0); this->bindables->iterHasNext(); this->bindables->iterNext()) {
+
             bindable = this->bindables->iterGetObj();
             if (bindable != nullptr) delete bindable;
+
         }
 
         delete this->bindables;
@@ -278,8 +275,9 @@ void Window::locateBindables() {
 
         current = this->elements->iterGetObj();
 
-        if (current != nullptr)
+        if (current != nullptr) {
             this->locateBindables(current);
+        }
 
     }
 
@@ -310,19 +308,12 @@ void Window::locateBindables(WindowElement* root) {
 
         current = root->children->iterGetObj();
 
-        if (current != nullptr)
+        if (current != nullptr) {
             this->locateBindables(current);
+        }
 
     }
 
     return;
 
-}
-
-void Window::setActionQueue(LinkedList<Action*>* queue) {
-    Window::actionQueue = queue;
-}
-
-void Window::queueAction(Action* action) {
-    Window::actionQueue->pushBack(action);
 }

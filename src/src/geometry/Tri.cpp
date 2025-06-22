@@ -9,11 +9,6 @@ using namespace Geometry;
 
 Tri2::Tri2(bool nullPointers /* default value = false */) {
 
-    /*
-        Stores a set of 3 vectors
-        nullPointers flag allows the pointers to be manually set instead of autocreating objects
-    */
-
     if (nullPointers) {
         this->v1 = nullptr;
         this->v2 = nullptr;
@@ -25,6 +20,8 @@ Tri2::Tri2(bool nullPointers /* default value = false */) {
         this->v2 = new Vec2(0, 0);
         this->v3 = new Vec2(0, 0);
     }
+    
+    return;
 
 }
 
@@ -97,17 +94,12 @@ void Tri2::rotate(float degrees, Vec2* around) {
 /* ------------ */
 
 Tri3::Tri3(bool nullPointers /* default value = false */) {
-    /*
-        Stores a set of 3 vectors as well as their normal, the normal can be updated using the instance function but this may be facing the wrong way
-        nullPointers flag allows the pointers to be manually set instead of autocreating objects
-    */
 
     if (nullPointers) {
         this->v1 = nullptr;
         this->v2 = nullptr;
         this->v2 = nullptr;
         this->normal = nullptr;
-        return;
     }
 
     else {
@@ -115,8 +107,9 @@ Tri3::Tri3(bool nullPointers /* default value = false */) {
         this->v2 = new Vec3(0, 0, 0);
         this->v3 = new Vec3(0, 0, 0);
         this->normal = new Vec3(0, 0, 0);
-        return;
     }
+
+    return;
 
 }
 
@@ -188,10 +181,8 @@ void Tri3::updateNormal() {
     vec1to2.set(this->v1).sub(this->v2);
     vec1to3.set(this->v1).sub(this->v3);
 
-    vec1to2.crossProduct( &(vec1to3), &(newNormal));
-    newNormal.normalize();
-    
-    this->normal->set( &(newNormal) );
+    vec1to2.crossProduct( &(vec1to3), this->normal );
+    this->normal->normalize();
 
     return;
 
@@ -204,7 +195,7 @@ bool Tri3::isFacing(Vec3* vec) const {
         return false;
     }
 
-    return vec->getAngle(this->normal) >= 90;
+    return ( vec->getAngle(this->normal) >= 90 );
 
 }
 
@@ -217,11 +208,10 @@ void Tri3::getCenter(Vec3* out) const {
     }
 
     // Average all 3 components
-    float x = this->v1->x + this->v2->x + this->v3->x;
-    float y = this->v1->y + this->v2->y + this->v3->y;
-    float z = this->v1->z + this->v2->z + this->v3->z;
-    x /= 3; y /= 3; z /= 3;
-
+    float x = (this->v1->x + this->v2->x + this->v3->x) / 3.0f;
+    float y = (this->v1->y + this->v2->y + this->v3->y) / 3.0f;
+    float z = (this->v1->z + this->v2->z + this->v3->z) / 3.0f;
+    
     out->set(x, y, z);
 
     return;

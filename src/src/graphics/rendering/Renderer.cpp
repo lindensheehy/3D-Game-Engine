@@ -8,6 +8,8 @@ Renderer::Renderer(Drawing::PixelDrawer* pixelDrawer, Display* display) {
     this->pixelDrawer = pixelDrawer;
     this->display = display;
 
+    return;
+
 }
 
 void Renderer::drawObject(Physics::Object* object, Camera* camera) {
@@ -22,7 +24,7 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
         return;
     }
     
-    using namespace Geometry;   // for Matrix4 and Vec3
+    using namespace Geometry;   // for Matrix4, Vec3, and Mesh
     
     /*
         These are the operations I handle here, in order of when they should happen:
@@ -100,8 +102,8 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
 
     // Apply the transformations to all vertices and normals. This is effectively the projection pipeline
     {
-        Geometry::Vec3 temp;
-        Geometry::Mesh* mesh = object->mesh;
+        Vec3 temp;
+        Mesh* mesh = object->mesh;
 
         // Transform the vertices
         for (int i = 0; i < mesh->vertexCount; i++) {
@@ -155,7 +157,7 @@ void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
     float lightAngle, lightFactor;
     uint32 shade;
 
-    int indexNormal, indexA, indexB, indexC;
+    int indexA, indexB, indexC, indexNormal;
     Geometry::Vec2 a2; Geometry::Vec3 a3;
     Geometry::Vec2 b2; Geometry::Vec3 b3;
     Geometry::Vec2 c2; Geometry::Vec3 c3;
@@ -206,7 +208,7 @@ void Renderer::drawTri(
 
     /*
         This function uses a bounding box approach to fill the triangle
-        It defines starting points, with some padding (see 'constexpr int padding')
+        It defines start and end points on each axis, with some padding (see 'constexpr int padding')
         Then it uses the edge functions for each edge of the triangle to determine if the pixel lies within
         It also allows a little bit of leniency (see 'constexpr float leniency'), which helps fill gaps between triangles
     */
@@ -248,19 +250,20 @@ void Renderer::drawTri(
     /*
         Now we set up the barycentric coordinate system
         This coordinate system lets me iterate over the 3d triangle, in steps relative to the 2d triangle
-        To do this i need to set up three vectors:
-        - stepper   => The 3d position of the top left of the bounding box
+        To do this, four vectors are created:
+        - stepper   => The iterator. Starts at the top left of the bounding box (in 3d space)
         - stepRight => The distance in 3d space equal to stepping 1 pixel right (i++)
         - stepDown  => The distance in 3d space equal to stepping 1 pixel down (j++)
-        - reset     => The coordinate stepper should go to each time it finished the inner loop
+        - reset     => The vector 'stepper' should be set to each time it finishes the inner loop
 
     */
 
-    // Set up
+    // Precompute constant
     float inverseAreaTotal = 1.0f / (
         (a.x * (b.y - c.y)) + (b.x * (c.y - a.y)) + (c.x * (a.y - b.y))
     );
 
+    // Helper function
     auto getBarycentric = [a, b, c, a3, b3, c3, inverseAreaTotal](
         int x, int y, Geometry::Vec3* out
     ) -> void {
@@ -288,7 +291,7 @@ void Renderer::drawTri(
 
     };
     
-    // Get the vectors
+    // Set up the vectors
     Geometry::Vec3 stepper, stepRight, stepDown, reset;
 
     getBarycentric(x1, y1, &(stepper));
@@ -301,7 +304,7 @@ void Renderer::drawTri(
 
     reset.set(stepper).add(stepRight);
 
-    // Start the stepper one behind so I can do the steps at the start of the loop. This helps continue work well
+    // Start the stepper one behind so I can do the steps at the start of the loop. This lets continue work nicely
     stepper.sub(stepDown);
 
     // Loop over the previously defined bounds
@@ -316,7 +319,7 @@ void Renderer::drawTri(
             // Skip iteration if the pixel is outside the triangle
             if ( !insideTri(i, j) ) continue;
 
-            // Squared depth. This approximates stepper.magnitude(), but we dont want to run the sqrt() call
+            // Squared depth. This approximates stepper.magnitude() without the sqrt() call (expensive to call in a tight loop like this)
             // It will be skewed, but thats fine. Its about order, not value
             depth = (stepper.x * stepper.x) + (stepper.y * stepper.y) + (stepper.z * stepper.z);
 
@@ -324,7 +327,7 @@ void Renderer::drawTri(
 
         }
 
-        // Reset to left, and step the reset down
+        // Reset to the top, and step the reset right
         stepper.set(reset);
         reset.add(stepRight);
 

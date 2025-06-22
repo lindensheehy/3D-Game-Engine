@@ -21,17 +21,23 @@ namespace Geometry {
 class Mesh {
 
     /*
-        This is the class used to define and transform meshes, some default meshes are populted after a call to initMeshes()
-        The reason there is a verticies list and a tri list is to simplify transformations and to use less memory
-        The verticies list stores the actual points, and the tris list only point to values in the verticies list
-        Same goes for the normals
-        The projected verticies use Vec3 objects to store depth. the x,y values are the screen coordinates and the z is the depth
+        This is the class used to define and transform meshes
+        Some default meshes are populted after initMeshes() is called
+
+        This mesh design does not store the triangles directly. Instead, it uses IndexMap
+        IndexMap stores the index of each vertex and the normal for each triangle index
+        Check out the IndexMap interface defined inside this class for more information
+
+        All the vector data for the mesh is stored in a single contiguous buffer
+        This means repeated access is fast within the vector data, even across 'seperate' arrays
+
+        When using the default meshes, they should be copied (via Mesh::copy()) before they are modified
     */
 
     public:
 
-        // Meshes, populated from initMeshes()
-        // These will be removed when I implement mesh importing from files
+        // Default meshes, populated from initMeshes()
+        // These will be removed when I implement mesh importing from files (postponed until V2)
         static Mesh* tempMesh;
         static Mesh* cubeMesh;
         static Mesh* sphereMesh;
@@ -45,12 +51,12 @@ class Mesh {
             /*
                 This contains an array named 'map' of the input size, where each item contains a Set struct.
                 Each Set item contains the index to various vecs for the triangles in a mesh.
-                These indexes refer to the position of the vectors in thier respective array.
+                These indexes refer to the position of the vectors in their respective array.
             */
 
             public:
 
-                // List items for the map variable
+                // List item for the map array
                 struct Set {
                     int vertex1;
                     int vertex2;
@@ -58,28 +64,32 @@ class Mesh {
                     int normal;
                 };
 
-                // Instance variables
+
+                /*   Instance Variables   */
+                
                 Set* map;
                 int size;
 
-                // Constructor
-                IndexMap();
+
+                // Constructor (see IndexMap::init())
+                IndexMap() : map(nullptr), size(0) {}
 
                 // Destructor
                 ~IndexMap();
+
 
                 /*   Instance Functions   */
 
                 // This does the actual construction, since IndexMap is stack allocated in Mesh
                 void init(int size);
 
-                // This is the equivalent to a deep copy, just sets all the instance variables of this to that of other
+                // This is the equivalent to a deep copy, just sets all the instance variables of this to that of 'other'
                 void setState(const IndexMap* other);
 
                 // Sets the values of the Set item at a given index
                 void setGroup(int index, int v1, int v2, int v3, int normal);
 
-                // Gets the values of the Set item at a given index. These values will be placed into the pointers given to the function.
+                // Gets the values of the Set item at a given index. These values will be placed into the pointers given.
                 void getGroup(int index, int* v1, int* v2, int* v3, int* normal) const;
 
         };
@@ -88,27 +98,15 @@ class Mesh {
 
         /*   Instance Variables   */
 
-        /*
-            For all "vertices", "normals", and "tris":
-            The list items are stored directly at the list location, not pointers
-            This is done for performance, but also so they can be easily imported from files
-
-            All three lists are also stored contiguously in memory, in one allocation
-            So they are in the same place, for cache locality, and the pointers are just offset to allow this
-
-            Also note the Tri3 objects in "tris" just point to Vec3 objects from the other 2 lists (no duplication)
-        */
-
         const int vertexCount, normalCount, triCount;
 
         Vec3* vertices;
         Vec3* normals;
 
-        // Maps vecs from verticies and normals to tris
         IndexMap indexMap;
 
         // The color which the mesh should appear as.
-        // This will be changed in the near future, each triangle should have their own color/texture
+        // This will be changed in the near future, each triangle should have their own color/texture (postponed until V2)
         uint32 color;
 
 
@@ -124,32 +122,34 @@ class Mesh {
         // Deep copy
         Mesh* copy() const;
 
-        // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
+        // Returns the center of the mesh (average of all verticies)
+        // This returns a pointer to a private instance variable. It should be copied before being modified
         Vec3* getCenter(); 
 
-        // Moves all the Vec3 objects within 'verticies' by the specified distance.
+        // Moves the mesh by the specified distance. Just calls Vec3::add() for each vertex.
         Mesh* move(Vec3* dist);
         Mesh* move(float dx, float dy, float dz);
 
-        // Scales the mesh by a given factor on each axis. Simply applies these factors to each component of every Vec3 object.
+        // Scales the mesh by a given factor on each axis. Just calls Vec3::scale() for each vertex.
         Mesh* scale(float factor);
         Mesh* scale(float fx, float fy, float fz);
 
-        // Rotates all the Vec3 objects by the specified angles. just calls Vec3->rotate() for each vertex.
+        // Rotates all the Vec3 objects by the specified angles. Just calls Vec3::rotate() for each vertex.
         Mesh* rotate(Vec3* angle, Vec3* around);
         Mesh* rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
 
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);
 
-        // This sets all the normals to the assumed values. These will always face outwards from the center of the mesh
+        // This sets all the normals to the assumed values using cross products
+        // These will always face outwards from the center of the mesh
         void updateNormals();
 
 
         /*   Class functions   */
 
         // Initializes all the standard meshes. Such as cubeMesh for example.
-        // Temporary, while i implement mesh file importing
+        // Temporary, while I implement mesh file importing (postponed until V2)
         static void initMeshes();
 
     private:
@@ -157,7 +157,7 @@ class Mesh {
         /*
             I also allocate the memory for rendering vertex data here
             This allows for better cache locality during rendering, plus it just keeps things organized in memory
-            The Renderer class is friended for this reason, as no other piece of this app cares about this memory
+            The Renderer class is friended for this reason, as no other piece of this app needs to know about this memory
         */
 
         friend class Graphics::Rendering::Renderer;
@@ -168,11 +168,11 @@ class Mesh {
 
 
         // This is the main pointer to the memory block owned by this mesh
-        // This memory holds all of "vertices", "normals", and "tris"
+        // This memory holds all of "vertices", "normals", "screenVertices", "cameraVertices", and "transformedNormals"
         void* mem;
         int memSize;
 
-        // The center of the mesh. Will be updated when the flag is false.
+        // The center of the mesh. Cached here because its expensive to compute
         Vec3 center;
         bool centerValid;
 

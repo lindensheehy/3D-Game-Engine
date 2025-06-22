@@ -28,6 +28,8 @@ class Context {
 
 class ContextNavBar : public Context {
 
+    // navbar.xml
+
     public:
 
         // Handles to the windows owned by the NavBar
@@ -42,6 +44,8 @@ class ContextNavBar : public Context {
 
 class ContextTransform : public Context {
 
+    // transform.xml
+
     public:
 
         // Not owned by this class
@@ -54,6 +58,8 @@ class ContextTransform : public Context {
 };
 
 class ContextObjects : public Context {
+
+    // objects.xml
 
     public:
 

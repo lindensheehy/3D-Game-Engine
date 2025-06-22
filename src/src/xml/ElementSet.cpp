@@ -13,7 +13,7 @@ ElementSet::ElementSet() {
 
 ElementSet::~ElementSet() {
 
-    // Delete strings and ParameterInfo objects from the set
+    // Delete list items, and their owned allocations
     Element* current;
     for (this->set->iterStart(0); this->set->iterHasNext(); this->set->iterNext()) {
 
@@ -21,8 +21,10 @@ ElementSet::~ElementSet() {
 
         if (current == nullptr) continue;
         
-        if (current->name != nullptr) delete[] current->name;
-        if (current->params != nullptr) delete current->params;
+        delete[] current->name;
+        delete current->params;
+
+        delete current;
 
     }
 
@@ -35,29 +37,23 @@ ElementSet::~ElementSet() {
 ElementSet::Element* ElementSet::matchElement(const char* elementName) {
 
     // Start by finding the length of the requested string
-    int nameLength = 0;
-    while (elementName[nameLength] != '\0') {
+    int nameLength = getTagLength(elementName);
 
-        // Break after too many chars
-        if (nameLength >= MAX_TAG_LENGTH) {
+    if (nameLength < 0) {
 
-            logWrite("Tried to call ElementSet::matchElement() on too long of a string!", true);
-            
-            logWrite(" -> Tried string \"");
-            logWrite(elementName);
-            logWrite("\" while max length is ");
-            logWrite(MAX_TAG_LENGTH, true);
-            
-            return nullptr;
-
-        }
-
-        nameLength++;
+        logWrite("Tried to call ElementSet::matchElement() on too long of a string!", true);
+        
+        logWrite(" -> Tried string \"");
+        logWrite(elementName);
+        logWrite("\" while max length is ");
+        logWrite(MAX_TAG_LENGTH, true);
+        
+        return nullptr;
 
     }
 
 
-    // Iterate through all stored elements
+    // Check against all stored elements
     Element* current;
     for (this->set->iterStart(0); this->set->iterHasNext(); this->set->iterNext()) {
 
@@ -84,14 +80,13 @@ ElementSet::Element* ElementSet::matchElement(const char* elementName) {
 
     }
 
-    // If no match found, return nullptr
+    // No match was found
     return nullptr;
 
 }
 
 void ElementSet::addDefaultElement(const char* elementName, ParameterInfo* parameterInfo, ElementType type) {
 
-    // Error checks
     if (elementName == nullptr) {
         logWrite("Called ElementSet::addDefaultElement(const char*, ParameterInfo*, ElementType) with arg1 as nullptr!", true);
         return;
@@ -151,7 +146,6 @@ void ElementSet::addDefaultElement(char* elementName, ParameterInfo* parameterIn
 
 void ElementSet::addCustomElement(const char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXML) {
 
-    // Error checks
     if (elementName == nullptr) {
         logWrite("Called ElementSet::addCustomElement(const char*, ParameterInfo*, XMLFile*) with arg1 as nullptr!", true);
         return;

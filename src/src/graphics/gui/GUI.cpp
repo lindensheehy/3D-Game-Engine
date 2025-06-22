@@ -1,7 +1,5 @@
 #include "graphics/gui/GUI.h"
 
-using namespace Graphics::Gui;
-
 
 /*
     The following code is here to route Windows messages to the right GUI instance
@@ -43,9 +41,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     Everything else is for the actual GUI class
 */
 
+using namespace Graphics::Gui;
+
+
 GUI::GUI(int width, int height, const char* windowName) {
 
-    // First i instantiate the windowList if it hasnt already been
+    // Instantiate the windowList if it hasnt already been
     if (windowList == nullptr) windowList = new LinkedList<GUI*>();
 
     this->window = new Window(WindowProc, width, height, windowName);
@@ -64,6 +65,7 @@ GUI::GUI(int width, int height, const char* windowName) {
 
     this->drawer = new Drawing::Drawer(width, height);
     this->drawer->setBuffer(this->window->buffer);
+    this->drawer->updateDimensions(width, height);
 
     this->shouldDestroyWindow = false;
 
@@ -75,10 +77,14 @@ GUI::GUI(int width, int height, const char* windowName) {
 
 GUI::~GUI() {
 
+    windowList->pop(this);
+
     delete this->display;
     delete this->drawer;
     delete this->state;
     delete this->window;
+
+    return;
 
 }
 
@@ -95,7 +101,7 @@ LRESULT GUI::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case 0:
             return 0;
 
-        // Message was a quit message, leave main loop
+        // Message was a quit message, set flag
         case 1:
             this->shouldDestroyWindow = true;
             return 0;
@@ -121,21 +127,17 @@ LRESULT GUI::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
             newWidth = LOWORD(lParam);
             newHeight = HIWORD(lParam);
 
-            // Tell display about the new dimensions
+            // Tell subsystems about the new dimensions
             this->display->updateDimensions(newWidth, newHeight);
-
-            // Tell gui about the new dimensions
             this->window->updateDimensions(newWidth, newHeight);
-            
-            // Tell drawer about the new dimensions
             this->drawer->updateDimensions(newWidth, newHeight);
 
-            // Also do default handling
+            // Message handled
             return 0;
 
         }
 
-        // Default handling
+        // Fall through to the default handling
         default:
             break;
 

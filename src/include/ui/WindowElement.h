@@ -16,30 +16,32 @@ namespace Ui {
 class WindowElement {
 
     /*
-        Individual graphical elements of windows.
-        This class should not be used, one of the subclasses should instead as they all have thier own functions.
+        Represents a single visual (or organizational) element in the UI
+        This is the lowest level of element in this module, and it makes up all UI features
+        
+        This class is purely a base class, and should not be used
+        Theres no issue with instantiating this class, it just wont do anything and will likely throw warnings/errors
     */
 
     public:
 
-        /*   Pre Defined Variables   */
-
-        uint32 color;
-
-
+    
+    
         /*   Instance Variables   */
-
+        
         Geometry::Vec2 pos; // Relative to parent
         Geometry::Vec2 size;
-        const char* tag;
+
+        // This is the color the element will show as (only affects certain subclasses)
+        uint32 color;
 
         LinkedList<WindowElement*>* children;
 
         // This defines what type of class this is
-        // This is not 1-to-1 with the class names, but rather it defines behaviours
+        // These dont map 1-to-1 onto the subclasses, they just define behaviour groupings
         Ui::ElementType type = Ui::ElementType::INVISIBLE;
 
-        // Used for binding interactable elements to other data
+        // Used for binding interactable elements to data
         // This is nullptr for any non-interactable element
         char* id;
         
@@ -48,8 +50,6 @@ class WindowElement {
 
         // Constructors
         WindowElement(int posx, int posy, int sizex, int sizey);
-
-        // Does NOT delete or directly use these vectors. they need to be handled correctly after this call
         WindowElement(Geometry::Vec2* pos, Geometry::Vec2* size);
 
         // Destructor
@@ -58,15 +58,12 @@ class WindowElement {
 
         /*   Instance Functions   */
 
-        // Offset should be the position of the parent, since all elements are stored in relative positions
+        // 'offset' should be the absolute position of the parent, so this elements 'pos' can be added to that
         virtual void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset);
 
         // This will return the lowest level element in the hierarchy that is interactable
         // If the position does not hit anything interactable, this will return nullptr
         WindowElement* hitTest(int x, int y, Geometry::Vec2* offset);
-
-        // Returns the child element that the click lies on. Returns this if this does but no children do. Returns nullptr if none do
-        WindowElement* doInput(Graphics::Gui::State* state, Geometry::Vec2* offset);
 
         void setPos(int x, int y);
         void setPos(Geometry::Vec2* newPos);
@@ -83,9 +80,9 @@ class WindowElement {
 
         /*   Class Functions   */
 
-        static void setActionQueue(LinkedList<Action*>* queue);
+        static inline void setActionQueue(LinkedList<Action*>* queue) { WindowElement::actionQueue = queue; }
 
-        static void queueAction(Action* action);
+        static inline void queueAction(Action* action) { WindowElement::actionQueue->pushBack(action); }
 
 
     protected:
@@ -95,7 +92,7 @@ class WindowElement {
         // Used for detecting clicks, and drawing for some subclasses
         Geometry::Vec2 endPos;
 
-        // Determines if doInput should stop after finding this element
+        // Determines if 'hitTest' should stop after finding this element
         bool isInteractable = false;
 
         // Reference to a shared Action queue
@@ -131,6 +128,10 @@ class WindowDiv : public WindowElement {
 
 
 class WindowLine : public WindowElement {
+
+    /*
+        Just a straight line from (x1, y1) to (x2, y2)
+    */
 
     public:
 
@@ -198,10 +199,6 @@ class WindowCircle : public WindowElement {
 
 class WindowTextStatic : public WindowElement {
 
-    /*
-        
-    */
-
     public:
 
         // Constructor
@@ -225,18 +222,11 @@ class WindowTextStatic : public WindowElement {
 class WindowTextInput : public WindowElement {
 
     /*
-        Class for a text input box which should be attached to some value
-        This is attached via a class setter, which allows class specific behaviour to be handled class-side
-        Since this is an interactive element, there is a lot more logic required
+        This is a text input box that can be attached to some value
+        This is attached by calling 'bind'. Only ints and floats are supported as of now
     */
 
     public:
-
-        enum class BindType {
-            NONE,
-            INT,
-            FLOAT
-        };
 
         // Constructor
         WindowTextInput(int posx, int posy, int width, char* id);
@@ -263,28 +253,47 @@ class WindowTextInput : public WindowElement {
     private:
 
         // Max length of string this will handle
-        const int BUFFERSIZE = 128;
+        static constexpr int BUFFERSIZE = 128;
 
-        // Instance Variables
-        char* text;         // Stores the current string being displayed
-        int length;         // Stores the length of the current 'text' string
-
-        int cursorPos;      // Stores the placement of the text cursor. 0 is before the first char
+        enum class BindType {
+            NONE,
+            INT,
+            FLOAT
+        };
 
         // These are the variables the text input can be bound to. only one will be valid at once
         BindType bindType;
         float* boundFloat;
         int* boundInt;
+
+        // Stores the current string being displayed
+        char* text;
+        int textLength;
+
+        // Stores the placement of the text cursor. 0 is before the first char
+        int cursorPos;
+
+
+        /*   Instance Functions   */
         
-        // Instance Functions
+        // This writes the value at the binded pointer (if it exists) into 'text'
+        // This allows the text box to accurately display the value its bound to
         void updateString();
 
+        // This writes the value in 'text' to the binded pointer (if it exists)
+        // This allows the text box to actually interact with the rest of the app
         void writeToValue();
 
 };
 
 
 class WindowTexture : public WindowElement {
+
+    /*
+        --- NOT IMPLEMENTED ---
+
+        This class displays a PNG as a UI element (postponed until V2)
+    */
 
     public:
 
@@ -299,12 +308,12 @@ class WindowTexture : public WindowElement {
 
         void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
 
-        // Optional call for this rather than having it in the destructor. Sometimes you might not want the PNG deleted if its used elsewhere
+        // Optional call for this rather than having it in the destructor
+        // PNG objects may be shared, so an opt-in destructor is ideal here
         void deleteTexture() {}
 
     private:
 
-        // I dont have a PNG class (yet)
         // PNG* texture;
 
 };
@@ -314,6 +323,7 @@ class WindowButton : public WindowElement {
 
     /*
         Class for buttons which should have some on click effect
+
         Note: Any buttons which are children of buttons WILL NOT be found as clicked since the search stops once it finds the first button
         This concept also applies to overlapping buttons, whenever clicking two at the same time, only one will act
     */
@@ -353,7 +363,7 @@ class WindowDragable : public WindowElement {
 
     public:
 
-        // Constructor
+        // Constructors
         WindowDragable(int posx, int posy, int sizex, int sizey, char* id);
         WindowDragable(int posx, int posy, int sizex, int sizey, Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag);
 
@@ -368,6 +378,7 @@ class WindowDragable : public WindowElement {
 
     private:
 
+        // Pointers to external data. Not owned by this class
         Geometry::Vec2* posToDrag;
         Geometry::Vec2* endPosToDrag;
 

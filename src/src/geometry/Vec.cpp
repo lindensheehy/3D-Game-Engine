@@ -7,20 +7,6 @@ using namespace Geometry;
 /* --- Vec2 --- */
 /* ------------ */
 
-Vec2::Vec2(float inputX, float inputY) {
-    this->x = inputX;
-    this->y = inputY;
-    this->magnitudeValue = 0;
-    this->magnitudeUpdated = false;
-}
-
-Vec2::Vec2() {
-    this->x = 0;
-    this->y = 0;
-    this->magnitudeValue = 0;
-    this->magnitudeUpdated = false;
-}
-
 Vec2* Vec2::copy() const {
     return new Vec2(this->x, this->y);
 }
@@ -73,7 +59,6 @@ Vec2& Vec2::set(float x, float y) {
 
     this->x = x;
     this->y = y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -83,7 +68,6 @@ Vec2& Vec2::set(const Vec2& other) {
 
     this->x = other.x;
     this->y = other.y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -98,7 +82,6 @@ Vec2& Vec2::set(const Vec2* other) {
 
     this->x = other->x;
     this->y = other->y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -108,7 +91,6 @@ Vec2& Vec2::add(float x, float y) {
 
     this->x += x;
     this->y += y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -118,7 +100,6 @@ Vec2& Vec2::add(const Vec2& other) {
 
     this->x += other.x;
     this->y += other.y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -133,7 +114,6 @@ Vec2& Vec2::add(const Vec2* other) {
 
     this->x += other->x;
     this->y += other->y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -143,7 +123,6 @@ Vec2& Vec2::sub(float x, float y) {
 
     this->x -= x;
     this->y -= y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -153,7 +132,6 @@ Vec2& Vec2::sub(const Vec2& other) {
 
     this->x -= other.x;
     this->y -= other.y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -168,7 +146,6 @@ Vec2& Vec2::sub(const Vec2* other) {
 
     this->x -= other->x;
     this->y -= other->y;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -178,7 +155,6 @@ Vec2& Vec2::scale(float factor) {
 
     this->x *= factor;
     this->y *= factor;
-    if (this->magnitudeUpdated) this->magnitudeValue *= factor;
 
     return *(this);
 }
@@ -187,7 +163,6 @@ Vec2& Vec2::inverseScale(float factor) {
     
     this->x /= factor;
     this->y /= factor;
-    if (this->magnitudeUpdated) this->magnitudeValue /= factor;
 
     return *(this);
 
@@ -198,33 +173,8 @@ Vec2& Vec2::normalize(float toMagnitude /* default value = 1.0 */) {
     return this->scale(factor);
 }
 
-float Vec2::get(int index) const {
-    switch (index) {
-        case 0:
-            return this->x;
-        case 1:
-            return this->y;
-        default:
-            return 0;
-    }
-}
-
-float* Vec2::toArray() const {
-    float* array = new float[2];
-    array[0] = this->x;
-    array[1] = this->y;
-    return array;
-}
-
 float Vec2::magnitude() {
-
-    if (!this->magnitudeUpdated) {
-        this->magnitudeValue = distance2(this->x, this->y);
-        this->magnitudeUpdated = true;
-    }
-
-    return this->magnitudeValue;
-
+    return distance2(this->x, this->y);
 }
 
 float Vec2::distanceTo(float x, float y) const {
@@ -364,9 +314,7 @@ void Vec2::rotate(float degrees, const Vec2* around /* default value = nullptr *
 }
 
 void Vec2::rotate(float degrees, const Vec2& around) {
-
     this->rotate(degrees, &(around));
-
 }
 
 
@@ -374,22 +322,6 @@ void Vec2::rotate(float degrees, const Vec2& around) {
 /* ------------ */
 /* --- Vec3 --- */
 /* ------------ */
-
-Vec3::Vec3(float inputX, float inputY, float inputZ) {
-    this->x = inputX;
-    this->y = inputY;
-    this->z = inputZ;
-    this->magnitudeValue = 0;
-    this->magnitudeUpdated = false;
-}
-
-Vec3::Vec3() {
-    this->x = 0;
-    this->y = 0;
-    this->z = 0;
-    this->magnitudeValue = 0;
-    this->magnitudeUpdated = false;
-}
 
 Vec3* Vec3::copy() const {
     return new Vec3(this->x, this->y, this->z);
@@ -449,7 +381,6 @@ Vec3& Vec3::set(float x, float y, float z) {
     this->x = x;
     this->y = y;
     this->z = z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -460,7 +391,6 @@ Vec3& Vec3::set(const Vec3& other) {
     this->x = other.x;
     this->y = other.y;
     this->z = other.z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -476,7 +406,6 @@ Vec3& Vec3::set(const Vec3* other) {
     this->x = other->x;
     this->y = other->y;
     this->z = other->z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -487,7 +416,6 @@ Vec3& Vec3::add(float dx, float dy, float dz) {
     this->x += dx;
     this->y += dy;
     this->z += dz;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -498,7 +426,6 @@ Vec3& Vec3::add(const Vec3& other) {
     this->x += other.x;
     this->y += other.y;
     this->z += other.z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -514,7 +441,6 @@ Vec3& Vec3::add(const Vec3* other) {
     this->x += other->x;
     this->y += other->y;
     this->z += other->z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -525,7 +451,6 @@ Vec3& Vec3::sub(float dx, float dy, float dz) {
     this->x -= dx;
     this->y -= dy;
     this->z -= dz;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -536,7 +461,6 @@ Vec3& Vec3::sub(const Vec3& other) {
     this->x -= other.x;
     this->y -= other.y;
     this->z -= other.z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -552,7 +476,6 @@ Vec3& Vec3::sub(const Vec3* other) {
     this->x -= other->x;
     this->y -= other->y;
     this->z -= other->z;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -563,7 +486,6 @@ Vec3& Vec3::scale(float factor) {
     this->x *= factor;
     this->y *= factor;
     this->z *= factor;
-    if (this->magnitudeUpdated) this->magnitudeValue *= factor;
 
     return *(this);
 
@@ -574,7 +496,6 @@ Vec3& Vec3::scale(float fx, float fy, float fz) {
     this->x *= fx;
     this->y *= fy;
     this->z *= fz;
-    this->magnitudeUpdated = false;
 
     return *(this);
 
@@ -585,7 +506,6 @@ Vec3& Vec3::inverseScale(float factor) {
     this->x /= factor;
     this->y /= factor;
     this->z /= factor;
-    if (this->magnitudeUpdated) this->magnitudeValue /= factor;
 
     return *(this);
 
@@ -596,36 +516,8 @@ Vec3& Vec3::normalize(float toMagnitude /* default value = 1.0 */) {
     return this->scale(factor);
 }
 
-float Vec3::get(int index) const {
-    switch (index) {
-        case 0:
-            return this->x;
-        case 1:
-            return this->y;
-        case 2:
-            return this->z;
-        default:
-            return 0;
-    }
-}
-
-float* Vec3::toArray() const {
-    float* array = new float[3];
-    array[0] = this->x;
-    array[1] = this->y;
-    array[2] = this->z;
-    return array;
-}
-
 float Vec3::magnitude() {
-
-    if (!this->magnitudeUpdated) {
-        this->magnitudeValue = distance3(this->x, this->y, this->z);
-        this->magnitudeUpdated = true;
-    }
-    
-    return this->magnitudeValue;
-
+    return distance3(this->x, this->y, this->z);
 }
 
 float Vec3::distanceTo(float x, float y, float z) const {
@@ -817,7 +709,7 @@ float Vec3::getAngle(float x, float y, float z) const {
 
 float Vec3::getAngle(const Vec3& other) const {
 
-    // This functions a bit bigger, so ill just use the float overload here
+    // This functions pretty big, so the float version is just called
     return this->getAngle(other.x, other.y, other.z);
 
 }
@@ -829,14 +721,12 @@ float Vec3::getAngle(const Vec3* other) const {
         return 0;
     }
 
-    // This functions a bit bigger, so ill just use the float overload here
+    // This functions pretty big, so the float version is just called
     return this->getAngle(other->x, other->y, other->z);
 
 }
 
 void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
-
-    // around = nullptr already addressed here, no need for error case
 
     if (yaw == 0 && pitch == 0 && roll == 0) return;
 
@@ -918,7 +808,7 @@ void Vec3::project() {
 
     /*
         Find a 2d coordinate coorsponding to a 3d point.
-        depth (length of the vector, which represents distance from camera in drawing) goes in the z component
+        The z component is left untouched
     */
 
     // Constant. Is currently proportional to display size
@@ -933,16 +823,12 @@ void Vec3::project() {
         return;
     }
 
-    float depth = this->magnitude();
-
     this->x = (this->x * focalLengthX) / this->z;
     this->y = (this->y * focalLengthY) / this->z;
 
     // adjust so its relative to the top left rather than middle
     this->x += 0.5;
     this->y += 0.5;
-
-    this->z = depth;
 
     return;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 
-// This is the list of keycodes my program tracks.
-// These values coorespond to both the given values from Windows, as well as the indexing of the keyStates array
+// This is the list of keycodes this program tracks
+// These values match the given values assigned by Windows
 enum class KeyCode : unsigned int {
 
     // This is just a "no key" value

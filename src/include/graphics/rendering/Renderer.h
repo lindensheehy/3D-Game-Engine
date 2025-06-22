@@ -18,10 +18,7 @@ class Renderer {
 
     /*
         This class is responsible for doing all the 3D rendering in this program
-        This is basically just a high level Graphics::Drawing::Drawer alternative
-
-        The main difference between this and Drawer is that this class owns and uses a depth buffer
-        The depth buffer allows 3d objects to be correctly rendered with respect to their distance from the camera
+        This is basically just a 3D version of Graphics::Drawing::Drawer (in that its a high level drawing interface)
     */
 
     public:
@@ -46,8 +43,8 @@ class Renderer {
         // Draws a mesh to the screen (assumes the private Mesh buffers are populated by drawObject)
         void drawMesh(Geometry::Mesh* mesh, Camera* camera);
 
-        // Draws a triangle onto the screen. a, b, and c are the triangle vertices
-        // Uses the Vec2's as screen position and the Vec3's for depth purposes
+        // Draws a triangle onto the screen where 'a', 'b', and 'c' are the triangle vertices
+        // Uses the Vec2s as screen space and the Vec3s as camera space (for depth purposes)
         void drawTri(
             uint32 color,
             Geometry::Vec2& a, Geometry::Vec3& a3,

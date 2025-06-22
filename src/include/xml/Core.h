@@ -15,35 +15,35 @@ enum PrimitiveTagType : int {
 
 };
 
-// These are the actual bytes that are stored in the buffer
+// These are the actual bytes that are stored in the primitive tags
 enum PrimitiveTagState : char {
 
     // These are the possible states for each PrimitiveTagType
     NONE = 0x00,
-    OPEN = 0x02,
-    CLOSE = 0x03,
+    OPEN = 0x01,
+    CLOSE = 0x02,
 
     /*   These ones should be unique to the ELEMENT type   */
 
     // This is used when two elements lie directly next to each other
     // Indicated by substring "/><"
-    CLOSE_OPEN = 0x04,
+    CLOSE_OPEN = 0x03,
 
     // This is used when there is a self closing tag right before a closing tag
     // Indicated by substring "/></"
-    DOUBLE_CLOSE = 0x05
+    DOUBLE_CLOSE = 0x04
 
 };
 
 // This is used to determine expected trait types on XML elements
 enum ParameterType : char {
 
-    TYPE_INT = 'a',
-    TYPE_FLOAT = 'b',
-    TYPE_STRING = 'c',
+    TYPE_INT = 1,
+    TYPE_FLOAT = 2,
+    TYPE_STRING = 3,
 
     // Used when the parameter was not found, therefore there is no type
-    TYPE_NONE = 'd'
+    TYPE_NONE = 4
 
 };
 

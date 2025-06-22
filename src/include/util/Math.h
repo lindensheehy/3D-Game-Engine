@@ -1,34 +1,28 @@
 #pragma once
 
-// For logging error cases
 #include "util/Log.h"
-
-/*
-    Note: Im very aware that there are several libraries which provide most, if not all, of this content, but I wanted to write it myself
-*/
 
 
 const float pi = 3.14159265358979323846;
-const float inf = 1e100;
+const float inf = 1e34;
 const float degToRadFactor = pi / 180;
 
 
-/*   -----   Basic Functions   -----   */
 
 // Returns the floor value of x as an int
 int floor(float x);
 int floor(double x);
 
-// Returns the rounded value of x as an integer. That means this rounds to ZERO decimal points
-int round(float x);
-int round(double x);
+// Returns the rounded value of x as an integer. That means this rounds to zero decimal points
+inline int round(float x) { return floor(x + 0.5f); }
+inline int round(double x) { return floor(x + 0.5f); }
 
 
-/*   -----   sqrt   -----   */
 
 // Returns a value within the given tolerance from the actual square root of x
-float sqrt (float x, float tolerance = 0.00001);
+float sqrt(float x, float tolerance = 0.00001);
 double sqrt(double x, double tolerance = 0.00001);
+
 
 
 /*   --------------------------   */
@@ -60,6 +54,7 @@ float arctan(float x);
 double arctan(double x);
 
 
+
 /*   ---------------------------   */
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
@@ -73,7 +68,7 @@ float distance3(float x1, float y1, float z1, float x2 = 0, float y2 = 0, float 
 // Returns a value 0-1 for how far between 'from' and 'to' the value is. Returns -1 if its outside the range.
 float normalize(float num, float from, float to);
 
-// Same as above, but allows values outside the range, in which case it would return values outside 0-1
+// Same as above, but allows values outside the range, in which case it will return values outside 0-1
 float inRange(float num, float from, float to);
 
 // Returns the angle between two points in DEGREES.
@@ -87,16 +82,13 @@ float getAngle(float x1, float y1, float x2 = 0, float y2 = 0);
 void rolloverAngle(float* angle);
 
 
+
 /*   ----------------------------   */
 /*   ---   Inline Functions   ---   */
 /*   ----------------------------   */
 
 // Angle conversion. Degrees -> Radians
-inline float toRadians(float degrees) {
-    return degrees * degToRadFactor;
-}
+inline float toRadians(float degrees) { return degrees * degToRadFactor; }
 
 // Angle conversion. Radians -> Degrees
-inline float toDegrees(float radians) {
-    return radians / degToRadFactor;
-}
+inline float toDegrees(float radians) { return radians / degToRadFactor; }

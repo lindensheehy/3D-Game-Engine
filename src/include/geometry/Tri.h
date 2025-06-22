@@ -12,13 +12,14 @@ class Tri2 {
     /*
         Represents a triangle in 2d space by storing 3 Vec2 pointers
 
-        The member variables of this class are not nessecarily owned by this class
-        For this reason they are not freed in a destructor, and are optionally freed by calling Tri3::freeVecs()
+        The Vec2 pointers are not nessecarily owned by this class. For this reason, there is no destructor. 
+        The vectors are optionally freed by calling Tri2::freeVecs()
     */
 
     public:
 
-        // Instance variables
+        /*   Instance Variables   */    
+
         Vec2* v1;
         Vec2* v2;
         Vec2* v3;
@@ -26,15 +27,15 @@ class Tri2 {
 
         /*   Constructor   */
 
-        // nullPointers determines if the instance variables should be initialized or not.
+        // 'nullPointers' determines if the instance variables should be initialized or not.
         // When this is false, all v1, v2, and v3 are set to individual copies of (0, 0)
         Tri2(bool nullPointers = false);
 
 
-        /*   Instance functions   */
+        /*   Instance Functions   */
 
         // This is the optional destructor for this class. 
-        // The Vec3 objects may not need to be freed for all instances so its handled manually
+        // The Vec2 objects may not need to be freed for all instances so its handled manually
         void freeVecs();
 
         // Deep copy
@@ -43,7 +44,7 @@ class Tri2 {
         // Logs the Tri2 object in a readable format
         void log() const;
 
-        // Rotates the triangle in 2d space
+        // Rotates the triangle in 2d space. Just calls Vec2::rotate on each vector
         void rotate(float degrees, Vec2* around = nullptr);
 
 };
@@ -54,15 +55,16 @@ class Tri3 {
 
     /*
         Similar to Tri2, but for 3d. This also contains a normal vector.
-        There are several other functions here becuase these are the objects used for all the Mesh objects.
+        There are several other utility functions here as well.
     
-        The member variables of this class are not nessecarily owned by this class
-        For this reason they are not freed in a destructor, and are optionally freed by calling Tri3::freeVecs()
+        The Vec3 pointers are not nessecarily owned by this class. For this reason, there is no destructor. 
+        The vectors are optionally freed by calling Tri3::freeVecs()
     */
 
     public:
 
-        // Instance variables
+        /*   Instance variables   */
+        
         Vec3* v1;
         Vec3* v2;
         Vec3* v3;
@@ -94,7 +96,7 @@ class Tri3 {
         void updateNormal();
 
         // Returns true if the triangle should be visible assuming its only opaque on the side the normal sticks out from.
-        // This just returns true when the angle between the Vec3 and the normal is >= 90
+        // This just returns true when the angle between 'vec' and the normal is >= 90
         bool isFacing(Vec3* vec) const;
 
         // Outputs the center of the triangle to the 'out' Vec3. This will overwrite anything existing in this vector

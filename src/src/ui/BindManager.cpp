@@ -13,23 +13,16 @@ BindManager::BindManager() {
 
 BindManager::~BindManager() {
 
-    if (this->binds != nullptr) {
-        
-        // Free any item in the list, as these are heap allocated
-        if (this->binds->length != 0) {
+    Bind* current;
 
-            Bind* current;
+    for (this->binds->iterStart(0); this->binds->iterHasNext(); this->binds->iterNext()) {
 
-            for (this->binds->iterStart(0); this->binds->iterHasNext(); this->binds->iterNext()) {
-                current = this->binds->iterGetObj();
-                delete current;
-            }
-
-        }
-
-        delete this->binds;
+        current = this->binds->iterGetObj();
+        delete current;
 
     }
+
+    delete this->binds;
 
     return;
 
@@ -49,6 +42,8 @@ void BindManager::addBind(WindowHandle* windowHandle, BindFunc bindFunc) {
     // Call the bind func
     bindFunc(windowHandle);
 
+    return;
+
 }
 
 void BindManager::removeBind(WindowHandle* windowHandle) {
@@ -66,6 +61,8 @@ void BindManager::removeBind(WindowHandle* windowHandle) {
     }
 
     this->removeBind(toRemove);
+
+    return;
 
 }
 
@@ -107,6 +104,8 @@ void BindManager::rebindAll() {
 
     }
 
+    return;
+
 }
 
 BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
@@ -135,5 +134,7 @@ BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
 void BindManager::removeBind(Bind* bind) {
 
     this->binds->pop(bind);
+
+    return;
 
 }

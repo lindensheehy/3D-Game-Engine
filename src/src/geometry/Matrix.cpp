@@ -10,13 +10,12 @@ void Matrix4::log() {
     for (int i = 0; i < 4; i++) {
 
         for (int j = 0; j < 4; j++) {
-
             logWrite(this->m[i][j]);
             logWrite(" ");
-
         }
 
-        logWrite("]\n         [ ");
+        logWrite("]\n");
+        if (i < 3) logWrite("         [ ");
 
     }
 
@@ -33,6 +32,11 @@ void Matrix4::set(const Matrix4& other) {
 }
 
 void Matrix4::set(const Matrix4* other) {
+
+    if (other == nullptr) {
+        logWrite("Matrix->set(Matrix*) was called on a nullptr!", true);
+        return;
+    }
     
     memcpy(this->m, other->m, sizeof(this->m));
 
@@ -41,35 +45,31 @@ void Matrix4::set(const Matrix4* other) {
 }
 
 void Matrix4::mul(const Matrix4& other) {
-    
-    // Cache other.m as o
-    float o[4][4];
-    memcpy(o, other.m, sizeof(o));
 
     // Cache this->m as t
     float t[4][4];
     memcpy(t, this->m, sizeof(t));
 
     // Inlined matrix multiplication, rows of t (this) by columns of o (other)
-    this->m[0][0] = (t[0][0] * o[0][0]) + (t[0][1] * o[1][0]) + (t[0][2] * o[2][0]) + (t[0][3] * o[3][0]);
-    this->m[0][1] = (t[0][0] * o[0][1]) + (t[0][1] * o[1][1]) + (t[0][2] * o[2][1]) + (t[0][3] * o[3][1]);
-    this->m[0][2] = (t[0][0] * o[0][2]) + (t[0][1] * o[1][2]) + (t[0][2] * o[2][2]) + (t[0][3] * o[3][2]);
-    this->m[0][3] = (t[0][0] * o[0][3]) + (t[0][1] * o[1][3]) + (t[0][2] * o[2][3]) + (t[0][3] * o[3][3]);
-
-    this->m[1][0] = (t[1][0] * o[0][0]) + (t[1][1] * o[1][0]) + (t[1][2] * o[2][0]) + (t[1][3] * o[3][0]);
-    this->m[1][1] = (t[1][0] * o[0][1]) + (t[1][1] * o[1][1]) + (t[1][2] * o[2][1]) + (t[1][3] * o[3][1]);
-    this->m[1][2] = (t[1][0] * o[0][2]) + (t[1][1] * o[1][2]) + (t[1][2] * o[2][2]) + (t[1][3] * o[3][2]);
-    this->m[1][3] = (t[1][0] * o[0][3]) + (t[1][1] * o[1][3]) + (t[1][2] * o[2][3]) + (t[1][3] * o[3][3]);
-
-    this->m[2][0] = (t[2][0] * o[0][0]) + (t[2][1] * o[1][0]) + (t[2][2] * o[2][0]) + (t[2][3] * o[3][0]);
-    this->m[2][1] = (t[2][0] * o[0][1]) + (t[2][1] * o[1][1]) + (t[2][2] * o[2][1]) + (t[2][3] * o[3][1]);
-    this->m[2][2] = (t[2][0] * o[0][2]) + (t[2][1] * o[1][2]) + (t[2][2] * o[2][2]) + (t[2][3] * o[3][2]);
-    this->m[2][3] = (t[2][0] * o[0][3]) + (t[2][1] * o[1][3]) + (t[2][2] * o[2][3]) + (t[2][3] * o[3][3]);
-
-    this->m[3][0] = (t[3][0] * o[0][0]) + (t[3][1] * o[1][0]) + (t[3][2] * o[2][0]) + (t[3][3] * o[3][0]);
-    this->m[3][1] = (t[3][0] * o[0][1]) + (t[3][1] * o[1][1]) + (t[3][2] * o[2][1]) + (t[3][3] * o[3][1]);
-    this->m[3][2] = (t[3][0] * o[0][2]) + (t[3][1] * o[1][2]) + (t[3][2] * o[2][2]) + (t[3][3] * o[3][2]);
-    this->m[3][3] = (t[3][0] * o[0][3]) + (t[3][1] * o[1][3]) + (t[3][2] * o[2][3]) + (t[3][3] * o[3][3]);
+    this->m[0][0] = (t[0][0] * other.m[0][0]) + (t[0][1] * other.m[1][0]) + (t[0][2] * other.m[2][0]) + (t[0][3] * other.m[3][0]);
+    this->m[0][1] = (t[0][0] * other.m[0][1]) + (t[0][1] * other.m[1][1]) + (t[0][2] * other.m[2][1]) + (t[0][3] * other.m[3][1]);
+    this->m[0][2] = (t[0][0] * other.m[0][2]) + (t[0][1] * other.m[1][2]) + (t[0][2] * other.m[2][2]) + (t[0][3] * other.m[3][2]);
+    this->m[0][3] = (t[0][0] * other.m[0][3]) + (t[0][1] * other.m[1][3]) + (t[0][2] * other.m[2][3]) + (t[0][3] * other.m[3][3]);
+    
+    this->m[1][0] = (t[1][0] * other.m[0][0]) + (t[1][1] * other.m[1][0]) + (t[1][2] * other.m[2][0]) + (t[1][3] * other.m[3][0]);
+    this->m[1][1] = (t[1][0] * other.m[0][1]) + (t[1][1] * other.m[1][1]) + (t[1][2] * other.m[2][1]) + (t[1][3] * other.m[3][1]);
+    this->m[1][2] = (t[1][0] * other.m[0][2]) + (t[1][1] * other.m[1][2]) + (t[1][2] * other.m[2][2]) + (t[1][3] * other.m[3][2]);
+    this->m[1][3] = (t[1][0] * other.m[0][3]) + (t[1][1] * other.m[1][3]) + (t[1][2] * other.m[2][3]) + (t[1][3] * other.m[3][3]);
+    
+    this->m[2][0] = (t[2][0] * other.m[0][0]) + (t[2][1] * other.m[1][0]) + (t[2][2] * other.m[2][0]) + (t[2][3] * other.m[3][0]);
+    this->m[2][1] = (t[2][0] * other.m[0][1]) + (t[2][1] * other.m[1][1]) + (t[2][2] * other.m[2][1]) + (t[2][3] * other.m[3][1]);
+    this->m[2][2] = (t[2][0] * other.m[0][2]) + (t[2][1] * other.m[1][2]) + (t[2][2] * other.m[2][2]) + (t[2][3] * other.m[3][2]);
+    this->m[2][3] = (t[2][0] * other.m[0][3]) + (t[2][1] * other.m[1][3]) + (t[2][2] * other.m[2][3]) + (t[2][3] * other.m[3][3]);
+    
+    this->m[3][0] = (t[3][0] * other.m[0][0]) + (t[3][1] * other.m[1][0]) + (t[3][2] * other.m[2][0]) + (t[3][3] * other.m[3][0]);
+    this->m[3][1] = (t[3][0] * other.m[0][1]) + (t[3][1] * other.m[1][1]) + (t[3][2] * other.m[2][1]) + (t[3][3] * other.m[3][1]);
+    this->m[3][2] = (t[3][0] * other.m[0][2]) + (t[3][1] * other.m[1][2]) + (t[3][2] * other.m[2][2]) + (t[3][3] * other.m[3][2]);
+    this->m[3][3] = (t[3][0] * other.m[0][3]) + (t[3][1] * other.m[1][3]) + (t[3][2] * other.m[2][3]) + (t[3][3] * other.m[3][3]);
 
     return;
 
@@ -309,11 +309,5 @@ void Matrix4::rotationZ(float angle, Matrix4* out) {
     out->m[1][1] = cos(radians);
 
     return;
-
-}
-
-void Matrix4::projection(float focalLengthX, float focalLengthY, Matrix4* out) {
-
-    
 
 }

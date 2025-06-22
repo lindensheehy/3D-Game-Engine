@@ -10,6 +10,14 @@ namespace Ui {
 
 class BindManager {
 
+    /*
+        This class abstracts the binding logic away from the external code
+
+        It serves two main purposes:
+        - Keeping everything in one place. All Windows that require binding can be stored here
+        - "Set it and forget it". You designate the bind function once, then call it again later with ease (via 'rebind')
+    */
+
     public:
 
         // Constructor
@@ -36,11 +44,10 @@ class BindManager {
 
     private:
 
-        // Holds a WindowHandle and BindFunc pair. Used in the binds linked list
+        // Holds a WindowHandle and BindFunc pair. Used in 'binds' (see below)
         struct Bind {
             
-            // All WindowHandles are stack allocated
-            // This is just a pointer because it needs to hold the same data as the passed WindowHandle
+            // This WindowHandle is not owned by this object. Its simply a copy of 'windowHandle' from 'addBind'
             WindowHandle* windowHandle;
 
             // Pointer to the main binding function for this bind
@@ -60,7 +67,7 @@ class BindManager {
         // This just returns the bind that holds the given WindowHandle
         Bind* getBind(WindowHandle* windowHandle);
 
-        // Tells this instance to stop tracking the given Bind
+        // Tells this instance to stop tracking the given Bind (helper function)
         void removeBind(Bind* bind);
 
 };

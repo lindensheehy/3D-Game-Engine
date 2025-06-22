@@ -8,15 +8,13 @@
 
 namespace Ui {
 
-    // Forward declare class UI in the relative global namespace
-    class UI;
-
-    // Forward declare WindowHandle globally
+    // Forward declare UI and WindowHandle in the relative global namespace
     // This module is pretty entangled, so this helps with circular dependancy issues
+    class UI;
     class WindowHandle;
 
 
-    // String literals for commonly used file paths
+    // String literals for file paths
     namespace File {
 
         constexpr const char* TRANSFORM   = "../src/assets/ui/windows/transform.xml";
@@ -26,7 +24,7 @@ namespace Ui {
     };
 
 
-    // Type def used to identify windows
+    // Type def used to uniquely identify windows
     typedef unsigned int WindowID;
 
 

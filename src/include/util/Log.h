@@ -2,10 +2,9 @@
 
 #include "util/Utility.h"
 
-// Init and Close
+// Control functions
 void logInit(const char* fileName);
 void logInit(char* fileName);
-
 void logClose();
 
 // Clears all characters from the output file
@@ -34,6 +33,6 @@ void logWriteHex(long long message, bool newLine = false);
 // New line
 void logNewLine();
 
-// Variable Format
+// Variable Format (prints "message: variable value")
 void logVar(const char* message, int variable);
 void logVar(const char* message, double variable);

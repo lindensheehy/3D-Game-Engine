@@ -3,15 +3,14 @@
 
 HANDLE hOutputFile = nullptr;
 
+// Exists primarily for casting (like 'intToString' for example)
 char* stringBuffer = nullptr;
 
-// Init and Close
+// Control functions
 void logInit(const char* fileName) {
 
-    if (hOutputFile != nullptr) {
-        logClose();
-    }
-
+    if (hOutputFile != nullptr) logClose();
+    
     if (fileName == nullptr) return;
     
     // Get handle to file
@@ -28,6 +27,8 @@ void logInit(const char* fileName) {
     // Allocate a string buffer, and delete old one if needed
     if (stringBuffer != nullptr) delete[] stringBuffer;
     stringBuffer = new char[64];
+
+    return;
 
 }
 
@@ -54,13 +55,15 @@ void logClear() {
     // Move the file pointer to the start of the file
     SetFilePointer(hOutputFile, 0, NULL, FILE_BEGIN);
 
-    // Truncates everything past the file pointer, that being everyhting
+    // Truncates anything past the file pointer, so everything
     SetEndOfFile(hOutputFile);
+
+    return;
 
 }
 
 // Strings and chars
-void logWrite(const char* message, bool newLine /* default value = false */) {
+void logWrite(const char* message, bool newLine) {
 
     if (hOutputFile == nullptr) return;
 
@@ -69,44 +72,52 @@ void logWrite(const char* message, bool newLine /* default value = false */) {
     DWORD bytesWritten;
     WriteFile(hOutputFile, message, strlen(message), &bytesWritten, NULL);
     
-    if (newLine) 
+    if (newLine) {
         WriteFile(hOutputFile, "\r\n", 2, &bytesWritten, NULL);
+    }
+
+    return;
 
 }
 
-void logWrite(char* message, bool newLine /* default value = false */) {
+void logWrite(char* message, bool newLine) {
     logWrite((const char*) message, newLine);
 }
 
-void logWrite(char message, bool newLine /* default value = false */) {
+void logWrite(char message, bool newLine) {
+
     char messageString[] = {message, '\0'};
     logWrite((const char*) messageString, newLine);
+
+    return;
+
 }
 
-void logWrite(wchar_t message, bool newLine /* default value = false */) {
+void logWrite(wchar_t message, bool newLine) {
     
     return;
 
 }
 
 // Decimal Values
-void logWrite(int message, bool newLine /* default value = false */) {
+void logWrite(int message, bool newLine) {
 
     intToString(message, stringBuffer, 64);
     logWrite(stringBuffer, newLine);
 
     return;
+
 }
 
-void logWrite(long message, bool newLine /* default value = false */) {
+void logWrite(long message, bool newLine) {
     logWrite((int) message, newLine);
 }
 
-void logWrite(long long message, bool newLine /* default value = false */) {
+void logWrite(long long message, bool newLine) {
     logWrite((int) message, newLine);
 }
 
-void logWrite(float message, bool newLine /* default value = false */) {
+void logWrite(float message, bool newLine) {
 
     floatToString(message, stringBuffer, 64, 4);
     logWrite(stringBuffer, newLine);
@@ -115,7 +126,7 @@ void logWrite(float message, bool newLine /* default value = false */) {
 
 }
 
-void logWrite(double message, bool newLine /* default value = false */) {
+void logWrite(double message, bool newLine) {
 
     doubleToString(message, stringBuffer, 64, 4);
     logWrite(stringBuffer, newLine);
@@ -125,25 +136,25 @@ void logWrite(double message, bool newLine /* default value = false */) {
 }
 
 // Hex values
-void logWriteHex(char message, bool newLine /* default value = false */) {
+void logWriteHex(char message, bool newLine) {
 
     return;
 
 }
 
-void logWriteHex(short message, bool newLine /* default value = false */) {
+void logWriteHex(short message, bool newLine) {
     
     return;
 
 }
 
-void logWriteHex(int message, bool newLine /* default value = false */) {
+void logWriteHex(int message, bool newLine) {
     
     return;
 
 }
 
-void logWriteHex(long long message, bool newLine /* default value = false */) {
+void logWriteHex(long long message, bool newLine) {
 
     return;
 
@@ -156,13 +167,21 @@ void logNewLine() {
 
 // Variable Format
 void logVar(const char* message, int variable) {
+
     logWrite(message, false);
     logWrite(": ", false);
     logWrite(variable, true);
+
+    return;
+
 }
 
 void logVar(const char* message, double variable) {
+
     logWrite(message, false);
     logWrite(": ", false);
     logWrite(variable, true);
+
+    return;
+
 }

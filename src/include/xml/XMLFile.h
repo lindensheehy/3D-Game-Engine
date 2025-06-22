@@ -14,12 +14,9 @@ class XMLFile {
 
     /*
         This class is responsible for parsing XML files that define UI elements
-        This turns the text from the file into a more usable format to generate WindowElement or Window objects
-        Most of the content of this class is private, as its intended to be treated like a black box
-        Steps to use are:
-        - Construct with a file name
-        - Set parameter values if needed
-        - Build your element or window
+        This translates the raw text data from the file into a more usable format (TagSequence objects)
+        This class should be treated like a black box
+        Just pass a file name, let it do what it does, and use the resulting data
     */
 
     public:
@@ -40,12 +37,13 @@ class XMLFile {
         // Destructor
         ~XMLFile();
 
+
         /*   Instance Functions   */
 
         // Performs a deep copy
         XMLFile* copy();
 
-        // Logs the contents of the object
+        // Logs the contents of this object
         void log();
 
         // Sets any instance of the string tag to the designated value (in string form)
@@ -53,7 +51,7 @@ class XMLFile {
         void setParameter(const char* tag, float value);
         void setParameter(const char* tag, const char* value);
 
-        // Similar to setParameter, but it doesnt add the underscore prefix
+        // Similar to setParameter, but it doesnt use the underscore prefix
         void setLabel(const char* tag, const char* value);
 
 
@@ -65,8 +63,19 @@ class XMLFile {
         char* file;
         int fileLength;
 
+        // Indexes of the start and end of each reserved section
+        // These include only whats in between the reserved tags, not the tags themselves
+        int parametersStart;
+        int parametersEnd;
+        
+        int labelsStart;
+        int labelsEnd;
 
-        // Empty constructor to make deep copy easier
+        int mainStart;
+        int mainEnd;
+
+
+        // Empty constructor for easier deep copies
         XMLFile() {}
 
 
@@ -76,24 +85,12 @@ class XMLFile {
         // Also removes comments like "<!-- comment -->"
         void formatFile(); 
 
-        // Populates the reserved section indexes
+        // Populates the reserved section indexes ('parametersStart', etc.)
         void locateSections();
 
-        // Applys all the labels defined in the XML file
-        // This effectively treats them as parameters with default values
+        // Applies all the labels defined in the XML file
+        // This just swaps any occurrence of the label string with the value given in the <labels> section
         void applyLabels();
-
-
-        // Indexes of the start and end of each reserved section
-        // These count only whats in between the reserved tags, not the tags themselves
-        int parametersStart;
-        int parametersEnd;
-        
-        int labelsStart;
-        int labelsEnd;
-
-        int mainStart;
-        int mainEnd;
 
 };
 

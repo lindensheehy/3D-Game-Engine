@@ -12,6 +12,8 @@ class State {
         This class serves to handle events from frame to frame.
         It keeps track of the events currently happening on this frame, and which events happened last frame.
         Subclasses MouseState and KeyboardState keep track of their respective events.
+
+        Also contains subclass TimeState, which offers utility functions for time
     */
 
     public:
@@ -41,12 +43,12 @@ class State {
                 // Constructor
                 TimeState();
 
+
                 /*   Instance Functions   */
 
-                // Updates the dt and frameTime variables
                 void updateDt();
 
-                // Updates the fps counter, or adds to framesSinceLastSecond
+                // Updates the fps counter, or increments framesSinceLastSecond
                 void updateFps();
 
                 // Does everything for the next frame. Including calling the above functions
@@ -68,7 +70,7 @@ class State {
                 // Saves the last full second + 1 (in ms, so a multiple of 1000) as a tell for when to update fps
                 double nextSecondMillis;
 
-                // Sets up the timer
+                // Sets up the timer that allows getTimeMillis() to work
                 void initTimer();
 
         };
@@ -77,13 +79,14 @@ class State {
 
             /*
                 Keeps track of mouse events.
-                position (x, y) in pixels, and buttons down.
-                Instance functions are for writing, instance variables are for reading.
+                position (x, y) in pixels, and button states.
+                Instance functions are for writing data states, instance variables are for reading.
             */
             
             public:
 
-                // Instance variables
+                /*   Instance variables   */
+                
                 bool leftButtonIsDown, rightButtonIsDown, middleButtonIsDown;
                 int posX, posY;
 
@@ -92,13 +95,13 @@ class State {
                 MouseState();
                 
 
-                /*   Instance functions   */
+                /*   Instance Functions   */
 
-                // Basically a 'set-all' function. It sets every instance variable of this instance, to that of another instance.
+                // Basically a 'set-all' function. It sets every instance variable of this instance to that of another instance.
                 void setState(MouseState* state);
 
-                // These are SETTERS for all the mouse buttons
-                // To GET the value, simply use the variable since its public
+                // These are SETTERS for the mouse button states
+                // To GET the states, simply use the member variables
 
                 // General
                 void buttonDown(WPARAM wParam);
@@ -123,8 +126,8 @@ class State {
 
             /*
                 Keeps track of keyboard events.
-                Not every key is tracked, but all the common ones are. You can see the list in the KeyCode enum above
-                There is one master list, of size 256 (keyStatesLength), and this is simply indexed by the hex equivalent of the KeyCode
+                Not every key is tracked, but all the common ones are (see util/KeyCodes.h)
+                There is one master array, of size 256 (keyStatesLength). The array is indexed by the KeyCode int value
             */
 
             public:
@@ -135,12 +138,13 @@ class State {
                 // Destructor
                 ~KeyboardState();
 
-                /*   Instance variables   */
 
-                // Basically a 'set-all' function. It sets every instance variable of this instance, to that of another instance.
+                /*   Instance Functions   */
+
+                // Basically a 'set-all' function. It sets every instance variable of this instance to that of another instance.
                 void setState(KeyboardState* state);
 
-                // Returns a pointer to a keystate within one of the instance arrays, this is based on my KeyCode enum defined above
+                // Returns a pointer to a keystate within the master array
                 bool* getKeyRef(KeyCode keyCode);
 
                 // Setters for keys
@@ -154,15 +158,11 @@ class State {
 
                 // Instance variable
                 bool* keyStates;                        // Holds the states on all keys on the given frame
-                const int keyStatesLength = 0x100;      // Just a const value to use in loops and array declarations
+                const int keyStatesLength = 0x100;      // Just a const value to use in loops and array definitions
 
         };
 
-        /*   Instance variables   */
-
-        // Stores a set of at most 3 keys which were just pressed this frame. will store the first 3 given by Windows
-        KeyCode* newKeyPresses;
-        int newKeyPressesIndex;
+        /*   Instance Variables   */
 
         // Subclasses
         TimeState* time;
@@ -176,30 +176,29 @@ class State {
         // Handle to the window. Used for some functions
         HWND hwnd; 
 
+        // Stores a set of at most 3 keys which were just pressed this frame. Will store the first 3 given by Windows
+        KeyCode newKeyPresses[3];
+        int newKeyPressesIndex;
+
 
         /*   Constructor   */
 
-        // hasChild determines if the lastFrame instance variable should be created.
-        // This is set to true for the version created in the program, then false for the actual lastFrame instance.
-        // The option therefore exists to create State with no child, but there is no reason to do this.
+        // 'hasChild' determines if the 'lastFrame' instance variable should be created.
+        // This exists because 'lastFrame' must not contain its own 'lastFrame'
+        // The option therefore exists to create a State with no 'lastFrame', but this breaks a lot of functionality.
         State(HWND hwnd, bool hasChild = true);
-
 
         // Destructor
         ~State();
 
 
-        /*   Instance functions   */
+        /*   Instance Functions   */
 
-        // Takes a message from Windows, and does the appropriate action. Returns non-zero if the message was not able to be handled
+        // Takes a message from Windows, and writes the appropriate data. Returns non-zero if the message was not handled
         int handleMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
-        // Updates everything to be ready for the next frame. Makes this become this->lastFrame
+        // Updates everything to be ready for the next frame. Should be called at the end of each frame
         void nextFrame();
-
-
-        // Checks for single mouse click events. checks if it is pressed on this frame, but wasnt pressed last frame.
-        // Or the other way around for releases
 
         // Returns true when the mouse button is down this frame, but was up last frame
         bool wasLeftJustPressed();
@@ -216,14 +215,14 @@ class State {
         // Updates the instance variables for mouse position
         void updateMousePos();
 
-        // Returns the distance in pixels that the mouse has moved since last frame in the respective direction
+        // Returns the distance in pixels that the mouse has moved since last frame
         int deltaMousePosX();
         int deltaMousePosY();
 
         // Simply returns the bool for the key state. Does not cross check with lastFrame.
         bool keyIsDown(KeyCode keyCode);
 
-        // Returns true only if the key was pressed this frame, but not last frame
+        // Returns true only if the key was down this frame, but up last frame
         bool keyJustDown(KeyCode keyCode);
 
         

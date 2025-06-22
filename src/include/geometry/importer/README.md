@@ -1,3 +1,5 @@
+## This module has been postponed until V2
+
 # Mesh Importer
 
 This directory contains code for importing Mesh objects from files.

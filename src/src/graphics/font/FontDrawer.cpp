@@ -5,6 +5,11 @@ using namespace Graphics::Font;
 
 FontDrawer::FontDrawer(Drawing::PixelDrawer* pixelDrawer) {
 
+    if (pixelDrawer == nullptr) {
+        logWrite("FontDrawer::FontDrawer(PixelDrawer*) was called on a nullptr!", true);
+        return;
+    }
+
     this->pixelDrawer = pixelDrawer;
 
     this->initFont();
@@ -21,23 +26,23 @@ FontDrawer::~FontDrawer() {
 
 }
 
-void FontDrawer::drawChar(uint32 pixel, char ch, int x, int y) {
+void FontDrawer::drawChar(uint32 color, char ch, int x, int y) {
 
     bool* pixels = this->getCharRef(ch);
 
-    this->drawCharPixels(pixel, pixels, x, y);
+    this->drawCharPixels(color, pixels, x, y);
     
     return;
 
 }
 
-void FontDrawer::drawString(uint32 pixel, const char* string, int x, int y) {
+void FontDrawer::drawString(uint32 color, const char* string, int x, int y) {
 
     int dx = 0;
 
     for (int i = 0; string[i] != '\0'; i++) {
 
-        this->drawChar(pixel, string[i], x + dx, y);
+        this->drawChar(color, string[i], x + dx, y);
 
         // Offset by +6 pixels because chars are 7 pixels wide
         dx += 6;
@@ -48,12 +53,12 @@ void FontDrawer::drawString(uint32 pixel, const char* string, int x, int y) {
 
 }
 
-void FontDrawer::drawInt(uint32 pixel, int num, int x, int y) {
+void FontDrawer::drawInt(uint32 color, int num, int x, int y) {
 
     char buffer[16];
     intToString(num, buffer, 16);
 
-    this->drawString(pixel, buffer, x, y);
+    this->drawString(color, buffer, x, y);
 
     return;
 
@@ -68,7 +73,7 @@ void FontDrawer::initFont() {
         switch (this->rawChars[i]) {
             
             // false pixel
-            case '_':
+            case ' ':
                 this->chars[i] = false;
                 break;
 
@@ -89,15 +94,16 @@ void FontDrawer::initFont() {
 
 }
 
-void FontDrawer::drawCharPixels(uint32 pixel, bool* pixels, int x, int y) {
+void FontDrawer::drawCharPixels(uint32 color, bool* pixels, int x, int y) {
 
     int dx = 0;
     int dy = 0;
 
     for (int i = 0; i < 49; i++) {
 
-        if (pixels[i])
-            this->pixelDrawer->drawPixel(pixel, x + dx, y + dy);
+        if (pixels[i]) {
+            this->pixelDrawer->drawPixel(color, x + dx, y + dy);
+        }
 
         dx++;
         if (dx > 6) {
@@ -116,7 +122,7 @@ bool* FontDrawer::getCharRef(char ch) const {
     /*
         Because the chars 'a' - 'z' are in order for their cooresponding integer value, I can use this to simplify the indexing
         Same goes for 'A' - 'Z' and '0' - '9'
-        As I do not have lower/upper variants for the letters, lowercase chars and uppercase chars turn to the same pixels
+        Since I dont have lower/upper variants for the letters, they both map to the same pixels
     */
 
     // This is the index of the character with respect to the character count (not array length)
@@ -128,30 +134,35 @@ bool* FontDrawer::getCharRef(char ch) const {
     }
 
     // Chars 'A' - 'Z' turn to 0 - 25
-    if ( ch >= 'A' && ch <= 'Z' ) {
+    else if ( ch >= 'A' && ch <= 'Z' ) {
         charIndex = ch - 'A';
     }
 
     // Chars '0' - '9' turn to 26 - 35
-    if ( ch >= '0' && ch <= '9' ) {
+    else if ( ch >= '0' && ch <= '9' ) {
         charIndex = (ch - '0') + 26;
     }
 
     // Other chars
-    switch (ch) {
+    else {
+        switch (ch) {
 
-        // Space
-        case ' ':
-            charIndex = 36;
-        
-        // Minus / Negative Sign
-        case '-':
-            charIndex = 37;
+            // Space
+            case ' ':
+                charIndex = 36;
+                break;
+            
+            // Minus / Negative Sign
+            case '-':
+                charIndex = 37;
+                break;
 
-        // Period / Decimal
-        case '.':
-            charIndex = 38;
+            // Period / Decimal
+            case '.':
+                charIndex = 38;
+                break;
 
+        }
     }
 
     // Use null char if nothing else applied

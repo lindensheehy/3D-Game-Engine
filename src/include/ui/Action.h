@@ -5,10 +5,11 @@
 #include "ui/Context.h"
 
 /*
-    These are basically just glorified variables.
-    The idea of this is that they can be added to a queue which is global across everything in the UI
-    Window or WindowElement objects can add these to the queue, 
-    then they will later be handled by the UI object when doInput() is called
+    These are basically just fancy data containers, that allow certain actions to happen
+    The idea is that they can be added to a queue which is shared between everything in the UI
+    Window or WindowElement objects can add these to the queue. They are handled later by UI on doInput()
+
+    This is an effort to decouple the action handling from the per class logic
 */
 
 namespace Ui {
@@ -26,7 +27,7 @@ class Action {
         Action();
 
         // Destructor
-        virtual ~Action();
+        virtual ~Action() {}
 
 };
 
@@ -47,8 +48,11 @@ class ActionCloseWindow : public Action {
 class ActionOpenWindow : public Action {
 
     /*
-        This class takes an optional WindowHandle pointer
+        This class uses a WindowHandle double pointer
         This handle will be populated with the Window information upon creation
+
+        This exists so the window is not left dangling upon creation
+        The double pointer allows this action to overwrite the pointer used externally
     */
 
     public:
@@ -85,9 +89,9 @@ class ActionCallFunc : public Action {
         // Function pointer to call
         void (*func)(Context*);
 
-        // Context to call the func with
-        // This should point to the Context object from the WindowHandle for the window the button belongs to
-        // Its a double pointer so that it will be updated when WindowHandle::setContext() is called
+        // Context to call 'func' with
+        // Should point to the Context inside the WindowHandle for the Window the WindowElement calling this belongs to
+        // Its a double pointer so it can be updated when WindowHandle::setContext() is called
         Context** context;
 
 };

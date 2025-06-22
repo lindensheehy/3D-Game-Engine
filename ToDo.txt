@@ -41,17 +41,59 @@ optimizations:
 Notes:
 
 
-Project:
+Cleanup!
+steps:
+- tidy code + comments
+--> const correctness
+- tidy includes
+- tidy testing suite
+- tidy build files  
+- update main readme
+- add readmes to directories
+- tidy 'not used'
 
-Project Overview – AltJS Runtime & Language
-    Custom language for the browser — simpler, cleaner alternative to JavaScript
-    Syntax inspired by Python / modern C++ — minimal boilerplate, readable
-    Transpiles to JavaScript — same runtime performance and browser compatibility
-    Shipped as a package — drop into any web project, works via loader/runtime
-    Focus on developer experience — faster to write, easier to learn
-    Goal: Lower barrier to frontend, reduce JS verbosity
-    Long-term: Viable JS alternative for real projects, teaching, and dev workflows
-    Compiler/transpiler written in C++ (or Rust/Zig) — fast and portable
-    Minimal JavaScript required — only for bootstrapping and browser glue
-    Designed to be fun, modern, and inventive
+- files done:
+    geometry/importer/Builder
+    geometry/importer/Parser
+    geometry/Matrix
+    geometry/Mesh
+    geometry/Tri
+    geometry/Vec
+    graphics/drawing/Drawer
+    graphics/drawing/PixelDrawer
+    graphics/drawing/PixelTracker
+    graphics/font/FontDrawer
+    graphics/font/Parser
+    graphics/gui/Core
+    graphics/gui/GUI
+    graphics/gui/State
+    graphics/gui/Window
+    graphics/png/PNG
+    graphics/rendering/Camera
+    graphics/rendering/Display
+    graphics/rendering/Renderer
+    physics/Bounding
+    physics/ObjectSet
+    ui/Action
+    ui/BindFuncs
+    ui/BindManager
+    ui/Context
+    ui/Core
+    ui/UI
+    ui/Window
+    ui/WindowElement
+    util/FileManager
+    util/FileNavigator
+    util/FileReader
+    util/KeyCodes
+    util/LinkedList
+    util/Log
+    util/Math
+    util/Utility
+    xml/Core
+    xml/ElementSet
+    xml/ParameterInfo
+    xml/TagSequence
+    xml/XML
+    xml/XMLFile
 

@@ -7,7 +7,7 @@ TagSequence::TagSequence(char* file, int fromIndex, int toIndex, const char* fil
 
     // This effectively makes this->file a subset of the given file
     this->file = &( file[fromIndex] );
-    this->fileLength = (toIndex - fromIndex) + 1;   // +1 because it should include fromIndex in length
+    this->fileLength = (toIndex - fromIndex) + 1;   // +1 because it should include 'fromIndex' in the length
 
     this->fileName = fileName;
 
@@ -19,19 +19,21 @@ TagSequence::TagSequence(char* file, int fromIndex, int toIndex, const char* fil
     // Initialize the buffer values
     memset(this->buffer, '\0', this->bufferLength);
 
-    for (int i = 0; i < this->primTagCount; i++)
+    for (int i = 0; i < this->primTagCount; i++) {
         this->resetPrimitiveTags(i);
+    }
 
     return;
 
 }
 
 TagSequence::~TagSequence() {
-    if (this->buffer != nullptr) delete[] this->buffer;
+    delete[] this->buffer;
 }
 
 TagSequence* TagSequence::copy() {
 
+    // This empty constructor does not initialize any of the member variables
     TagSequence* ret = new TagSequence();
 
     ret->stringTagCount = this->stringTagCount;
@@ -157,7 +159,8 @@ void TagSequence::findBufferLength() {
     bool inTag = false;
 
 
-    // Iterate over data between <main> and </main>
+    // Iterate over the entire raw file contents
+    // To be clear, this only includes the section that was specified in the construction of this object
     for (int i = 0; i < this->fileLength; i++) {
 
         currentChar = this->file[i];
@@ -188,32 +191,28 @@ void TagSequence::findBufferLength() {
 
 }
 
-int TagSequence::validatePrimTags() const {
-    return 0;
-}
-
 char* TagSequence::getStringTag(int index, int* lengthOut) const {
 
     if (lengthOut == nullptr) {
-        logWrite("Tried to call XML::getTag(int, int*) on a nullptr!", true);
+        logWrite("Tried to call XML::getStringTag(int, int*) on a nullptr!", true);
         return nullptr;
     }
 
     // Check for invalid index. Logging is handled within the call
-    if (validateStringTagIndex(index, "getTag")) return nullptr;
+    if (validateStringTagIndex(index, "getStringTag")) return nullptr;
 
 
     // This finds the effective index in tagSequence for the given index
-    // Start by skipping the first primitive tags
+    // Start by skipping the first primitive tags (since those take up the first PRIM_TAG_LENGTH indexes)
     int effectiveIndex = PRIM_TAG_LENGTH;
 
     // Each index needs to be XML::MAX_TAG_LENGTH + XML::PRIM_TAG_LENGTH bytes apart
     effectiveIndex += (index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH));
 
-    // This shouldnt ever happen becuase i check index against this->tagCount, but its good to be sure
+    // This shouldnt ever happen becuase the index was already checked against this->tagCount, but its good to be sure
     if (effectiveIndex + MAX_TAG_LENGTH >= this->bufferLength) {
 
-        logWrite("Tried to call XML::getTag(int, int*) with out of bounds index!", true);
+        logWrite("Tried to call XML::getStringTag(int, int*) with out of bounds index!", true);
         logWrite(" -> Tried index ");
         logWrite(index);
         logWrite(", effective index is ");
@@ -225,19 +224,22 @@ char* TagSequence::getStringTag(int index, int* lengthOut) const {
 
     }
 
+    /*
+        NOTE: These strings are not explicitly null terminated. Instead, the empty space at the end of the strings is filled with '\0'
+              This matters because any strings that are at the max length will not be null terminated
+              Thats generally fine, but its an important note if these strings are used elsewhere
+    */
+
     // Find the length of the tag, either until a null terminator or XML::MAX_TAG_LENGTH
     int tagLength = 0;
     while (true) {
 
-        /*   Break cases   */
-
-        // If the string is less than XML::MAX_TAG_LENGTH bytes, there will be '\0' filling the rest of the space
         if (this->buffer[effectiveIndex + tagLength] == '\0') break;
 
         tagLength++;
 
-        // If the tag is the max length. In this case there wont be a '\0' char so i must check this manually
-        // This also decrements the length count, because it will be 1 higher than allowed
+        // If the loop reaches the max length that means the string is done
+        // This also decrements the length count, because otherwise it will be 1 higher than allowed
         if (tagLength > MAX_TAG_LENGTH) {
             tagLength--;
             break;
@@ -245,7 +247,6 @@ char* TagSequence::getStringTag(int index, int* lengthOut) const {
 
     }
 
-    // Set the lengthOut parameter
     *lengthOut = tagLength;
 
     // Return the pointer to the tag location in tagSequence
@@ -256,17 +257,18 @@ char* TagSequence::getStringTag(int index, int* lengthOut) const {
 void TagSequence::setStringTag(int index, char* tag, int length) {
 
     if (this->buffer == nullptr) {
-        logWrite("Tried to call XML::setTag(int, char*, int) before initializing tagSequence!", true);
+        logWrite("Tried to call XML::setStringTag(int, char*, int) before initializing tagSequence!", true);
         return;
     }
 
     if (tag == nullptr) {
-        logWrite("Tried to call XML::setTag(int, char*, int) on a nullptr!", true);
+        logWrite("Tried to call XML::setStringTag(int, char*, int) on a nullptr!", true);
         return;
     }
 
     // Check for invalid index. Logging is handled within the call
-    if (validateStringTagIndex(index, "setTag")) return;
+    if (validateStringTagIndex(index, "setStringTag")) return;
+
 
     // This finds the effective index in tagSequence for the given index
     // Start by skipping the first primitive tags
@@ -278,7 +280,7 @@ void TagSequence::setStringTag(int index, char* tag, int length) {
     // This shouldnt ever happen becuase i check index against this->tagCount, but its good to be sure
     if (effectiveIndex + MAX_TAG_LENGTH >= this->bufferLength) {
 
-        logWrite("Tried to call XML::setTag(int, char*, int) with out of bounds index!", true);
+        logWrite("Tried to call XML::setStringTag(int, char*, int) with out of bounds index!", true);
         logWrite(" -> Tried index ");
         logWrite(index);
         logWrite(", effective index is ");
@@ -293,11 +295,11 @@ void TagSequence::setStringTag(int index, char* tag, int length) {
     int effectiveLength = length;
 
     // Warning if the length is too big
-    // This is just so i know if i need to increase the max length
+    // This is just so I know if I need to increase the max length
     // This will also cap the length to XML::MAX_TAG_LENGTH
     if (length > MAX_TAG_LENGTH) {
 
-        logWrite("Warning: [XML::setTag()] Tried to write a tag longer than maximum allowed length!", true);
+        logWrite("Warning: [XML::setStringTag()] Tried to write a tag longer than maximum allowed length!", true);
         logWrite(" -> Tried to write length ");
         logWrite(length);
         logWrite(" while the max length is ");
@@ -314,7 +316,7 @@ void TagSequence::setStringTag(int index, char* tag, int length) {
         effectiveLength                         // Byte count
     );
 
-    // Fill the rest of the space in the tag with '\0' chars
+    // Fill any unused space in the tag with '\0' chars
     if (effectiveLength < MAX_TAG_LENGTH) {
         memset(
             &(this->buffer[effectiveIndex + effectiveLength]),     // Location to write
@@ -329,16 +331,16 @@ void TagSequence::setStringTag(int index, char* tag, int length) {
 
 void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
 
-    // Error checks
     if (oldTag == nullptr) {
-        logWrite("Called TagSequence::swapTag(const char*, const char*) with 'oldTag' as a null pointer!", true);
+        logWrite("Called TagSequence::swapStringTag(const char*, const char*) with 'oldTag' as a null pointer!", true);
         return;
     }
 
     if (newTag == nullptr) {
-        logWrite("Called TagSequence::swapTag(const char*, const char*) with 'newTag' as a null pointer!", true);
+        logWrite("Called TagSequence::swapStringTag(const char*, const char*) with 'newTag' as a null pointer!", true);
         return;
     }
+
 
     /*   Find length of each tag   */
 
@@ -348,7 +350,7 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
     // Log error if the length is invalid
     if (oldTagLength < 0) {
 
-        logWrite("TagSequence::swapTag() is trying to find a string tag longer than MAX_TAG_LENGTH!", true);
+        logWrite("TagSequence::swapStringTag() is trying to find a string tag longer than MAX_TAG_LENGTH!", true);
         
         logWrite(" -> is trying to find \"");
         logWrite(oldTag);
@@ -367,7 +369,7 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
     // Log error if the length is invalid
     if (newTagLength < 0) {
 
-        logWrite("TagSequence::swapTag() is trying to write a string tag longer than MAX_TAG_LENGTH!", true);
+        logWrite("TagSequence::swapStringTag() is trying to write a string tag longer than MAX_TAG_LENGTH!", true);
         
         logWrite(" -> is trying to write \"");
         logWrite(newTag);
@@ -381,14 +383,12 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
     }
 
 
-    // Stuff for the loop
-
-    // Holds the return values of this->getTag()
+    // Holds the return values of this->getStringTag()
     char* currentTag;
     int currentTagLength;
 
-    // This is just used to track if no matches were found
-    // If none were found I log it, just in case that was not intended
+    // This is just used to check if no matches were found
+    // If none were found I log that, just in case that was not intended
     int matchCount = 0;
 
     // Loop to find and replace the applicable tags
@@ -411,7 +411,7 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
 
         }
 
-        // If the loop never reset matches, the tag should be replaced
+        // If the loop never reset 'matches', the tag should be replaced
         if (matches) {
             this->setStringTag(i, (char*) newTag, newTagLength);
             matchCount++;
@@ -419,9 +419,8 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
 
     }
 
-    // Log warning if the parameter was not found
     if (matchCount == 0) {
-        logWrite("Warning: TagSequence::swapTag() did not find the given oldTag!", true);
+        logWrite("Warning: TagSequence::swapStringTag() did not find the given oldTag!", true);
         logWrite(" -> Tried to find \"");
         logWrite(oldTag);
         logWrite("\" but failed", true);
@@ -433,7 +432,6 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
 
 void TagSequence::resetPrimitiveTags(int index) {
 
-    // Check for invalid index. Logging is handled within the call
     if (validatePrimTagIndex(index, "resetPrimitiveTags")) return;
 
 
@@ -449,10 +447,8 @@ void TagSequence::resetPrimitiveTags(int index) {
 
 PrimitiveTagState TagSequence::getPrimitiveTag(int index, PrimitiveTagType type) const {
 
-    // Check for invalid index. Logging is handled within the call
     if (validatePrimTagIndex(index, "getPrimitiveTag")) return NONE;
 
-    // Effective index of the start of the primitive tag buffer
     int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
 
     // Returns the respective byte, after casting to the enum
@@ -462,10 +458,8 @@ PrimitiveTagState TagSequence::getPrimitiveTag(int index, PrimitiveTagType type)
 
 void TagSequence::setPrimitiveTag(int index, PrimitiveTagType type, PrimitiveTagState state) {
 
-    // Check for invalid index. Logging is handled within the call
     if (validatePrimTagIndex(index, "setPrimitiveTag")) return;
 
-    // Effective index of the start of the primitive tag buffer
     int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
 
     this->buffer[ effectiveIndex + ( (int) type ) ] = ( (char) state );
@@ -581,7 +575,7 @@ void TagSequence::populateStringTags() {
     bool isReserved;
 
     // This is the internal index of the tag. 
-    // This is related, but not the same as, the actual index of this->tagSequence
+    // This is related to 'stringTagCount'. Its just the parent index of the particular string tag section
     int tagIndex = 0;
 
     // True when the index lies inside a string tag, this lets each non reserved char side by side count as just one tag
@@ -594,8 +588,6 @@ void TagSequence::populateStringTags() {
     // This is the length of the current string tag. This is passed to this->setTag()
     int tagLength = 0;
 
-    // This loop populates the string tags only.
-    // Only the main section is parsed here, as the other sections are treated differently
     for (int i = 0; i < this->fileLength; i++) {
 
         currentChar = this->file[i];
@@ -617,6 +609,8 @@ void TagSequence::populateStringTags() {
                 tagLength = 0;
 
             }
+
+            else continue;
 
         }
 
@@ -654,17 +648,17 @@ void TagSequence::populatePrimTags() {
     bool isReserved;
 
     // This is the internal index of the tag. 
-    // This is related to, but not the same as, the actual index of this->tagSequence
+    // This is related to 'primTagCount'. Its just the parent index of the particular prim tag section
     int tagIndex = 0;
 
     // True when the index lies inside a string tag.
     // In this context, this just helps to track tagIndex
     bool inTag = false;
 
-    // Here i need to know the last two chars in some cases
+    // The previous char needs to be stored for some cases
     char prevChar = '\0';
 
-    // Flags for if each primitive tag is open or closed in the current context
+    // This is the only state flag that must be tracked, the rest can be inferred
     bool inParams = false;
 
     // Used for checking previously set state. This is needed in some contexts
@@ -672,7 +666,7 @@ void TagSequence::populatePrimTags() {
 
     // This loop populates the primitive tags
     // I do also need to keep track of the tagIndex here, so a bunch of the logic is copied from the last loop
-    // This all *could* be in the same loop as above, but i chose to seperate them for readability
+    // This all could be in the same loop as above, but i chose to seperate them for readability
     for (int i = 0; i < this->fileLength; i++) {
 
         prevChar = currentChar;
@@ -778,11 +772,13 @@ void TagSequence::populatePrimTags() {
 
                         logWrite(" -> In file \"");
 
-                        if (this->fileName != nullptr) 
+                        if (this->fileName != nullptr) {
                             logWrite(this->fileName);
+                        }
 
-                        else 
+                        else {
                             logWrite("Unspecified!!");
+                        }   
 
                         logWrite("\"", true);
 

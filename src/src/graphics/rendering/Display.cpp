@@ -3,25 +3,15 @@
 using namespace Graphics::Rendering;
 
 
-Display::Display() {
-    this->width = 0;
-    this->height = 0;
-    this->widthOffset = 0;
-    this->heightOffset = 0;
-}
+Display::Display(int width, int height, int widthOffset, int heightOffset) {
 
-Display::Display(int width, int height) {    
-    this->width = width;
-    this->height = height;
-    this->widthOffset = 0;
-    this->heightOffset = 0;
-}
-
-Display::Display(int width, int height, int widthOffset, int heightOffset) {    
     this->width = width;
     this->height = height;
     this->widthOffset = widthOffset;
     this->heightOffset = heightOffset;
+
+    return;
+
 }
 
 void Display::setState(Display* other) {
@@ -45,47 +35,17 @@ void Display::updateDimensions(int width, int height) {
 }
 
 int Display::middleX() {
-    return ((int) (this->width / 2)) + this->widthOffset;
+    return ( (this->width / 2) + this->widthOffset );
 }
 
 int Display::middleY() {
-    return ((int) (this->height / 2)) + this->heightOffset;
-}
-
-void Display::toDisplayPos(Geometry::Vec2* vec) {
-    /*
-        Converts factors from 0-1 into display cooridnates given a Display object
-        CHANGES THE ACTUAL VALUES OF THE ARGUMENT
-    */
-
-    // Address error case, but dont kill the process yet in case its not fatal
-    if (vec == nullptr) {
-        logWrite("Called Display->toDisplayPos(Vec2*) on a null pointer!", true);
-        return;
-    }
-
-    int drawPosx = (int) (vec->x * (float) this->width);
-    drawPosx += this->widthOffset;
-
-    int drawPosy = this->height - (int) (vec->y * (float) this->height); // minus because y=0 is at the top
-    drawPosy += this->heightOffset;
-
-    vec->x = drawPosx;
-    vec->y = drawPosy;
-
-    return;
-
+    return ( (this->height / 2) + this->heightOffset );
 }
 
 void Display::toDisplayPos(Geometry::Vec3* vec) {
-    /*
-        Converts factors from 0-1 into display cooridnates given a Display object
-        CHANGES THE ACTUAL VALUES OF THE ARGUMENT
-    */
 
-    // Address error case, but dont kill the process yet in case its not fatal
     if (vec == nullptr) {
-        logWrite("Called Display->toDisplayPos(Vec2*) on a null pointer!", true);
+        logWrite("Called Display->toDisplayPos(Vec3*) on a null pointer!", true);
         return;
     }
 

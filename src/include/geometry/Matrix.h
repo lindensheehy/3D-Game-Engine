@@ -13,7 +13,7 @@ class Matrix4 {
         This is a class for 4x4 matrices
         Includes static functions for instantiating some standard matrices
         Also has instance functions for operations like matrix-matrix and vector-matrix multiplication
-    */
+    */  
 
     public:
 
@@ -28,18 +28,22 @@ class Matrix4 {
 
         /*   Instance Functions   */
 
-        // Logs the matrix in a readable format
+        // Logs the matrix in the format:
+        // Matrix4: [ a b c d ]
+        //          [ e f g h ]
+        //          [ i j k l ]
+        //          [ m n o p ]
         void log();
 
-        // Sets this Matrix4 to the given Matrix4
+        // Sets this Matrix4 to the given Matrix4 (shallow copy)
         void set(const Matrix4& other);
         void set(const Matrix4* other);
 
-        // Mutliplies this Matrix4 by another Matrix4. Puts the result in this
+        // Mutliplies this Matrix4 by another Matrix4. Puts the result in this (overwriting any previous data)
         void mul(const Matrix4& other);
         void mul(const Matrix4* other);
 
-        // Multiplies the given Vec3 by this Matrix4. Changes the contents of the Vec3
+        // Multiplies the given Vec3 by this Matrix4. Overwrites the contents of 'vec'
         void mul(Vec3* vec) const;
 
 
@@ -67,7 +71,11 @@ class Matrix4 {
         // Loads a rotation matrix by the given angle around the Z axis into 'out'. Uses degrees
         static void rotationZ(float angle, Matrix4* out);
 
-        static void projection(float focalLengthX, float focalLengthY, Matrix4* out);
+        // UNIMPLEMENTED
+        // Current projection is handled without matrices
+        // I'm keeping this because projection matrices are the industry standard
+        // This will likely be implemented in V2
+        static void projection(float focalLengthX, float focalLengthY, Matrix4* out) {}
 
     private:
 
@@ -78,12 +86,12 @@ class Matrix4 {
 
             /*
                 NO NULLPTR CHECK!
-                This function does not check if out is nullptr. This is why its private.
+                This function does not check if 'out' is nullptr. This is why its private.
                 Should only be called from within the class, and safely!
             */
         
             // This sets the matrix to all 0s
-            // 0 in IEEE 754 is equivalent to all 0s (like 0x00000000), so this is an effective way to initialize the values
+            // 0.0 in IEEE 754 is equivalent to all 0s (like 0x00000000), so this is an effective way to initialize the values
             memset(out->m, 0x00, sizeof(out->m));
         
             // Set 1s along the diagonal to make the identity matrix

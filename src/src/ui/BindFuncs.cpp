@@ -119,9 +119,6 @@ void BindFuncs::Transform::bind(WindowHandle* windowHandle) {
 
 void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
 
-
-    /*   First do the binds that to not depend on the Context object   */
-
     if (windowHandle == nullptr) {
         logWrite("BindFuncs::Objects::bind(WindowHandle*) was called on a nullptr!", true);
         return;
@@ -138,9 +135,7 @@ void BindFuncs::Objects::bind(WindowHandle* windowHandle) {
     window->bindButton("WindowCloseButton", new ActionCloseWindow(windowHandle->id));
     window->bindDragable("WindowDragBar", &(window->pos), &(window->endPos));
 
-
-    /*   The rest of the binds dont actually need the Context for this function   */
-
+    // Buttons
     window->bindButton("createCube", new ActionCallFunc(BindFuncs::Objects::createCube, &(windowHandle->context)));
     window->bindButton("createSphere", new ActionCallFunc(BindFuncs::Objects::createSphere, &(windowHandle->context)));
 
@@ -153,7 +148,7 @@ void BindFuncs::Objects::createCube(Context* contextObjects) {
 
     /*   Verify the contents of the Context object   */
 
-    // Null Context is okay, just the function cant run this time
+    // Null Context is okay, just the function cant run
     if (contextObjects == nullptr) return;
 
     if (contextObjects->type != ContextType::OBJECTS) {
@@ -190,7 +185,7 @@ void BindFuncs::Objects::createSphere(Context* contextObjects) {
 
     /*   Verify the contents of the Context object   */
 
-    // Null Context is okay, just the function cant run this time
+    // Null Context is okay, just the function cant run
     if (contextObjects == nullptr) return;
 
     if (contextObjects->type != ContextType::OBJECTS) {

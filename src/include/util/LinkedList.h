@@ -2,27 +2,28 @@
 
 #include "util/Utility.h"
 
-/*
-    This file does NOT have a cooresponding .cpp file because templates make it more effort than its worth.
-*/
 
+/*
+    This file does NOT have a cooresponding .cpp file because templated code cannot be precompiled
+    While it technically can, it defeats the point of even having the template
+*/
 
 template<typename type>
 class LinkedList {
 
     /*
-        Doubly linked list implementation.
+        Doubly linked list
         Any type is allowed, and nodes also store an integer id alongside their item
-        There is an included iterator, to avoid using ids to iterate
+        There is an included iterator, to help abstract from the linked list structure
     */
 
-    public:
+    private:
 
         class Node {
 
             /*
                 Item for the doubly linked list
-                Includes an item, and a int tag
+                Includes an item, and a int id
             */
 
             public:
@@ -37,46 +38,20 @@ class LinkedList {
 
 
                 /*   Constructors   */
-                Node() {
-                    this->next = nullptr;
-                    this->last = nullptr;
-                    this->item = nullptr;
-                    this->id = 0;
-                }
 
-                Node(type item) {
-                    this->next = nullptr;
-                    this->last = nullptr;
-                    this->item = item;
-                    this->id = 0;
-                }
-
-                Node(int id) {
-                    this->next = nullptr;
-                    this->last = nullptr;
-                    this->item = nullptr;
-                    this->id = id;
-                }
-
-                Node(type item, int id) {
-                    this->next = nullptr;
-                    this->last = nullptr;
-                    this->item = item;
-                    this->id = id;
-                }
+                Node()                  : next(nullptr), last(nullptr), item(nullptr),  id(0)   {}
+                Node(type item)         : next(nullptr), last(nullptr), item(item),     id(0)   {}
+                Node(int id)            : next(nullptr), last(nullptr), item(nullptr),  id(id)  {}
+                Node(type item, int id) : next(nullptr), last(nullptr), item(item),     id(id)  {}
 
 
                 /*   Instance Functions   */
 
                 // Returns true if this node is the first node in the list.
-                bool isFirst() {
-                    return (this->last == nullptr);
-                }
+                inline bool isFirst() { return (this->last == nullptr); }
 
                 // Returns true if this node is the last node in the list.
-                bool isLast() {
-                    return (this->next == nullptr);
-                }
+                inline bool isLast() { return (this->next == nullptr); }
                 
                 // Logs the node in the format:  last id <- this id -> next id
                 void log() {
@@ -101,6 +76,8 @@ class LinkedList {
 
         };
 
+    public:
+
         /*   Instance Variables   */
 
         int length;
@@ -108,11 +85,15 @@ class LinkedList {
 
         // Constructor
         LinkedList() {
+
             this->first = nullptr;
             this->last = nullptr;
 
             this->length = 0;
             this->nextFreeId = 0;
+
+            return;
+
         }
 
         // Destructor
@@ -134,6 +115,8 @@ class LinkedList {
                 nextRef = currentRef->next;
 
             }
+
+            return;
 
         }
 
@@ -166,9 +149,7 @@ class LinkedList {
         bool contains(type item) {
 
             for (this->iterStart; this->iterHasNext(); this->iterNext()) {
-                
                 if (this->iterCurrent->item == item) return true;
-
             }
 
             return false;
@@ -180,6 +161,7 @@ class LinkedList {
 
             this->pushBack(item, this->nextFreeId);
             this->nextFreeId++;
+
             return;
 
         }
@@ -198,7 +180,7 @@ class LinkedList {
                 return;
             }
 
-            // Length 1 list
+            // Length 1
             if (this->first == this->last) {
                 this->last = newNode;
                 this->first->next = newNode;
@@ -206,7 +188,7 @@ class LinkedList {
                 return;
             }
 
-            // Length >2 list
+            // Length >2
             this->last->next = newNode;
             newNode->last = this->last;
             this->last = newNode;
@@ -220,6 +202,7 @@ class LinkedList {
 
             this->pushFront(item, this->nextFreeId);
             this->nextFreeId++;
+
             return;
 
         }
@@ -238,7 +221,7 @@ class LinkedList {
                 return;
             }
 
-            // Length 1 list
+            // Length 1
             if (this->first == this->last) {
                 this->first = newNode;
                 this->last->last = newNode;
@@ -246,7 +229,7 @@ class LinkedList {
                 return;
             }
 
-            // Length >2 list
+            // Length >2
             this->first->last = newNode;
             newNode->next = this->first;
             this->first = newNode;
@@ -268,7 +251,7 @@ class LinkedList {
 
             this->length--;
 
-            // Length 1 list
+            // Length 1
             if (this->first == this->last) {
 
                 ret = this->last;
@@ -282,7 +265,7 @@ class LinkedList {
 
             }
 
-            // Length >2 list
+            // Length >2
             ret = this->last;
             this->last = ret->last;
             this->last->next = nullptr;
@@ -307,7 +290,7 @@ class LinkedList {
 
             this->length--;
 
-            // Length 1 list
+            // Length 1
             if (this->first == this->last) {
 
                 ret = this->first;
@@ -321,7 +304,7 @@ class LinkedList {
 
             }
 
-            // Length >2 list
+            // Length >2
             ret = this->first;
             this->first = ret->next;
             this->first->last = nullptr;
@@ -387,7 +370,7 @@ class LinkedList {
 
             }
 
-            // If none found return null
+            // Nothing was found
             return nullptr;
 
         }
@@ -444,6 +427,7 @@ class LinkedList {
 
             }
 
+            // Nothing was found
             return nullptr;
 
         }
@@ -468,12 +452,12 @@ class LinkedList {
                 if (current == id) return this->iterGetObj();
             }
 
-            // If none found return null
+            // Nothing was found
             return nullptr;
 
         }
 
-        // Sets the instance variable iterCurrent to an index, from where the other iterator functions can be called
+        // This starts the iterator on the given index. Use 'iterGetObj' to get the current item, and 'iterNext' for traversal.
         void iterStart(int index) {
 
             this->iterCurrent = this->first;
@@ -491,9 +475,11 @@ class LinkedList {
 
             }
 
+            return;
+
         }
 
-        // Returns the object of iterCurrent. Returns nullptr if the iterator is at null
+        // Returns the item the iterator is at. Returns nullptr if the iterator is invalid
         type iterGetObj() {
 
             if (this->iterCurrent == nullptr) return (type) nullptr;
@@ -502,7 +488,7 @@ class LinkedList {
 
         }
 
-        // Returns the id of iterCurrent. Returns -1 if the iterator is at null
+        // Returns the id the iterator is at. Returns -1 if the iterator is at null
         int iterGetId() {
 
             if (this->iterCurrent == nullptr) return -1;
@@ -532,16 +518,10 @@ class LinkedList {
         }
 
         // Returns true if iterCurrent equals nullptr
-        inline bool iterIsDone() {
-
-            return (this->iterCurrent == nullptr);
-
-        }
+        inline bool iterIsDone() { return (this->iterCurrent == nullptr); }
 
         // Equivalent to !iterIsDone(). Just easier to use in for loops
-        inline bool iterHasNext() {
-            return !(this->iterIsDone());
-        }
+        inline bool iterHasNext() { return !(this->iterIsDone()); }
 
         // Logs all of the nodes in the order they stand in the list
         void log() {
@@ -572,12 +552,10 @@ class LinkedList {
         
         /*   Instance Variables   */
 
-        // Node objects shouldnt be used outside of the class
         Node* first;
         Node* last;
         Node* iterCurrent;
 
-        // No reason to make this public
         int nextFreeId;
 
 

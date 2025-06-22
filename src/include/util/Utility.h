@@ -20,7 +20,7 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 
 
-// Returns the length of the string INCLUDING the null terminator byte 0x00
+// Returns the length of the string INCLUDING the null terminator byte (0x00)
 int stringLength(const char* str);
 
 
@@ -29,19 +29,19 @@ namespace Color {
 
     // Constant color codes
     // Bytes are [opacity][red][green][blue]
-    const uint32 RED         = 0xFFFF0000;
-    const uint32 GREEN       = 0xFF00FF00;
-    const uint32 BLUE        = 0xFF0000FF;
-    const uint32 BLACK       = 0xFF000000;
-    const uint32 WHITE       = 0xFFFFFFFF;
-    const uint32 GREY        = 0xFF888888;
-    const uint32 DARKGREY    = 0xFF333333;
+    constexpr uint32 RED         = 0xFFFF0000;
+    constexpr uint32 GREEN       = 0xFF00FF00;
+    constexpr uint32 BLUE        = 0xFF0000FF;
+    constexpr uint32 BLACK       = 0xFF000000;
+    constexpr uint32 WHITE       = 0xFFFFFFFF;
+    constexpr uint32 GREY        = 0xFF888888;
+    constexpr uint32 DARKGREY    = 0xFF333333;
 
     // For UI drawing
-    const uint32 BACKGROUND  = 0xFF303030;
-    const uint32 LIGHTER     = 0xFF505050;
-    const uint32 DARKER      = 0xFF181818;
-    const uint32 ACCENT      = 0xFFA78BFA;
+    constexpr uint32 BACKGROUND  = 0xFF303030;
+    constexpr uint32 LIGHTER     = 0xFF505050;
+    constexpr uint32 DARKER      = 0xFF181818;
+    constexpr uint32 ACCENT      = 0xFFA78BFA;
 
 
     // Sets the brightness of a given color (uint32) to a float between 0-1.

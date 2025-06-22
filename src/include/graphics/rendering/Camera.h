@@ -12,17 +12,26 @@ namespace Rendering {
 
 class Camera {
 
+    /*
+        This class represents a Camera in 3d space, for rendering purposes
+
+        Contains a handful of vectors for physics/geometry, alongside some rendering focused data
+        Projection is handled here, because it is inherently tied to the camera state
+
+        Some of the stuff in this class is just a skeleton of future plans
+        These sections are labeled as such, and will likely be implementedor removed in V2
+    */
+
     public:
         
-        /*   Instance variables   */
+        /*   Instance Variables   */
 
-        // Physics vectors
         Geometry::Vec3 pos;
         Geometry::Vec3 velocity;
         Geometry::Vec3 acceleration;
 
-        // Tells which way the camera is facing
-        // Angle gives the yaw, pitch and roll (in degrees). Vec is a normalized spatial vector
+        // Contains the camera rotation data (ie. which way the camera is facing)
+        // 'facingAngle' gives the yaw, pitch and roll (in degrees). 'facingVec' is a normalized spatial vector
         Geometry::Vec3 facingAngle;
         Geometry::Vec3 facingVec;
 
@@ -31,14 +40,16 @@ class Camera {
 
         
         /*
+            --- NOT USED (postponed until V2) ---
+
             These values are used for projection
 
             'nearPlane' and 'farPlane' define the min and max depth vertices will be rendered at
             Any vertices outside this range will not be considered for rendering
 
             The frustum is symetric, so the 'Top' and 'Left' values are equivalent to 'Bottom' and 'Right' respectively
-            The values in these are in relation to the width and height of the frustum at the near plane
-            As they are scaled with depth, these effectively make up the width and height of the frustum at any depth
+            These values are in relation to the width and height of the frustum at the near plane
+            As they are scaled with depth, these effectively make up the width/height ratio of the frustum at any depth
         */
 
         float nearPlane;
@@ -51,15 +62,12 @@ class Camera {
         float sprintFactor;
 
         // This is the vector representing the direction of the global light source for this camera
-        // This will be removed at some point, when I implement better lighting
+        // This will be removed at some point, when I implement better lighting (postponed until V2)
         Geometry::Vec3 lightingVec;
 
 
         // Constructor
         Camera();
-
-        // Destructor
-        ~Camera();
 
 
         /*   Instance functions   */
@@ -71,29 +79,12 @@ class Camera {
         // Also updates the facing direction vector
         void rotate(float yaw, float pitch, float roll);
 
-        // Draws the mesh to the screen, based on this camera
-        void drawMesh(const Geometry::Mesh* mesh, const Geometry::Vec3* positionOffset) const;
-
-        // Loads the projection matrix for this camera into 'out'
-        void loadProjectionMatrix(Geometry::Matrix4* out);
-
-        // Takes a Vec3 object, and projects it into a Vec2 object.
-        // The Vec2 components will be overwritten with the output of this function.
-        // The values will be given in terms of fov (0 -> 1 is one fov length) so they dont mean anything for drawing until converted using a Display object
-        // here the places distance between point and camera position into the z coordinate of displayPos
-        void project(const Geometry::Vec3* vec, Geometry::Vec3* out, const Geometry::Vec3* offset = nullptr) const;
-
-        // Runs the functions above for all the verticies in a mesh
-        void project(Geometry::Mesh* mesh) const;
-        void project(Geometry::Mesh* mesh, Geometry::Vec3* offset) const;
-
-        // Returns true if the camera can see the triangle, based on the location of the tri relative to the cam, and the normal vector of the tri
-        bool canSee(const Geometry::Tri3* tri) const;
-        bool canSee(const Geometry::Tri3* tri, const Geometry::Vec3* offset) const;
+        // Loads the projection matrix for this camera into 'out' (NOT USED)
+        void loadProjectionMatrix(Geometry::Matrix4* out) const;
 
     private:
 
-        // Just used to ensure angles are between 0-360
+        // Just used to ensure all internal angle values are between 0-360
         void rolloverAngles();
         
 };

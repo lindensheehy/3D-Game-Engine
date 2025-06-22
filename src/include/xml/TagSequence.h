@@ -11,7 +11,7 @@ class TagSequence {
 
     /*
         This class is sort of just a glorified string buffer
-        This just abstracts away from the byte level operations needed to work with the XML
+        This just abstracts away from the byte level operations needed to work with the raw XML
         
         Functionally you can treat it as two arrays, with one having an extra element
         One array holds the string tags (after calling TagSequence::populateStringTags())
@@ -27,11 +27,13 @@ class TagSequence {
         int stringTagCount;
         int primTagCount;
 
+
         // Constructor
         TagSequence(char* file, int fromIndex, int toIndex, const char* fileName = nullptr);
 
         // Destructor
         ~TagSequence();
+
 
         /*   Instance Functions   */
 
@@ -41,12 +43,8 @@ class TagSequence {
         // Logs the contents of the tag sequence
         void log();
 
-        // Fills the bufferLength, stringTagCount and primTagCount instance variables
+        // Populates 'stringTagCount', 'primTagCount', and 'bufferLength'
         void findBufferLength();
-
-        // Returns non zero if the primitive tags are invalid
-        // Also logs specific errors on invalid tags
-        int validatePrimTags() const;
 
         // Gets the string tag at the given index. lengthOut will be filled with the length of the tag
         char* getStringTag(int index, int* lengthOut) const;
@@ -64,15 +62,10 @@ class TagSequence {
         PrimitiveTagState getPrimitiveTag(int index, PrimitiveTagType type) const;
 
         // Puts a primitive tag at a location. The actual position is right before the cooresponding string tag index
-        // More than one can be set at once. This is capped at XML::PRIM_TAG_LENGTH, which is the amount of types of prim tags
-        // This is just to abstract away from the byte level operations involved
         void setPrimitiveTag(int index, PrimitiveTagType type, PrimitiveTagState state);
 
-
-        // Populates the string tags in the tag sequence
         void populateStringTags();
 
-        // Populates the primitive tags in the tag sequence
         void populatePrimTags();
 
 
@@ -84,7 +77,7 @@ class TagSequence {
         char* file;
         int fileLength;
 
-        // This class really doesnt need this, but it helps for logging specific errors
+        // This class really doesnt need this, but it helps to log specific errors
         const char* fileName;
 
         // Buffer holding the tagSequence

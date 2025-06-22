@@ -9,17 +9,15 @@ namespace Gui {
 class Window {
 
     /*
-        This class is basically just a wrapper for the windows API. 
-        It serves to simplify and abstract away from the low level aspects of window handling.
-        The constructor creates the window, and then the instance variable "buffer" holds the pixel data of the window.
+        This class just wraps window creation/maintenance with the WinAPI
+        The constructor creates the window, and then 'buffer' holds the pixel data of the window.
         Calling flip() will write the pixels in the buffer to the window.
     */
 
     public:
 
-        /* --- Instance variables --- */
+        /*   Instance Variables   */
 
-        // Window size
         int windowWidth, windowHeight;
 
         LPCSTR windowTitle;
@@ -28,7 +26,7 @@ class Window {
         uint32* buffer;
 
         HWND hwnd;                      // Handle to created window
-        HINSTANCE hInstance;            // Handle to main
+        HINSTANCE hInstance;            // Handle to main (this app in Windows)
 
 
         // Constructor
@@ -36,6 +34,7 @@ class Window {
 
         // Destructor
         ~Window();
+
 
         /*   Instance functions   */
 
@@ -45,7 +44,7 @@ class Window {
         // Tells Windows to redraw the window
         void flip() const;
 
-        // Sends all the messages from Windows to the WindowProc function. Will break on a WM_PAINT message so the main loop can execute before drawing
+        // Sends all the messages from Windows to the WindowProc function. Should be called every frame
         void handleMessages() const;
 
         // Updates the cursor state
@@ -59,9 +58,10 @@ class Window {
         HDC memDC;
         HBITMAP hBitmap;
 
-        BITMAPINFO bitmapInfo;          // Stores info to help windows translate the pixel buffer into Uint32 format
+        // Stores info to help windows translate the pixel buffer to a bitmap
+        BITMAPINFO bitmapInfo;
 
-        // Stores the different cursor type handles
+        // Stores the different cursor type handles (loaded on construction)
         HCURSOR hCursorArrow;
         HCURSOR hCursorHand;
         HCURSOR hCursorText;

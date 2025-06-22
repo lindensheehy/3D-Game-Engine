@@ -26,8 +26,6 @@ class GUI {
 
         /*   Instance Variables   */
 
-        // This class is composed mostly of these other classes in this module
-
         // Holds information about the window dimensions, alongside some utility functions for rendering
         Rendering::Display* display;
 
@@ -60,12 +58,6 @@ class GUI {
         // This updates the data in this GUI instance based on the message from Windows
         // This will return non 0 if the message was not handled
         LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-
-
-    private:
-
-        /*   Instance Functions   */
 
 };
 

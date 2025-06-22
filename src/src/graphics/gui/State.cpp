@@ -9,7 +9,6 @@ using namespace Graphics::Gui;
 
 State::TimeState::TimeState() {
 
-    // Variable initialization
     this->totalFrameCount = 0;
     this->dt = 0;
     this->fps = 0;
@@ -17,10 +16,11 @@ State::TimeState::TimeState() {
     this->framesSinceLastSecond = 0;
     this->nextSecondMillis = 0;
 
-
-    // Get time
+    // Set up
     this->initTimer();
     this->update();
+
+    return;
 
 }
 
@@ -36,6 +36,8 @@ void State::TimeState::updateDt() {
 
     this->dt = (double) (frameTimeQP - lastFrameTimeQP) / frequencyQP;
     this->dt *= 1000;
+
+    return;
 
 }
 
@@ -58,6 +60,8 @@ void State::TimeState::updateFps() {
 
     }
 
+    return;
+
 }
 
 void State::TimeState::update() {
@@ -68,6 +72,8 @@ void State::TimeState::update() {
     this->updateDt();
     this->updateFps();
 
+    return;
+
 }
 
 double State::TimeState::getTimeMillis() {
@@ -75,6 +81,7 @@ double State::TimeState::getTimeMillis() {
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
     double temp = (double) (currentTime.QuadPart) / frequency.QuadPart;
+
     return temp * 1000;
 
 }
@@ -83,6 +90,8 @@ void State::TimeState::initTimer() {
 
     QueryPerformanceFrequency( &(this->frequency) );
     QueryPerformanceCounter( &(this->frameTime) );
+
+    return;
 
 }
 
@@ -93,18 +102,26 @@ void State::TimeState::initTimer() {
 /*  ------------------------------------  */
 
 State::MouseState::MouseState() {
+
     this->leftButtonIsDown = false;
     this->rightButtonIsDown = false;
     this->posX = 0;
     this->posY = 0;
+
+    return;
+
 }
 
 void State::MouseState::setState(MouseState* state) {
+
     this->leftButtonIsDown = state->leftButtonIsDown;
     this->rightButtonIsDown = state->rightButtonIsDown;
     this->middleButtonIsDown = state->middleButtonIsDown;
     this->posX = state->posX;
     this->posY = state->posY;
+
+    return;
+
 }
 
 void State::MouseState::buttonDown(WPARAM wParam) {
@@ -113,17 +130,22 @@ void State::MouseState::buttonDown(WPARAM wParam) {
 
         case MK_LBUTTON:
             this->leftButtonDown();
-            return;
+            break;
 
         case MK_MBUTTON:
             this->middleButtonDown();
-            return;
+            break;
 
         case MK_RBUTTON:
             this->rightButtonDown();
-            return;
+            break;
+
+        default:
+            break;
 
     }
+
+    return;
 
 }
 
@@ -133,17 +155,22 @@ void State::MouseState::buttonUp(WPARAM wParam) {
 
         case MK_LBUTTON:
             this->leftButtonUp();
-            return;
+            break;
 
         case MK_MBUTTON:
             this->middleButtonUp();
-            return;
+            break;
 
         case MK_RBUTTON:
             this->rightButtonUp();
-            return;
+            break;
+
+        default:
+            break;
 
     }
+
+    return;
 
 }
 
@@ -172,8 +199,12 @@ void State::MouseState::rightButtonUp() {
 }
 
 void State::MouseState::setPos(int x, int y) {
+
     this->posX = x;
     this->posY = y;
+
+    return;
+
 }
 
 
@@ -183,16 +214,24 @@ void State::MouseState::setPos(int x, int y) {
 /*  -------------------------------------  */
 
 State::KeyboardState::KeyboardState() {
-    this->keyStates = new bool[this->keyStatesLength] {};
+
+    this->keyStates = new bool[this->keyStatesLength];
+    memset(this->keyStates, 0x00, this->keyStatesLength * sizeof(bool));
+
+    return;
+
 }
 
 State::KeyboardState::~KeyboardState() {
+
     delete[] this->keyStates;
+
+    return;
+
 }
 
 void State::KeyboardState::setState(KeyboardState* state) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {
         logWrite("Called State::KeyboardState->setState(KeyboardState*) on a null pointer!", true);
         return;
@@ -208,8 +247,8 @@ void State::KeyboardState::setState(KeyboardState* state) {
 bool* State::KeyboardState::getKeyRef(KeyCode keyCode) {
 
     /*
-        Returns a pointer to the key boolean value within the instance variables
-        This is reused in other instance functions
+        Returns a pointer to the keys boolean value within the master array
+        This is a helper function for other instance functions
     */
     
     // Invalid value
@@ -241,7 +280,8 @@ bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
-    else return false;
+    
+    return false;
 
 }
 
@@ -253,7 +293,9 @@ bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
 
 State::State(HWND hwnd, bool hasChild /* default value = true */) {
 
-    this->newKeyPresses = new KeyCode[3] {KeyCode::NONE, KeyCode::NONE, KeyCode::NONE};
+    this->newKeyPresses[0] = KeyCode::NONE;
+    this->newKeyPresses[1] = KeyCode::NONE;
+    this->newKeyPresses[2] = KeyCode::NONE;
     this->newKeyPressesIndex = 0;
 
     this->time = new TimeState();
@@ -265,14 +307,19 @@ State::State(HWND hwnd, bool hasChild /* default value = true */) {
     if (hasChild) this->lastFrame = new State(hwnd, false);
     else this->lastFrame = nullptr;
 
+    return;
+
 }
 
 State::~State() {
-    if (this->newKeyPresses != nullptr) delete[] this->newKeyPresses;
-    if (this->time != nullptr)          delete this->time;
-    if (this->mouse != nullptr)         delete this->mouse;
-    if (this->keys != nullptr)          delete this->keys;
-    if (this->lastFrame != nullptr)     delete this->lastFrame;
+
+    delete this->time;
+    delete this->mouse;
+    delete this->keys;
+    delete this->lastFrame;
+
+    return;
+
 }
 
 int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -334,7 +381,7 @@ int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
     }
 
-    // If the message was not handled in the switch, return 1 to signify this
+    // If the message was not handled in the switch, return 2 to signify this
     return 2;
 
 }
@@ -366,21 +413,11 @@ bool State::wasRightJustPressed() {
 }
 
 bool State::wasLeftHeld() {
-
-    return (
-        this->mouse->leftButtonIsDown &&
-        this->lastFrame->mouse->leftButtonIsDown
-    );
-
+    return (this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }
 
 bool State::wasRightHeld() {
-
-    return (
-        this->mouse->rightButtonIsDown &&
-        this->lastFrame->mouse->rightButtonIsDown
-    );
-
+    return (this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
 bool State::wasLeftJustReleased() {
@@ -400,6 +437,8 @@ void State::updateMousePos() {
 
     this->mouse->posX = point.x;
     this->mouse->posY = point.y;
+
+    return;
 
 }
 
@@ -436,4 +475,6 @@ void State::setState(State* state) {
 
     this->mouse->setState(state->mouse);
     this->keys->setState(state->keys);
+
+    return;
 }

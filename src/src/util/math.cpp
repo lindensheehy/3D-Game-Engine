@@ -3,11 +3,12 @@
 
 /*   -----   Basic Functions   -----   */
 int floor(float x) {
+
     /*
         Type casting is used to truncate the fractional part of the value
 
         For negative number this returns floor(x) + 1
-        So those cases are handled
+        Thats why the if statement exists
     */
 
     int returnValue = (int) x;
@@ -19,11 +20,12 @@ int floor(float x) {
 }
 
 int floor(double x) {
+
     /*
         Type casting is used to truncate the fractional part of the value
 
         For negative number this returns floor(x) + 1
-        So those cases are handled
+        Thats why the if statement exists
     */
 
     int returnValue = (int) x;
@@ -34,35 +36,12 @@ int floor(double x) {
 
 }
 
-int round(float x) {
-    /*
-        This just calls floor(x + 0.5)
-        This does the same thing as rounding to 0 decimal points
-        Rounding to more decimal points is not supported
-    */
-
-    float y = x + 0.5;
-    return floor(y);
-
-}
-
-int round(double x) {
-    /*
-        This just calls floor(x + 0.5)
-        This does the same thing as rounding to 0 decimal points
-        Rounding to more decimal points is not supported
-    */
-
-    double y = x + 0.5;
-    return floor(y);
-
-}
-
-float sqrt(float x, float tolerance /* default value = 0.00001 */) {
+float sqrt(float x, float tolerance) {
     return (float) sqrt( (double) x, (double) tolerance );
 }
 
-double sqrt(double x, double tolerance /* default value = 0.00001 */) {
+double sqrt(double x, double tolerance) {
+
     /*
     
         This function makes use of the Newton Raphson method to find the sqrt of x as follows:
@@ -141,6 +120,7 @@ float sin(float x) {
 }
 
 double sin(double x) {
+
     /*
         Uses radians
         This function uses the power series defined for sin(x) as
@@ -182,6 +162,7 @@ double sin(double x) {
     returnValue += (exp9) / fac9;
 
     return returnValue;
+
 }
 
 float cos(float x) {
@@ -189,6 +170,7 @@ float cos(float x) {
 }
 
 double cos(double x) {
+
     /*
         Uses radians
         This function uses the power series defined for sin(x) as
@@ -236,6 +218,7 @@ double cos(double x) {
     if (abs(returnValue) < 1e-6) return 0;
 
     return returnValue;
+
 }
 
 float tan(float x) {
@@ -243,6 +226,7 @@ float tan(float x) {
 }
 
 double tan(double x) {
+
     /*
         Uses radians
         The tan power series is quite complicated and is not very accurate with only a few terms, so it is not used
@@ -273,6 +257,7 @@ float arctan(float x) {
 }
 
 double arctan(double x) {
+
     /*
         Returns radians
         This function is sort of complicated so heres the breakdown:
@@ -367,6 +352,7 @@ float arcsin(float x) {
 }
 
 double arcsin(double x) {
+
     /*
         This function makes use of the arctan function defined above, along side the following identity:
 
@@ -411,6 +397,7 @@ float arccos(float x) {
 }
 
 double arccos(double x) {
+
     /*
         This function makes use of the arctan function defined above, along side the following identity:
 
@@ -459,7 +446,7 @@ double arccos(double x) {
 /*   ---   Other Functions   ---   */
 /*   ---------------------------   */
 
-float distance2(float x1, float y1, float x2 /* default value = 0 */, float y2 /* default value = 0 */) {
+float distance2(float x1, float y1, float x2, float y2) {
 
     float dx = x1 - x2;
     float dy = y1 - y2;
@@ -468,7 +455,7 @@ float distance2(float x1, float y1, float x2 /* default value = 0 */, float y2 /
 
 }
 
-float distance3(float x1, float y1, float z1, float x2 /* default value = 0 */, float y2 /* default value = 0 */, float z2 /* default value = 0 */) {
+float distance3(float x1, float y1, float z1, float x2, float y2, float z2) {
 
     float dx = x1 - x2;
     float dy = y1 - y2;
@@ -490,16 +477,19 @@ float normalize(float num, float from, float to) {
 }
 
 float inRange(float num, float from, float to) {
+
     /*
         Function is similar to range, but returns -1 for values outside the range
     */
 
-    if ( (num >= from) && (num <= to) )
-        return ( (num - from) / (to - from) );
-    return -1;
+    if ( (num < from) || (num > to) ) return -1;
+
+    return ( (num - from) / (to - from) );
+
 }
 
-float getAngle(float x1, float y1, float x2 /* default value = 0 */, float y2 /* default value = 0 */) {
+float getAngle(float x1, float y1, float x2, float y2) {
+
     /*
         Returns the angle made between the y axis and (x1, y1) relative to (x2, y2)
         so this means that the 'y-axis' will be shifted to one side depending on where x2 lies

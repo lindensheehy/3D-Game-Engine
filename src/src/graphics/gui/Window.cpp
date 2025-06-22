@@ -3,18 +3,19 @@
 using namespace Graphics::Gui;
 
 
-Window::Window(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle /* default value = "Window" */) {
+Window::Window(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight, LPCSTR windowTitle) {
 
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
     this->windowTitle = windowTitle;
 
-    this->buffer = new uint32[PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT] {};
+    this->buffer = new uint32[PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT];
+    memset(this->buffer, 0x00, (PIXEL_BUFFER_WIDTH * PIXEL_BUFFER_HEIGHT) * sizeof(uint32));
 
-    // Get hInstance, since I'm not using WinMain
+    // Get hInstance manually, since I'm not using WinMain
     this->hInstance = GetModuleHandle(nullptr);
 
-    // Create and register Window Class
+    // Create and register the Window Class
     WNDCLASS wc = {};
     wc.lpfnWndProc = windowProcFunc;
     wc.hInstance = this->hInstance;
@@ -73,12 +74,19 @@ Window::Window(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight,
     this->hCursorHand = LoadCursor(NULL, IDC_HAND);
     this->hCursorText = LoadCursor(NULL, IDC_IBEAM);
 
+    return;
+
 }
 
 Window::~Window() {
+
     delete[] this->buffer;
+
     DestroyWindow(this->hwnd);
     UnregisterClass(this->windowTitle, this->hInstance);
+
+    return;
+    
 }
 
 void Window::updateDimensions(int width, int height) {

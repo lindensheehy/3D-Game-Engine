@@ -1,3 +1,17 @@
+/*
+    --- THIS FILE IS NOT PART OF THE CURRENT BUILD ---
+
+    This file is incomplete, but it’s here on purpose.
+
+    It’s meant to define physics bounding shapes.
+    These will be used for physics interaction handling, and will be tied to Object instances
+
+    This code only exists to help layout the project structure.
+    It will be properly implemented (or refactored) in V2.
+
+    Leaving it here to show what was planned. Not forgotten, just moved forward.
+*/
+
 #include "physics/Bounding.h"
 
 using namespace Physics;
@@ -110,13 +124,15 @@ bool BoundingRect::collidesWith(BoundingShape* other) {
 
         case NONE:
             logWrite("Cannot call BoundingRect::collidesWith(BoundingShape*) on type BoundingShape (must use a subclass type)", true);
-            return false;
+            break;
 
         default:
             logWrite("Invalid BoundType found during BoundingRect::collidesWith(BoundingShape*) call (probably not initialized properly)", true);
-            return false;
+            break;
 
     }
+
+    return false;
 
 }
 
@@ -166,12 +182,14 @@ bool BoundingSphere::collidesWith(BoundingShape* other) {
 
         case NONE:
             logWrite("Cannot call BoundingSphere::collidesWith(BoundingShape*) on type BoundingShape (must use a subclass type)", true);
-            return false;
+            break;
 
         default:
             logWrite("Invalid BoundType found during BoundingSphere::collidesWith(BoundingShape*) call (probably not initialized properly)", true);
-            return false;
+            break;
 
     }
+
+    return false;
 
 }

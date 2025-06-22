@@ -85,49 +85,41 @@ uint32 Color::merge(uint32 color1, float opacity1, uint32 color2, float opacity2
 
 /*   -----   Swap Variants   -----   */
 void swap(int* var1, int* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
 
     int temp = *var1;
     *var1 = *var2;
     *var2 = temp;
+
     return;
 
 }
 
 void swap(unsigned int* var1, unsigned int* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
 
     unsigned int temp = *var1;
     *var1 = *var2;
     *var2 = temp;
+
     return;
 
 }
 
 void swap(float* var1, float* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
 
     float temp = *var1;
     *var1 = *var2;
     *var2 = temp;
+
     return;
 
 }
 
 void swap(double* var1, double* var2) {
-    /*
-        Just swaps the values in var1 and var2 using pointers to those values
-    */
 
     double temp = *var1;
     *var1 = *var2;
     *var2 = temp;
+
     return;
 
 }
@@ -143,9 +135,7 @@ bool stringToFloat(char* string, float* result, int MAXLENGTH) {
     if (result == nullptr) return false;
 
     double doubleResult;
-
     bool passed = stringToDouble(string, &doubleResult, MAXLENGTH);
-
     *result = (float) doubleResult;
 
     return passed; 

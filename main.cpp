@@ -10,6 +10,8 @@
 #include "xml/XML.h"
 #include "xml/XMLFile.h"
 
+#include "geometry/Matrix.h"
+
 // Global declarations
 Graphics::Gui::GUI* gui;
 Graphics::Rendering::Camera* camera;
@@ -250,7 +252,7 @@ void init() {
 
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::cubeMesh;
-    newObject->scaleBy(15)->move(0, 0, 50)->setColor(Color::WHITE);
+    newObject->scaleBy(25)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
 
     // newObject = new Physics::Object();
@@ -270,7 +272,7 @@ void init() {
 
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::sphereMesh;
-    newObject->scaleBy(12)->move(0, 0, 40)->setColor(Color::BLUE);
+    newObject->scaleBy(20)->move(0, 0, 40)->setColor(Color::BLUE);
     objects->pushBack(newObject, 5);
 
     // newObject = new Physics::Object();

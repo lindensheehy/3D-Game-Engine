@@ -13,7 +13,7 @@ XML::XML() {
 
 XML::~XML() {
 
-    if (this->elementSet != nullptr) delete this->elementSet;
+    delete this->elementSet;
 
     return;
 
@@ -23,7 +23,7 @@ void XML::initDefaultElements() {
 
     /*   
         This just loads the signature for each element from "ui/WindowElement.h"
-        Will need to change this function when adding a new default element
+        Will need to change this function when adding or changing default elements
     */
 
     ParameterInfoBuilder* builder = new ParameterInfoBuilder();
@@ -134,7 +134,6 @@ void XML::initDefaultElements() {
     this->elementSet->addDefaultElement("dragable", parameterInfo, ElementSet::DRAGABLE);
 
 
-    // Clean up
     delete builder;
 
     return;
@@ -147,8 +146,18 @@ void XML::initCustomElements() {
     ParameterInfo* parameterInfo;
     XMLFile* xmlFile;
     
-    /*                      --- REPLACE THIS LATER ---                          */
-    /*   THIS SHOULD DYNAMICALLY USE EVERY XML FILE IN src/assets/ui/elements   */
+    /*
+        Right now this just manually defines two elements that exist in src/assets/ui/elements
+
+        This can perform a scan for files (via util/FileNavigator), but I'm choosing to postpone that until V2
+        Mostly because its not just a simple plug and play... This function will need to:
+        - iterate over the files
+        - read from them
+        - parse the contents of the <parameters> section
+        - and populate 'elementSet' accordingly
+
+        Its possible, and it is planned, but I'm just not implementing it in this version
+    */
 
     // textbox
     builder->addParameter("posx", TYPE_INT, 0);
@@ -173,7 +182,7 @@ void XML::initCustomElements() {
 
     this->elementSet->addCustomElement("topbar", parameterInfo, xmlFile);
 
-    // Clean up
+
     delete builder;
 
     return;
@@ -242,7 +251,7 @@ Ui::WindowElement* XML::buildElement(XMLFile* xmlFile) {
         // Holds the name of the param for custom elements
         char* customParamName;
 
-        // Global state of the PARAMS tag, will equal the last non NONE PARAMS tag
+        // Global state of the PARAMS tag, will equal the last non-NONE PARAMS tag
         PrimitiveTagState paramsTagState = CLOSE;
 
         // Holds the state of each prim tag in each iteration
@@ -631,7 +640,7 @@ Ui::WindowElement* XML::buildElement(XMLFile* xmlFile) {
                     Note: 
                     This code assumes that the closing tags will always match up properly
                     If any dont, the code will still run, but you may get unexpected results
-                    Best way to think of this is by treating all closing tags </tag> the same
+                    This code does not discriminate closing tags, so '</tag1>' and '</tag2>' are functionally identical
                 */
 
                 // Pop the last item on the stack, and store for further use
@@ -757,10 +766,8 @@ Ui::WindowElement* XML::buildElement(XMLFile* xmlFile) {
 
                             /*   Cast the string value into the temp buffer   */
 
-                            // First try treating as decimal
                             if ( !(stringToFloat(vars.stringTag, &(vars.floatTemp), MAX_TAG_LENGTH)) ) {
 
-                                // If both were invalid, throw an error
                                 logError("wants to cast a string into a float but cant!", xmlFile, i);
                                 logWrite(" -> String \"");
                                 logWrite(vars.stringTag);
@@ -827,14 +834,16 @@ Ui::WindowElement* XML::buildElement(XMLFile* xmlFile) {
     delete[] vars.intBuffer;
     delete[] vars.floatBuffer;
 
-    for (int i = 0; i < PARAMS_BUFFER_SIZE; i++)
+    for (int i = 0; i < PARAMS_BUFFER_SIZE; i++) {
         delete[] vars.stringBuffer[i];
+    }
 
     delete[] vars.stringBuffer;
 
     // Delete any items in the stack
-    for (vars.stack->iterStart(0); vars.stack->iterHasNext(); vars.stack->iterNext())
+    for (vars.stack->iterStart(0); vars.stack->iterHasNext(); vars.stack->iterNext()) {
         delete vars.stack->iterGetObj();
+    }
 
     delete vars.stack;
 

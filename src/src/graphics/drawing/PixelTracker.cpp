@@ -6,9 +6,12 @@ using namespace Graphics::Drawing;
 PixelTracker::PixelTracker() {
 
     this->currentObject = nullptr;
+    this->foundObject = nullptr;
     this->watchedPixel.set(0, 0);
 
     this->watchingPixelWrites = false;
+
+    return;
 
 }
 

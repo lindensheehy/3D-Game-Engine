@@ -8,10 +8,12 @@ using namespace Ui;
 /* ---------------------------- */
 
 Action::Action() {
-    this->type = ActionType::NONE;
-}
 
-Action::~Action() {}
+    this->type = ActionType::NONE;
+
+    return;
+
+}
 
 
 
@@ -24,7 +26,9 @@ ActionCloseWindow::ActionCloseWindow(WindowID targetWindowId) {
     this->type = ActionType::CLOSE_WINDOW;
 
     this->targetWindowId = targetWindowId;
-    
+
+    return;
+
 }
 
 
@@ -41,6 +45,8 @@ ActionOpenWindow::ActionOpenWindow(const char* fileName, WindowHandle** windowHa
     this->windowHandle = windowHandle;
     this->bindFunc = bindFunc;
 
+    return;
+
 }
 
 
@@ -56,6 +62,8 @@ ActionCallFunc::ActionCallFunc(void (*func)(Context*), Context** context) {
     this->func = func;
     this->context = context;
 
+    return;
+
 }
 
 void ActionCallFunc::callFunc() {
@@ -63,5 +71,7 @@ void ActionCallFunc::callFunc() {
     if (this->context == nullptr) return;
 
     this->func( *(this->context) );
+
+    return;
 
 }

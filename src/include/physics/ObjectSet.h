@@ -14,8 +14,11 @@ namespace Physics {
 class Object {
     
     /*
-        This class contains a mesh alongside some variables for handling physics interactions
-        Most of the instance functions here just directly call the same function from Mesh class
+        This class represents a game object. It contains a Mesh pointer and some vectors/values
+        Meshes are shared by Objects, because the transformations happen Object side
+
+        The Meshes in this program are largely static. So this class contains the primary transformation vectors
+        To adjust how the object appears (position, scale, etc.), change the vectors in this class, no where else
     */
 
     public:
@@ -32,24 +35,23 @@ class Object {
 
         float opacity;
 
-        float mass;
         float gravityFactor;
+        
+        // Unused (postponed until V2)
+        float mass;
         float frictionFactor;
         float bounceFactor;
 
 
-        // Constructor
+        // Constructors
         Object();
         Object(Geometry::Mesh* mesh);
 
 
         /*   Instance Functions   */
 
-        // Creates a copy of the instance, and returns a pointer to it.
+        // Deep copy (mostly). Returns a new Object instance. The copy will use the same Mesh pointer
         Object* copy();
-
-        // Returns the center of the mesh (average of all verticies). This returns a reference to an instance variable.
-        Geometry::Vec3* getCenter();
 
         // Moves the object in space by the specified distance.
         Object* move(Geometry::Vec3* dist);
@@ -59,28 +61,17 @@ class Object {
         Object* scaleBy(float factor);
         Object* scaleBy(float fx, float fy, float fz);
 
-        // Rotates the object by the specified angles. rotates around (0, 0, 0) if no around vector is given
+        // Rotates the object by the specified angles (in place rotation)
         Object* rotate(Geometry::Vec3* angle);
         Object* rotate(float yaw, float pitch, float roll);
 
-        // Sets the color of the object
         Object* setColor(uint32 color);
 
         // Updates all the physics variables of this object based on a delta time
         void doPhysics(float dt);
 
-        // Simple collision check. the object will act as though there is an infinite mass plane at a y level
-        void doFloorCollision(float y);
-
+        // Unfinished (postponed until V2)
         bool collides(Object* other);
-
-    private:
-
-        // Stores the last version of each vector so update() knows what to do. 
-        // pos does not need this becuase its handled object side as opposed to mesh side
-        Geometry::Vec3 lastRotation;
-        Geometry::Vec3 lastScale;
-
 
 };
 
@@ -89,9 +80,8 @@ class Object {
 class ObjectSet {
 
     /*
-        Contains a set of Objects in the form of a doubly linked list
-        This can be added and removed from, and this way a group of objects can be rendered and drawn together
-        This set is used for items unaffected by physics
+        Contains a set of Objects in a LinkedList (util/LinkedList.h)
+        This allows a group of objects to be rendered, drawn, and even transformed together
     */
 
     public:
@@ -104,9 +94,6 @@ class ObjectSet {
 
 
         /*   Instance Functions   */
-
-        // Returns the length of the internal linked list
-        int getLength();
         
         void pushBack(Object* obj);
         void pushBack(Object* obj, int id);
@@ -114,37 +101,39 @@ class ObjectSet {
         void pushFront(Object* obj, int id);
 
 
+        /*
+            Inline functions. These operations are simply forwarded to the internal LinkedList
+            This could be avoiding by extending LinkedList, but composition > inheritance ;)
+
+            See LinkedList for more detail about implementation and behaviour
+        */
+
+        inline int getLength() { return this->list->length; }
+
         inline Object* popBack() { return this->list->popBack(); }
+
         inline Object* popFront() { return this->list->popFront(); }
 
-        // Pops the node with this id. If the id doesnt exist in the list, this returns nullptr
         inline Object* popById(int id) { return this->list->popById(id); }
 
-        // Returns a reference to the object with a given id. DOES NOT change the internal list.
         inline Object* getById(int id) { return this->list->getById(id); }
 
-        // Sets the instance variable iterCurrent to an index, from where the other iterator functions can be called
         inline void iterStart(int index) { this->list->iterStart(index); }
 
-        // Returns the object of iterCurrent. Returns nullptr if the iterator is at null
         inline Object* iterGetObj() { return this->list->iterGetObj(); }
 
-        // Returns the id of iterCurrent. Returns -1 if the iterator is at null
         inline int iterGetId() { return this->list->iterGetId(); }
 
-        // Moves the iterator forward 1
         inline void iterNext() { this->list->iterNext(); }
 
-        // Moves the iterator back 1
         inline void iterLast() { this->list->iterLast(); }
 
-        // Returns true if iterCurrent equals nullptr
         inline bool iterIsDone() { return this->list->iterIsDone(); }
 
 
-        /*   Functions to affect all objects in the set   */
+        /*   Functions affecting all objects in the set   */
 
-        // Changes the position of all the objects
+        // Adds to the position of all the objects
         void moveAll(Geometry::Vec3* dist);
         void moveAll(float dx, float dy, float dz);
 
@@ -161,18 +150,15 @@ class ObjectSet {
         void setVelocityAll(float vx, float vy, float vz);
 
         // Sets the gravitational acceleration for all objects in the set
-        void setGravityAll(Geometry::Vec3* gravity);  // This copies the values from thi Vec3 into instance variables, this one needs to be handled accordingly
-        void setGravityAll(float gx, float gy, float gz);  // Sets all the instance variables to these values
-        void setGravityAll(float gy);  // Sets the gravity to just down or up
+        void setGravityAll(Geometry::Vec3* gravity);
+        void setGravityAll(float gx, float gy, float gz);
+        void setGravityAll(float gy);
 
-        // Sets the opacity of all the objects
+        // Sets the opacity of all the objects (between 0 and 1)
         void setOpacityAll(float opacity);
 
         // Calls Object->doPhysics for all in the set
         void doAllPhysics(float dt);
-
-        // Projects all the objects into window coordinates
-        void projectAll(Graphics::Rendering::Camera* camera, Graphics::Rendering::Display* display);
 
         // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest, optional opacity value from 0-1
         void drawAll(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera);
@@ -187,7 +173,7 @@ class ObjectSet {
         
         /*   Instance Variables   */
 
-        // List shouldnt be directly accessed
+        // This shouldnt be directly accessed
         LinkedList<Object*>* list;
 
 };

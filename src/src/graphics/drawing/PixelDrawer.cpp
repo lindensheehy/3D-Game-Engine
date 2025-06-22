@@ -11,7 +11,7 @@ PixelDrawer::PixelDrawer(int width, int height) {
     this->bufferSize = height * height;
 
     // Depth buffer
-    this->depthBuffer = new float[this->maxBufferIndex];
+    this->depthBuffer = new float[this->maxBufferSize];
     this->resetDepthBuffer();
 
     return;
@@ -28,6 +28,11 @@ PixelDrawer::~PixelDrawer() {
 
 void PixelDrawer::updateDimensions(int width, int height) {
 
+    /*
+        This function assumes the values have already been bound checked
+        This function is not called directly, and is called by Drawer::updateDimensions() instead
+    */
+
     this->bufferWidth = width;
     this->bufferHeight = height;
     this->bufferSize = width * height;
@@ -43,9 +48,7 @@ void PixelDrawer::resetDepthBuffer() {
         Those are the only ones used on any given draw frame, so no need to reset the rest
     */
 
-    int range = this->bufferWidth * this->bufferHeight;
-
-    for (int i = 0; i < range; i++) {
+    for (int i = 0; i < this->bufferSize; i++) {
         this->depthBuffer[i] = inf;
     }
 
@@ -115,8 +118,8 @@ void PixelDrawer::drawPixel(uint32 pixel, int x, int y, float depth, float opaci
     if (depth > this->depthBuffer[index]) return;
 
     // Check with PixelTracker
-    if (this->pixelTracker.watchingPixelWrites) {
-        if (this->pixelTracker.watchedPixel.is(x, y)) {
+    if (this->pixelTracker.watchingPixelWrites) [[unlikely]] {
+        if (this->pixelTracker.watchedPixel.is(x, y)) [[unlikely]] {
             this->pixelTracker.foundWrite();
         }
     }

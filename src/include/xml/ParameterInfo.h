@@ -18,16 +18,19 @@ struct Parameter {
 class ParameterInfo {
 
     /*
-        This is a wrapper for two internal arrays as follows
         This is used to determine if a parameter exists, and what type it is
+        It does this by wrapping two internal arrays as follows:
+        - 'names' This holds the name of each parameter, in one long string
+                  This long string is not delimited, using 'namesIndexes' and 'namesLengths' to determine boundaries
+        - 'types' This just a regular array of type ParameterType
+                  These values coorespond to actual types (see xml/Core.h for more detail)
 
-        This simplifies the process a TON, by just using matchParameter to check it
+        This simplifies the process a TON, by just using matchParameter to check types
 
         The constructor is private because it is not intended to be used directly
-        ParameterInfoBuilder should do this for you because it will dynamically build the data set
+        ParameterInfoBuilder should handle construction for you (see below)
     */
 
-    // This gives ParameterInfoBuilder access to the private members
     friend class ParameterInfoBuilder;
 
     public:
@@ -45,6 +48,7 @@ class ParameterInfo {
         // Constructor
         ParameterInfo(LinkedList<Parameter*>* params);
 
+
         /*   Instance Variables   */
 
         // Stores each name in one long string
@@ -54,13 +58,13 @@ class ParameterInfo {
         int* namesIndexes;
 
         // Stores the length of each sub string in names
-        // This is sort of redundant becuase of namesIndexes, but its just better ease of use
+        // This is sort of redundant becuase of namesIndexes, but its just for ease of use
         int* namesLengths;
 
         // Stores each type
         ParameterType* types;
 
-        // Length of each array, they should only ever be the same length, so one variable is fine
+        // Length of each array. They should only ever be the same length, so one variable is fine
         int length;
 
 };
@@ -69,13 +73,10 @@ class ParameterInfo {
 class ParameterInfoBuilder {
 
     /*
-        This class serves to help in constructing ParameterInfo objects
-        This makes use of linked lists for dynamic insertion
+        This class serves to construct ParameterInfo objects
+        This makes use of linked lists for quick insertion
         Once the build() function is called, it will return a valid ParameterInfo object holding the same data
     */
-
-    // Also let ParameterInfo see into this builder
-    friend class ParameterInfo;
 
     public:
 
@@ -89,12 +90,13 @@ class ParameterInfoBuilder {
         /*   Instance Functions   */
 
         // Builds the ParameterInfo object. Also resets the builder
+        // Returns a new heap allocated ParameterInfo object
         ParameterInfo* build();
 
-        // Resets the object being built to empty
+        // Deletes any existing data that was being built
         void reset();
 
-        // Adds the parameter to the list. Takes a string and a type
+        // Adds the parameter to the list
         // The strings in this class are read only, so this will use the same pointer
         void addParameter(const char* name, ParameterType type, int position);
         void addParameter(char* name, ParameterType type, int position);

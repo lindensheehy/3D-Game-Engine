@@ -43,11 +43,9 @@ ParameterInfo::ParameterInfo(LinkedList<Parameter*>* params) {
     // Stores the length of the current sub string
     int length;
 
-
-    // This will be passed to the ParameterInfo constructor
     this->types = new ParameterType[this->length];
 
-    // Index pointer for the next slot in the array
+    // Index pointer for the next slot in the 'types' array
     int typesArrayIndex = 0;
     
 
@@ -85,6 +83,8 @@ ParameterInfo::~ParameterInfo() {
     delete[] this->namesLengths;
     delete[] this->types;
 
+    return;
+
 }
 
 ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) {
@@ -116,7 +116,6 @@ ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) 
     }
 
 
-    // Used for the next loop
     int startIndex;
     int length;
 
@@ -170,8 +169,9 @@ ParameterInfoBuilder::ParameterInfoBuilder() {
 
 ParameterInfoBuilder::~ParameterInfoBuilder() {
 
-    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext())
+    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext()) {
         delete this->params->iterGetObj();
+    }
 
     delete this->params;
 
@@ -191,12 +191,15 @@ ParameterInfo* ParameterInfoBuilder::build() {
 
 void ParameterInfoBuilder::reset() {
 
-    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext())
+    for (this->params->iterStart(0); this->params->iterHasNext(); this->params->iterNext()) {
         delete this->params->iterGetObj();
+    }
 
     delete this->params;
 
     this->params = new LinkedList<Parameter*>();
+
+    return;
 
 }
 

@@ -1,3 +1,18 @@
+/*
+    --- THIS FILE IS NOT PART OF THE CURRENT BUILD ---
+
+    This file doesn’t work right now, but it’s here on purpose.
+    I brought it over from another one of my apps where PNGs were loaded using 'lodepng' (an external library)
+
+    It’s meant to hold the logic and data for decoding PNG files into a usable format for the engine
+    This was (and likely will be) done by loading pixel data into memory for use as textures.
+
+    Since I am not using includes in this project, I removed the external lodepng dependency
+    This code only exists to help layout the project structure, and will likely be implemented in V2.
+
+    Leaving it here to show what was planned. Not forgotten, just moved forward.
+*/
+
 #pragma once
 
 #include "util/Utility.h"
@@ -9,8 +24,7 @@ namespace Png {
 class PNG {
 
     /*
-        This class holds data to describe a PNG file.
-        Not yet implemented, this class just stands from before i removed the external lib that helped parse .png files
+        This class holds data to describe a PNG file, and handles decoding
     */
 
     public:
