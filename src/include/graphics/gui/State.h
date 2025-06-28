@@ -55,7 +55,7 @@ class State {
                 void update();
 
                 // Returns the current time in milliseconds
-                double getTimeMillis();
+                double getTimeMillis() const;
 
             private:
 
@@ -98,7 +98,7 @@ class State {
                 /*   Instance Functions   */
 
                 // Basically a 'set-all' function. It sets every instance variable of this instance to that of another instance.
-                void setState(MouseState* state);
+                void setState(const MouseState* state);
 
                 // These are SETTERS for the mouse button states
                 // To GET the states, simply use the member variables
@@ -142,17 +142,17 @@ class State {
                 /*   Instance Functions   */
 
                 // Basically a 'set-all' function. It sets every instance variable of this instance to that of another instance.
-                void setState(KeyboardState* state);
+                void setState(const KeyboardState* state);
 
                 // Returns a pointer to a keystate within the master array
-                bool* getKeyRef(KeyCode keyCode);
+                bool* getKeyRef(KeyCode keyCode) const;
 
                 // Setters for keys
                 void keyDown(KeyCode keyCode);
                 void keyUp(KeyCode keyCode);
 
                 // Getter for keys
-                bool keyIsDown(KeyCode keyCode);
+                bool keyIsDown(KeyCode keyCode) const;
 
             private:
 
@@ -174,7 +174,7 @@ class State {
         State* lastFrame;
 
         // Handle to the window. Used for some functions
-        HWND hwnd; 
+        const HWND hwnd; 
 
         // Stores a set of at most 3 keys which were just pressed this frame. Will store the first 3 given by Windows
         KeyCode newKeyPresses[3];
@@ -201,35 +201,35 @@ class State {
         void nextFrame();
 
         // Returns true when the mouse button is down this frame, but was up last frame
-        bool wasLeftJustPressed();
-        bool wasRightJustPressed();
+        bool wasLeftJustPressed() const;
+        bool wasRightJustPressed() const;
 
         // Returns true when the mouse button is down this frame, and was down last frame
-        bool wasLeftHeld();
-        bool wasRightHeld();
+        bool wasLeftHeld() const;
+        bool wasRightHeld() const;
 
         // Returns true when the mouse button is up this frame, but was down last frame
-        bool wasLeftJustReleased();
-        bool wasRightJustReleased();
+        bool wasLeftJustReleased() const;
+        bool wasRightJustReleased() const;
 
         // Updates the instance variables for mouse position
         void updateMousePos();
 
         // Returns the distance in pixels that the mouse has moved since last frame
-        int deltaMousePosX();
-        int deltaMousePosY();
+        int deltaMousePosX() const;
+        int deltaMousePosY() const;
 
         // Simply returns the bool for the key state. Does not cross check with lastFrame.
-        bool keyIsDown(KeyCode keyCode);
+        bool keyIsDown(KeyCode keyCode) const;
 
         // Returns true only if the key was down this frame, but up last frame
-        bool keyJustDown(KeyCode keyCode);
+        bool keyJustDown(KeyCode keyCode) const;
 
         
     private:
 
         // Basically a 'set-all' function. It sets every instance variable of this instance, to that of another instance.
-        void setState(State* state);
+        void setState(const State* state);
 
 };
 

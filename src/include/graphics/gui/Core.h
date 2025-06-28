@@ -19,7 +19,7 @@ namespace Gui {
 
 
     // Enum used to help set the mouse cursor state
-    enum CursorState : int {
+    enum CursorState : char {
 
         // Regular arrow cursor
         CURSOR_ARROW,

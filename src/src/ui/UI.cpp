@@ -12,7 +12,7 @@ LinkedList<Action*>* UI::actionQueue = nullptr;
 UI::UI() {
 
     // Only one UI object should exist at once (for now)
-    // Since this constructor populates 'actionQueue', this is an effective way to check
+    // Since this constructor populates 'actionQueue', this is an effective way to check if more than one UI exists
     if (UI::actionQueue != nullptr) {
         logWrite("Warning: UI is trying to construct more than once!", true);
         logWrite(" -> Because of the current 'actionQueue' system, only one UI instance can exist at once", true);
@@ -83,7 +83,7 @@ void UI::draw(Graphics::Drawing::Drawer* drawer) {
 
 }
 
-bool UI::doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursorStateOut /* Default value = nullptr */) {
+bool UI::doInput(const Graphics::Gui::State* state, Graphics::Gui::CursorState* cursorStateOut /* Default value = nullptr */) {
     
     // Handle actions before starting
     this->handleActions();
@@ -315,7 +315,7 @@ void UI::validateWindowHandle(WindowHandle** pWindowHandle) {
     // This is actually fine, just the rest of the code cant execute in this case
     if ((*pWindowHandle) == nullptr) return;
 
-    Window* window = (*pWindowHandle)->ptr;
+    const Window* window = (*pWindowHandle)->ptr;
 
     // Check the Window list to see if it actually exists
     Window* current;

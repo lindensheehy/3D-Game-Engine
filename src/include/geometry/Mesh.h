@@ -124,10 +124,10 @@ class Mesh {
 
         // Returns the center of the mesh (average of all verticies)
         // This returns a pointer to a private instance variable. It should be copied before being modified
-        Vec3* getCenter(); 
+        const Vec3* getCenter();
 
         // Moves the mesh by the specified distance. Just calls Vec3::add() for each vertex.
-        Mesh* move(Vec3* dist);
+        Mesh* move(const Vec3* dist);
         Mesh* move(float dx, float dy, float dz);
 
         // Scales the mesh by a given factor on each axis. Just calls Vec3::scale() for each vertex.
@@ -135,8 +135,8 @@ class Mesh {
         Mesh* scale(float fx, float fy, float fz);
 
         // Rotates all the Vec3 objects by the specified angles. Just calls Vec3::rotate() for each vertex.
-        Mesh* rotate(Vec3* angle, Vec3* around);
-        Mesh* rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
+        Mesh* rotate(const Vec3* angle, const Vec3* around = nullptr);
+        Mesh* rotate(float yaw, float pitch, float roll, const Vec3* around = nullptr);
 
         // Sets the color of the mesh
         Mesh* setColor(uint32 color);

@@ -46,7 +46,7 @@ int getFileSizeBytes() {
     if (hFileGlobal == nullptr) return -1;
 
     LARGE_INTEGER fileSize;
-    bool status = GetFileSizeEx(hFileGlobal, &fileSize);
+    const bool status = GetFileSizeEx(hFileGlobal, &fileSize);
 
     // Failed to get size
     if (!status) return -1;
@@ -61,7 +61,7 @@ int getFileSizeBytes(HANDLE hFile) {
     if (hFile == INVALID_HANDLE_VALUE) return -1;
 
     LARGE_INTEGER fileSize;
-    bool status = GetFileSizeEx(hFile, &fileSize);
+    const bool status = GetFileSizeEx(hFile, &fileSize);
 
     // Failed to get size
     if (!status) return -1;
@@ -76,13 +76,13 @@ char* readFile() {
     if (hFileGlobal == nullptr) return nullptr;
 
     // Get file size, return nullptr if failed
-    int fileSize = getFileSizeBytes();
+    const int fileSize = getFileSizeBytes();
     if (fileSize <= 0) return nullptr;
 
     char* buffer = new char[fileSize + 1];  // +1 for null terminator
     DWORD bytesRead;
 
-    bool status = ReadFile(hFileGlobal, buffer, fileSize, &bytesRead, nullptr);
+    const bool status = ReadFile(hFileGlobal, buffer, fileSize, &bytesRead, nullptr);
 
     // Failed to read all bytes
     if ( !status || (bytesRead != fileSize) ) {
@@ -100,7 +100,7 @@ char* readFile(const char* fileName) {
     // Close the open file if there is one
     if (hFileGlobal != nullptr) closeFile();
 
-    int status = openFile(fileName);
+    const int status = openFile(fileName);
 
     // Failed to open file
     if (status == -1) {
@@ -129,13 +129,13 @@ char* readFile(const char* fileName) {
 char* readFile(HANDLE hFile) {
 
     // Get file size, return nullptr if failed
-    int fileSize = getFileSizeBytes(hFile);
+    const int fileSize = getFileSizeBytes(hFile);
     if (fileSize <= 0) return nullptr;
 
     char* buffer = new char[fileSize + 1];  // +1 for null terminator
     DWORD bytesRead;
 
-    bool status = ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
+    const bool status = ReadFile(hFile, buffer, fileSize, &bytesRead, nullptr);
 
     // Failed to read all bytes
     if ( !status || (bytesRead != fileSize) ) {

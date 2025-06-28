@@ -12,7 +12,7 @@ Renderer::Renderer(Drawing::PixelDrawer* pixelDrawer, Display* display) {
 
 }
 
-void Renderer::drawObject(Physics::Object* object, Camera* camera) {
+void Renderer::drawObject(Physics::Object* object, const Camera* camera) {
 
     if (object == nullptr) {
         logWrite("Called Renderer::drawObject(Object*, Camera*) with arg1 as nullptr", true);
@@ -103,7 +103,7 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
     // Apply the transformations to all vertices and normals. This is effectively the projection pipeline
     {
         Vec3 temp;
-        Mesh* mesh = object->mesh;
+        const Mesh* mesh = object->mesh;
 
         // Transform the vertices
         for (int i = 0; i < mesh->vertexCount; i++) {
@@ -152,7 +152,7 @@ void Renderer::drawObject(Physics::Object* object, Camera* camera) {
 
 }
 
-void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
+void Renderer::drawMesh(const Geometry::Mesh* mesh, const Camera* camera) {
 
     float lightAngle, lightFactor;
     uint32 shade;
@@ -161,6 +161,9 @@ void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
     Geometry::Vec2 a2; Geometry::Vec3 a3;
     Geometry::Vec2 b2; Geometry::Vec3 b3;
     Geometry::Vec2 c2; Geometry::Vec3 c3;
+
+    // Used for backface culling
+    float angle;
 
     for (int i = 0; i < mesh->triCount; i++) {
 
@@ -177,7 +180,7 @@ void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
         triCenter.set(a3).add(b3).add(c3).inverseScale(3);
 
         // Backface culling
-        float angle = triCenter.getAngle(mesh->transformedNormals[indexNormal]);
+        angle = triCenter.getAngle(mesh->transformedNormals[indexNormal]);
         if (angle < 90.0f ) continue;
 
         // Find a shade based on the lighting vec
@@ -201,9 +204,9 @@ void Renderer::drawMesh(Geometry::Mesh* mesh, Camera* camera) {
 
 void Renderer::drawTri(
     uint32 color,
-    Geometry::Vec2& a, Geometry::Vec3& a3,
-    Geometry::Vec2& b, Geometry::Vec3& b3,
-    Geometry::Vec2& c, Geometry::Vec3& c3
+    const Geometry::Vec2& a, const Geometry::Vec3& a3,
+    const Geometry::Vec2& b, const Geometry::Vec3& b3,
+    const Geometry::Vec2& c, const Geometry::Vec3& c3
 ) {
 
     /*
@@ -215,10 +218,10 @@ void Renderer::drawTri(
 
     // First find the bounding box of the triangle
     constexpr int padding = 1;
-    int x1 = round( min(a.x, min(b.x, c.x)) ) - padding;
-    int y1 = round( min(a.y, min(b.y, c.y)) ) - padding;
-    int x2 = round( max(a.x, max(b.x, c.x)) ) + padding;
-    int y2 = round( max(a.y, max(b.y, c.y)) ) + padding;
+    const int x1 = round( min(a.x, min(b.x, c.x)) ) - padding;
+    const int y1 = round( min(a.y, min(b.y, c.y)) ) - padding;
+    const int x2 = round( max(a.x, max(b.x, c.x)) ) + padding;
+    const int y2 = round( max(a.y, max(b.y, c.y)) ) + padding;
 
     // Break early if the triangle is unreasonably large (this likely means it lies outside the cameras FOV)
     // This will be replaced later with proper frustum culling, but it does the job for the time being
@@ -231,9 +234,9 @@ void Renderer::drawTri(
     ) -> bool {
 
         // Get the edge function value for each line (a, b), (b, c), (c, a)
-        float ab = ((b.x - a.x) * (y - a.y)) - ((b.y - a.y) * (x - a.x));
-        float bc = ((c.x - b.x) * (y - b.y)) - ((c.y - b.y) * (x - b.x));
-        float ca = ((a.x - c.x) * (y - c.y)) - ((a.y - c.y) * (x - c.x));
+        const float ab = ((b.x - a.x) * (y - a.y)) - ((b.y - a.y) * (x - a.x));
+        const float bc = ((c.x - b.x) * (y - b.y)) - ((c.y - b.y) * (x - b.x));
+        const float ca = ((a.x - c.x) * (y - c.y)) - ((a.y - c.y) * (x - c.x));
 
         // Pixels this far away the from the triangle will be counted
         constexpr float leniency = 0.8f;
@@ -258,8 +261,8 @@ void Renderer::drawTri(
 
     */
 
-    // Precompute constant
-    float inverseAreaTotal = 1.0f / (
+    // Precompute the denominator + division operation (this lets me use multiplication elsewhere, which is quicker)
+    const float inverseAreaTotal = 1.0f / (
         (a.x * (b.y - c.y)) + (b.x * (c.y - a.y)) + (c.x * (a.y - b.y))
     );
 
@@ -268,17 +271,15 @@ void Renderer::drawTri(
         int x, int y, Geometry::Vec3* out
     ) -> void {
 
-        float areaA, areaB, areaC;
-        float lA, lB, lC;
+        const float areaA = (x * (b.y - c.y)) + (b.x * (c.y - y)) + (c.x * (y - b.y));
+        const float areaB = (a.x * (y - c.y)) + (x * (c.y - a.y)) + (c.x * (a.y - y));
+        const float areaC = (a.x * (b.y - y)) + (b.x * (y - a.y)) + (x * (a.y - b.y));
+
+        const float lA = areaA * inverseAreaTotal;
+        const float lB = areaB * inverseAreaTotal;
+        const float lC = areaC * inverseAreaTotal;
+
         Geometry::Vec3 temp;
-
-        areaA = (x * (b.y - c.y)) + (b.x * (c.y - y)) + (c.x * (y - b.y));
-        areaB = (a.x * (y - c.y)) + (x * (c.y - a.y)) + (c.x * (a.y - y));
-        areaC = (a.x * (b.y - y)) + (b.x * (y - a.y)) + (x * (a.y - b.y));
-
-        lA = areaA * inverseAreaTotal;
-        lB = areaB * inverseAreaTotal;
-        lC = areaC * inverseAreaTotal;
 
         temp.set(a3).scale(lA);
         out->set(temp);

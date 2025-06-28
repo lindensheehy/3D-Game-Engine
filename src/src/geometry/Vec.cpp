@@ -24,21 +24,11 @@ void Vec2::log() const {
 }
 
 bool Vec2::is(float x, float y) const {
-
-    return (
-        this->x == x &&
-        this->y == y
-    );
-
+    return ( this->x == x && this->y == y );
 }
 
 bool Vec2::is(const Vec2& other) const {
-    
-    return (
-        this->x == other.x &&
-        this->y == other.y
-    );
-
+    return ( this->x == other.x && this->y == other.y );
 }
 
 bool Vec2::is(const Vec2* other) const {
@@ -48,10 +38,7 @@ bool Vec2::is(const Vec2* other) const {
         return false;
     }
 
-    return (
-        this->x == other->x &&
-        this->y == other->y
-    );
+    return ( this->x == other->x && this->y == other->y );
 
 }
 
@@ -157,6 +144,7 @@ Vec2& Vec2::scale(float factor) {
     this->y *= factor;
 
     return *(this);
+
 }
 
 Vec2& Vec2::inverseScale(float factor) {
@@ -168,12 +156,12 @@ Vec2& Vec2::inverseScale(float factor) {
 
 }
 
-Vec2& Vec2::normalize(float toMagnitude /* default value = 1.0 */) {
+Vec2& Vec2::normalize(float toMagnitude) {
     float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
 
-float Vec2::magnitude() {
+float Vec2::magnitude() const {
     return distance2(this->x, this->y);
 }
 
@@ -263,15 +251,11 @@ void Vec2::midpoint(const Vec2* other, Vec2* out) const {
 }
 
 float Vec2::dotProduct(float x, float y) const {
-
     return (this->x * x) + (this->y * y);
-
 }
 
 float Vec2::dotProduct(const Vec2& other) const {
-
     return (this->x * other.x) + (this->y * other.y);
-
 }
 
 float Vec2::dotProduct(const Vec2* other) const {
@@ -301,10 +285,10 @@ void Vec2::rotate(float degrees, const Vec2* around /* default value = nullptr *
         relativeY -= aroundY;
     }
 
-    float radians = toRadians(degrees);
+    const float radians = toRadians(degrees);
 
-    float sinValue = sin(radians);
-    float cosValue = cos(radians);
+    const float sinValue = sin(radians);
+    const float cosValue = cos(radians);
 
     this->x = (cosValue * relativeX) - (sinValue * relativeY) + aroundX;
     this->y = (cosValue * relativeY) + (sinValue * relativeX) + aroundY;
@@ -511,12 +495,12 @@ Vec3& Vec3::inverseScale(float factor) {
 
 }
 
-Vec3& Vec3::normalize(float toMagnitude /* default value = 1.0 */) {
+Vec3& Vec3::normalize(float toMagnitude) {
     float factor = toMagnitude / this->magnitude();
     return this->scale(factor);
 }
 
-float Vec3::magnitude() {
+float Vec3::magnitude() const {
     return distance3(this->x, this->y, this->z);
 }
 
@@ -609,15 +593,11 @@ void Vec3::midpoint(const Vec3* other, Vec3* out) const {
 }
 
 float Vec3::dotProduct(float x, float y, float z) const {
-
     return (this->x * x) + (this->y * y) + (this->z * z);
-
 }
 
 float Vec3::dotProduct(const Vec3& other) const {
-
     return (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
-
 }
 
 float Vec3::dotProduct(const Vec3* other) const {
@@ -638,9 +618,9 @@ void Vec3::crossProduct(float x, float y, float z, Vec3* out) const {
         return;
     }
 
-    float xOut = (this->y * z) - (this->z * y);
-    float yOut = (this->z * x) - (this->x * z);
-    float zOut = (this->x * y) - (this->y * x);
+    const float xOut = (this->y * z) - (this->z * y);
+    const float yOut = (this->z * x) - (this->x * z);
+    const float zOut = (this->x * y) - (this->y * x);
     out->set(xOut, yOut, zOut);
 
     return;
@@ -654,9 +634,9 @@ void Vec3::crossProduct(const Vec3& other, Vec3* out) const {
         return;
     }
 
-    float x = (this->y * other.z) - (this->z * other.y);
-    float y = (this->z * other.x) - (this->x * other.z);
-    float z = (this->x * other.y) - (this->y * other.x);
+    const float x = (this->y * other.z) - (this->z * other.y);
+    const float y = (this->z * other.x) - (this->x * other.z);
+    const float z = (this->x * other.y) - (this->y * other.x);
     out->set(x, y, z);
 
     return;
@@ -675,9 +655,9 @@ void Vec3::crossProduct(const Vec3* other, Vec3* out) const {
         return;
     }
 
-    float x = (this->y * other->z) - (this->z * other->y);
-    float y = (this->z * other->x) - (this->x * other->z);
-    float z = (this->x * other->y) - (this->y * other->x);
+    const float x = (this->y * other->z) - (this->z * other->y);
+    const float y = (this->z * other->x) - (this->x * other->z);
+    const float z = (this->x * other->y) - (this->y * other->x);
     out->set(x, y, z);
 
     return;
@@ -695,13 +675,13 @@ float Vec3::getAngle(float x, float y, float z) const {
     thisCopy.normalize();
     otherCopy.normalize();
 
-    float dotProduct = thisCopy.dotProduct(otherCopy);
+    const float dotProduct = thisCopy.dotProduct(otherCopy);
 
     // These cases shouldnt happen but floating point errors can cause them
     if (dotProduct < -1) return 180;
     if (dotProduct > 1)  return 0;
 
-    float radians = arccos(dotProduct);
+    const float radians = arccos(dotProduct);
     
     return toDegrees(radians);
 
@@ -709,7 +689,7 @@ float Vec3::getAngle(float x, float y, float z) const {
 
 float Vec3::getAngle(const Vec3& other) const {
 
-    // This functions pretty big, so the float version is just called
+    // This functions pretty big, so the call is forwarded to the float overload
     return this->getAngle(other.x, other.y, other.z);
 
 }
@@ -721,12 +701,12 @@ float Vec3::getAngle(const Vec3* other) const {
         return 0;
     }
 
-    // This functions pretty big, so the float version is just called
+    // This functions pretty big, so the call is forwarded to the float overload
     return this->getAngle(other->x, other->y, other->z);
 
 }
 
-void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
+void Vec3::rotate(float yaw, float pitch, float roll, const Vec3* around /* default value = nullptr */) {
 
     if (yaw == 0 && pitch == 0 && roll == 0) return;
 
@@ -747,13 +727,14 @@ void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default va
     }
 
     float radians;
+    float sinValue, cosValue;
 
     if (yaw != 0) {
         
         radians = toRadians(yaw);
 
-        float sinValue = sin(radians);
-        float cosValue = cos(radians);
+        sinValue = sin(radians);
+        cosValue = cos(radians);
 
         this->x = (cosValue * relativeX) - (sinValue * relativeZ) + aroundX;
         this->z = (cosValue * relativeZ) + (sinValue * relativeX) + aroundZ;
@@ -768,8 +749,8 @@ void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default va
 
         radians = toRadians(pitch);
 
-        float sinValue = sin(radians);
-        float cosValue = cos(radians);
+        sinValue = sin(radians);
+        cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeZ) + aroundY;
         this->z = (cosValue * relativeZ) + (sinValue * relativeY) + aroundZ;
@@ -784,8 +765,8 @@ void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default va
 
         radians = toRadians(roll);
 
-        float sinValue = sin(radians);
-        float cosValue = cos(radians);
+        sinValue = sin(radians);
+        cosValue = cos(radians);
 
         this->y = (cosValue * relativeY) - (sinValue * relativeX) + aroundY;
         this->x = (cosValue * relativeX) + (sinValue * relativeY) + aroundX;
@@ -796,7 +777,7 @@ void Vec3::rotate(float yaw, float pitch, float roll, Vec3* around /* default va
 
 }
 
-void Vec3::rotate(float yaw, float pitch, float roll, Vec3& around) {
+void Vec3::rotate(float yaw, float pitch, float roll, const Vec3& around) {
 
     this->rotate(yaw, pitch, roll, &(around));
 

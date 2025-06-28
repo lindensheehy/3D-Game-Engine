@@ -66,7 +66,7 @@ void BindManager::removeBind(WindowHandle* windowHandle) {
 
 }
 
-void BindManager::rebind(WindowHandle* windowHandle) {
+void BindManager::rebind(WindowHandle* windowHandle) const {
 
     if (windowHandle == nullptr) {
         logWrite("BindManager::rebind(WindowHandle*) was called on a nullptr!", true);
@@ -86,7 +86,7 @@ void BindManager::rebind(WindowHandle* windowHandle) {
 
 }
 
-void BindManager::rebindAll() {
+void BindManager::rebindAll() const {
 
     Bind* current;
 
@@ -108,7 +108,7 @@ void BindManager::rebindAll() {
 
 }
 
-BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) {
+BindManager::Bind* BindManager::getBind(WindowHandle* windowHandle) const {
 
     Bind* current;
 

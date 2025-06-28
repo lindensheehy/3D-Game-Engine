@@ -37,7 +37,7 @@ ElementSet::~ElementSet() {
 ElementSet::Element* ElementSet::matchElement(const char* elementName) {
 
     // Start by finding the length of the requested string
-    int nameLength = getTagLength(elementName);
+    const int nameLength = getTagLength(elementName);
 
     if (nameLength < 0) {
 
@@ -104,7 +104,7 @@ void ElementSet::addDefaultElement(const char* elementName, ParameterInfo* param
     }
 
     // Find length of elementName
-    int length = getTagLength(elementName);
+    const int length = getTagLength(elementName);
 
     if (length < 0) {
 
@@ -136,14 +136,6 @@ void ElementSet::addDefaultElement(const char* elementName, ParameterInfo* param
 
 }
 
-void ElementSet::addDefaultElement(char* elementName, ParameterInfo* parameterInfo, ElementType type) {
-
-    this->addDefaultElement( (const char*) elementName, parameterInfo, type );
-
-    return;
-
-}
-
 void ElementSet::addCustomElement(const char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXML) {
 
     if (elementName == nullptr) {
@@ -162,7 +154,7 @@ void ElementSet::addCustomElement(const char* elementName, ParameterInfo* parame
     }
 
     // Find length of elementName
-    int length = getTagLength(elementName);
+    const int length = getTagLength(elementName);
 
     if (length < 0) {
 
@@ -190,14 +182,6 @@ void ElementSet::addCustomElement(const char* elementName, ParameterInfo* parame
     newElement->xmlFile = elementXML;
 
     this->set->pushBack(newElement);
-
-    return;
-
-}
-
-void ElementSet::addCustomElement(char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXML) {
-
-    this->addCustomElement( (const char*) elementName, parameterInfo, elementXML );
 
     return;
 

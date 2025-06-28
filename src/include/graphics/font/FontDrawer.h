@@ -48,7 +48,7 @@ class FontDrawer {
         void initFont();
 
         // Draws a set of pixels to the screen. the other draw functions depend on this
-        void drawCharPixels(uint32 color, bool* pixels, int x, int y);
+        void drawCharPixels(uint32 color, const bool* pixels, int x, int y);
 
         // Returns a pointer to the pixels for a character
         bool* getCharRef(char ch) const;
@@ -70,9 +70,9 @@ class FontDrawer {
         // spaces are 0 (false) and zeros are 1 (true), the bool values coorespond to pixel states (on/off)
         // All the seperate strings here get put together by the compiler into one big string
         // String length is: (7 * 7) * char count (40) = 1960 + nullchar -> 1961
-        const int rawCharsCount = 40;
-        const int rawCharsSize = 1961;
-        const char* rawChars = {
+        static constexpr int rawCharsCount = 40;
+        static constexpr int rawCharsSize = 1961;
+        static constexpr const char* rawChars = {
 
             // A
             "       "

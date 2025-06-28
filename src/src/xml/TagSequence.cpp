@@ -31,7 +31,7 @@ TagSequence::~TagSequence() {
     delete[] this->buffer;
 }
 
-TagSequence* TagSequence::copy() {
+TagSequence* TagSequence::copy() const {
 
     // This empty constructor does not initialize any of the member variables
     TagSequence* ret = new TagSequence();
@@ -52,7 +52,7 @@ TagSequence* TagSequence::copy() {
     
 }
 
-void TagSequence::log() {
+void TagSequence::log() const {
 
     logWrite("Tag Sequence (");
     logWrite("Buffer Length = ");
@@ -138,8 +138,9 @@ void TagSequence::log() {
         }
 
         // String tag logging
-        if (offset >= PRIM_TAG_LENGTH)
+        if (offset >= PRIM_TAG_LENGTH) {
             logWrite(this->buffer[i]);
+        }
 
     }
 
@@ -181,7 +182,7 @@ void TagSequence::findBufferLength() {
 
     }
     
-    int length = ( (tagCount * MAX_TAG_LENGTH) + ((tagCount + 1) * PRIM_TAG_LENGTH) );
+    const int length = ( (tagCount * MAX_TAG_LENGTH) + ((tagCount + 1) * PRIM_TAG_LENGTH) );
 
     this->bufferLength = length;
     this->stringTagCount = tagCount;
@@ -345,7 +346,7 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
     /*   Find length of each tag   */
 
     // Returns -1 if tag is too long
-    int oldTagLength = getTagLength(oldTag);
+    const int oldTagLength = getTagLength(oldTag);
 
     // Log error if the length is invalid
     if (oldTagLength < 0) {
@@ -364,7 +365,7 @@ void TagSequence::swapStringTag(const char* oldTag, const char* newTag) {
     }
 
     // Returns -1 if tag is too long
-    int newTagLength = getTagLength(newTag);
+    const int newTagLength = getTagLength(newTag);
 
     // Log error if the length is invalid
     if (newTagLength < 0) {
@@ -435,7 +436,7 @@ void TagSequence::resetPrimitiveTags(int index) {
     if (validatePrimTagIndex(index, "resetPrimitiveTags")) return;
 
 
-    int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
+    const int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
 
     this->buffer[ effectiveIndex + ( (int) ELEMENT ) ]  = NONE;
     this->buffer[ effectiveIndex + ( (int) PARAMS ) ]   = NONE;
@@ -449,7 +450,7 @@ PrimitiveTagState TagSequence::getPrimitiveTag(int index, PrimitiveTagType type)
 
     if (validatePrimTagIndex(index, "getPrimitiveTag")) return NONE;
 
-    int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
+    const int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
 
     // Returns the respective byte, after casting to the enum
     return ( (PrimitiveTagState) this->buffer[ effectiveIndex + ( (int) type ) ] );
@@ -460,7 +461,7 @@ void TagSequence::setPrimitiveTag(int index, PrimitiveTagType type, PrimitiveTag
 
     if (validatePrimTagIndex(index, "setPrimitiveTag")) return;
 
-    int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
+    const int effectiveIndex = index * (MAX_TAG_LENGTH + PRIM_TAG_LENGTH);
 
     this->buffer[ effectiveIndex + ( (int) type ) ] = ( (char) state );
 

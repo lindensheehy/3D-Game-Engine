@@ -28,7 +28,7 @@ FontDrawer::~FontDrawer() {
 
 void FontDrawer::drawChar(uint32 color, char ch, int x, int y) {
 
-    bool* pixels = this->getCharRef(ch);
+    const bool* pixels = this->getCharRef(ch);
 
     this->drawCharPixels(color, pixels, x, y);
     
@@ -94,7 +94,7 @@ void FontDrawer::initFont() {
 
 }
 
-void FontDrawer::drawCharPixels(uint32 color, bool* pixels, int x, int y) {
+void FontDrawer::drawCharPixels(uint32 color, const bool* pixels, int x, int y) {
 
     int dx = 0;
     int dy = 0;

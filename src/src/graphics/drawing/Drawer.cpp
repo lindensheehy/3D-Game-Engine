@@ -6,6 +6,7 @@ using namespace Graphics::Drawing;
 void Drawer::updateDimensions(int width, int height) {
     
     this->pixelDrawer.updateDimensions(width, height);
+
     return;
 
 }
@@ -13,24 +14,25 @@ void Drawer::updateDimensions(int width, int height) {
 void Drawer::setBuffer(uint32* buffer) {
 
     this->pixelDrawer.buffer = buffer;
+
     return;
 
 }
 
 void Drawer::drawLine(uint32 color, int x1, int y1, int x2, int y2) {
 
-    int distx = x2 - x1;
-    int disty = y2 - y1;
+    const int distx = x2 - x1;
+    const int disty = y2 - y1;
 
-    int totalDist = max(abs(distx), abs(disty));
+    const int totalDist = max(abs(distx), abs(disty));
 
     if (totalDist == 0) return;
 
     float x = (float) x1;
     float y = (float) y1;
 
-    float dx = distx / (float) totalDist;
-    float dy = disty / (float) totalDist;
+    const float dx = distx / (float) totalDist;
+    const float dy = disty / (float) totalDist;
 
     for (int i = 0; i <= totalDist; i++) {
 
@@ -47,11 +49,11 @@ void Drawer::drawLine(uint32 color, int x1, int y1, int x2, int y2) {
 
 void Drawer::drawLine(uint32 color, int x1, int y1, int x2, int y2, float depth1, float depth2, float opacity) {
 
-    int distx = x2 - x1;
-    int disty = y2 - y1;
-    float distDepth = depth2 - depth1;
+    const int distx = x2 - x1;
+    const int disty = y2 - y1;
+    const float distDepth = depth2 - depth1;
 
-    int totalDist = max(abs(distx), abs(disty));
+    const int totalDist = max(abs(distx), abs(disty));
 
     if (totalDist == 0) return;
 
@@ -59,9 +61,9 @@ void Drawer::drawLine(uint32 color, int x1, int y1, int x2, int y2, float depth1
     float y = (float) y1;
     float d = depth1;
 
-    float dx = distx / (float) totalDist;
-    float dy = disty / (float) totalDist;
-    float dd = distDepth / (float) totalDist;
+    const float dx = distx / (float) totalDist;
+    const float dy = disty / (float) totalDist;
+    const float dd = distDepth / (float) totalDist;
 
     for (int i = 0; i < totalDist; i++) {
 
@@ -110,7 +112,7 @@ void Drawer::drawVerticalLine(uint32 color, int y1, int y2, int x, float depth1,
     // Edge case
     if (y1 == y2) {
 
-        float d = min(depth1, depth2);
+        const float d = min(depth1, depth2);
         this->pixelDrawer.drawPixel(color, x, y1, d, opacity);
 
         return;
@@ -122,7 +124,7 @@ void Drawer::drawVerticalLine(uint32 color, int y1, int y2, int x, float depth1,
         swap(&depth1, &depth2);
     }
 
-    float depthSlope = (depth2 - depth1) / (y2 - y1);
+    const float depthSlope = (depth2 - depth1) / (y2 - y1);
     float d = depth1;
 
     for (int i = y1; i <= y2; i++) {
@@ -167,7 +169,7 @@ void Drawer::drawHorizontalLine(uint32 color, int x1, int x2, int y, float depth
     // Edge case
     if (x1 == x2) {
 
-        float d = min(depth1, depth2);
+        const float d = min(depth1, depth2);
         this->pixelDrawer.drawPixel(color, x1, y, d, opacity);
 
         return;
@@ -179,7 +181,7 @@ void Drawer::drawHorizontalLine(uint32 color, int x1, int x2, int y, float depth
         swap(&depth1, &depth2);
     }
 
-    float depthSlope = (depth2 - depth1) / (x2 - x1);
+    const float depthSlope = (depth2 - depth1) / (x2 - x1);
     float d = depth1;
 
     for (int i = x1; i <= x2; i++) {
@@ -227,9 +229,9 @@ void Drawer::fillScreen(uint32 color) {
 
 void Drawer::drawElipse(uint32 color, int x, int y, int radiusX, int radiusY) {
 
-    int limit = radiusX * radiusY;
-    float factorx = sqrt( (float) (radiusY / radiusX) );
-    float factory = 1 / factorx;
+    const int limit = radiusX * radiusY;
+    const float factorx = sqrt( (float) (radiusY / radiusX) );
+    const float factory = 1 / factorx;
 
     for (int i = -radiusX; i < radiusX; i++) {
         for (int j = -radiusY; j < radiusY; j++) {
@@ -247,7 +249,7 @@ void Drawer::drawElipse(uint32 color, int x, int y, int radiusX, int radiusY) {
 
 void Drawer::drawCircle(uint32 color, int x, int y, int radius) {
 
-    int limit = radius * radius;
+    const int limit = radius * radius;
 
     for (int i = -radius; i < radius; i++) {
         for (int j = -radius; j < radius; j++) {
@@ -382,9 +384,9 @@ void Drawer::drawTriangle(uint32 color, int x1, int y1, int x2, int y2, int x3, 
     */
   
 
-    bool oneIsTwo = (x1 == x2) && (y1 == y2);
-    bool twoIsThree = (x2 == x3) && (y2 == y3);
-    bool oneIsThree = (x1 == x3) && (y1 == y3);
+    const bool oneIsTwo = (x1 == x2) && (y1 == y2);
+    const bool twoIsThree = (x2 == x3) && (y2 == y3);
+    const bool oneIsThree = (x1 == x3) && (y1 == y3);
 
     // Cases where the 'triangle' has more than one point with the same coordinates, so these are checked here for quick handling
     if ( oneIsTwo ) {
@@ -545,7 +547,7 @@ void Drawer::drawTriangle(uint32 color, int x1, int y1, int x2, int y2, int x3, 
 
 }
 
-void Drawer::drawTriangle(uint32 color, Geometry::Tri2* tri) {
+void Drawer::drawTriangle(uint32 color, const Geometry::Tri2* tri) {
 
     if (tri == nullptr) {
         logWrite("Called Drawer->drawTriangle(uint32, Tri2*) on a null pointer!", true);
@@ -567,12 +569,12 @@ void Drawer::drawTriangle(uint32 color, Geometry::Tri2* tri) {
         return;
     }
     
-    int x1 = round(tri->v1->x);
-    int y1 = round(tri->v1->y);
-    int x2 = round(tri->v2->x);
-    int y2 = round(tri->v2->y);
-    int x3 = round(tri->v3->x);
-    int y3 = round(tri->v3->y);
+    const int x1 = round(tri->v1->x);
+    const int y1 = round(tri->v1->y);
+    const int x2 = round(tri->v2->x);
+    const int y2 = round(tri->v2->y);
+    const int x3 = round(tri->v3->x);
+    const int y3 = round(tri->v3->y);
 
     this->drawTriangle(color, x1, y1, x2, y2, x3, y3);
 
@@ -580,7 +582,7 @@ void Drawer::drawTriangle(uint32 color, Geometry::Tri2* tri) {
 
 }
 
-void Drawer::drawTriangle(uint32 color, Geometry::Tri3* tri, float opacity) {
+void Drawer::drawTriangle(uint32 color, const Geometry::Tri3* tri, float opacity) {
 
     if (tri == nullptr) {
         logWrite("Called Drawer->drawTriangle(uint32, Tri2*) on a null pointer!", true);
@@ -602,18 +604,18 @@ void Drawer::drawTriangle(uint32 color, Geometry::Tri3* tri, float opacity) {
         return;
     }
     
-    int x1 = round(tri->v1->x);
-    int y1 = round(tri->v1->y);
+    const int x1 = round(tri->v1->x);
+    const int y1 = round(tri->v1->y);
 
-    int x2 = round(tri->v2->x);
-    int y2 = round(tri->v2->y);
+    const int x2 = round(tri->v2->x);
+    const int y2 = round(tri->v2->y);
     
-    int x3 = round(tri->v3->x);
-    int y3 = round(tri->v3->y);
+    const int x3 = round(tri->v3->x);
+    const int y3 = round(tri->v3->y);
 
-    float d1 = tri->v1->z;
-    float d2 = tri->v2->z;
-    float d3 = tri->v3->z;
+    const float d1 = tri->v1->z;
+    const float d2 = tri->v2->z;
+    const float d3 = tri->v3->z;
 
     this->drawTriangle(color, x1, y1, x2, y2, x3, y3, d1, d2, d3, opacity);
 
@@ -621,22 +623,22 @@ void Drawer::drawTriangle(uint32 color, Geometry::Tri3* tri, float opacity) {
 
 }
 
-void Drawer::drawFps(Gui::State* state, Rendering::Display* display) {
+void Drawer::drawFps(const Gui::State* state, const Rendering::Display* display) {
 
     if (state == nullptr) {
         logWrite("Called Drawer->drawFps(State) on a nullptr!", true);
         return;
     }
 
-    int w = display->width + display->widthOffset;
-    int h = display->heightOffset;
+    const int w = display->width + display->widthOffset;
+    const int h = display->heightOffset;
 
     this->drawRectFilled(Color::BLACK, w - 50, h, w, h + 13);
     this->fontDrawer.drawInt(Color::WHITE, state->time->fps, (w - 50) + 12, 3);
 
 }
 
-void Drawer::drawSky(Rendering::Camera* camera, Rendering::Display* display) {
+void Drawer::drawSky(const Rendering::Camera* camera, const Rendering::Display* display) {
 
     if (camera == nullptr) {
         logWrite("Called drawSky(Drawer*, Camera*, Display*) with 'camera' as a null pointer!", true);
@@ -651,7 +653,7 @@ void Drawer::drawSky(Rendering::Camera* camera, Rendering::Display* display) {
     // Find the height on the display to draw the skyline
     Geometry::Vec2* heightVec = new Geometry::Vec2(display->height, 0);
     heightVec->rotate(camera->facingAngle.x);
-    float height = (display->height / 2) + heightVec->y;
+    const float height = (display->height / 2) + heightVec->y;
     delete heightVec;
 
     // If the camera is facing down enough that no sky is visible
@@ -690,10 +692,10 @@ void Drawer::drawSky(Rendering::Camera* camera, Rendering::Display* display) {
 
 }
 
-void Drawer::drawCrosshair(Rendering::Display* display) {
+void Drawer::drawCrosshair(const Rendering::Display* display) {
 
-    int centerX = display->middleX();
-    int centerY = display->middleY();
+    const int centerX = display->middleX();
+    const int centerY = display->middleY();
     
     // Middle dot
     this->pixelDrawer.drawPixel(Color::WHITE, centerX, centerY);

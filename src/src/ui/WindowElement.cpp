@@ -45,7 +45,7 @@ WindowElement::~WindowElement() {
 
     WindowElement* child;
 
-    for (this->children->iterStart(0); !this->children->iterIsDone(); this->children->iterNext()) {
+    for (this->children->iterStart(0); this->children->iterHasNext(); this->children->iterNext()) {
         
         child = this->children->iterGetObj();
         delete child;
@@ -63,16 +63,16 @@ WindowElement::~WindowElement() {
 
 }
 
-void WindowElement::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowElement::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
-    // Log becuase this shouldnt ever be called (should only be called by subclasses)
+    // Log becuase this should never be called (should only be called by subclass overrides)
     logWrite("Called WindowElement->draw()!", true);
 
     return;
 
 }
 
-WindowElement* WindowElement::hitTest(int x, int y, Geometry::Vec2* offset) {
+WindowElement* WindowElement::hitTest(int x, int y, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newPos;
     newPos.set(this->pos);
@@ -126,9 +126,9 @@ void WindowElement::setPos(int x, int y) {
 
 }
 
-void WindowElement::setPos(Geometry::Vec2* newPos) {
+void WindowElement::setPos(const Geometry::Vec2* newPos) {
 
-    this->setPos((int) newPos->x, (int) newPos->y);
+    this->setPos( round(newPos->x), round(newPos->y) );
 
     return;
 
@@ -142,7 +142,7 @@ void WindowElement::addChild(WindowElement* child) {
 
 }
 
-void WindowElement::drawChildren(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowElement::drawChildren(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     for (this->children->iterStart(0); this->children->iterHasNext(); this->children->iterNext()) {
         this->children->iterGetObj()->draw(drawer, offset);
@@ -160,7 +160,7 @@ void WindowElement::drawChildren(Graphics::Drawing::Drawer* drawer, Geometry::Ve
 
 WindowDiv::WindowDiv(int posx, int posy, int sizex, int sizey) : WindowElement(posx, posy, sizex, sizey) {}
 
-void WindowDiv::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowDiv::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -186,7 +186,7 @@ WindowLine::WindowLine(int posx, int posy, int sizex, int sizey, uint32 color) :
 
 }
 
-void WindowLine::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowLine::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -216,7 +216,7 @@ WindowFilledRect::WindowFilledRect(int posx, int posy, int sizex, int sizey, uin
 
 }
 
-void WindowFilledRect::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowFilledRect::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -246,7 +246,7 @@ WindowOutlinedRect::WindowOutlinedRect(int posx, int posy, int sizex, int sizey,
 
 }
 
-void WindowOutlinedRect::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowOutlinedRect::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -279,7 +279,7 @@ WindowCircle::WindowCircle(int posx, int posy, int size, uint32 color) : WindowE
 
 }
 
-void WindowCircle::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowCircle::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -321,7 +321,7 @@ WindowTextStatic::~WindowTextStatic() {
 
 }
 
-void WindowTextStatic::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowTextStatic::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -369,7 +369,7 @@ WindowTextInput::~WindowTextInput() {
 
 }
 
-void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     // Update the internal string
     this->updateString();
@@ -402,7 +402,7 @@ void WindowTextInput::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* of
 
 }
 
-void WindowTextInput::onInput(Graphics::Gui::State* state) {
+void WindowTextInput::onInput(const Graphics::Gui::State* state) {
 
     if (state->wasLeftJustPressed()) this->cursorPos = this->textLength;
 
@@ -628,11 +628,9 @@ WindowTexture::WindowTexture(int posx, int posy, int sizex, int sizey, const cha
 
 }
 
-WindowTexture::~WindowTexture() {
+WindowTexture::~WindowTexture() {}
 
-}
-
-void WindowTexture::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowTexture::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -685,7 +683,7 @@ WindowButton::~WindowButton() {
 
 }
 
-void WindowButton::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowButton::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -699,7 +697,7 @@ void WindowButton::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offse
 
 }
 
-void WindowButton::onInput(Graphics::Gui::State* state) {
+void WindowButton::onInput(const Graphics::Gui::State* state) {
 
     if (this->action != nullptr) {
         WindowElement::queueAction(this->action);
@@ -752,7 +750,7 @@ WindowDragable::WindowDragable(int posx, int posy, int sizex, int sizey, Geometr
 
 }
 
-void WindowDragable::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) {
+void WindowDragable::draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) {
 
     Geometry::Vec2 newOffset;
     newOffset.set(this->pos).add(offset);
@@ -763,7 +761,7 @@ void WindowDragable::draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* off
 
 }
 
-void WindowDragable::onInput(Graphics::Gui::State* state) {
+void WindowDragable::onInput(const Graphics::Gui::State* state) {
 
     if (this->posToDrag == nullptr || this->endPosToDrag == nullptr) return;
 

@@ -37,10 +37,10 @@ class BindManager {
         void removeBind(WindowHandle* windowHandle);
 
         // Rebinds the Window given by the WindowHandle
-        void rebind(WindowHandle* windowHandle);
+        void rebind(WindowHandle* windowHandle) const;
 
         // Rebinds all the stored windows
-        void rebindAll();
+        void rebindAll() const;
 
     private:
 
@@ -65,7 +65,7 @@ class BindManager {
         /*   Instance Functions   */
 
         // This just returns the bind that holds the given WindowHandle
-        Bind* getBind(WindowHandle* windowHandle);
+        Bind* getBind(WindowHandle* windowHandle) const;
 
         // Tells this instance to stop tracking the given Bind (helper function)
         void removeBind(Bind* bind);

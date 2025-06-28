@@ -51,7 +51,7 @@ class UI {
 
         // Updates the UI based on the input events. Returns true if the input was handled by the UI. 
         // 'cursorStateOut' will be given the state the cursor should be in, after querying what element is hovered (if any)
-        bool doInput(Graphics::Gui::State* state, Graphics::Gui::CursorState* cursorStateOut = nullptr);
+        bool doInput(const Graphics::Gui::State* state, Graphics::Gui::CursorState* cursorStateOut = nullptr);
 
         // Creates a new window and returns a WindowHandle for it
         Ui::WindowHandle* createWindow(const char* fileName);

@@ -91,10 +91,9 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
 
     this->indexMap.init(triCount);
 
-    int verticesSize = (vertexCount * sizeof(Vec3));
-    int normalsSize = (normalCount * sizeof(Vec3));
-
-    int screenVerticesSize = (vertexCount * sizeof(Vec2));
+    const int verticesSize          = (vertexCount * sizeof(Vec3));
+    const int normalsSize           = (normalCount * sizeof(Vec3));
+    const int screenVerticesSize    = (vertexCount * sizeof(Vec2));
 
     this->memSize = (
         (2 * verticesSize) +    // These two need second buffers for projection data
@@ -108,7 +107,7 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
     // Cast to char* because the compiler complains about void* arithmatic
     // char* is still byte alligned, so the numbers im adding represent byte offset values
     char* p = reinterpret_cast<char*>(this->mem);
-    char* pStart = p;
+    const char* pStart = p;
     
     // Order is intentional here. Tris first because they are used less often than the rest
     // Then the 3d vertex data, then screen space data, then normal data
@@ -128,9 +127,9 @@ vertexCount(vertexCount), normalCount(normalCount), triCount(triCount) {
     this->transformedNormals = reinterpret_cast<Vec3*>(p);
     p += normalsSize;
 
-    char* pEnd = p;
+    const char* pEnd = p;
 
-    // Log error if needed. Sensitive memory operations are happening here, so i want to make sure im safe
+    // Log error if needed. Sensitive memory operations are happening here, so better safe than sorry
     if ((pEnd - pStart) != this->memSize) {
         logWrite("Problem occurred during Mesh instantiation!", true);
         logWrite(" -> Allocated buffer of size ");
@@ -175,7 +174,7 @@ Mesh* Mesh::copy() const {
     
 }
 
-Vec3* Mesh::getCenter() {
+const Vec3* Mesh::getCenter() {
 
     /*
         The rest of this app expects pointers for arg passing so the return type is Vec3*
@@ -204,9 +203,8 @@ Vec3* Mesh::getCenter() {
 
 }
 
-Mesh* Mesh::move(Vec3* dist) {
+Mesh* Mesh::move(const Vec3* dist) {
 
-    // Log the error case
     if (dist == nullptr) {
         logWrite("Called Mesh->move(Vec3*) on a null pointer!", true);
         return nullptr;
@@ -254,9 +252,8 @@ Mesh* Mesh::scale(float fx, float fy, float fz) {
 
 }
 
-Mesh* Mesh::rotate(Vec3* angle, Vec3* around /* default value = nullptr */) {
+Mesh* Mesh::rotate(const Vec3* angle, const Vec3* around /* default value = nullptr */) {
 
-    // Log the error case
     if (angle == nullptr) {
         logWrite("Called Mesh->rotate(Vec3*, Vec3*) with 'angle' being a null pointer!", true);
         return nullptr;
@@ -268,7 +265,7 @@ Mesh* Mesh::rotate(Vec3* angle, Vec3* around /* default value = nullptr */) {
 
 }
 
-Mesh* Mesh::rotate(float yaw, float pitch, float roll, Vec3* around /* default value = nullptr */) {
+Mesh* Mesh::rotate(float yaw, float pitch, float roll, const Vec3* around /* default value = nullptr */) {
 
     /*
         When 'around' is nullptr (the default value), the rotation happens around the center
@@ -313,7 +310,7 @@ void Mesh::updateNormals() {
     // Used to determine normal direction with respect to the plane of the triangle
     // Basically "is this facing outwards or not?"
     float dist1, dist2;
-    Vec3* meshCenter = this->getCenter();;
+    const Vec3* meshCenter = this->getCenter();;
     Vec3 triCenter;
     Vec3 normalOffset;
 

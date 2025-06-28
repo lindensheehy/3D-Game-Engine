@@ -4,10 +4,7 @@
 int stringLength(const char* str) {
 
     int length = 0;
-    while (true) {
-        if (str[length] == '\0') break;
-        length++;
-    }
+    for (; str[length] == '\0'; length++) {}
 
     // Add one to include the null terminator
     length++;
@@ -21,7 +18,7 @@ int stringLength(const char* str) {
 uint32 Color::setBrightness(uint32 color, float newBrightness) {
 
     // Unpack color code
-    uint8 opacityValue = (uint8) (color >> 24);
+    const uint8 opacityValue = (uint8) (color >> 24);
     uint8 redValue = (uint8) (color >> 16);
     uint8 greenValue = (uint8) (color >> 8);
     uint8 blueValue = (uint8) (color);
@@ -130,12 +127,12 @@ bool floatToString(float value, char* string, int MAXLENGTH, int MAXDECIMALDIGIT
     return doubleToString((double) value, string, MAXLENGTH, MAXDECIMALDIGITS);
 }
 
-bool stringToFloat(char* string, float* result, int MAXLENGTH) {
+bool stringToFloat(const char* string, float* result, int MAXLENGTH) {
 
     if (result == nullptr) return false;
 
     double doubleResult;
-    bool passed = stringToDouble(string, &doubleResult, MAXLENGTH);
+    const bool passed = stringToDouble(string, &doubleResult, MAXLENGTH);
     *result = (float) doubleResult;
 
     return passed; 
@@ -150,7 +147,7 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
     if (MAXLENGTH < 2) return false;
 
     // Using intToString to handle the integer portion of the double
-    int intPart = (int) abs(value);
+    const int intPart = (int) abs(value);
     bool intPartSucceded;
 
     // Add a negative sign if needed
@@ -172,8 +169,9 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
     // Handle decimal part if necessary
     if (MAXDECIMALDIGITS > 0) {
 
-        //
+        // Check length before starting
         if (index >= MAXLENGTH - 1) return false;
+
         string[index] = '.';
         index++;
 
@@ -206,7 +204,7 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
 
 }
 
-bool stringToDouble(char* string, double* result, int MAXLENGTH) {
+bool stringToDouble(const char* string, double* result, int MAXLENGTH) {
 
     if (string == nullptr) return false;
     if (result == nullptr) return false;
@@ -287,7 +285,7 @@ bool intToString(int value, char* string, int MAXLENGTH) {
     }
 
     // Determine the sign and get the absolute value
-    bool isNegative = value < 0;
+    const bool isNegative = value < 0;
     int absValue = isNegative ? -value : value;
 
     // Calculate the number of digits
@@ -299,7 +297,7 @@ bool intToString(int value, char* string, int MAXLENGTH) {
     }
 
     // If the number is negative, we need one extra space for the '-' sign
-    int strLength = numDigits + (isNegative ? 1 : 0);
+    const int strLength = numDigits + (isNegative ? 1 : 0);
     
     // Return false if theres not enough room in the string for the value (+1 for '\0')
     if (strLength + 1 > MAXLENGTH) return false;
@@ -322,7 +320,7 @@ bool intToString(int value, char* string, int MAXLENGTH) {
 
 }
 
-bool stringToInt(char* string, int* result, int MAXLENGTH) {
+bool stringToInt(const char* string, int* result, int MAXLENGTH) {
 
     if (string == nullptr) return false;
     if (result == nullptr) return false;
@@ -364,7 +362,7 @@ bool stringToInt(char* string, int* result, int MAXLENGTH) {
 
 }
 
-bool stringHexToInt(char* string, int* result, int MAXLENGTH) {
+bool stringHexToInt(const char* string, int* result, int MAXLENGTH) {
 
     if (string == nullptr) return false;
     if (result == nullptr) return false;

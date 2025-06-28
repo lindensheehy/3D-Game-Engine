@@ -20,11 +20,11 @@ class Action {
 
         /*   Instance Variables   */
 
-        Ui::ActionType type;
+        Ui::ActionType type = ActionType::NONE;
         
 
         // Constructor
-        Action();
+        Action() {}
 
         // Destructor
         virtual ~Action() {}

@@ -77,7 +77,7 @@ void handleInput() {
     // If the input is handled through the UI (based on return value), the rest of this is skipped
     // This also updates the mouse cursor state if needed
     Graphics::Gui::CursorState cursorState;
-    bool inputHandled = ui->doInput(gui->state, &cursorState);
+    const bool inputHandled = ui->doInput(gui->state, &cursorState);
     gui->window->setCursorState(cursorState);
     if (inputHandled) return;
 
@@ -110,10 +110,10 @@ void handleInput() {
     if (gui->state->mouse->leftButtonIsDown) {
 
         // 0.2 is just a random number I chose becuase it felt good in the app
-        float mouseSensitivity = 0.2;
-        float camDeltaYaw = (float) gui->state->deltaMousePosX();
-        float camDeltaPitch = (float) gui->state->deltaMousePosY();
-        camera->rotate( -camDeltaPitch * mouseSensitivity, -camDeltaYaw * mouseSensitivity, 0 );
+        constexpr float MOUSE_SENSITIVITY = 0.2;
+        const float camDeltaYaw = (float) gui->state->deltaMousePosX();
+        const float camDeltaPitch = (float) gui->state->deltaMousePosY();
+        camera->rotate( -camDeltaPitch * MOUSE_SENSITIVITY, -camDeltaYaw * MOUSE_SENSITIVITY, 0 );
 
     }
 
@@ -145,6 +145,7 @@ void handleInput() {
             // Reset opacity of old selectedObject if needed
             if (selectedObject != nullptr) selectedObject->opacity = 1;
 
+            // Cast out the const. This is a comprimise that allows PixelTracker to be more explicit with its intentions
             selectedObject = newSelection;
 
             // Now I update the opacity, and pass it to the UI, rebinding the Transform Window as well
@@ -216,8 +217,9 @@ void handleInput() {
     }
 
     // Gives all the objects some vertical velocity
-    if (gui->state->keyJustDown(KeyCode::Z))
+    if (gui->state->keyJustDown(KeyCode::Z)) {
         objects->setVelocityAll(0, 25, 0);
+    }
 
 }
 
@@ -255,15 +257,15 @@ void init() {
     newObject->scaleBy(25)->move(0, 0, 50)->setColor(Color::WHITE);
     objects->pushBack(newObject, 1);
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    // newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
-    // objects->pushBack(newObject, 2);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
+    objects->pushBack(newObject, 2);
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    // newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotate(10, 0, 0)->setColor(Color::BLUE);
-    // objects->pushBack(newObject, 3);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotate(10, 0, 0)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 3);
 
     // newObject = new Physics::Object();
     // newObject->mesh = Geometry::Mesh::capsuleMesh->copy();
@@ -275,23 +277,23 @@ void init() {
     newObject->scaleBy(20)->move(0, 0, 40)->setColor(Color::BLUE);
     objects->pushBack(newObject, 5);
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::sphereMesh->copy();
-    // newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
-    // objects->pushBack(newObject, 6);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::sphereMesh->copy();
+    newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    objects->pushBack(newObject, 6);
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    // newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
-    // objects->pushBack(newObject, 7);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    objects->pushBack(newObject, 7);
 
 
     /*   Floor   */
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    // newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
-    // objects->pushBack(newObject, 8);
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
+    objects->pushBack(newObject, 8);
 
 
     gravity = false;

@@ -41,7 +41,7 @@ class ParameterInfo {
 
         /*   Instance Functions   */
 
-        ParameterType matchParameter(const char* name, int* positionOut);
+        ParameterType matchParameter(const char* name, int* positionOut) const;
 
     private:
 
@@ -99,7 +99,6 @@ class ParameterInfoBuilder {
         // Adds the parameter to the list
         // The strings in this class are read only, so this will use the same pointer
         void addParameter(const char* name, ParameterType type, int position);
-        void addParameter(char* name, ParameterType type, int position);
 
     private:
 

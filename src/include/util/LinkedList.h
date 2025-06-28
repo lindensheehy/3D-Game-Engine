@@ -48,13 +48,13 @@ class LinkedList {
                 /*   Instance Functions   */
 
                 // Returns true if this node is the first node in the list.
-                inline bool isFirst() { return (this->last == nullptr); }
+                inline bool isFirst() const { return (this->last == nullptr); }
 
                 // Returns true if this node is the last node in the list.
-                inline bool isLast() { return (this->next == nullptr); }
+                inline bool isLast() const { return (this->next == nullptr); }
                 
                 // Logs the node in the format:  last id <- this id -> next id
-                void log() {
+                void log() const {
 
                     if (this->last == nullptr)
                         logWrite("null");
@@ -124,7 +124,7 @@ class LinkedList {
         /*   Instance Functions   */
 
         // Returns the object at the first position in the list
-        type getFirst() {
+        type getFirst() const {
 
             if (this->first != nullptr) {
                 return this->first->item;
@@ -135,7 +135,7 @@ class LinkedList {
         }
 
         // Returns the object at the last position in the list
-        type getLast() {
+        type getLast() const {
 
             if (this->last != nullptr) {
                 return this->last->item;
@@ -480,7 +480,7 @@ class LinkedList {
         }
 
         // Returns the item the iterator is at. Returns nullptr if the iterator is invalid
-        type iterGetObj() {
+        type iterGetObj() const {
 
             if (this->iterCurrent == nullptr) return (type) nullptr;
 
@@ -489,7 +489,7 @@ class LinkedList {
         }
 
         // Returns the id the iterator is at. Returns -1 if the iterator is at null
-        int iterGetId() {
+        int iterGetId() const {
 
             if (this->iterCurrent == nullptr) return -1;
 
@@ -518,13 +518,13 @@ class LinkedList {
         }
 
         // Returns true if iterCurrent equals nullptr
-        inline bool iterIsDone() { return (this->iterCurrent == nullptr); }
+        inline bool iterIsDone() const { return (this->iterCurrent == nullptr); }
 
         // Equivalent to !iterIsDone(). Just easier to use in for loops
-        inline bool iterHasNext() { return !(this->iterIsDone()); }
+        inline bool iterHasNext() const { return !(this->iterIsDone()); }
 
         // Logs all of the nodes in the order they stand in the list
-        void log() {
+        void log() const {
 
             logWrite("LinkedList( length = ");
             logWrite(this->length, true);

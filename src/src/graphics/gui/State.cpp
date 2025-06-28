@@ -30,9 +30,9 @@ void State::TimeState::updateDt() {
 
     QueryPerformanceCounter( &(this->frameTime) );
 
-    long long frameTimeQP = this->frameTime.QuadPart;
-    long long lastFrameTimeQP = this->lastFrameTime.QuadPart;
-    long long frequencyQP = this->frequency.QuadPart;
+    const long long frameTimeQP = this->frameTime.QuadPart;
+    const long long lastFrameTimeQP = this->lastFrameTime.QuadPart;
+    const long long frequencyQP = this->frequency.QuadPart;
 
     this->dt = (double) (frameTimeQP - lastFrameTimeQP) / frequencyQP;
     this->dt *= 1000;
@@ -49,7 +49,7 @@ void State::TimeState::updateFps() {
     if (frameTimeMillis > this->nextSecondMillis) {
 
         // Reset next second
-        long long temp = (long long) ((frameTimeMillis + 1000) / 1000);
+        const long long temp = (long long) ((frameTimeMillis + 1000) / 1000);
         this->nextSecondMillis = (double) temp * 1000;
 
         // Store fps
@@ -76,11 +76,11 @@ void State::TimeState::update() {
 
 }
 
-double State::TimeState::getTimeMillis() {
+double State::TimeState::getTimeMillis() const {
 
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
-    double temp = (double) (currentTime.QuadPart) / frequency.QuadPart;
+    const double temp = (double) (currentTime.QuadPart) / frequency.QuadPart;
 
     return temp * 1000;
 
@@ -112,7 +112,7 @@ State::MouseState::MouseState() {
 
 }
 
-void State::MouseState::setState(MouseState* state) {
+void State::MouseState::setState(const MouseState* state) {
 
     this->leftButtonIsDown = state->leftButtonIsDown;
     this->rightButtonIsDown = state->rightButtonIsDown;
@@ -230,21 +230,22 @@ State::KeyboardState::~KeyboardState() {
 
 }
 
-void State::KeyboardState::setState(KeyboardState* state) {
+void State::KeyboardState::setState(const KeyboardState* state) {
 
     if (state == nullptr) {
         logWrite("Called State::KeyboardState->setState(KeyboardState*) on a null pointer!", true);
         return;
     }
 
-    for (int i = 0; i < this->keyStatesLength; i++)
+    for (int i = 0; i < this->keyStatesLength; i++) {
         this->keyStates[i] = state->keyStates[i];
+    }
 
     return;
 
 }
 
-bool* State::KeyboardState::getKeyRef(KeyCode keyCode) {
+bool* State::KeyboardState::getKeyRef(KeyCode keyCode) const {
 
     /*
         Returns a pointer to the keys boolean value within the master array
@@ -276,7 +277,7 @@ void State::KeyboardState::keyUp(KeyCode keyCode) {
 
 }
 
-bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
+bool State::KeyboardState::keyIsDown(KeyCode keyCode) const {
     
     bool* key = this->getKeyRef(keyCode);
     if (key != nullptr) return (*key) == true;
@@ -291,7 +292,7 @@ bool State::KeyboardState::keyIsDown(KeyCode keyCode) {
 /*  ----------   State   ----------  */
 /*  -------------------------------  */
 
-State::State(HWND hwnd, bool hasChild /* default value = true */) {
+State::State(HWND hwnd, bool hasChild /* default value = true */) : hwnd(hwnd) {
 
     this->newKeyPresses[0] = KeyCode::NONE;
     this->newKeyPresses[1] = KeyCode::NONE;
@@ -301,8 +302,6 @@ State::State(HWND hwnd, bool hasChild /* default value = true */) {
     this->time = new TimeState();
     this->mouse = new MouseState();
     this->keys = new KeyboardState();
-
-    this->hwnd = hwnd;
 
     if (hasChild) this->lastFrame = new State(hwnd, false);
     else this->lastFrame = nullptr;
@@ -324,7 +323,7 @@ State::~State() {
 
 int State::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
 
-    KeyCode keyCode = (KeyCode) wParam;
+    const KeyCode keyCode = (KeyCode) wParam;
 
     switch (msg) {
 
@@ -404,27 +403,27 @@ void State::nextFrame() {
 
 }
 
-bool State::wasLeftJustPressed() {
+bool State::wasLeftJustPressed() const {
     return (this->mouse->leftButtonIsDown && !this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool State::wasRightJustPressed() {
+bool State::wasRightJustPressed() const {
     return (this->mouse->rightButtonIsDown && !this->lastFrame->mouse->rightButtonIsDown);
 }
 
-bool State::wasLeftHeld() {
+bool State::wasLeftHeld() const {
     return (this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool State::wasRightHeld() {
+bool State::wasRightHeld() const {
     return (this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
-bool State::wasLeftJustReleased() {
+bool State::wasLeftJustReleased() const {
     return (!this->mouse->leftButtonIsDown && this->lastFrame->mouse->leftButtonIsDown);
 }
 
-bool State::wasRightJustReleased() {
+bool State::wasRightJustReleased() const {
     return (!this->mouse->rightButtonIsDown && this->lastFrame->mouse->rightButtonIsDown);
 }
 
@@ -442,21 +441,21 @@ void State::updateMousePos() {
 
 }
 
-int State::deltaMousePosX() {
+int State::deltaMousePosX() const {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posX) - (this->lastFrame->mouse->posX);
 }
 
-int State::deltaMousePosY() {
+int State::deltaMousePosY() const {
     if (this->lastFrame == nullptr) return 0;
     return (this->mouse->posY) - (this->lastFrame->mouse->posY);
 }
 
-bool State::keyIsDown(KeyCode keyCode) {
+bool State::keyIsDown(KeyCode keyCode) const {
     return this->keys->keyIsDown(keyCode);
 }
 
-bool State::keyJustDown(KeyCode keyCode) {
+bool State::keyJustDown(KeyCode keyCode) const {
 
     bool isDown = this->keys->keyIsDown(keyCode);
     bool wasDown = this->lastFrame->keys->keyIsDown(keyCode);
@@ -465,9 +464,8 @@ bool State::keyJustDown(KeyCode keyCode) {
 
 }
 
-void State::setState(State* state) {
+void State::setState(const State* state) {
 
-    // Address error case, but dont kill the process yet in case its not fatal
     if (state == nullptr) {
         logWrite("Called State->setState(State*) on a null pointer!", true);
         return;

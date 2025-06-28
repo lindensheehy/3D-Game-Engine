@@ -7,7 +7,7 @@ using namespace Geometry;
 /* --- Tri2 --- */
 /* ------------ */
 
-Tri2::Tri2(bool nullPointers /* default value = false */) {
+Tri2::Tri2(bool nullPointers) {
 
     if (nullPointers) {
         this->v1 = nullptr;
@@ -77,7 +77,7 @@ void Tri2::log() const {
 
 }
 
-void Tri2::rotate(float degrees, Vec2* around) {
+void Tri2::rotate(float degrees, const Vec2* around) {
 
     this->v1->rotate(degrees, around);
     this->v2->rotate(degrees, around);
@@ -93,7 +93,7 @@ void Tri2::rotate(float degrees, Vec2* around) {
 /* --- Tri3 --- */
 /* ------------ */
 
-Tri3::Tri3(bool nullPointers /* default value = false */) {
+Tri3::Tri3(bool nullPointers) {
 
     if (nullPointers) {
         this->v1 = nullptr;
@@ -181,14 +181,14 @@ void Tri3::updateNormal() {
     vec1to2.set(this->v1).sub(this->v2);
     vec1to3.set(this->v1).sub(this->v3);
 
-    vec1to2.crossProduct( &(vec1to3), this->normal );
+    vec1to2.crossProduct(vec1to3, this->normal);
     this->normal->normalize();
 
     return;
 
 }
 
-bool Tri3::isFacing(Vec3* vec) const {
+bool Tri3::isFacing(const Vec3* vec) const {
 
     if (vec == nullptr) {
         logWrite("Called Tri3::isFacing(Vec3*) on a null pointer!", true);
@@ -208,9 +208,9 @@ void Tri3::getCenter(Vec3* out) const {
     }
 
     // Average all 3 components
-    float x = (this->v1->x + this->v2->x + this->v3->x) / 3.0f;
-    float y = (this->v1->y + this->v2->y + this->v3->y) / 3.0f;
-    float z = (this->v1->z + this->v2->z + this->v3->z) / 3.0f;
+    const float x = (this->v1->x + this->v2->x + this->v3->x) / 3.0f;
+    const float y = (this->v1->y + this->v2->y + this->v3->y) / 3.0f;
+    const float z = (this->v1->z + this->v2->z + this->v3->z) / 3.0f;
     
     out->set(x, y, z);
 

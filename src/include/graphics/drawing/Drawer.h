@@ -87,17 +87,17 @@ class Drawer {
         void drawTriangle(uint32 color, int x1, int y1, int x2, int y2, int x3, int y3, float depth1, float depth2, float depth3, float opacity = 1.0);
 
         // Same as above but uses a Tri object. The Tri3 version uses the z coordinates for depth.
-        void drawTriangle(uint32 color, Geometry::Tri2* tri);
-        void drawTriangle(uint32 color, Geometry::Tri3* tri, float opacity = 1.0);
+        void drawTriangle(uint32 color, const Geometry::Tri2* tri);
+        void drawTriangle(uint32 color, const Geometry::Tri3* tri, float opacity = 1.0);
 
         // Draws the fps box in the top left
-        void drawFps(Gui::State* state, Rendering::Display* display);
+        void drawFps(const Gui::State* state, const Rendering::Display* display);
 
         // Draws the sky based on the camera pitch
-        void drawSky(Rendering::Camera* camera, Rendering::Display* display);
+        void drawSky(const Rendering::Camera* camera, const Rendering::Display* display);
 
         // Draws a crosshair in the center of the display
-        void drawCrosshair(Rendering::Display* display);
+        void drawCrosshair(const Rendering::Display* display);
 
 };
 

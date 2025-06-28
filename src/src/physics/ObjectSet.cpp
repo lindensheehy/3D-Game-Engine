@@ -49,7 +49,7 @@ Object::Object(Geometry::Mesh* mesh) {
 
 }
 
-Object* Object::copy() {
+Object* Object::copy() const {
 
     Object* ret = new Object();
 
@@ -72,7 +72,7 @@ Object* Object::copy() {
 
 }
 
-Object* Object::move(Geometry::Vec3* dist) {
+Object* Object::move(const Geometry::Vec3* dist) {
 
     if (dist == nullptr) {
         logWrite("Called Object->move(Geometry::Vec3*) on a nullptr!", true);
@@ -105,7 +105,7 @@ Object* Object::scaleBy(float fx, float fy, float fz) {
 
 }
 
-Object* Object::rotate(Geometry::Vec3* angle) {
+Object* Object::rotate(const Geometry::Vec3* angle) {
 
     if (this->mesh == nullptr) {
         logWrite("Called Object->rotate() while Object->mesh was nullptr!", true);
@@ -143,7 +143,7 @@ Object* Object::setColor(uint32 color) {
 
 void Object::doPhysics(float dt) {
 
-    float dtSeconds = dt / 1000;
+    const float dtSeconds = dt / 1000;
 
     Geometry::Vec3 delta;
 
@@ -157,7 +157,7 @@ void Object::doPhysics(float dt) {
 
 }
 
-bool Object::collides(Object* other) {
+bool Object::collides(const Object* other) const {
     return false;
 }
 
@@ -240,7 +240,7 @@ void ObjectSet::pushFront(Object* obj, int id) {
     
 }
 
-void ObjectSet::moveAll(Geometry::Vec3* dist) {
+void ObjectSet::moveAll(const Geometry::Vec3* dist) {
 
     if (dist == nullptr) {
         logWrite("Called ObjectSet::moveAll(Geometry::Vec3*) on a nullptr!", true);
@@ -265,7 +265,7 @@ void ObjectSet::moveAll(float dx, float dy, float dz) {
 
 }
 
-void ObjectSet::setPosAll(Geometry::Vec3* pos) {
+void ObjectSet::setPosAll(const Geometry::Vec3* pos) {
 
     if (pos == nullptr) {
         logWrite("Called ObjectSet::setPosAll(Geometry::Vec3*) on a nullptr!", true);
@@ -290,7 +290,7 @@ void ObjectSet::setPosAll(float x, float y, float z) {
 
 }
 
-void ObjectSet::addVelocityAll(Geometry::Vec3* v) {
+void ObjectSet::addVelocityAll(const Geometry::Vec3* v) {
 
     if (v == nullptr) {
         logWrite("Called ObjectSet::addVelocityAll(Geometry::Vec3*) on a nullptr!", true);
@@ -315,7 +315,7 @@ void ObjectSet::addVelocityAll(float vx, float vy, float vz) {
 
 }
 
-void ObjectSet::setVelocityAll(Geometry::Vec3* v) {
+void ObjectSet::setVelocityAll(const Geometry::Vec3* v) {
 
     if (v == nullptr) {
         logWrite("Called ObjectSet::setVelocityAll(Geometry::Vec3*) on a nullptr!", true);
@@ -340,7 +340,7 @@ void ObjectSet::setVelocityAll(float vx, float vy, float vz) {
 
 }
 
-void ObjectSet::setGravityAll(Geometry::Vec3* gravity) {
+void ObjectSet::setGravityAll(const Geometry::Vec3* gravity) {
 
     if (gravity == nullptr) {
         logWrite("Called ObjectSet::setAllGravity(Geometry::Vec3*) on a nullptr!", true);
@@ -395,7 +395,7 @@ void ObjectSet::doAllPhysics(float dt) {
 
 }
 
-void ObjectSet::drawAll(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera) {
+void ObjectSet::drawAll(Graphics::Rendering::Renderer* renderer, const Graphics::Rendering::Camera* camera) {
 
     if (renderer == nullptr) {
         logWrite("Called ObjectSet::drawAll(Graphics::Rendering::Renderer*, Graphics::Rendering::Camera*) with arg1 as a nullptr!", true);
@@ -440,7 +440,7 @@ void ObjectSet::drawAll(Graphics::Rendering::Renderer* renderer, Graphics::Rende
 
 }
 
-void ObjectSet::drawAllWithNormals(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera) {
+void ObjectSet::drawAllWithNormals(Graphics::Rendering::Renderer* renderer, const Graphics::Rendering::Camera* camera) {
 
     if (renderer == nullptr) {
         logWrite("Called ObjectSet::drawAllWithNormals(Graphics::Rendering::Renderer*, Graphics::Rendering::Camera*) with arg1 as a nullptr!", true);

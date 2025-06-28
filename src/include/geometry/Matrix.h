@@ -33,7 +33,7 @@ class Matrix4 {
         //          [ e f g h ]
         //          [ i j k l ]
         //          [ m n o p ]
-        void log();
+        void log() const;
 
         // Sets this Matrix4 to the given Matrix4 (shallow copy)
         void set(const Matrix4& other);

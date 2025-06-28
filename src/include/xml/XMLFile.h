@@ -41,10 +41,10 @@ class XMLFile {
         /*   Instance Functions   */
 
         // Performs a deep copy
-        XMLFile* copy();
+        XMLFile* copy() const;
 
         // Logs the contents of this object
-        void log();
+        void log() const;
 
         // Sets any instance of the string tag to the designated value (in string form)
         void setParameter(const char* tag, int value);

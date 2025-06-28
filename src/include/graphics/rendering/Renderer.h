@@ -36,20 +36,20 @@ class Renderer {
         /*   Instance Functions   */
 
         // Draws an Object instance to the screen
-        void drawObject(Physics::Object* object, Camera* camera);
+        void drawObject(Physics::Object* object, const Camera* camera);
 
     private:
 
         // Draws a mesh to the screen (assumes the private Mesh buffers are populated by drawObject)
-        void drawMesh(Geometry::Mesh* mesh, Camera* camera);
+        void drawMesh(const Geometry::Mesh* mesh, const Camera* camera);
 
         // Draws a triangle onto the screen where 'a', 'b', and 'c' are the triangle vertices
         // Uses the Vec2s as screen space and the Vec3s as camera space (for depth purposes)
         void drawTri(
             uint32 color,
-            Geometry::Vec2& a, Geometry::Vec3& a3,
-            Geometry::Vec2& b, Geometry::Vec3& b3,
-            Geometry::Vec2& c, Geometry::Vec3& c3
+            const Geometry::Vec2& a, const Geometry::Vec3& a3,
+            const Geometry::Vec2& b, const Geometry::Vec3& b3,
+            const Geometry::Vec2& c, const Geometry::Vec3& c3
         );
 
         // This is the opacity value this Renderer will draw at

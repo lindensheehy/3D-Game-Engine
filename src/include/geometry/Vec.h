@@ -22,7 +22,6 @@ class Vec2 {
 
         /*   Constructors   */
 
-        // Specified values
         Vec2(float inputX, float inputY) : x(inputX), y(inputY) {}
 
         // Defaults to (0, 0)
@@ -67,7 +66,7 @@ class Vec2 {
         Vec2& normalize(float toMagnitude = 1.0);
 
         // Returns the magnitude of the vector
-        float magnitude();
+        float magnitude() const;
 
         // Returns the distance between this vector and other
         float distanceTo(float x, float y) const;
@@ -109,7 +108,6 @@ class Vec3 {
 
         /*   Constructors   */
 
-        // Specified values
         Vec3(float inputX, float inputY, float inputZ) : x(inputX), y(inputY), z(inputZ) {}
 
         // Defaults to (0, 0, 0)
@@ -155,7 +153,7 @@ class Vec3 {
         Vec3& normalize(float toMagnitude = 1.0);
 
         // Returns the magnitude of the vector
-        float magnitude();
+        float magnitude() const;
 
         // Returns the distance between this vector and other
         float distanceTo(float x, float y, float z) const;
@@ -185,8 +183,8 @@ class Vec3 {
 
         // Rotates the vector around a certain point (by default (0, 0, 0)) by a given angle around each axis.
         // Each rotation occurs COUNTER CLOCKWISE, when looking down upon the rotation.
-        void rotate(float yaw, float pitch, float roll, Vec3* around = nullptr);
-        void rotate(float yaw, float pitch, float roll, Vec3& around);
+        void rotate(float yaw, float pitch, float roll, const Vec3* around = nullptr);
+        void rotate(float yaw, float pitch, float roll, const Vec3& around);
 
         // Performs an in-place Perspective projection (overwriting any existing data)
         // The resulting values are normalized with respect to the FOV

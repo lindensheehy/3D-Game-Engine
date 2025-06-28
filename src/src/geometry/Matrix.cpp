@@ -3,7 +3,7 @@
 using namespace Geometry;
 
 
-void Matrix4::log() {
+void Matrix4::log() const {
 
     logWrite("Matrix4: [ ");
 
@@ -47,6 +47,7 @@ void Matrix4::set(const Matrix4* other) {
 void Matrix4::mul(const Matrix4& other) {
 
     // Cache this->m as t
+    // this->m is being modified in the following logic, so caching it is necessary
     float t[4][4];
     memcpy(t, this->m, sizeof(t));
 
@@ -93,9 +94,9 @@ void Matrix4::mul(Vec3* vec) const {
         return;
     }
 
-    float x = vec->x;
-    float y = vec->y;
-    float z = vec->z;
+    const float x = vec->x;
+    const float y = vec->y;
+    const float z = vec->z;
 
     /*
         Since this is a Vec3, the w component is assumed to be 1
@@ -281,7 +282,7 @@ void Matrix4::rotationY(float angle, Matrix4* out) {
 
     Matrix4::identityNoCheck(out);
 
-    float radians = toRadians(angle);
+    const float radians = toRadians(angle);
 
     out->m[0][0] = cos(radians);
     out->m[2][0] = -sin(radians);
@@ -301,7 +302,7 @@ void Matrix4::rotationZ(float angle, Matrix4* out) {
 
     Matrix4::identityNoCheck(out);
 
-    float radians = toRadians(angle);
+    const float radians = toRadians(angle);
 
     out->m[0][0] = cos(radians);
     out->m[0][1] = -sin(radians);

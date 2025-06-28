@@ -86,18 +86,14 @@ void logWrite(char* message, bool newLine) {
 
 void logWrite(char message, bool newLine) {
 
-    char messageString[] = {message, '\0'};
-    logWrite((const char*) messageString, newLine);
+    const char messageString[] = {message, '\0'};
+    logWrite(messageString, newLine);
 
     return;
 
 }
 
-void logWrite(wchar_t message, bool newLine) {
-    
-    return;
-
-}
+void logWrite(wchar_t message, bool newLine) {}
 
 // Decimal Values
 void logWrite(int message, bool newLine) {
@@ -136,29 +132,13 @@ void logWrite(double message, bool newLine) {
 }
 
 // Hex values
-void logWriteHex(char message, bool newLine) {
+void logWriteHex(char message, bool newLine) {}
 
-    return;
+void logWriteHex(short message, bool newLine) {}
 
-}
+void logWriteHex(int message, bool newLine) {}
 
-void logWriteHex(short message, bool newLine) {
-    
-    return;
-
-}
-
-void logWriteHex(int message, bool newLine) {
-    
-    return;
-
-}
-
-void logWriteHex(long long message, bool newLine) {
-
-    return;
-
-}
+void logWriteHex(long long message, bool newLine) {}
 
 // New line
 void logNewLine() {

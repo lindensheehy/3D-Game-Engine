@@ -142,16 +142,16 @@ double sin(double x) {
     while (value < -pi) value += (2 * pi);
 
     // Exponents
-    double exp3 = value * value * value;
-    double exp5 = exp3 * value * value;
-    double exp7 = exp5 * value * value;
-    double exp9 = exp7 * value * value;
+    const double exp3 = value * value * value;
+    const double exp5 = exp3 * value * value;
+    const double exp7 = exp5 * value * value;
+    const double exp9 = exp7 * value * value;
 
     // Factorials
-    double fac3 = 2 * 3;
-    double fac5 = fac3 * 4 * 5;
-    double fac7 = fac5 * 6 * 7;
-    double fac9 = fac7 * 8 * 9;
+    const double fac3 = 2 * 3;
+    const double fac5 = fac3 * 4 * 5;
+    const double fac7 = fac5 * 6 * 7;
+    const double fac9 = fac7 * 8 * 9;
 
     // Put it all together
     double returnValue = value;
@@ -192,18 +192,18 @@ double cos(double x) {
     while (value < -pi) value += (2 * pi);
 
     // Exponents
-    double exp2 = value * value;
-    double exp4 = exp2 * value * value;
-    double exp6 = exp4 * value * value;
-    double exp8 = exp6 * value * value;
-    double exp10 = exp8 * value * value;
+    const double exp2 = value * value;
+    const double exp4 = exp2 * value * value;
+    const double exp6 = exp4 * value * value;
+    const double exp8 = exp6 * value * value;
+    const double exp10 = exp8 * value * value;
 
     // Factorials
-    double fac2 = 2;
-    double fac4 = fac2 * 3 * 4;
-    double fac6 = fac4 * 5 * 6;
-    double fac8 = fac6 * 7 * 8;
-    double fac10 = fac8 * 9 * 10;
+    const double fac2 = 2;
+    const double fac4 = fac2 * 3 * 4;
+    const double fac6 = fac4 * 5 * 6;
+    const double fac8 = fac6 * 7 * 8;
+    const double fac10 = fac8 * 9 * 10;
 
     // Put it all together
     double returnValue = 1;
@@ -241,8 +241,8 @@ double tan(double x) {
     while (value < -pi) value += (2 * pi);
 
     // Find sin and cos, then get tan
-    double sinValue = sin(value);
-    double cosValue = cos(value);
+    const double sinValue = sin(value);
+    const double cosValue = cos(value);
 
     // Dont divide by zero
     if (cosValue == 0)
@@ -318,10 +318,10 @@ double arctan(double x) {
     else {
 
         // Just defining these here for readability
-        double exp3 = value * value * value;
-        double exp5 = exp3 * value * value;
-        double exp7 = exp5 * value * value;
-        double exp9 = exp7 * value * value;
+        const double exp3 = value * value * value;
+        const double exp5 = exp3 * value * value;
+        const double exp7 = exp5 * value * value;
+        const double exp9 = exp7 * value * value;
 
         // Put it all together
         returnValue = value;
@@ -337,7 +337,7 @@ double arctan(double x) {
     if (inverseFlag) {
 
         // offset = pi/2 or -pi/2 depending of sign of returnvalue
-        double offset = (returnValue > 0) ? (pi / 2) : -(pi / 2);
+        const double offset = (returnValue > 0) ? (pi / 2) : -(pi / 2);
 
         return offset - returnValue;
 
@@ -376,9 +376,7 @@ double arcsin(double x) {
         return 0;
     }
 
-    double y;
-
-    y = 1 - (x * x);
+    double y = 1 - (x * x);
 
     // Check for value of 0, as this could give a divide by 0 error
     if (y == 0) {
@@ -448,8 +446,8 @@ double arccos(double x) {
 
 float distance2(float x1, float y1, float x2, float y2) {
 
-    float dx = x1 - x2;
-    float dy = y1 - y2;
+    const float dx = x1 - x2;
+    const float dy = y1 - y2;
 
     return sqrt((dx * dx) + (dy * dy));
 
@@ -457,9 +455,9 @@ float distance2(float x1, float y1, float x2, float y2) {
 
 float distance3(float x1, float y1, float z1, float x2, float y2, float z2) {
 
-    float dx = x1 - x2;
-    float dy = y1 - y2;
-    float dz = z1 - z2;
+    const float dx = x1 - x2;
+    const float dy = y1 - y2;
+    const float dz = z1 - z2;
 
     return sqrt((dx * dx) + (dy * dy) + (dz * dz));
 
@@ -515,8 +513,9 @@ float getAngle(float x1, float y1, float x2, float y2) {
 
     } 
     
-    else
+    else {
         radians = 0;
+    }
 
     // Adjust angle based on quadrant
     if (y1 < y2) radians = pi - radians;

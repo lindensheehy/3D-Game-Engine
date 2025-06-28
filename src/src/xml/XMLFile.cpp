@@ -59,7 +59,7 @@ XMLFile::~XMLFile() {
 
 }
 
-XMLFile* XMLFile::copy() {
+XMLFile* XMLFile::copy() const {
 
     // This empty constructor does not initialize any member variables
     XMLFile* ret = new XMLFile();
@@ -85,7 +85,7 @@ XMLFile* XMLFile::copy() {
 
 }
 
-void XMLFile::log() {
+void XMLFile::log() const {
 
     // Log file contents
     logWrite("XMLFile object contents:", true);
@@ -651,7 +651,7 @@ void XMLFile::applyLabels() {
     // Skip if there is no labels section
     if (this->labelsStart == -1 || this->labelsEnd == -1) return;
 
-    int labelCount = this->labels->stringTagCount;
+    const int labelCount = this->labels->stringTagCount;
 
     if (labelCount % 2 != 0) {
         logWrite("XML::applyLabels() found an uneven number of label tags!", true);

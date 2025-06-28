@@ -93,7 +93,7 @@ void PixelDrawer::clipCoordinates(int* x, int* y) const {
 void PixelDrawer::drawPixel(uint32 pixel, int x, int y) {
 
     // Validate requested write
-    int index = this->bufferIndex(x, y);
+    const int index = this->bufferIndex(x, y);
     if (index == -1) return;
 
     // Check with PixelTracker
@@ -112,7 +112,7 @@ void PixelDrawer::drawPixel(uint32 pixel, int x, int y) {
 void PixelDrawer::drawPixel(uint32 pixel, int x, int y, float depth, float opacity /* = 1.0 */) {
 
     // Validate requested write
-    int index = this->bufferIndex(x, y);
+    const int index = this->bufferIndex(x, y);
     if (index == -1) return;
 
     if (depth > this->depthBuffer[index]) return;
@@ -127,8 +127,8 @@ void PixelDrawer::drawPixel(uint32 pixel, int x, int y, float depth, float opaci
     if (opacity < 1.0) {
 
         // Find effective color based on pixel color, opacity, and color behind
-        uint32 originalPixel = this->buffer[index];
-        uint32 result = Color::merge(pixel, opacity, originalPixel, 1 - opacity);
+        const uint32 originalPixel = this->buffer[index];
+        const uint32 result = Color::merge(pixel, opacity, originalPixel, 1 - opacity);
 
         this->buffer[index] = result;
 

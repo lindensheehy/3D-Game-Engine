@@ -38,10 +38,10 @@ class TagSequence {
         /*   Instance Functions   */
 
         // Performs a deep copy
-        TagSequence* copy();
+        TagSequence* copy() const;
 
         // Logs the contents of the tag sequence
-        void log();
+        void log() const;
 
         // Populates 'stringTagCount', 'primTagCount', and 'bufferLength'
         void findBufferLength();

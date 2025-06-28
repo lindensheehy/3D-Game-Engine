@@ -51,10 +51,10 @@ class Object {
         /*   Instance Functions   */
 
         // Deep copy (mostly). Returns a new Object instance. The copy will use the same Mesh pointer
-        Object* copy();
+        Object* copy() const;
 
         // Moves the object in space by the specified distance.
-        Object* move(Geometry::Vec3* dist);
+        Object* move(const Geometry::Vec3* dist);
         Object* move(float dx, float dy, float dz);
 
         // Scales the object by a given factor on each axis
@@ -62,7 +62,7 @@ class Object {
         Object* scaleBy(float fx, float fy, float fz);
 
         // Rotates the object by the specified angles (in place rotation)
-        Object* rotate(Geometry::Vec3* angle);
+        Object* rotate(const Geometry::Vec3* angle);
         Object* rotate(float yaw, float pitch, float roll);
 
         Object* setColor(uint32 color);
@@ -71,7 +71,7 @@ class Object {
         void doPhysics(float dt);
 
         // Unfinished (postponed until V2)
-        bool collides(Object* other);
+        bool collides(const Object* other) const;
 
 };
 
@@ -108,7 +108,7 @@ class ObjectSet {
             See LinkedList for more detail about implementation and behaviour
         */
 
-        inline int getLength() { return this->list->length; }
+        inline int getLength() const { return this->list->length; }
 
         inline Object* popBack() { return this->list->popBack(); }
 
@@ -120,37 +120,37 @@ class ObjectSet {
 
         inline void iterStart(int index) { this->list->iterStart(index); }
 
-        inline Object* iterGetObj() { return this->list->iterGetObj(); }
+        inline Object* iterGetObj() const { return this->list->iterGetObj(); }
 
-        inline int iterGetId() { return this->list->iterGetId(); }
+        inline int iterGetId() const { return this->list->iterGetId(); }
 
         inline void iterNext() { this->list->iterNext(); }
 
         inline void iterLast() { this->list->iterLast(); }
 
-        inline bool iterIsDone() { return this->list->iterIsDone(); }
+        inline bool iterIsDone() const { return this->list->iterIsDone(); }
 
 
         /*   Functions affecting all objects in the set   */
 
         // Adds to the position of all the objects
-        void moveAll(Geometry::Vec3* dist);
+        void moveAll(const Geometry::Vec3* dist);
         void moveAll(float dx, float dy, float dz);
 
         // Sets the position of all the objects
-        void setPosAll(Geometry::Vec3* pos);
+        void setPosAll(const Geometry::Vec3* pos);
         void setPosAll(float x, float y, float z);
 
         // Adds velocity to all the objects
-        void addVelocityAll(Geometry::Vec3* v);
+        void addVelocityAll(const Geometry::Vec3* v);
         void addVelocityAll(float vx, float vy, float vz);
 
         // Sets the velocity of all the objects
-        void setVelocityAll(Geometry::Vec3* v);
+        void setVelocityAll(const Geometry::Vec3* v);
         void setVelocityAll(float vx, float vy, float vz);
 
         // Sets the gravitational acceleration for all objects in the set
-        void setGravityAll(Geometry::Vec3* gravity);
+        void setGravityAll(const Geometry::Vec3* gravity);
         void setGravityAll(float gx, float gy, float gz);
         void setGravityAll(float gy);
 
@@ -161,13 +161,13 @@ class ObjectSet {
         void doAllPhysics(float dt);
 
         // Projects, sorts, and draws all the objects in the set, in order from furthest away to closest, optional opacity value from 0-1
-        void drawAll(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera);
+        void drawAll(Graphics::Rendering::Renderer* renderer, const Graphics::Rendering::Camera* camera);
 
         // Does the same as drawAll(), but also draws red normal vectors on all the tris
-        void drawAllWithNormals(Graphics::Rendering::Renderer* renderer, Graphics::Rendering::Camera* camera);
+        void drawAllWithNormals(Graphics::Rendering::Renderer* renderer, const Graphics::Rendering::Camera* camera);
 
         // Logs all of the nodes in the order they stand in the list
-        inline void log() { this->list->log(); }
+        inline void log() const { this->list->log(); }
 
     private:
         

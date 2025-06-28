@@ -87,7 +87,7 @@ ParameterInfo::~ParameterInfo() {
 
 }
 
-ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) {
+ParameterType ParameterInfo::matchParameter(const char* name, int* positionOut) const {
 
     if (name == nullptr) return TYPE_NONE;
     if (positionOut == nullptr) return TYPE_NONE;
@@ -218,8 +218,4 @@ void ParameterInfoBuilder::addParameter(const char* name, ParameterType type, in
 
     return;
 
-}
-
-void ParameterInfoBuilder::addParameter(char* name, ParameterType type, int position) {
-    this->addParameter( (const char*) name, type, position );
 }

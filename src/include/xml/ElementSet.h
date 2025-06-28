@@ -74,13 +74,11 @@ class ElementSet {
         // This will copy elementName into a new allocation. The passed argument must be handled externally
         // This will not make a copy for parameterInfo, so it should not be used after passing
         void addDefaultElement(const char* elementName, ParameterInfo* parameterInfo, ElementType type);
-        void addDefaultElement(char* elementName, ParameterInfo* parameterInfo, ElementType type);
 
         // Adds a new element to the set. This assumes the element exists in XML (in a file)
         // This will copy elementName into a new allocation. The passed argument must be handled externally
         // This will not make a copy for parameterInfo, so it should not be used after passing
         void addCustomElement(const char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXml);
-        void addCustomElement(char* elementName, ParameterInfo* parameterInfo, XMLFile* elementXml);
 
     private:
 

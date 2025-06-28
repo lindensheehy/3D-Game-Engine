@@ -55,7 +55,7 @@ class FileNavigator {
         void iterNext();
 
         // Intended to be used in loops as the condition. Returns false once there are no more valid files for the iterator to use
-        bool iterIsValid();
+        bool iterIsValid() const;
 
         // Kills the iterator early. This closes all file handles if any are open
         void iterEnd();

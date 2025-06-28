@@ -40,13 +40,13 @@ class XML {
         // Loads all the elements defined in "src/assets/ui/elements/"
         void initCustomElements();
 
-        // Builds an WindowElement object from an XMLFile object
-        // The main use case is nested file elements (like if file X uses an element defined in file Y)
-        Ui::WindowElement* buildElement(XMLFile* xmlFile);
-
         // Builds a window from a file name
         // This is the primary entry point for this module
         Ui::Window* buildWindow(const char* fileName);
+
+        // Builds an WindowElement object from an XMLFile object
+        // The main use case is nested file elements (like if file X uses an element defined in file Y)
+        Ui::WindowElement* buildElement(XMLFile* xmlFile);
         
 
     private:

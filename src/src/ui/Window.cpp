@@ -77,7 +77,7 @@ void Window::draw(Graphics::Drawing::Drawer* drawer) {
 
 }
 
-WindowElement* Window::hitTest(int x, int y) {
+WindowElement* Window::hitTest(int x, int y) const {
 
     // Position does not lie within the window
     if (

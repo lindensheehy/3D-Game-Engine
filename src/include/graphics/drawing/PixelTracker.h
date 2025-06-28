@@ -26,6 +26,13 @@ class PixelTracker {
 
     public:
 
+        /*
+            Important note: member variables 'currentObject' and 'foundObject' are effectively const
+            This class will not touch their internals. They are just used as identifiers for other code
+            However, they are not actually const. This is because they are identifiers for non const data
+            Making them const would require casting out that const elsewhere, which is avoided for clarity and safety       
+        */
+
         /*   Instance Variables   */
 
         // The Object that is being drawn
@@ -47,7 +54,7 @@ class PixelTracker {
         
         /*   Instance Functions   */
 
-        // Sets foundObject to SelectedObject
+        // Sets 'foundObject' to 'currentObject'
         void foundWrite();
 
 

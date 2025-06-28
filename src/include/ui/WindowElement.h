@@ -59,22 +59,22 @@ class WindowElement {
         /*   Instance Functions   */
 
         // 'offset' should be the absolute position of the parent, so this elements 'pos' can be added to that
-        virtual void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset);
+        virtual void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset);
 
         // This will return the lowest level element in the hierarchy that is interactable
         // If the position does not hit anything interactable, this will return nullptr
-        WindowElement* hitTest(int x, int y, Geometry::Vec2* offset);
+        WindowElement* hitTest(int x, int y, const Geometry::Vec2* offset);
 
         void setPos(int x, int y);
-        void setPos(Geometry::Vec2* newPos);
+        void setPos(const Geometry::Vec2* newPos);
 
         // Adds a child element to this element
         void addChild(WindowElement* child);
 
         // Handles various input actions, only used in a few subclasses
-        virtual void onInput(Graphics::Gui::State* state) {}
+        virtual void onInput(const Graphics::Gui::State* state) {}
 
-        // Runs when the element is no longer selected, only used in a few subclasses
+        // Runs when the element is no longer selected, only used in select subclasses
         virtual void onDeselect() {}
 
 
@@ -102,7 +102,7 @@ class WindowElement {
         /*   Instance functions   */
 
         // This function assumes the given offset already accounts for this->pos
-        void drawChildren(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset);
+        void drawChildren(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset);
 
 };
 
@@ -122,7 +122,7 @@ class WindowDiv : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
 };
 
@@ -141,7 +141,7 @@ class WindowLine : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
 };
 
@@ -156,7 +156,7 @@ class WindowFilledRect : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
 };
 
@@ -171,7 +171,7 @@ class WindowOutlinedRect : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
 };
 
@@ -186,7 +186,7 @@ class WindowCircle : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
     private:
 
@@ -210,7 +210,7 @@ class WindowTextStatic : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
     private:
 
@@ -237,9 +237,9 @@ class WindowTextInput : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
-        void onInput(Graphics::Gui::State* state) override;
+        void onInput(const Graphics::Gui::State* state) override;
 
         void onDeselect() override;
 
@@ -306,7 +306,7 @@ class WindowTexture : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
         // Optional call for this rather than having it in the destructor
         // PNG objects may be shared, so an opt-in destructor is ideal here
@@ -340,9 +340,9 @@ class WindowButton : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
-        void onInput(Graphics::Gui::State* state) override;
+        void onInput(const Graphics::Gui::State* state) override;
 
         void bind(Action* action);
 
@@ -370,9 +370,9 @@ class WindowDragable : public WindowElement {
 
         /*   Instance Functions   */
 
-        void draw(Graphics::Drawing::Drawer* drawer, Geometry::Vec2* offset) override;
+        void draw(Graphics::Drawing::Drawer* drawer, const Geometry::Vec2* offset) override;
 
-        void onInput(Graphics::Gui::State* state) override;
+        void onInput(const Graphics::Gui::State* state) override;
 
         void bind(Geometry::Vec2* posToDrag, Geometry::Vec2* endPosToDrag);
 

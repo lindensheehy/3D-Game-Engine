@@ -37,7 +37,7 @@ class WindowHandle {
         /*   Instance Variables   */
         
         // Unique ID for this Window
-        WindowID id;
+        const WindowID id;
 
         // Constructors
         WindowHandle() : id(-1), ptr(nullptr), context(nullptr) {}
@@ -55,8 +55,8 @@ class WindowHandle {
             this->context = context;
         }
         
-        inline bool hasValidContext() { return (this->context != nullptr); }
-        inline bool hasNoContext() { return (this->context == nullptr); }
+        inline bool hasValidContext() const { return (this->context != nullptr); }
+        inline bool hasNoContext() const { return (this->context == nullptr); }
 
     private:
 
@@ -107,8 +107,9 @@ class Window {
         // Draws the window and all its elements
         void draw(Graphics::Drawing::Drawer* drawer);
 
-        // Returns true if the click lies within the bounds of the window
-        WindowElement* hitTest(int x, int y);
+        // Checks if the click position (absolute) lies within the bounds of the window
+        // Will return the hovered WindowElement. Returns nullptr if no element was found, or the position lies outside the window
+        WindowElement* hitTest(int x, int y) const;
 
         // Adds an element to the window
         void addElement(WindowElement* element);

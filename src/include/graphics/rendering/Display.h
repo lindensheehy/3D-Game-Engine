@@ -35,18 +35,18 @@ class Display {
         /*   Instance Functions   */
 
         // Basically a 'set all' function
-        void setState(Display* other);
+        void setState(const Display* other);
 
         // Updates this instance with new window dimensions. Should be called on window resize
         void updateDimensions(int width, int height);
 
         // Returns the center of the display rect on the given axis relative to the whole gui window
-        int middleX();
-        int middleY();
+        int middleX() const;
+        int middleY() const;
 
         // This converts FOV normalized values into pixel positions, overwriting the old values
         // This only affects the x and y components. z is left untouched
-        void toDisplayPos(Geometry::Vec3* vec);
+        void toDisplayPos(Geometry::Vec3* out) const;
 
 };
 

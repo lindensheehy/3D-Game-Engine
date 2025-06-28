@@ -14,7 +14,7 @@ Display::Display(int width, int height, int widthOffset, int heightOffset) {
 
 }
 
-void Display::setState(Display* other) {
+void Display::setState(const Display* other) {
 
     this->width = other->width;
     this->height = other->height;
@@ -34,29 +34,29 @@ void Display::updateDimensions(int width, int height) {
 
 }
 
-int Display::middleX() {
+int Display::middleX() const {
     return ( (this->width / 2) + this->widthOffset );
 }
 
-int Display::middleY() {
+int Display::middleY() const {
     return ( (this->height / 2) + this->heightOffset );
 }
 
-void Display::toDisplayPos(Geometry::Vec3* vec) {
+void Display::toDisplayPos(Geometry::Vec3* out) const {
 
-    if (vec == nullptr) {
+    if (out == nullptr) {
         logWrite("Called Display->toDisplayPos(Vec3*) on a null pointer!", true);
         return;
     }
 
-    float drawPosx = vec->x * (float) this->width;
+    float drawPosx = out->x * (float) this->width;
     drawPosx += this->widthOffset;
 
-    float drawPosy = this->height - (vec->y * (float) this->height); // minus because y=0 is at the top
+    float drawPosy = this->height - (out->y * (float) this->height); // minus because y=0 is at the top
     drawPosy += this->heightOffset;
 
-    vec->x = drawPosx;
-    vec->y = drawPosy;
+    out->x = drawPosx;
+    out->y = drawPosy;
 
     return;
 

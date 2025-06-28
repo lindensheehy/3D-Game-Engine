@@ -8,7 +8,7 @@ FileNavigator::FileNavigator(const char* workingPath) {
         return;
     }
 
-    int length = stringLength(workingPath);
+    const int length = stringLength(workingPath);
 
     // Points to the null byte so it can be set using this index later
     this->workingPathEndIndex = length - 1;
@@ -66,7 +66,7 @@ void FileNavigator::setWorkingPath(const char* newPath) {
     // Make sure the iter is not active
     this->iterEnd();
 
-    int length = stringLength(newPath);
+    const int length = stringLength(newPath);
 
     // Make sure its not too big
     if (length > MAX_PATH) {
@@ -93,10 +93,10 @@ void FileNavigator::iterStart(const char* pattern) {
 
     this->iterEnd();
 
-    int length = stringLength(pattern);
+    const int length = stringLength(pattern);
 
     // Make sure it wont overflow this->workingPath
-    int fullLength = this->workingPathEndIndex + length;
+    const int fullLength = this->workingPathEndIndex + length;
     if (fullLength >= MAX_PATH) {
         logWrite("FileNavigator::iterStart() called with too long of a path!", true);
         logWrite(" -> path \"");
@@ -143,7 +143,7 @@ void FileNavigator::iterNext() {
 
     if (this->hCurrentFile == INVALID_HANDLE_VALUE) return;
 
-    bool foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
+    const bool foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
 
     if (!foundValidFile) this->exitDir();
 
@@ -153,7 +153,7 @@ void FileNavigator::iterNext() {
 
 }
 
-bool FileNavigator::iterIsValid() {
+bool FileNavigator::iterIsValid() const {
     return this->hCurrentFile != INVALID_HANDLE_VALUE;
 }
 
@@ -190,10 +190,10 @@ char* FileNavigator::readCurrentFile() {
 
     // Get relativePath and cFileName
     File* currentFile = this->dirStack->getFirst();
-    int fileNameLength = stringLength(this->fileData.cFileName);
+    const int fileNameLength = stringLength(this->fileData.cFileName);
 
     // Defend against buffer overflows
-    int fullLength = appendIndex + currentFile->relativePathLength + fileNameLength + this->currentPatternLength;
+    const int fullLength = appendIndex + currentFile->relativePathLength + fileNameLength + this->currentPatternLength;
     if (fullLength >= MAX_PATH) {
         logWrite("FileNavigator::iterStart() called with too long of a path!", true);
         logWrite(" -> path \"");
@@ -229,16 +229,19 @@ void FileNavigator::skipNavDirs() {
 
     if (this->hCurrentFile == INVALID_HANDLE_VALUE) return;
 
+    bool dotDir, dotDotDir;
+    bool foundValidFile;
+
     while (true) {
 
-        bool dotDir = this->fileData.cFileName[0] == '.';
-        bool dotDotDir = dotDir && this->fileData.cFileName[1] == '.';
+        dotDir = this->fileData.cFileName[0] == '.';
+        dotDotDir = dotDir && this->fileData.cFileName[1] == '.';
 
         // Early break
         if ( (!dotDir) && (!dotDotDir) ) break;
 
         // Skip the current file
-        bool foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
+        foundValidFile = FindNextFileA(this->hCurrentFile, &(this->fileData));
 
         // This case means the directory was empty. Containing only Windows generated files
         if (!foundValidFile) this->exitDir();
@@ -294,10 +297,10 @@ void FileNavigator::enterDir() {
 
     // Get relativePath and cFileName
     File* currentFile = this->dirStack->getFirst();
-    int fileNameLength = stringLength(this->fileData.cFileName);
+    const int fileNameLength = stringLength(this->fileData.cFileName);
 
     // Defend against buffer overflows
-    int fullLength = appendIndex + currentFile->relativePathLength + fileNameLength + this->currentPatternLength;
+    const int fullLength = appendIndex + currentFile->relativePathLength + fileNameLength + this->currentPatternLength;
     if (fullLength >= MAX_PATH) {
         logWrite("FileNavigator::iterStart() called with too long of a path!", true);
         logWrite(" -> path \"");

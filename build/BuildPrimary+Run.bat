@@ -26,10 +26,10 @@ if not exist "%objdir%" (
 :: graphics
 
     :: drawing
-    @REM set dir=%srcdir%graphics\drawing\
-    @REM set out=%objdir%graphics-drawing-
+    set dir=%srcdir%graphics\drawing\
+    set out=%objdir%graphics-drawing-
     @REM g++ -Ofast %include%        -c %dir%Drawer.cpp           -o %out%Drawer.o
-    @REM g++ -Ofast %include%        -c %dir%PixelDrawer.cpp      -o %out%PixelDrawer.o
+    g++ -Ofast %include%        -c %dir%PixelDrawer.cpp      -o %out%PixelDrawer.o
     @REM g++ -Ofast %include%        -c %dir%PixelTracker.cpp     -o %out%PixelTracker.o
 
     :: font
@@ -76,10 +76,10 @@ if not exist "%objdir%" (
 :: util
 set dir=%srcdir%util\
 set out=%objdir%util-
-g++ -Ofast %include%        -c %dir%FileNavigator.cpp     -o %out%FileNavigator.o
-g++ -Ofast %include%        -c %dir%FileReader.cpp        -o %out%FileReader.o
-@REM g++ -Ofast %include%        -c %dir%KeyCodes.cpp          -o %out%KeyCodes.o
-g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
+@REM g++ -Ofast %include%        -c %dir%FileNavigator.cpp     -o %out%FileNavigator.o
+@REM g++ -Ofast %include%        -c %dir%FileReader.cpp        -o %out%FileReader.o
+@REM @REM g++ -Ofast %include%        -c %dir%KeyCodes.cpp          -o %out%KeyCodes.o
+@REM g++ -Ofast %include%        -c %dir%Utility.cpp           -o %out%Utility.o
 @REM g++ -Ofast %include%        -c %dir%Math.cpp              -o %out%Math.o
 @REM g++ -Ofast %include%        -c %dir%Log.cpp               -o %out%Log.o
 

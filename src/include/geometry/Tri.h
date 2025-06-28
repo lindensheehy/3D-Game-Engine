@@ -45,7 +45,7 @@ class Tri2 {
         void log() const;
 
         // Rotates the triangle in 2d space. Just calls Vec2::rotate on each vector
-        void rotate(float degrees, Vec2* around = nullptr);
+        void rotate(float degrees, const Vec2* around = nullptr);
 
 };
 
@@ -97,7 +97,7 @@ class Tri3 {
 
         // Returns true if the triangle should be visible assuming its only opaque on the side the normal sticks out from.
         // This just returns true when the angle between 'vec' and the normal is >= 90
-        bool isFacing(Vec3* vec) const;
+        bool isFacing(const Vec3* vec) const;
 
         // Outputs the center of the triangle to the 'out' Vec3. This will overwrite anything existing in this vector
         void getCenter(Vec3* out) const;
