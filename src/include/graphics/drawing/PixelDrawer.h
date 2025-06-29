@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/Utility.h"
+#include "util/Log.h"
 
 #include "graphics/drawing/PixelTracker.h"
 

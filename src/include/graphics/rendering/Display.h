@@ -1,8 +1,7 @@
 #pragma once
 
-#include "graphics/gui/Core.h"
-
 #include "util/Utility.h"
+#include "util/Log.h"
 #include "geometry/Vec.h"
 
 

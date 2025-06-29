@@ -1,41 +1,6 @@
 #include "util/Math.h"
 
 
-/*   -----   Basic Functions   -----   */
-int floor(float x) {
-
-    /*
-        Type casting is used to truncate the fractional part of the value
-
-        For negative number this returns floor(x) + 1
-        Thats why the if statement exists
-    */
-
-    int returnValue = (int) x;
-
-    if (x < 0 && x != returnValue) returnValue--;   
-    
-    return returnValue;
-
-}
-
-int floor(double x) {
-
-    /*
-        Type casting is used to truncate the fractional part of the value
-
-        For negative number this returns floor(x) + 1
-        Thats why the if statement exists
-    */
-
-    int returnValue = (int) x;
-
-    if (x < 0 && x != returnValue) returnValue--;   
-    
-    return returnValue;
-
-}
-
 float sqrt(float x, float tolerance) {
     return (float) sqrt( (double) x, (double) tolerance );
 }

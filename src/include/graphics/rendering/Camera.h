@@ -1,10 +1,10 @@
 #pragma once
 
 #include "util/Utility.h"
+#include "util/Log.h"
 
 #include "geometry/Vec.h"
 #include "geometry/Matrix.h"
-#include "geometry/Mesh.h"
 
 
 namespace Graphics {

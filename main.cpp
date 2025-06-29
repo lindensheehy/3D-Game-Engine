@@ -1,16 +1,9 @@
 #include "util/Utility.h"
-#include "util/FileNavigator.h"
 
 #include "graphics/rendering/Camera.h"
 #include "graphics/rendering/Renderer.h"
 #include "graphics/gui/GUI.h"
-#include "geometry/Mesh.h"
 #include "ui/UI.h"
-
-#include "xml/XML.h"
-#include "xml/XMLFile.h"
-
-#include "geometry/Matrix.h"
 
 // Global declarations
 Graphics::Gui::GUI* gui;

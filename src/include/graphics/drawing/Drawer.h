@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/Utility.h"
+#include "util/Log.h"
 
 #include "graphics/gui/Core.h"
 #include "graphics/drawing/PixelDrawer.h"
@@ -9,6 +10,7 @@
 #include "graphics/rendering/Camera.h"
 #include "graphics/rendering/Display.h"
 #include "graphics/gui/State.h"
+
 #include "geometry/Vec.h"
 #include "geometry/Tri.h"
 

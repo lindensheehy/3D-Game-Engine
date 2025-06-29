@@ -1,7 +1,5 @@
 #pragma once
 
-#include "util/Utility.h"
-
 #include "geometry/Vec.h"
 
 

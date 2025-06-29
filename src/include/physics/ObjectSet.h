@@ -1,12 +1,19 @@
 #pragma once
 
 #include "util/Utility.h"
-
+#include "util/Log.h"
 #include "util/LinkedList.h"
+
 #include "geometry/Mesh.h"
-#include "graphics/rendering/Camera.h"
 #include "graphics/rendering/Renderer.h"
-#include "graphics/drawing/Drawer.h"
+
+
+// Forward declaration
+namespace Graphics {
+    namespace Rendering {
+        class Camera;
+    }
+}
 
 
 namespace Physics {

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <windows.h>
+
 #include "util/Utility.h"
+
 
 // Control functions
 void logInit(const char* fileName);

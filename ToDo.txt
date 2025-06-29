@@ -44,8 +44,8 @@ Notes:
 Cleanup!
 steps:
 - tidy code + comments
---> const correctness
-- tidy includes
+- const correctness
+--> tidy includes
 - tidy testing suite
 - tidy build files  
 - update main readme
@@ -53,47 +53,47 @@ steps:
 - tidy 'not used'
 
 - files done:
-+    geometry/importer/Builder
-+    geometry/importer/Parser
-+    geometry/Matrix
-+    geometry/Mesh
-+    geometry/Tri
-+    geometry/Vec
-+    graphics/drawing/Drawer
-+    graphics/drawing/PixelDrawer
-+    graphics/drawing/PixelTracker
-+    graphics/font/FontDrawer
-+    graphics/font/Parser
-+    graphics/gui/Core
-+    graphics/gui/GUI
-+    graphics/gui/State
-+    graphics/gui/Window
-+    graphics/png/PNG
-+    graphics/rendering/Camera
-+    graphics/rendering/Display
-+    graphics/rendering/Renderer
-+    physics/Bounding
-+    physics/ObjectSet
-+    ui/Action
-+    ui/BindFuncs
-+    ui/BindManager
-+    ui/Context
-+    ui/Core
-+    ui/UI
-+    ui/Window
-+    ui/WindowElement
-+    util/FileManager
-+    util/FileNavigator
-+    util/FileReader
-+    util/KeyCodes
-+    util/LinkedList
-+    util/Log
-+    util/Math
-+    util/Utility
-+    xml/Core
-+    xml/ElementSet
-+    xml/ParameterInfo
-+    xml/TagSequence
-+    xml/XML
-+    xml/XMLFile
+++    geometry/importer/Builder
+++    geometry/importer/Parser
+++    geometry/Matrix
+++    geometry/Mesh
+++    geometry/Tri
+++    geometry/Vec
+++    graphics/drawing/Drawer
+++    graphics/drawing/PixelDrawer
+++    graphics/drawing/PixelTracker
+++    graphics/font/FontDrawer
+++    graphics/font/Parser
+++    graphics/gui/Core
+++    graphics/gui/GUI
+++    graphics/gui/State
+++    graphics/gui/Window
+++    graphics/png/PNG
+++    graphics/rendering/Camera
+++    graphics/rendering/Display
+++    graphics/rendering/Renderer
+++    physics/Bounding
+++    physics/ObjectSet
+++    ui/Action
+++    ui/BindFuncs
+++    ui/BindManager
+++    ui/Context
+++    ui/Core
+++    ui/UI
+++    ui/Window
+++    ui/WindowElement
+++    util/FileManager
+++    util/FileNavigator
+++    util/FileReader
+++    util/KeyCodes
+++    util/LinkedList
+++    util/Log
+++    util/Math
+++    util/Utility
+++    xml/Core
+++    xml/ElementSet
+++    xml/ParameterInfo
+++    xml/TagSequence
+++    xml/XML
+++    xml/XMLFile
 

@@ -1,21 +1,12 @@
 #pragma once
 
+#include "util/Utility.h"
 #include "util/Log.h"
 
 
 const float pi = 3.14159265358979323846;
 const float inf = 1e34;
 const float degToRadFactor = pi / 180;
-
-
-
-// Returns the floor value of x as an int
-int floor(float x);
-int floor(double x);
-
-// Returns the rounded value of x as an integer. That means this rounds to zero decimal points
-inline int round(float x) { return floor(x + 0.5f); }
-inline int round(double x) { return floor(x + 0.5f); }
 
 
 

@@ -147,7 +147,7 @@ bool doubleToString(double value, char* string, int MAXLENGTH, int MAXDECIMALDIG
     if (MAXLENGTH < 2) return false;
 
     // Using intToString to handle the integer portion of the double
-    const int intPart = (int) abs(value);
+    const int intPart = (int) (value >= 0) ? value : -value;
     bool intPartSucceded;
 
     // Add a negative sign if needed
@@ -404,4 +404,39 @@ bool stringHexToInt(const char* string, int* result, int MAXLENGTH) {
 
     return true;
     
+}
+
+
+int floor(float x) {
+
+    /*
+        Type casting is used to truncate the fractional part of the value
+
+        For negative number this returns floor(x) + 1
+        Thats why the if statement exists
+    */
+
+    int returnValue = (int) x;
+
+    if (x < 0 && x != returnValue) returnValue--;   
+    
+    return returnValue;
+
+}
+
+int floor(double x) {
+
+    /*
+        Type casting is used to truncate the fractional part of the value
+
+        For negative number this returns floor(x) + 1
+        Thats why the if statement exists
+    */
+
+    int returnValue = (int) x;
+
+    if (x < 0 && x != returnValue) returnValue--;   
+    
+    return returnValue;
+
 }

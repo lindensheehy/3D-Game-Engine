@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/Utility.h"
+#include "util/Log.h"
 
 #include "geometry/Vec.h"
 

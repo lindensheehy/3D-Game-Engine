@@ -2,13 +2,12 @@
 
 #include "util/Utility.h"
 
+#include "ui/Core.h"
+#include "ui/Action.h"
+
 #include "geometry/Vec.h"
 #include "graphics/drawing/Drawer.h"
 #include "util/LinkedList.h"
-#include "physics/ObjectSet.h"
-
-#include "ui/Core.h"
-#include "ui/Action.h"
 
 
 namespace Ui {

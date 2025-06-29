@@ -5,12 +5,14 @@
     These are just data containers with no real functions
 */
 
-#include "util/Utility.h"
-
 #include "ui/Core.h"
 
-#include "physics/ObjectSet.h"
 
+// Forward declarations
+namespace Physics {
+    class Object;
+    class ObjectSet;
+}
 
 namespace Ui {
 

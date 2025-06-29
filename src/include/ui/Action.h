@@ -2,8 +2,6 @@
 
 #include "ui/Core.h"
 
-#include "ui/Context.h"
-
 /*
     These are basically just fancy data containers, that allow certain actions to happen
     The idea is that they can be added to a queue which is shared between everything in the UI
@@ -13,6 +11,9 @@
 */
 
 namespace Ui {
+
+// Forward declaration
+class Context;
 
 class Action {
 

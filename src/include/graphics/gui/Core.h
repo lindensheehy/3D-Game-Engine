@@ -1,8 +1,9 @@
 #pragma once
 
-#include "util/Utility.h"
+#include <windows.h>
 
-#include "util/KeyCodes.h"
+#include "util/Utility.h"
+#include "util/Log.h"
 
 
 namespace Graphics {

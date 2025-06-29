@@ -2,6 +2,8 @@
 
 #include "graphics/gui/Core.h"
 
+#include "util/KeyCodes.h"
+
 
 namespace Graphics {
 namespace Gui {

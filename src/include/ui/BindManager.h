@@ -1,9 +1,12 @@
 #pragma once
 
-#include "util/Utility.h"
+#include "ui/Core.h"
 
 #include "ui/Window.h"
 #include "ui/BindFuncs.h"
+
+#include "util/Log.h"
+#include "util/LinkedList.h"
 
 
 namespace Ui {

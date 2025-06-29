@@ -1,11 +1,7 @@
 #pragma once
 
 #include "util/Utility.h"
-
-#include "geometry/Vec.h"
-#include "graphics/drawing/Drawer.h"
-#include "graphics/gui/Gui.h"
-#include "util/LinkedList.h"
+#include "util/Log.h"
 
 #include "ui/Core.h"
 #include "ui/Action.h"
@@ -14,6 +10,18 @@
 #include "ui/BindManager.h"
 
 #include "xml/XML.h"
+
+#include "geometry/Vec.h"
+#include "graphics/gui/Gui.h"
+#include "util/LinkedList.h"
+
+
+// Forward declaration
+namespace Graphics {
+    namespace Drawing {
+        class Drawer;
+    }
+}
 
 
 namespace Ui {

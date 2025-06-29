@@ -1,6 +1,8 @@
 #pragma once
 
-#include "util/Utility.h"
+#include <windows.h>
+
+#include "util/Log.h"
 
 /*
     This file is responsible for reading data from files.

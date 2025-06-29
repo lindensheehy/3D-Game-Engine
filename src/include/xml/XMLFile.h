@@ -5,7 +5,6 @@
 
 #include "xml/Core.h"
 #include "xml/TagSequence.h"
-#include "xml/ParameterInfo.h"
 
 
 namespace Xml {

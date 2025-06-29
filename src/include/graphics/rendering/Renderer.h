@@ -1,12 +1,12 @@
 #pragma once
 
 #include "util/Utility.h"
+#include "util/Log.h"
 
 #include "graphics/rendering/Display.h"
 #include "graphics/drawing/Drawer.h"
 
 #include "geometry/Vec.h"
-#include "geometry/Tri.h"
 #include "geometry/Matrix.h"
 #include "physics/ObjectSet.h"
 

@@ -4,10 +4,6 @@
     This just contains code that should be accessible and included across all other files
 */
 
-#include <windows.h>
-
-#include "util/Math.h"
-
 
 typedef signed char int8;
 typedef signed short int16;
@@ -88,6 +84,14 @@ bool stringToInt(const char* string, int* result, int MAXLENGTH);
 bool stringHexToInt(const char* string, int* result, int MAXLENGTH);
 
 
+// Returns the floor value of x as an int
+int floor(float x);
+int floor(double x);
+
+// Returns the rounded value of x as an integer. That means this rounds to zero decimal points
+inline int round(float x) { return floor(x + 0.5f); }
+inline int round(double x) { return floor(x + 0.5f); }
+
 
 // Returns the greater value
 inline int max(int var1, int var2) {
@@ -101,7 +105,6 @@ inline double max(double var1, double var2) {
 inline unsigned int max(unsigned int var1, unsigned int var2) {
     return (var1 > var2) ? var1 : var2;
 }
-
 
 
 // Returns the lesser value

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/Utility.h"
+#include <windows.h>
 #include "util/Log.h"
 #include "util/FileReader.h"
 #include "util/LinkedList.h"

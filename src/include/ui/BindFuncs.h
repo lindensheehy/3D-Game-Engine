@@ -1,10 +1,10 @@
 #pragma once
 
+#include "ui/Core.h"
+
 #include "util/Utility.h"
 
-#include "ui/Core.h"
 #include "ui/Window.h"
-
 #include "physics/ObjectSet.h"
 
 

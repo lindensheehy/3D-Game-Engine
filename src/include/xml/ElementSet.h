@@ -1,14 +1,17 @@
 #pragma once
 
 #include "util/Utility.h"
+#include "util/Log.h"
 #include "util/LinkedList.h"
 
 #include "xml/Core.h"
-#include "xml/XMLFile.h"
 #include "xml/ParameterInfo.h"
 
 
 namespace Xml {
+
+// Forward declaration
+class XMLFile;
 
 class ElementSet {
 
