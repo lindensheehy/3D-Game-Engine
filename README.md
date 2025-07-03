@@ -1,53 +1,97 @@
-# 3D Game Engine in C++
+### 🗃️ Archived Project – This project is no longer maintained.
 
-This is a 3D game engine written in C++ using `windows.h` <ins>as my **only** external include</ins>. I chose this limitation to align with my goal of learning as much as possible about C++. This meant, if I wanted high-level abstractions, I would have to write them myself; therefore, I would be writing much more code, and I would have to know how everything works. For example, instead of using `<math.h>`, I did the necessary research to implement the needed functions myself. This also applies to higher-level concepts like my `Mesh` class.
+# 3D Game Engine
 
-Everything in this repository was written 100% by Linden Sheehy (me).
+This is a 3D game engine built from scratch in C++ using `windows.h` as the **only external include**. The project was developed as both a learning experience and a passion project, spanning over two years of work. All functionality—from windowing and rendering to UI and input handling—was implemented manually, with no third-party libraries.
 
-## Key Features:
+This repository now serves as a **frozen, archived version** of the engine. While development on this version is complete, a future version is planned, featuring a full redesign using Vulkan and modern tools. This project remains a monument to what I built completely solo—and I’m proud to share it 😃
 
-### Rendering
-- **Projection:** Uses perspective projection to simulate a 3D scene on a 2D window.
-- **Depth Buffering:** Implements a depth buffer to ensure that objects are rendered correctly with respect to their depth in the scene.
-- **Transparency Handling:** Support for objects with varying levels of opacity.
+## 🧠 Philosophy
 
-### UI
-- **Custom UI Elements:** Supports a range of UI components, including buttons, textboxes, dividers, etc., with the ability to dynamically handle inputs and render windows on the screen.
-- **UI Hierarchy System:** The UI elements are organized hierarchically, with a parent-child relationship, making it easy to manage complex window layouts.
-- **Custom XML Structure (Future Plan):** UI elements will be stored in XML files, which will be parsed by my code to generate individual elements or whole windows. 
+The core philosophy behind this engine was simple: **write everything myself**. That meant no std library, and no rendering libraries or engines. Just raw C++ and `windows.h`.
 
+If I wanted a feature—like matrix math, alpha blending, or even a UI system—I had to figure it out and build it. That forced me to deeply understand the concepts I was working with, and it made the project incredibly rewarding.
 
-### Physics (Work in Progress)
-- **Physics Framework Setup:** As of now, objects can have velocities and acceleration.
-- **Collision System (Future Plan):** The groundwork for a collision system has been set up, but the logic to handle collisions is still in the works.
+## 🔧 Key Features
 
-### Custom Test Suite
-- **Output Tests:** A modular, reusable system built to easily test outputs of functions for various input parameters. These tests output to a .HTML file for ease of use.
-- **Speed Tests:** Pretty basic system to test the performance of my app.
+### ⚙️ Rendering Pipeline
 
-## Libraries & Dependencies:
-- **Windows API:** Used for window creation, handling input, and painting a pixel buffer to the window.
-- **No Standard C++ Libraries:** This project avoids the use of the standard C++ library, except `<windows.h>`, of course.
-- **Self-Written Libraries:** This project heavily relies on libraries written by me for the vast majority of the functionality. These can be seen in `src/include/` and `src/src/`.
+The heart of this project is its software-based 3D renderer. Here's a rough outline of how it works:
 
-## Controls:
-- **W, A, S, D:** Move the camera along the X and Z axes.
-- **Space, Ctrl:** Ascend and descend along the y-axis respectively.
-- **Shift:** Sprint (increases movement speed in all directions).
-- **Left Click + Mouse Movement:** Look around (rotate the camera).
-- **Q, E:** Select objects and cycle through them (will also create a 'Transform' window).
-- **J, K, L:** Rotate the selected object about each axis.
-- **U, I:** Translate the selected object along the X-axis.
-- **T, Y:** Translate the selected object along the Z-axis.
-- **O, P:** Translate the selected object along the Y-axis.
-- **G:** Toggle gravity on or off (only affects objects, not the camera).
-- **Z:** Make all the objects 'jump' (just gives some vertical velocity).
-- **N:** Show normals on all rendered triangles, appearing as small red lines. This also makes the objects partially transparent.
+- Objects are transformed into screen space using custom matrix math and perspective projection.
+- Triangles are rasterized using bounding-box iteration, edge functions, and efficient depth interpolation via barycentric deltas.
+- A z-buffer is used to handle proper depth sorting.
+- Alpha blending is supported for rendering semi-transparent objects.
 
-## How to Run:
-1. Clone the repository.
-2. Navigate to the project directory.
-3. Run `BuildAll+Run.bat` (Windows) to compile and run the project. This will compile each dependency to a .o file, then compile and run main.
+This is a **true pixel-based software renderer**, written entirely from scratch.
 
-## Conclusion
-This is very much a passion project for me. As much as it is a learning opportunity to develop my skills, it's also driven by my interest in 3D graphics and my love for building things from scratch. I could talk for hours about any individual part of this project, because a lot of time and thought went into everything.
+### 🧩 UI System
+
+The second major component is a fully custom, windowed UI system designed to make the engine interactive and configurable:
+
+- **Hierarchy-based layout**: UI windows own elements, which can themselves contain children.
+- **Custom XML-like layout language** for defining UI windows and their elements.
+- **Dynamic action binding** via `Context` objects that allow elements to interact with engine state.
+- **Reusable layouts**: Any window layout that defines a `<parameters>` section can be reused as a "custom element" inside other windows.
+- Written with **flexibility and extensibility** in mind, this system is what turns the engine into something usable.
+
+The UI system is lightweight, efficient, and essential for inspecting and interacting with objects in the scene.
+
+### 🧪 Testing & Benchmarking
+
+- A custom **output testing framework** was written to validate function behavior. Test results are exported as HTML for easy viewing.
+- A simple but flexible **benchmarking system** allows performance testing for any part of the codebase.
+
+Both systems are modular, reusable, and helped keep the engine stable during development.
+
+### 🔡 Font Drawing
+
+This system isn't flashy, but it's functional:
+
+- Character glyphs are 7×7 on/off bitmaps stored directly in code.
+- Drawing is monospace, pixel-based, with no smoothing or scaling.
+- While simple and rigid, it's effective for debug output and basic UI labels.
+
+## 🎮 Controls
+
+- **W, A, S, D / Space / Ctrl** — Move the camera freely (6DoF).
+- **Left Click + Mouse** — Look around.
+- **Right Click** — Select the object under the cursor; dynamically binds the transform window (if open).
+- **Enter** — Deselect the current object.
+- **Shift** — Sprint (increases movement speed).
+- **G** — Toggle gravity (affects objects only).
+- **Z** — Adds vertical velocity to all objects (makes them "jump").
+
+## ▶️ How to Run
+
+1. Clone this repository.
+2. Navigate to `root/build/`.
+3. Run `BuildAll+Run.bat`.
+
+This script will compile all components to `.o` files and launch the engine. It may take a moment—there’s a lot to build.
+
+## 🧱 Project Structure
+
+Most directories are documented with a README, but here's a high-level overview:
+
+- `build/` — Contains the build scripts, runtime log, and compiled `.exe`.
+- `not used/` — Deprecated code, experiments, and old sketches. None of this contributes to the build, but it’s retained for archival value.
+- `src/` — The core of the engine:
+  - `assets/` — Non-code files used by the engine (e.g., UI layouts).
+  - `include/` — All header files (`.h`).
+  - `obj/` — Output directory for compiled object files (`.o`).
+  - `src/` — All implementation files (`.cpp`).
+- `testing/` — Contains test files (not part of the main build).
+
+## 📄 License
+
+This project is licensed under the [GNU General Public License v3.0](./LICENSE).
+
+You are free to use, modify, and distribute this software, as long as any derivative work is also shared under the same license.
+
+## 🏁 Final Thoughts
+
+>This was very much a passion project for me. As much as it was a chance to grow as a programmer, it was also just *fun*. Every part of this engine reflects something I wanted to build, understand, or improve.
+I poured a lot of time into this—somewhere north of 17,000 lines of code and hundreds of hours. It’s not perfect, but it’s mine, and it’s finished. And I’m proud of that.
+Development now shifts to a collaborative, Vulkan-powered version—but this version will always stand as a milestone in my growth as a developer.
+— **Linden Sheehy**

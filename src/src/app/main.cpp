@@ -110,16 +110,6 @@ void handleInput() {
 
     }
 
-    if (gui->state->keyJustDown(KeyCode::K)) {
-        logWrite("Camera Angle: ");
-        camera->facingAngle.log();
-        logNewLine();
-        logWrite("Camera Facing Vec: ");
-        camera->facingVec.log();
-        logNewLine();
-        logNewLine();
-    }
-
 
     /*   Object Selection   */
 
@@ -181,18 +171,6 @@ void handleInput() {
         selectedObject = nullptr;
     }
 
-
-    /*   Temporary stuff   */
-
-    // Toggle normal vector drawing on key n
-    if (gui->state->keyJustDown(KeyCode::N)) {
-
-        drawNormals = !drawNormals;
-
-        if (drawNormals) objects->setOpacityAll(0.5);
-        else objects->setOpacityAll(1);
-
-    }
 
     // Toggles gravity
     if (gui->state->keyJustDown(KeyCode::G)) {

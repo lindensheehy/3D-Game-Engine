@@ -96,8 +96,9 @@ g++ -Ofast %include%        -c %dir%XMLFile.cpp           -o %out%XMLFile.o
 
 
 :: Build main
+set dir=%srcdir%app\
 g++ -Ofast %include% ^
-    ..\main.cpp ^
+    %dir%main.cpp ^
     %objdir%*.o ^
     -o GameEngine.exe ^
     -mwindows

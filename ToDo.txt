@@ -47,8 +47,8 @@ steps:
 - const correctness
 - tidy includes
 - tidy testing suite
---> tidy build files  
-- update main readme
+- tidy build files  
+--> update main readme
 - add readmes to directories
 - tidy 'not used'
 

@@ -3,9 +3,9 @@
 :: Its a relatively lightweight way to speed up compile times
 
 :: Paths
-set include=-I../src/include
-set srcdir=../src/src/
-set objdir=../src/obj/
+set include=-I..\src\include
+set srcdir=..\src\src\
+set objdir=..\src\obj\
 
 
 :: Create obj dir if it doesnt exist
@@ -97,8 +97,9 @@ set out=%objdir%xml-
 
 
 :: Build main
+set dir=%srcdir%app\
 g++ -Ofast %include% ^
-    ../main.cpp ^
+    %dir%main.cpp ^
     %objdir%*.o ^
     -o GameEngine.exe ^
     -mwindows
