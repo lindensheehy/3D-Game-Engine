@@ -45,8 +45,8 @@ Cleanup!
 steps:
 - tidy code + comments
 - const correctness
---> tidy includes
-- tidy testing suite
+- tidy includes
+--> tidy testing suite
 - tidy build files  
 - update main readme
 - add readmes to directories

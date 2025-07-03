@@ -332,3 +332,25 @@ class Player {
         }
 
 };
+
+bool isPalindrome(const char* str, int length) {
+    
+    // Assuming no more than 255 characters of any type will appear
+    char counts[26] = {0};
+
+    for (int i = 0; i < length, i++) {
+        
+        // Assumes all lowercase
+        counts[ str[i] - 'a' ]++;
+
+    }
+
+    int odd = 0;
+
+    for (int i = 0; i < 26; i++) {
+        if (counts[i] % 2 == 1) odd++;
+    }
+
+    return odd < 2;
+
+}

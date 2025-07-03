@@ -2,5 +2,3 @@ src/obj/*.o
 *.exe
 
 build/log.txt
-testing/results/log.txt
-testing/results/testreport.html

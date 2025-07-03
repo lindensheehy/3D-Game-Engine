@@ -4,7 +4,7 @@ set objdir=../../src/obj/
 
 :: Build UnitTests.exe
 g++ -Ofast %include% ^
-    core.cpp ^
+    code.cpp ^
     %objdir%*.o ^
     -o results/UnitTests.exe ^
     -mwindows

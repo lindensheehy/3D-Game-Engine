@@ -7,7 +7,7 @@
 #include "util/Math.h"
 #include "../src/util/Math.cpp"
 
-// I use a TimeState object to do the time stuff, rather than reimplementing it all
+// Using a TimeState object to do the time stuff, rather than reimplementing it all
 #include "graphics/gui/State.h"
 #include "../src/graphics/gui/State.cpp"
 
@@ -34,19 +34,6 @@ int main(int argc, char* argv[]) {
 
         // From "include.h"
         run();
-
-        // Print data on first iteration
-        if (i == 0) {
-
-            logWrite("Found lambda values (");
-            logWrite(lA);
-            logWrite(", ");
-            logWrite(lB);
-            logWrite(", ");
-            logWrite(lC);
-            logWrite(")", true);
-
-        }
 
         iterationTime = time->getTimeMillis();
         if (iterationTime >= nextLog) {

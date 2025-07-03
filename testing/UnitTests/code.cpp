@@ -30,21 +30,20 @@ int main() {
     /*  --------------------------------------  */
 
     // Functions from "src/include/Math.h"
-    FunctionWrapper<int, double>* funcFloor = /* ----------------------- */ new FunctionWrapper<int, double>(floor, "floor");
-    FunctionWrapper<int, double>* funcRound = /* ----------------------- */ new FunctionWrapper<int, double>(round, "round");
-    FunctionWrapper<double, double, double>* funcSqrt = /* ------------- */ new FunctionWrapper<double, double, double>(sqrt, "sqrt");
-    FunctionWrapper<double, double>* funcSin = /* ---------------------- */ new FunctionWrapper<double, double>(sin, "sin");
-    FunctionWrapper<double, double>* funcCos = /* ---------------------- */ new FunctionWrapper<double, double>(cos, "cos");
-    FunctionWrapper<double, double>* funcTan = /* ---------------------- */ new FunctionWrapper<double, double>(tan, "tan");
-    FunctionWrapper<double, double>* funcArctan = /* ------------------- */ new FunctionWrapper<double, double>(arctan, "arctan");
-    FunctionWrapper<double, double>* funcArcsin = /* ------------------- */ new FunctionWrapper<double, double>(arcsin, "arcsin");
-    FunctionWrapper<double, double>* funcArccos = /* ------------------- */ new FunctionWrapper<double, double>(arccos, "arccos");
-    FunctionWrapper<double, double, double, double>* funcRange = /* ---- */ new FunctionWrapper<double, double, double, double>(range, "range");
-    FunctionWrapper<double, double, double, double>* funcInRange = /* -- */ new FunctionWrapper<double, double, double, double>(inRange, "inRange");
-    FunctionWrapper<double, double, double, double, double>* funcGetAngle = new FunctionWrapper<double, double, double, double, double>(getAngle, "getAngle");
+    FunctionWrapper<float, float, float>* funcSqrt = /* ---------------- */ new FunctionWrapper<float, float, float>(sqrt, "sqrt");
+    FunctionWrapper<float, float>* funcSin = /* ------------------------ */ new FunctionWrapper<float, float>(sin, "sin");
+    FunctionWrapper<float, float>* funcCos = /* ------------------------ */ new FunctionWrapper<float, float>(cos, "cos");
+    FunctionWrapper<float, float>* funcTan = /* ------------------------ */ new FunctionWrapper<float, float>(tan, "tan");
+    FunctionWrapper<float, float>* funcArctan = /* --------------------- */ new FunctionWrapper<float, float>(arctan, "arctan");
+    FunctionWrapper<float, float>* funcArcsin = /* --------------------- */ new FunctionWrapper<float, float>(arcsin, "arcsin");
+    FunctionWrapper<float, float>* funcArccos = /* --------------------- */ new FunctionWrapper<float, float>(arccos, "arccos");
+    FunctionWrapper<float, float, float, float>* funcNormalize = /* ---- */ new FunctionWrapper<float, float, float, float>(normalize, "range");
+    FunctionWrapper<float, float, float, float>* funcInRange = /* ------ */ new FunctionWrapper<float, float, float, float>(inRange, "inRange");
+    FunctionWrapper<float, float, float, float, float>* funcGetAngle = /**/ new FunctionWrapper<float, float, float, float, float>(getAngle, "getAngle");
 
     // Functions from "src/include/Utility.h"
-    FunctionWrapper<double, char*, int>* funcStringToDouble = /* -------- */ new FunctionWrapper<double, char*, int>(stringToDouble, "stringToDouble");
+    FunctionWrapper<int, float>* funcFloor = /* ------------------------ */ new FunctionWrapper<int, float>(floor, "floor");
+    FunctionWrapper<int, float>* funcRound = /* ------------------------ */ new FunctionWrapper<int, float>(round, "round");
 
     logWrite(
         "<div class=\"seperation\"></div>\n"
@@ -222,7 +221,7 @@ int main() {
         "</h2>\n"
     );
     
-    funcRange->test(0.4, 5, 3, 8, 0.001);
+    funcNormalize->test(0.4, 5, 3, 8, 0.001);
 
     //inRange
     logWrite(
@@ -239,25 +238,6 @@ int main() {
         "   getAngle function from math.cpp\n"
         "</h2>\n"
     );
-
-
-    // StringToDouble
-    logWrite(
-        "<div class=\"seperation\"></div>\n"
-        "<h2>\n"
-        "   StringToDouble function from Utility.cpp\n"
-        "</h2>\n"
-    );
-
-    //                             Return                Input        MAXLENGTH
-    funcStringToDouble->test(         0,       (char*)    "0",           16          );
-    funcStringToDouble->test(         1,       (char*)    "1",           16          );
-    funcStringToDouble->test(        1.1,      (char*)   "1.1",          16          );
-    funcStringToDouble->test(        -1,       (char*)    "-1",          16          );
-    funcStringToDouble->test(       -1.1,      (char*)   "-1.1",         16          );
-    funcStringToDouble->test(       12345,     (char*)  "12345",         16          );
-    funcStringToDouble->test(       1000,      (char*)   "1000",         16          );
-
 
 
     // Log Results
