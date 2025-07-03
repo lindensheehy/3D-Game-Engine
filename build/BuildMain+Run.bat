@@ -1,4 +1,4 @@
-:: This only builds the main.exe, anything changed in the header files will not take effect when building this way
+:: This only builds main.cpp, anything changed in the dependancy files will not take effect when building this way
 
 :: Paths
 set include=-I../src/include

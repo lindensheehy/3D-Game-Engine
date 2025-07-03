@@ -1,5 +1,3 @@
-:: Build libraries
-
 :: Paths
 set include=-I..\src\include
 set srcdir=..\src\src\

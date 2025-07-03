@@ -1,4 +1,3 @@
-
 set include=-I../../src/include
 set objdir=../../src/obj/
 
@@ -12,5 +11,5 @@ cd results
 BenchMarking.exe
 
 
-:: Uncomment this for debugging
+:: Just here for debugging when errors are thrown
 pause

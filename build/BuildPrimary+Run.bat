@@ -1,4 +1,6 @@
-:: Build libraries
+:: This file has commands to build everything in the project
+:: The intent is to comment out pieces that dont need to be compiled for a certain part of the development cycle
+:: Its a relatively lightweight way to speed up compile times
 
 :: Paths
 set include=-I../src/include

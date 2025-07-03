@@ -1,4 +1,3 @@
-
 set include=-I../../src/include
 set objdir=../../src/obj/
 
@@ -16,5 +15,5 @@ UnitTests.exe
 :: Open the html file
 start "" testreport.html
 
-:: Uncomment this for debugging
+:: Just here for debugging when errors are thrown
 pause
