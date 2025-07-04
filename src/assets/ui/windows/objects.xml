@@ -11,7 +11,7 @@
 
     <filledRect posx=330 posy=50 sizex=260 sizey=76 color=background>
 
-        <outlinedRect posx=0 posy=0 sizex=260 sizey=75 color=border/>
+        <outlinedRect posx=0 posy=0 sizex=260 sizey=76 color=border/>
 
         <topbar width=260 buttonPos=241 title=ObjectManager/>
 

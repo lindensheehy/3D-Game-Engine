@@ -216,55 +216,47 @@ void init() {
     objects = new Physics::ObjectSet();
     Physics::Object* newObject;
 
-    /*   Main Objects   */
-
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::tempMesh;
-    // newObject->scaleBy(15)->move(0, 0, 50)->setColor(Color::WHITE);
-    // objects->pushBack(newObject);
-
+    // Large floor
     newObject = new Physics::Object();
-    newObject->mesh = Geometry::Mesh::cubeMesh;
-    newObject->scaleBy(25)->move(0, 0, 50)->setColor(Color::WHITE);
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(150, 1, 150)->move(0, -50, 50)->setColor(0xFF999999);
     objects->pushBack(newObject, 1);
 
+    // Large central cube (white)
     newObject = new Physics::Object();
-    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    newObject->scaleBy(5)->move(0, 20, 50)->setColor(Color::GREY);
+    newObject->mesh = Geometry::Mesh::cubeMesh;
+    newObject->scaleBy(25)->move(0, 0, 50)->setColor(0xFF2A4D69);
     objects->pushBack(newObject, 2);
 
+    // Small grey cube on top of floor, offset right
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    newObject->scaleBy(10, 5, 15)->move(30, 10, 40)->rotate(10, 0, 0)->setColor(Color::BLUE);
+    newObject->scaleBy(80, 4, 4)->move(0, 5, 101)->setColor(0xFF555B6E);
     objects->pushBack(newObject, 3);
 
-    // newObject = new Physics::Object();
-    // newObject->mesh = Geometry::Mesh::capsuleMesh->copy();
-    // newObject->scaleBy(15)->move(0, -20, 50)->setColor(Color::GREEN);
-    // objects->pushBack(newObject, 4);
+    // Medium rectangular blue cube, rotated a bit, offset forward & right
+    newObject = new Physics::Object();
+    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
+    newObject->scaleBy(10, 5, 15)->move(40, 0, 60)->rotate(40, 20, 60)->setColor(0xFFF7B733);
+    objects->pushBack(newObject, 4);
 
+    // Large blue sphere centered slightly forward
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::sphereMesh;
-    newObject->scaleBy(20)->move(0, 0, 40)->setColor(Color::BLUE);
+    newObject->scaleBy(20)->move(0, 10, 50)->setColor(0xFF70C1B3);
     objects->pushBack(newObject, 5);
 
+    // Large white sphere offset left
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::sphereMesh->copy();
-    newObject->scaleBy(25)->move(-30, 0, 50)->setColor(Color::WHITE);
+    newObject->scaleBy(25)->move(-10, 0, 95)->rotate(45, 20, 50)->setColor(0xFFF0E5D8);
     objects->pushBack(newObject, 6);
 
+    // Medium blue cube above floor, offset left & forward
     newObject = new Physics::Object();
     newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    newObject->scaleBy(10)->move(0, 10, 50)->setColor(Color::BLUE);
+    newObject->scaleBy(10)->move(-10, 15, 90)->rotate(10, 0, 40)->setColor(0xFFF25F5C);
     objects->pushBack(newObject, 7);
-
-
-    /*   Floor   */
-
-    newObject = new Physics::Object();
-    newObject->mesh = Geometry::Mesh::cubeMesh->copy();
-    newObject->scaleBy(100, 1, 100)->move(0, -50, 50)->setColor(Color::DARKGREY);
-    objects->pushBack(newObject, 8);
 
 
     gravity = false;

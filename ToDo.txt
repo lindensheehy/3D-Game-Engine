@@ -97,3 +97,40 @@ steps:
 ++    xml/XML
 ++    xml/XMLFile
 
+
+directory list:
+- build
+- build/src
+- not used
+- src/assets/fonts
+- src/assets/models/meshes
+- src/assets/models/scenes
+- src/assets/textures
+- src/assets/ui
+- src/include/geometry
+- src/include/geometry/importer
+- src/include/graphics/drawing
+- src/include/graphics/font
+- src/include/graphics/gui
+- src/include/graphics/png
+- src/include/graphics/rendering
+- src/include/physics
+- src/include/ui
+- src/include/util
+- src/include/xml
+- src/obj
+- src/src/app
+- src/src/geometry
+- src/src/geometry/importer
+- src/src/graphics/drawing
+- src/src/graphics/font
+- src/src/graphics/gui
+- src/src/graphics/png
+- src/src/graphics/rendering
+- src/src/physics
+- src/src/ui
+- src/src/util
+- src/src/xml
+- testing
+- testing/BenchMarking
+- testing/UnitTests

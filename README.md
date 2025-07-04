@@ -1,4 +1,6 @@
-### 🗃️ Archived Project – This project is no longer maintained.
+### 🗃️ Archived Project – This repository is no longer maintained.
+
+---
 
 # 3D Game Engine
 
@@ -6,11 +8,17 @@ This is a 3D game engine built from scratch in C++ using `windows.h` as the **on
 
 This repository now serves as a **frozen, archived version** of the engine. While development on this version is complete, a future version is planned, featuring a full redesign using Vulkan and modern tools. This project remains a monument to what I built completely solo—and I’m proud to share it 😃
 
+![Engine Screenshot](screenshots/GameEngineDemoScreenshot2.png)
+
+---
+
 ## 🧠 Philosophy
 
-The core philosophy behind this engine was simple: **write everything myself**. That meant no std library, and no rendering libraries or engines. Just raw C++ and `windows.h`.
+The core philosophy behind this engine was simple: **write everything myself**. That meant no standard library (std), and no rendering libraries or engines. Just raw C++ and `windows.h`.
 
 If I wanted a feature—like matrix math, alpha blending, or even a UI system—I had to figure it out and build it. That forced me to deeply understand the concepts I was working with, and it made the project incredibly rewarding.
+
+---
 
 ## 🔧 Key Features
 
@@ -39,7 +47,7 @@ The UI system is lightweight, efficient, and essential for inspecting and intera
 
 ### 🧪 Testing & Benchmarking
 
-- A custom **output testing framework** was written to validate function behavior. Test results are exported as HTML for easy viewing.
+- A custom **unit testing framework** was written to validate function behavior. Test results are exported as HTML for easy viewing.
 - A simple but flexible **benchmarking system** allows performance testing for any part of the codebase.
 
 Both systems are modular, reusable, and helped keep the engine stable during development.
@@ -49,18 +57,22 @@ Both systems are modular, reusable, and helped keep the engine stable during dev
 This system isn't flashy, but it's functional:
 
 - Character glyphs are 7×7 on/off bitmaps stored directly in code.
-- Drawing is monospace, pixel-based, with no smoothing or scaling.
+- Drawing is pixel-based and monospace, with no smoothing or scaling.
 - While simple and rigid, it's effective for debug output and basic UI labels.
+
+---
 
 ## 🎮 Controls
 
-- **W, A, S, D / Space / Ctrl** — Move the camera freely (6DoF).
+- **W / A / S / D / Space / Ctrl** — Move the camera freely (6DoF).
 - **Left Click + Mouse** — Look around.
 - **Right Click** — Select the object under the cursor; dynamically binds the transform window (if open).
 - **Enter** — Deselect the current object.
 - **Shift** — Sprint (increases movement speed).
-- **G** — Toggle gravity (affects objects only).
+- **G** — Toggle gravity (affects objects only, *not* the camera).
 - **Z** — Adds vertical velocity to all objects (makes them "jump").
+
+---
 
 ## ▶️ How to Run
 
@@ -70,12 +82,26 @@ This system isn't flashy, but it's functional:
 
 This script will compile all components to `.o` files and launch the engine. It may take a moment—there’s a lot to build.
 
+### 🧰 Build Requirements
+
+This engine is **Windows-only** and depends on `windows.h`.
+
+- **Compiler**: GCC via MinGW (uses `g++` under the hood)
+- **Architecture**: Built and tested for **x86_64 (64-bit)** systems
+- **Optimization**: Compiled with `-Ofast` for speed
+- **Standard**: Written for **C++17**
+
+⚠️ **Note**: This project has very limited testing outside my own development environment.  
+Your mileage may vary depending on your compiler version or system configuration.
+
+---
+
 ## 🧱 Project Structure
 
 Most directories are documented with a README, but here's a high-level overview:
 
 - `build/` — Contains the build scripts, runtime log, and compiled `.exe`.
-- `not used/` — Deprecated code, experiments, and old sketches. None of this contributes to the build, but it’s retained for archival value.
+- `legacy/` — Deprecated code, experiments, and old sketches. None of this contributes to the build, but it’s retained for archival value.
 - `src/` — The core of the engine:
   - `assets/` — Non-code files used by the engine (e.g., UI layouts).
   - `include/` — All header files (`.h`).
@@ -83,15 +109,30 @@ Most directories are documented with a README, but here's a high-level overview:
   - `src/` — All implementation files (`.cpp`).
 - `testing/` — Contains test files (not part of the main build).
 
+---
+
 ## 📄 License
 
 This project is licensed under the [GNU General Public License v3.0](./LICENSE).
 
 You are free to use, modify, and distribute this software, as long as any derivative work is also shared under the same license.
 
+SPDX-License-Identifier: GPL-3.0
+
+### 🛡️ Why GPL?
+
+I chose the GPL for one simple reason: it reflects exactly how I want this work to be used.  
+I have no problem with people using my code however they like—**as long as it stays open source**.  
+
+This engine represents a lot of work on my end, and I'm proud to share it freely.  
+The GPL ensures that no one can take advantage of that by locking it behind closed doors.  
+If this code helps someone, that’s awesome—I just want that openness to continue forward.
+
+---
+
 ## 🏁 Final Thoughts
 
 >This was very much a passion project for me. As much as it was a chance to grow as a programmer, it was also just *fun*. Every part of this engine reflects something I wanted to build, understand, or improve.
-I poured a lot of time into this—somewhere north of 17,000 lines of code and hundreds of hours. It’s not perfect, but it’s mine, and it’s finished. And I’m proud of that.
-Development now shifts to a collaborative, Vulkan-powered version—but this version will always stand as a milestone in my growth as a developer.
-— **Linden Sheehy**
+>I poured a lot of time into this—somewhere north of 17,000 lines of code and hundreds of hours. It’s not perfect, but it’s mine, and it’s finished. And I’m proud of that.
+>Development now shifts to a collaborative, Vulkan-powered version—but this version will always stand as a milestone in my growth as a developer.
+>— **Linden Sheehy**
