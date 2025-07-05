@@ -4,15 +4,13 @@
 
 # `src/include/geometry/importer`
 
-Brief overview of the module’s **purpose**, **scope**, and how it fits into the engine. Mention any important interactions with other modules or responsibilities this code handles.
+placeholder text
 
 ---
 
 ## Contents
 
-- `FileName1.h` — Short description of what this file defines or exposes
-- `FileName2.h` — Another description
-- *(Add or remove as needed)*
+- `FileName.x` — placeholder text
 
 ---
 
@@ -27,9 +25,4 @@ This section is useful for mapping out local dependency graphs.
 
 ## Key Notes 
 
-- Design patterns or decisions worth remembering
-- Known quirks, caveats, or things that surprised you
-- TODOs or things planned for the future
-- Anything a new dev should know before touching this
-
----
+- placeholder text
