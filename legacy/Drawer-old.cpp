@@ -1,3 +1,14 @@
+/*
+    This is an old version of my Drawer class.
+
+    It predates a major refactor, where I pulled out the pixel-level functionality
+    into a separate class (which now exists as PixelDrawer).
+
+    I initially kept it around for a fallback if things went wrong.
+    Now it kind of just stands to show history.
+*/
+
+
 #include "gui/Drawer.h"
 
 

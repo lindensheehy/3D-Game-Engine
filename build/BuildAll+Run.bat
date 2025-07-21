@@ -20,7 +20,6 @@ set dir=%srcdir%geometry\
 set out=%objdir%geometry-
 g++ -Ofast %include%        -c %dir%Matrix.cpp      -o %out%Matrix.o
 g++ -Ofast %include%        -c %dir%Mesh.cpp        -o %out%Mesh.o
-g++ -Ofast %include%        -c %dir%Tri.cpp         -o %out%Tri.o
 g++ -Ofast %include%        -c %dir%Vec.cpp         -o %out%Vec.o
 
 

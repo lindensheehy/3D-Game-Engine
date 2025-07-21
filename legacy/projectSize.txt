@@ -1,122 +1,135 @@
+This file contains the LOC (lines of code) count for each code file in this project.
+It doesn’t serve any real purpose apart from just seeing the numbers. 
+And yes, this was all done by hand.
+
+I could (and probably will) write a tool to automate it at some point, 
+but for now... here we are.
+
+
 Line counts:
 
-Testing -> 770
-
 Deps:
-- Headers ======================================= TOTAL => 4,968
+- include/ ======================================= TOTAL => 5,163
 
-    - geometry ============================== TOTAL => 627
-        - Matrix.h ------------> 102
-        - Mesh.h --------------> 186
-        - Tri.h ---------------> 106
-        - Vec.h ---------------> 233
+    - geometry/ ============================== TOTAL => 608
+        - importer/ -----------> 0
+        - Matrix.h ------------> 111
+        - Mesh.h --------------> 182
+        - Tri.h ---------------> 117
+        - Vec.h ---------------> 198
 
-    - graphics ============================== TOTAL => 1,426
-        - drawing ======================= TOTAL => 250
-            - Drawer.h ------------> 101
-            - PixelDrawer.h -------> 91
-            - PixelTracker.h ------> 58
-        - font ========================== TOTAL => 443
-            - FontDrawer.h --------> 443
+    - graphics/ ============================== TOTAL => 1,420
+        - drawing/ ======================= TOTAL => 266
+            - Drawer.h ------------> 108
+            - PixelDrawer.h -------> 95
+            - PixelTracker.h ------> 63
+        - font/ ========================== TOTAL => 444
+            - FontDrawer.h --------> 444
             - Parser.h ------------> 0
-        - gui =========================== TOTAL => 423
-            - Core.h --------------> 37
-            - GUI.h ---------------> 74
-            - State.h -------------> 239
+        - gui/ =========================== TOTAL => 417
+            - Core.h --------------> 38
+            - GUI.h ---------------> 66
+            - State.h -------------> 240
             - Window.h ------------> 73
-        - png =========================== TOTAL => 68
-            - PNG.h ---------------> 68
-        - rendering ===================== TOTAL => 242
-            - Camera.h ------------> 103
-            - Display.h -----------> 66
-            - Renderer.h ----------> 73
+        - png/ =========================== TOTAL => 82
+            - PNG.h ---------------> 82
+        - rendering/ ===================== TOTAL => 211
+            - Camera.h ------------> 94
+            - Display.h -----------> 54
+            - Renderer.h ----------> 63
 
-    - physics =============================== TOTAL => 290
-        - Bounding.h ----------> 94
-        - ObjectSet.h ---------> 196
+    - physics/ =============================== TOTAL => 304
+        - Bounding.h ----------> 115
+        - ObjectSet.h ---------> 189
 
-    - ui ==================================== TOTAL => 1,044
-        - Action.h ------------> 96
-        - BindFuncs.h ---------> 51
-        - BindManager.h -------> 69
-        - Context.h -----------> 70
-        - Core.h --------------> 88
-        - UI.h ----------------> 121
-        - Window.h ------------> 172
-        - WindowElement.h -----> 377
+    - ui/ ==================================== TOTAL => 1,103
+        - Action.h ------------> 101
+        - BindFuncs.h ---------> 49
+        - BindManager.h -------> 79
+        - Context.h -----------> 95
+        - Core.h --------------> 86
+        - UI.h ----------------> 122
+        - Window.h ------------> 184
+        - WindowElement.h -----> 387
 
-    - util ================================== TOTAL => 1,033
-        - FileReader.h --------> 30
+    - util/ ================================== TOTAL => 1,179
+        - FileManager.h -------> 39
+        - FileNavigator.h -----> 121
+        - FileReader.h --------> 46
         - KeyCodes.h ----------> 91
-        - LinkedList.h --------> 654
-        - Log.h ---------------> 40
-        - Math.h --------------> 103
-        - Utility.h -----------> 115
+        - LinkedList.h --------> 632
+        - Log.h ---------------> 42
+        - Math.h --------------> 86
+        - Utility.h -----------> 122
 
-    - xml =================================== TOTAL => 548
+    - xml/ =================================== TOTAL => 549
         - Core.h --------------> 64
-        - ElementSet.h --------> 95
-        - ParameterInfo.h -----> 112
-        - TagSequence.h -------> 111
-        - XML.h ---------------> 65
-        - XMLFile.h -----------> 101
+        - ElementSet.h --------> 97
+        - ParameterInfo.h -----> 114
+        - TagSequence.h -------> 105
+        - XML.h ---------------> 72
+        - XMLFile.h -----------> 97
 
-- Source Files ================================== TOTAL => 11,956
+- src/ =========================================== TOTAL => 12,316
 
-    - geometry ============================== TOTAL => 2,250
-        - Matrix.cpp ----------> 320
-        - Mesh.cpp ------------> 750
-        - Tri.cpp -------------> 230
-        - Vec.cpp -------------> 950
+    - app/ =================================== TOTAL => 337
+        - main.cpp ------------> 337
 
-    - graphics ============================== TOTAL => 2,902
-        - graphics ====================== TOTAL => 869
-            - Drawer.cpp ----------> 705
-            - PixelDrawer.cpp -----> 142
-            - PixelTracker.cpp ----> 22
-        - graphics ====================== TOTAL => 184
-            - FontDrawer.cpp ------> 184
+    - geometry/ ============================== TOTAL => 2,095
+        - importer/ -----------> 0
+        - Matrix.cpp ----------> 315
+        - Mesh.cpp ------------> 734
+        - Tri.cpp -------------> 229
+        - Vec.cpp -------------> 817
+
+    - graphics/ ============================== TOTAL => 2,539
+        - graphics/ ====================== TOTAL => 882
+            - Drawer.cpp ----------> 712
+            - PixelDrawer.cpp -----> 145
+            - PixelTracker.cpp ----> 25
+        - graphics/ ====================== TOTAL => 195
+            - FontDrawer.cpp ------> 195
             - Parser.cpp ----------> 0
-        - graphics ====================== TOTAL => 785
-            - GUI.cpp -------------> 147
-            - State.cpp -----------> 440
-            - Window.cpp ----------> 198
-        - graphics ====================== TOTAL => 124
-            - PNG.cpp -------------> 124
-        - graphics ====================== TOTAL => 940
-            - Camera.cpp ----------> 143
-            - Display.cpp ---------> 104
-            - Renderer.cpp --------> 693
+        - graphics/ ====================== TOTAL => 834
+            - GUI.cpp -------------> 149
+            - State.cpp -----------> 479
+            - Window.cpp ----------> 206
+        - graphics/ ====================== TOTAL => 141
+            - PNG.cpp -------------> 141
+        - graphics/ ====================== TOTAL => 487
+            - Camera.cpp ----------> 83
+            - Display.cpp ---------> 64
+            - Renderer.cpp --------> 340
 
-    - physics =============================== TOTAL => 614
-        - Bounding.cpp --------> 178
-        - ObjectSet.cpp -------> 436
+    - physics/ =============================== TOTAL => 655
+        - Bounding.cpp --------> 195
+        - ObjectSet.cpp -------> 460
 
-    - ui ==================================== TOTAL => 2,041
-        - Action.cpp ----------> 68
-        - BindFuncs.cpp -------> 223
-        - BindManager.cpp -----> 140
+    - ui/ ==================================== TOTAL => 2,094
+        - Action.cpp ----------> 64
+        - BindFuncs.cpp -------> 220
+        - BindManager.cpp -----> 141
         - Core.cpp ------------> 77
-        - UI.cpp --------------> 435
-        - Window.cpp ----------> 329
-        - WindowElement.cpp ---> 769
+        - UI.cpp --------------> 486
+        - Window.cpp ----------> 320
+        - WindowElement.cpp ---> 786
 
-    - util ================================== TOTAL => 1,268
-        - FileReader.cpp ------> 113
+    - util/ ================================== TOTAL => 1,730
+        - FileManager.cpp -----> 24
+        - FileNavigator.cpp ---> 409
+        - FileReader.cpp ------> 151
         - KeyCodes.cpp --------> 29
-        - Log.cpp -------------> 169
-        - Math.cpp ------------> 553
-        - Utility.cpp ---------> 404
+        - Log.cpp -------------> 168
+        - Math.cpp ------------> 506
+        - Utility.cpp ---------> 443
 
-    - xml =================================== TOTAL => 2,881
+    - xml/ =================================== TOTAL => 2,866
         - Core.cpp ------------> 44
-        - ElementSet.cpp ------> 211
-        - ParameterInfo.cpp ---> 223
-        - TagSequence.cpp -----> 853
-        - XML.cpp -------------> 868
-        - XMLFile.cpp ---------> 682
+        - ElementSet.cpp ------> 189
+        - ParameterInfo.cpp ---> 222
+        - TagSequence.cpp -----> 850
+        - XML.cpp -------------> 877
+        - XMLFile.cpp ---------> 684
 
 
-main.cpp    -> 407
-
-Total       -> 17,331
+Total       -> 17,479

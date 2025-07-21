@@ -1,3 +1,16 @@
+/*
+
+    This file doesnt do anything, and its very outdated.
+
+    At one point i wanted to see all my code in one single file, just to put it into scale.
+    This file is the result of that. 
+
+    Im just leaving it because I think its somewhat valuable to me personally,
+    But as far as the project goes, its worthless.
+
+*/
+
+
 // Basic Includes
 #include <iostream>
 #include <iomanip>

@@ -8,9 +8,9 @@
     This was (and likely will be) done by loading pixel data into memory for use as textures.
 
     Since I am not using includes in this project, I removed the external lodepng dependency
-    This code only exists to help layout the project structure, and will likely be implemented in V2.
+    This code only exists to help layout the project structure.
 
-    Leaving it here to show what was planned. Not forgotten, just moved forward.
+    Leaving it here to show what was planned. Not forgotten, just deferred.
 */
 
 #include "graphics/png/PNG.h"

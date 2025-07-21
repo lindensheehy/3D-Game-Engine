@@ -1,3 +1,9 @@
+/*
+    This file holds a sketch I wrote up for planning how multithreading might look in this project.
+
+    Since the current project is single-threaded, this clearly never went anywhere, but here it is.
+*/
+
 #include <thread>
 
 #include "src/include/State.h"

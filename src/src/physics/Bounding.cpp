@@ -7,9 +7,8 @@
     These will be used for physics interaction handling, and will be tied to Object instances
 
     This code only exists to help layout the project structure.
-    It will be properly implemented (or refactored) in V2.
 
-    Leaving it here to show what was planned. Not forgotten, just moved forward.
+    Leaving it here to show what was planned. Not forgotten, just deferred.
 */
 
 #include "physics/Bounding.h"

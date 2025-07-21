@@ -1,39 +1,57 @@
-# Meshes
+# `src/assets/models/meshes/`
 
-This directory stores the meshes used in this program. <br>
-Each mesh type has its own sub-directory, containing 2 files, being:
+This directory stores mesh data used by the engine. While unused in the current build, it reflects the planned structure for future versions. The setup here is intentional, but largely incomplete.
 
-## The Binary File (raw.bin)
+Each mesh type has its own subdirectory, where meshes are defined in human-readable `readable.txt` files, alongside optional `raw.bin` files for faster loading after the first load.
 
-The binary file contains the post parse version of the data from the .txt file (see below) <br>
-This is just saved for speed purposes, dont edit this file.
+---
 
-## The Text File (readable.txt)
+## Contents
 
-The text file contains a human readable format of the mesh data. This is where the meshes are created, and modified.
+- `cube/` — A simple regular cube. 6 square faces, forming 12 polygons. Normalized to side length 1 around the origin (0, 0, 0).
+- `sphere/` — A sphere-like mesh. This approximates the shape of a sphere using 200 polygons. It is not a regular shape, instead using layers of interlacing triangles.
 
-The format is as follows:
+---
 
-* This file format uses tags for navigation, like `[tag]`
-* The parser starts interpreting after the `[start]` tag
-* Each other tag denotes a subsection of the file, and they are all followed by the count of items they contain, like `[tag-10]`
-* Items under the tags have ids before them, like `0=someText` (ids start at 0)
-* Semicolons are used to end lines, except tags
-* All spaces are ignored, so `0 = text` is equivalent to `0=text`
-* For vector formats, the commas are the seperators
+## Format
+
+Mesh files follow a structured tag-based format, designed for both readability and easy parsing. Key characteristics:
+
+- Tags are enclosed in square brackets: `[start]`, `[vertices-12]`, etc.
+- The parser begins after the `[start]` tag.
+- Subsections are labeled with a tag followed by a count, e.g. `[vertices-12]` for 12 vertices.
+- Entries follow the format `id=value`, e.g. `0=(0.5, 0.5, 0.5)`
+- Semicolons (`;`) end each line (except for tag headers).
+- Whitespace is ignored, so `0 = (x, y, z)` is treated the same as `0=(x,y,z)`
+- Vector values use comma separators.
+
+---
 
 ### `[vertices-x]`
 
-Each vertex has its position stored directly in vector form, like (x, y, z) <br>
-Example vertex -> `0=(0.5, 0.5, 0.5)` or `0=(0.5,0.5,0.5)` (spaces are ignored)
+Each vertex stores a position vector in 3D space:
+
+Example vertex: `0 = (0.5, 0.5, 0.5)`
 
 ### `[normals-x]`
 
-Normals are stored just like vertices <br>
-Example normal -> `0=(0, 1, 0)` or `0=(0,1,0)`
+Normals are stored just like vertices (but remember, these are **directions**, not positions):
+
+Example normal: `0 = (0, 1, 0)`
 
 ### `[tris-x]`
 
-Tris are stored by pointing to items from the `[vertices]` and `[normals]` sections <br>
-Each triangle is stored in 4d vector format, where the first 3 components are vertices and the last is the normal <br>
-Example tri -> `0=(0, 1, 2, 0)` or `0=(0,1,2,0)`
+Triangles reference existing vertices and normals. Each triangle is a 4D vector:
+
+- The first three components are vertex indices
+- The fourth component is the normal index
+
+Example tri: `0 = (0, 1, 2, 0)`
+
+---
+
+## Key Notes
+
+- Meshes must be defined in `readable.txt` first. The engine generates `raw.bin` from this source. These `.bin` files are not intended to be read, edited, or otherwise handled by humans.
+- This directory is not currently used by the build. It exists to support future features in the engine’s asset loading system.
+- The format is custom-built and may be updated depending on rendering needs going forward.

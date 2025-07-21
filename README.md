@@ -2,9 +2,9 @@
 
 ---
 
-# 3D Game Engine
+# SceneLab3D
 
-This is a 3D game engine built from scratch in C++ using `windows.h` as the **only external include**. The project was developed as both a learning experience and a passion project, spanning over two years of work. All functionality—from windowing and rendering to UI and input handling—was implemented manually, with no third-party libraries.
+SceneLab3D is a 3D scene editor and game engine framework built from scratch in C++ using `windows.h` as the **only external include**. The project was developed as both a learning experience and a passion project, spanning over two years of work. All functionality—from windowing and rendering to UI and input handling—was implemented manually, with no third-party libraries.
 
 This repository now serves as a **frozen, archived version** of the engine. While development on this version is complete, a future version is planned, featuring a full redesign using Vulkan and modern tools. This project remains a monument to what I built completely solo—and I’m proud to share it 😃
 

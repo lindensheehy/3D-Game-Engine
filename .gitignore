@@ -1,4 +1,10 @@
-src/obj/*.o
+# Object files
+*.o
+
+# Executables
 *.exe
 
+# Generated output files
 build/log.txt
+testing/BenchMarking/results/output.txt
+testing/UnitTests/results/testreport.html

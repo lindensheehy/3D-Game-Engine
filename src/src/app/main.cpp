@@ -202,7 +202,7 @@ void init() {
     logWrite("Starting...", true);
 
     // Start the gui window
-    gui = new Graphics::Gui::GUI(1200, 700, "Game Engine");
+    gui = new Graphics::Gui::GUI(1200, 700, "Clowd3D");
 
     renderer = new Graphics::Rendering::Renderer( &(gui->drawer->pixelDrawer), gui->display );
 

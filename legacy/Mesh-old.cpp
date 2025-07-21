@@ -1,5 +1,12 @@
 /*
-    Keeping this around in case i need stuff from it later
+    This is an old version of my Mesh class.
+
+    It predates a major refactor, where I replaced all the scattered heap allocations
+    with a single flat memory block and pointer arithmetic for access.
+
+    At the time, I didnt know about flat arrays of structs/classes, opting instead for arrays of pointers.
+    It wasn’t the most efficient approach, but it reflects where I was at in my learning.
+    I’m keeping this as a snapshot of that point in time.
 */
 
 #include "geometry/Mesh.h"

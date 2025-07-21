@@ -1,16 +1,31 @@
-# Bench Marking Suite
+# Benchmarking Suite
 
-The files in this directory are used for benchmarking. The output of these tests is printed to a .txt file under `results/output.txt`
+This directory contains tools for benchmarking. The results of each test are written to `./results/output.txt` — overwriting any previous test results.
 
-### `core.cpp`
+---
 
-Contains the logic for bench marking. No need to touch this file.
+### Files Overview
 
-### `code.cpp`
+#### `core.cpp`
 
-Contains the two functions that are called from `core.cpp`. Those being `void init()` and `void run()`. 
+Handles the benchmarking logic. You shouldn't need to modify this file.
 
-`init()` is called once when the bench marking starts.
-`run()` is called on each iteration
+#### `code.cpp`
 
-Also contains the variable `iterations`, which says how many times the code will call `run()` before logging the time elapsed.
+Defines three key functions used by the benchmark runner:
+
+- `void init()` – called once at the start.
+- `void run()` – called each iteration.
+- `void cleanup()` – called once after all iterations are complete.
+
+Also defines the `iterations` variable, which controls how many times `run()` is called before timing results are logged.
+
+This is where you put the logic that you want to benchmark.
+
+#### `Run.bat`
+
+Builds and runs the benchmarking executable.
+
+This script requires `.o` files in `src/obj/`. It only needs the object files you reference — along with `graphics-gui-State.o` for timing.  
+
+If you encounter linker errors, try running `build/BuildAll+Run.bat` first — it should populate the required object files in `src/obj/` and resolve the issue.

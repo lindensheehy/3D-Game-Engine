@@ -1,3 +1,9 @@
+This is my to-do file. Well, really, it’s just my “I want to read this later” file.  
+It contains a bunch of stuff I thought was valuable enough to save for later.  
+The archival process is documented at the bottom, since I used this file to keep track of it.
+
+
+
 new stuff:
 
 - DLLs for scripting. use a language like C# (or maybe just stick with C++), and compile into a DLL dynamically.
@@ -21,10 +27,12 @@ new stuff:
     - build a parser for the mesh files (assets/models/meshes/)
     - build some (or update existing) UI to create objects using these meshes
 
+
 fixes:
 
 - fix TextInput UI elements from drawing to infinite length.
     - probably just add a parameter 'maxLength' to Drawer::drawString()
+
 
 optimizations:
 
@@ -38,8 +46,7 @@ optimizations:
 
 
 
-Notes:
-
+==> The following section documents the archiving process completed at the end of this project’s development.
 
 Cleanup!
 steps:
@@ -48,7 +55,7 @@ steps:
 - tidy includes
 - tidy testing suite
 - tidy build files  
---> update main readme
+- update main readme
 - add readmes to directories
 - tidy 'not used'
 
@@ -98,39 +105,47 @@ steps:
 ++    xml/XMLFile
 
 
+Steps:
+- title + contents
+- description
+- dependencies
+- notes
+
 directory list:
-- build
-- build/src
-- not used
-- src/assets/fonts
-- src/assets/models/meshes
-- src/assets/models/scenes
-- src/assets/textures
-- src/assets/ui
-- src/include/geometry
-- src/include/geometry/importer
-- src/include/graphics/drawing
-- src/include/graphics/font
-- src/include/graphics/gui
-- src/include/graphics/png
-- src/include/graphics/rendering
-- src/include/physics
-- src/include/ui
-- src/include/util
-- src/include/xml
-- src/obj
-- src/src/app
-- src/src/geometry
-- src/src/geometry/importer
-- src/src/graphics/drawing
-- src/src/graphics/font
-- src/src/graphics/gui
-- src/src/graphics/png
-- src/src/graphics/rendering
-- src/src/physics
-- src/src/ui
-- src/src/util
-- src/src/xml
-- testing
-- testing/BenchMarking
-- testing/UnitTests
+----- build
+----- build/src
+----- legacy
+----- src/assets/fonts
+----- src/assets/models/meshes
+----- src/assets/models/scenes
+----- src/assets/textures
+----- src/assets/ui
+----- src/include/geometry
+----- src/include/geometry/importer
+----- src/include/graphics
+----- src/include/graphics/drawing
+----- src/include/graphics/font
+----- src/include/graphics/gui
+----- src/include/graphics/png
+----- src/include/graphics/rendering
+----- src/include/physics
+----- src/include/ui
+----- src/include/util
+----- src/include/xml
+----- src/obj
+----- src/src/app
+----- src/src/geometry
+----- src/src/geometry/importer
+----- src/src/graphics
+----- src/src/graphics/drawing
+----- src/src/graphics/font
+----- src/src/graphics/gui
+----- src/src/graphics/png
+----- src/src/graphics/rendering
+----- src/src/physics
+----- src/src/ui
+----- src/src/util
+----- src/src/xml
+----- testing
+----- testing/BenchMarking
+----- testing/UnitTests

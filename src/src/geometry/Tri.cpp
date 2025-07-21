@@ -1,3 +1,12 @@
+/*
+    --- THIS FILE IS NOT PART OF THE CURRENT BUILD ---
+
+    This file works correctly but is not needed in the current version.  
+    It remains from earlier iterations where these triangle classes were used.
+
+    Keeping it here because it’s fully functional, just unused at the moment.
+*/
+
 #include "geometry/Tri.h"
 
 using namespace Geometry;

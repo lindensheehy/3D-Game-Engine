@@ -1,3 +1,11 @@
+/*
+    This file just contains some spare code for my Renderer class.
+
+    I honestly have no idea if anything in here is usable,
+    but I guess at some point I thought it was worth keeping.
+*/
+
+
 auto drawNormal = [this](
     Geometry::Vec2& from, Geometry::Vec3& from3,
     Geometry::Vec2& to, Geometry::Vec3& to3

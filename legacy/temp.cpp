@@ -1,3 +1,13 @@
+/*
+    This is my designated sketch file.
+
+    There are dozens of completely unrelated chunks of code in here.
+    Everything was written by me at some point to plan, explain, or test ideas.
+    And no, it’s not even all necessarily related to this project.
+
+    Kind of worthless technically speaking, but I feel like it’s nice to keep around.
+*/
+
 
 template<typename type>
 class LinkedList;

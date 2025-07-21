@@ -2,15 +2,15 @@
     --- THIS FILE IS NOT PART OF THE CURRENT BUILD ---
 
     This file doesn’t work right now, but it’s here on purpose.
-    I brought it over from another one of my apps where PNGs were loaded using 'lodepng' (an external library)
+    I brought it over from one of my other projects where PNGs were loaded using 'lodepng' (an external library)
 
     It’s meant to hold the logic and data for decoding PNG files into a usable format for the engine
     This was (and likely will be) done by loading pixel data into memory for use as textures.
 
     Since I am not using includes in this project, I removed the external lodepng dependency
-    This code only exists to help layout the project structure, and will likely be implemented in V2.
+    This code only exists to help layout the project structure.
 
-    Leaving it here to show what was planned. Not forgotten, just moved forward.
+    Leaving it here to show what was planned. Not forgotten, just deferred.
 */
 
 #pragma once

@@ -1,8 +1,0 @@
-Starting...
-
-On iteration 15508322 ( 15.5083% )
-On iteration 53936986 ( 53.9369% )
-On iteration 91877113 ( 91.8771% )
-
-
-Completed Execution in 2651.3575 ms

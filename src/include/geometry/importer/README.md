@@ -1,28 +1,12 @@
-## This module has been postponed until V2
+# `src/include/geometry/importer/`
 
----
+### 🚧 This module is not part of the current build 🚧
 
-# `src/include/geometry/importer`
-
-placeholder text
+This directory is planned to contain a parser for file-based mesh data, along with a class responsible for building meshes from the parsed data.
 
 ---
 
 ## Contents
 
-- `FileName.x` — placeholder text
-
----
-
-## Dependencies
-
-- **Depends on:** `path/to/other/module`, `another/dependency`
-- **Used by:** `module/that/uses/this`, `another/consumer`
-
-This section is useful for mapping out local dependency graphs.
-
----
-
-## Key Notes 
-
-- placeholder text
+- `Builder.h` — Responsible for constructing meshes from parsed data.
+- `Parser.h` — Responsible for parsing raw text into a more usable IR.
