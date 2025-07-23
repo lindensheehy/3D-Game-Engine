@@ -95,8 +95,8 @@ This system isn't flashy, but it's functional:
 <h2 id="how-to-run">🚀 How to Run</h2>
 
 1. Clone this repository.
-2. Navigate to `root/build/`.
-3. Run `BuildAll+Run.bat`.
+2. Run `build/BuildAll+Run.bat`.
+3. Wait 🙂
 
 This script will compile all components to `.o` files and launch the engine. It may take a moment—there’s a lot to build.
 
