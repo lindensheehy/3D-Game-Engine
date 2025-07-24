@@ -5,15 +5,21 @@ set include=-I..\src\include
 set srcdir=..\src\src\
 set objdir=..\src\obj\
 
+
+:: Build icon
+set dir=..\src\assets\icon\
+set out=%objdir%icon-
+windres %dir%resource.rc -O coff -o %out%resource.o
+
 :: Compile main.exe
 set dir=%srcdir%app\
 g++ -Ofast %include% ^
     %dir%main.cpp ^
     %objdir%*.o ^
-    -o GameEngine.exe ^
+    -o Kiwi3D.exe ^
     -mwindows
 
-GameEngine.exe
+Kiwi3D.exe
 
 :: pause for debugging purposes
 pause

@@ -95,15 +95,20 @@ set out=%objdir%xml-
 @REM g++ -Ofast %include%        -c %dir%XMLFile.cpp           -o %out%XMLFile.o
 
 
+:: Build icon
+set dir=..\src\assets\icon\
+set out=%objdir%icon-
+windres %dir%resource.rc -O coff -o %out%resource.o
+
 :: Build main
 set dir=%srcdir%app\
 g++ -Ofast %include% ^
     %dir%main.cpp ^
     %objdir%*.o ^
-    -o GameEngine.exe ^
+    -o Kiwi3D.exe ^
     -mwindows
 
-GameEngine.exe
+Kiwi3D.exe
 
 :: pause for debugging purposes
 pause

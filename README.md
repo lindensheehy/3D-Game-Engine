@@ -8,7 +8,7 @@ Kiwi3D is a 3D scene editor and game engine framework built from scratch in C++ 
 
 This repository now serves as a **frozen, archived version** of the engine. While development on this version is complete, a future version is planned, featuring a full redesign using Vulkan and modern tools. This project remains a monument to what I built completely solo—and I’m proud to share it 😃
 
-![Engine Screenshot](screenshots/GameEngineDemoScreenshot2.png)
+![Engine Screenshot](screenshots/GameEngineDemoScreenshot3.png)
 
 ---
 

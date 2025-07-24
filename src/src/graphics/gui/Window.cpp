@@ -16,12 +16,21 @@ Window::Window(WindowProcFunc windowProcFunc, int windowWidth, int windowHeight,
     this->hInstance = GetModuleHandle(nullptr);
 
     // Create and register the Window Class
-    WNDCLASS wc = {};
+    WNDCLASSEX wc = {};
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = windowProcFunc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
     wc.hInstance = this->hInstance;
+    wc.hIcon = LoadIcon(this->hInstance, MAKEINTRESOURCE(101));
+    wc.hIconSm = LoadIcon(this->hInstance, MAKEINTRESOURCE(101));
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.lpszMenuName = nullptr;
     wc.lpszClassName = this->windowTitle;
 
-    if (!RegisterClass(&wc)) {
+    if (!RegisterClassEx(&wc)) {
         logWrite("Failed to create window class", true);
         return;
     }
