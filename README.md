@@ -1,4 +1,4 @@
-### 🗃️ Archived Project – This repository is no longer maintained.
+### 🗃️ Archived Project – Development is complete
 
 ---
 
@@ -8,7 +8,7 @@ Kiwi3D is a 3D scene editor and game engine framework built from scratch in C++ 
 
 This repository now serves as a **frozen, archived version** of the engine. While development on this version is complete, a future version is planned, featuring a full redesign using Vulkan and modern tools. This project remains a monument to what I built completely solo—and I’m proud to share it 😃
 
-![Engine Screenshot](screenshots/GameEngineDemoScreenshot3.png)
+![Screenshot of Kiwi3D showing the scene editor and UI](screenshots/GameEngineDemoScreenshot3.png)
 
 ---
 
@@ -24,6 +24,7 @@ This repository now serves as a **frozen, archived version** of the engine. Whil
 - [Controls](#controls)
 - [🚀 How to Run](#how-to-run)
   - [Build Requirements](#build-requirements)
+  - [Release](#release)
 - [Project Structure](#project-structure)
 - [📄 License](#license)
 - [📝 Final Thoughts](#final-thoughts)
@@ -111,6 +112,13 @@ This engine is **Windows-only** and depends on `windows.h`.
 
 ⚠️ **Note**: This project has very limited testing outside my own development environment.  
 Your mileage may vary depending on your compiler version or system configuration.
+
+<h3 id="release">Release</h3>
+
+Building Kiwi3D sounds like a pain? I get it... but I've got you covered 😄
+
+You can **download the binary directly** from the [release page](https://github.com/lindensheehy/Kiwi3D/releases/tag/v1.0.0). 
+This lets you skip all the setup and jump straight into a working version of the app—as long as you're on a 64-bit Windows machine.
 
 ---
 
